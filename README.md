@@ -9,7 +9,7 @@ npm install yfm-transform
 
 ### CLI
 ```bash
-yfm-transform --source ./md-sources-dir --dest ./html-output --styles
+node_modules/.bin/yfm-transform --source ./md-sources-dir --dest ./html-output --styles
 ```
 
 ### API

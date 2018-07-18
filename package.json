@@ -9,7 +9,7 @@
     "url": "https://github.yandex-team.ru/data-ui/yfm"
   },
   "main": "lib/index.js",
-  "bin": "bin/yfm-transform.js",
+  "bin": "bin/yfm-transform",
   "files": [
     "lib",
     "bin"
