@@ -1,0 +1,31 @@
+{
+  "name": "yfm-transform",
+  "version": "0.1.0",
+  "description": "Yandex Flavored Markdown utilities",
+  "author": "Andrey Morozov <amje@yandex-team.ru>",
+  "license": "UNLICENSED",
+  "main": "lib/index.js",
+  "bin": "bin/yfm-transform.js",
+  "files": [
+    "lib",
+    "bin"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "github-markdown-css": "^2.10.0",
+    "glob": "^7.1.2",
+    "highlight.js": "^9.12.0",
+    "markdown-it": "^8.4.2",
+    "markdown-it-attrs": "^2.3.1",
+    "markdown-it-deflist": "^2.0.3",
+    "markdown-it-meta": "^0.0.1",
+    "mkdirp": "^0.5.1",
+    "yargs": "^12.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-data-ui": "^3.0.1"
+  }
+}
