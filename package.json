@@ -4,6 +4,10 @@
   "description": "Yandex Flavored Markdown utilities",
   "author": "Andrey Morozov <amje@yandex-team.ru>",
   "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.yandex-team.ru/data-ui/yfm"
+  },
   "main": "lib/index.js",
   "bin": "bin/yfm-transform.js",
   "files": [
