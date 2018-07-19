@@ -1,18 +1,36 @@
 Трансформер YFM (Yandex Flavored Markdown) -> HTML
 
-## Установка
+## Исходники
+### Установка
+```bash
+git clone git@github.yandex-team.ru:data-ui/yfm.git
+cd yfm
+npm install
+```
+
+### Использование
+```bash
+npm run transform -- --source ./md-sources-dir --dest ./html-output --styles
+```
+
+## npm-пакет
+### Установка
 ```bash
 npm install yfm-transform
 ```
 
-## Использование
-
-### CLI
+Для использования CLI будет удобнее поставить пакет глобально:
 ```bash
-node_modules/.bin/yfm-transform --source ./md-sources-dir --dest ./html-output --styles
+sudo npm install -g yfm-transform
 ```
 
-### API
+### Использование
+**CLI**
+```bash
+yfm-transform --source ./md-sources-dir --dest ./html-output --styles
+```
+
+**API**
 ```js
 const fs = require('fs');
 const transform = require('yfm-transform');

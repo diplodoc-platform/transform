@@ -8,7 +8,7 @@ const glob = require('glob');
 const mkdirp = require('mkdirp');
 const transform = require('../lib');
 
-const cwd = process.cwd();
+const cwd = process.env.INIT_CWD || process.cwd();
 let source = argv.source || cwd;
 let dest = argv.dest || cwd;
 const styles = argv.styles || false;

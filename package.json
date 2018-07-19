@@ -2,7 +2,7 @@
   "name": "yfm-transform",
   "version": "0.1.0",
   "description": "Yandex Flavored Markdown utilities",
-  "author": "Andrey Morozov <amje@yandex-team.ru>",
+  "author": "Data UI Team <data-ui@yandex-team.ru>",
   "license": "UNLICENSED",
   "repository": {
     "type": "git",
@@ -15,6 +15,7 @@
     "bin"
   ],
   "scripts": {
+    "transform": "bin/yfm-transform",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
