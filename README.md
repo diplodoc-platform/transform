@@ -35,8 +35,9 @@ yfm-transform --source ./md-sources-dir --dest ./html-output --styles
 const fs = require('fs');
 const transform = require('yfm-transform');
 
+const rootPath = '/path/to/docs/root';
 const filePath = '/path/to/markdown/file.md';
 const content = fs.readFileSync(filePath, 'utf');
 
-const {html, meta} = transform(content, filePath)
+const {html, meta} = transform(content, filePath, rootPath);
 ```
