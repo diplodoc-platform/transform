@@ -1,0 +1,23 @@
+.yfm {
+    h1, h2, h3, h4, h5, h6 {
+        .anchor {
+            display: inline-block;
+            width: 24px;
+            padding-right: 4px;
+            margin-left: -24px;
+            float: left;
+
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .anchor::before {
+            content: '#';
+            visibility: hidden;
+        }
+
+        &:hover .anchor::before {
+            visibility: visible;
+        }
+    }
+}
