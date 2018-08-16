@@ -11,12 +11,21 @@
   "main": "lib/index.js",
   "bin": "bin/yfm-transform",
   "files": [
+    "dist",
     "lib",
     "bin"
   ],
   "scripts": {
     "transform": "bin/yfm-transform",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "css": "npm run css:compile && npm run css:prefix && npm run css:minify",
+    "css:compile": "node-sass src/scss/yfm.scss dist/css/yfm.css",
+    "css:prefix": "postcss dist/css/yfm.css --output dist/css/yfm.css",
+    "css:minify": "cleancss dist/css/yfm.css --output dist/css/yfm.min.css",
+    "js": "npm run js:compile && npm run js:minify",
+    "js:compile": "rollup -c",
+    "js:minify": "uglifyjs dist/js/yfm.js --output dist/js/yfm.min.js",
+    "dist": "npm run css && npm run js"
   },
   "dependencies": {
     "github-markdown-css": "^2.10.0",
@@ -32,7 +41,18 @@
     "yargs": "^12.0.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.0.0-rc.1",
+    "@babel/plugin-proposal-object-rest-spread": "7.0.0-rc.1",
+    "@babel/preset-env": "7.0.0-rc.1",
+    "autoprefixer": "^9.1.1",
+    "babel-eslint": "^8.2.6",
+    "clean-css-cli": "^4.2.1",
     "eslint": "^4.19.1",
-    "eslint-config-data-ui": "^3.0.1"
+    "eslint-config-data-ui": "^3.0.1",
+    "node-sass": "^4.9.3",
+    "postcss-cli": "^6.0.0",
+    "rollup": "^0.64.1",
+    "rollup-plugin-babel": "^4.0.0-beta.8",
+    "uglify-js": "^3.4.7"
   }
 }

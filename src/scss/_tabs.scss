@@ -1,0 +1,52 @@
+.yfm {
+    .tabs {
+        margin-bottom: 15px;
+    }
+
+    .tab-list {
+        display: flex;
+        margin-bottom: 15px;
+
+        border-bottom: 1px solid #e7e7e7;
+    }
+
+    .tab {
+        margin-bottom: -1px;
+        margin-right: 20px;
+        border-bottom: 2px solid transparent;
+
+        line-height: 33px;
+        font-weight: 700;
+        outline: none;
+        cursor: pointer;
+        user-select: none;
+
+        &:last-child {
+            margin-right: 0;
+        }
+
+        &:hover, &:active {
+            color: #d00;
+        }
+
+        &.active {
+            border-bottom-color: #d00;
+        }
+    }
+
+    .tab-panel {
+        display: none;
+
+        &:first-child {
+            margin-top: 0 !important;
+        }
+
+        &:last-child {
+            margin-bottom: 0 !important;
+        }
+
+        &.active {
+            display: block;
+        }
+    }
+}

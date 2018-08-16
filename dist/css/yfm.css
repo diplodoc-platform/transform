@@ -1,0 +1,35 @@
+.yfm .tabs {
+  margin-bottom: 15px; }
+
+.yfm .tab-list {
+  display: flex;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #e7e7e7; }
+
+.yfm .tab {
+  margin-bottom: -1px;
+  margin-right: 20px;
+  border-bottom: 2px solid transparent;
+  line-height: 33px;
+  font-weight: 700;
+  outline: none;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none; }
+  .yfm .tab:last-child {
+    margin-right: 0; }
+  .yfm .tab:hover, .yfm .tab:active {
+    color: #d00; }
+  .yfm .tab.active {
+    border-bottom-color: #d00; }
+
+.yfm .tab-panel {
+  display: none; }
+  .yfm .tab-panel:first-child {
+    margin-top: 0 !important; }
+  .yfm .tab-panel:last-child {
+    margin-bottom: 0 !important; }
+  .yfm .tab-panel.active {
+    display: block; }

@@ -42,7 +42,7 @@ function styledHtml(html, meta) {
         }
     </style>
 </head>
-<body class="markdown-body">
+<body class="markdown-body yfm">
     ${html}
 </body>
 </html>
