@@ -50,12 +50,14 @@
       }
     }
 
-    document.addEventListener('click', function (event) {
-      if (!event.target.matches(Selector.TAB)) {
-        return;
-      }
+    if (typeof document !== 'undefined') {
+      document.addEventListener('click', function (event) {
+        if (!event.target.matches(Selector.TAB)) {
+          return;
+        }
 
-      selectTab(event.target);
-    });
+        selectTab(event.target);
+      });
+    }
 
 })));
