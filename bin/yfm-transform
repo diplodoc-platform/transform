@@ -58,7 +58,7 @@ files.forEach((sourceFile) => {
     const sourcePath = path.resolve(source, sourceFile);
     const destPath = path.resolve(dest, destFile);
     const sourceFileContent = fs.readFileSync(sourcePath, 'utf8');
-    const {html, meta} = transform(sourceFileContent, {path: sourcePath});
+    const {html, meta} = transform(sourceFileContent, {path: sourcePath, root: source, assetsPublicPath: '/'});
 
     const destFileContent = styles ? styledHtml(html, meta) : html;
 
