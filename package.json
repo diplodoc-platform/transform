@@ -28,6 +28,7 @@
     "dist": "npm run css && npm run js"
   },
   "dependencies": {
+    "chalk": "^2.4.1",
     "github-markdown-css": "^2.10.0",
     "glob": "^7.1.2",
     "highlight.js": "^9.12.0",
