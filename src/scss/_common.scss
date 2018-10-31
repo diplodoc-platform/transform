@@ -1,0 +1,312 @@
+@import 'variables';
+
+$codeBorder: 1px solid #dce6f0;
+$codeBackground: #f7fbff;
+
+.yfm {
+    font-family: 'YS Text', 'Segoe UI', Arial, Helvetica, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    font-size: 16px;
+    line-height: 24px;
+    word-wrap: break-word;
+    color: $textColor;
+
+    * {
+        box-sizing: border-box;
+    }
+
+    & > *:not(h2):not(h3):not(h4):not(h5):not(h6):first-child {
+        margin-top: 0 !important;
+    }
+
+    & > *:last-child {
+        margin-bottom: 0 !important;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        margin-bottom: 15px;
+        font-weight: 500;
+        line-height: 1.4em;
+    }
+
+    h1 {
+        font-size: 36px;
+    }
+
+    h2 {
+        font-size: 26px;
+    }
+
+    h3 {
+        font-size: 20px;
+    }
+
+    h4 {
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    h5 {
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    h6 {
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    a {
+        background-color: transparent;
+        color: $accentColor;
+        text-decoration: none;
+
+        &:hover, &:active {
+            color: $brandColor;
+        }
+
+        &:not([href]) {
+            color: inherit;
+        }
+
+    }
+
+    strong {
+        font-weight: 700;
+    }
+
+    img {
+        box-sizing: content-box;
+        max-width: 100%;
+        border: none;
+        background-color: #fff;
+
+        &[align=right] {
+            padding-left: 20px;
+        }
+
+        &[align=left] {
+            padding-right: 20px;
+        }
+
+    }
+
+    p,
+    blockquote,
+    ul,
+    ol,
+    dl,
+    table,
+    pre {
+        margin: 0 0 15px 0;
+    }
+
+    ul, ol, dl {
+        & pre {
+            margin-top: 15px;
+        }
+    }
+
+    code,
+    kbd,
+    pre {
+        font-family: monospace, monospace;
+        font-size: 1em;
+        font-feature-settings: normal;
+    }
+
+    input {
+        margin: 0;
+        overflow: visible;
+
+        font-family: inherit;
+        font-size: inherit;
+        line-height: inherit;
+
+        &[type='checkbox'] {
+            box-sizing: border-box;
+            padding: 0;
+        }
+    }
+
+    table {
+        display: block;
+        width: 100%;
+        overflow: auto;
+        position: relative;
+        z-index: 1;
+
+        border-collapse: collapse;
+        border-spacing: 0;
+        background: #fff;
+
+        tr {
+            border-bottom: 1px solid $borderColor;
+        }
+
+        th, td {
+            padding: 10px 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        th {
+            font-weight: 700;
+            text-align: left;
+        }
+
+        td {
+            white-space: normal;
+            vertical-align: baseline;
+        }
+    }
+
+    hr {
+        box-sizing: content-box;
+        height: 0.25em;
+        padding: 0;
+        margin: 1.5em 0;
+        overflow: hidden;
+
+        background-color: $borderColor;
+        border: none;
+
+        &::before {
+            content: '';
+            display: table;
+        }
+
+        &::after {
+            content: '';
+            display: table;
+            clear: both;
+        }
+    }
+
+    blockquote {
+        position: relative;
+        padding-left: 12px;
+        border-left: 3px solid $accentColor;
+
+        & > *:first-child {
+            margin-top: 0;
+        }
+
+        & > *:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    dl {
+        padding: 0;
+
+        & > *:first-child {
+            margin-top: 0;
+        }
+
+        & > *:last-child {
+            margin-bottom: 0;
+        }
+
+        dt {
+            margin-bottom: 5px;
+            font-size: 1em;
+            font-weight: 700;
+            font-style: italic;
+        }
+
+        dd {
+            margin-bottom: 15px;
+            padding: 0 15px;
+        }
+    }
+
+    dd {
+        margin-left: 0;
+
+        & > ol:first-child,
+        & > ul:first-child,
+        & > dd:first-child {
+            padding-left: 0;
+        }
+    }
+
+    ul, ol {
+        padding-left: 2.2em;
+    }
+
+    ul ul,
+    ul ol,
+    ol ol,
+    ol ul {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    ol {
+        list-style-type: none;
+        counter-reset: list;
+
+        & > li {
+            position: relative;
+            counter-increment: list;
+
+            &::before {
+                position: absolute;
+                right: 100%;
+                margin-right: 4px;
+                content: counters(list, '.') '. ';
+            }
+        }
+    }
+
+    li {
+        word-wrap: break-word;
+    }
+
+    li + li {
+        margin-top: 0.33em;
+    }
+
+    li p,
+    li blockquote {
+        margin-top: 15px;
+    }
+
+    code {
+        padding: 0.1em 0.4em 0.15em;
+        background-color: $codeBackground;
+        border: $codeBorder;
+        border-radius: 4px;
+        font-size: 0.875em;
+        white-space: nowrap;
+    }
+
+    pre {
+        word-wrap: normal;
+    }
+
+    pre code {
+        display: inline;
+        padding: 0;
+        margin: 0;
+        overflow: visible;
+        word-wrap: normal;
+        background-color: transparent;
+        border: 0;
+    }
+
+    pre > code {
+        display: block;
+        padding: 15px;
+        overflow: auto;
+        position: relative;
+        z-index: 1;
+
+        border-radius: 10px;
+        border: $codeBorder;
+        background-color: $codeBackground;
+
+        white-space: pre;
+    }
+}
