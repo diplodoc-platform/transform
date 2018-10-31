@@ -16,7 +16,16 @@ const styles = argv.styles || false;
 source = path.resolve(cwd, source);
 dest = path.resolve(cwd, dest);
 
-const files = glob.sync('**/*.md', {cwd: source});
+let files;
+const sourceStats = fs.statSync(source);
+if (sourceStats.isDirectory()) {
+    files = glob.sync('**/*.md', {cwd: source});
+} else {
+    const {dir, base} = path.parse(source);
+    source = dir;
+
+    files = glob.sync(base, {cwd: source});
+}
 
 const githubMarkdownStyles = fs.readFileSync(require.resolve('github-markdown-css/github-markdown.css'), 'utf8');
 const hljsStyles = fs.readFileSync(require.resolve('highlight.js/styles/default.css'), 'utf8');
