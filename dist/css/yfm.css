@@ -229,16 +229,13 @@
   margin-left: -24px;
   float: left;
   text-align: center;
-  font-size: 18px;
+  font-size: 18px; }
+
+.yfm h1 .anchor::before, .yfm h2 .anchor::before, .yfm h3 .anchor::before, .yfm h4 .anchor::before, .yfm h5 .anchor::before, .yfm h6 .anchor::before {
+  content: '#';
   visibility: hidden; }
-  .yfm h1 .anchor::before, .yfm h2 .anchor::before, .yfm h3 .anchor::before, .yfm h4 .anchor::before, .yfm h5 .anchor::before, .yfm h6 .anchor::before {
-    content: '#'; }
 
-.yfm h1:hover .anchor, .yfm h2:hover .anchor, .yfm h3:hover .anchor, .yfm h4:hover .anchor, .yfm h5:hover .anchor, .yfm h6:hover .anchor {
-  visibility: visible; }
-
-.yfm h1:target .anchor, .yfm h2:target .anchor, .yfm h3:target .anchor, .yfm h4:target .anchor, .yfm h5:target .anchor, .yfm h6:target .anchor {
-  color: #d00;
+.yfm h1:hover .anchor::before, .yfm h2:hover .anchor::before, .yfm h3:hover .anchor::before, .yfm h4:hover .anchor::before, .yfm h5:hover .anchor::before, .yfm h6:hover .anchor::before {
   visibility: visible; }
 
 .yfm .tabs {
