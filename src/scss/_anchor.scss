@@ -1,3 +1,5 @@
+@import 'variables';
+
 .yfm {
     h1, h2, h3, h4, h5, h6 {
         .anchor {
@@ -9,14 +11,19 @@
 
             text-align: center;
             font-size: 18px;
-        }
-
-        .anchor::before {
-            content: '#';
             visibility: hidden;
+
+            &::before {
+                content: '#';
+            }
         }
 
-        &:hover .anchor::before {
+        &:hover .anchor {
+            visibility: visible;
+        }
+
+        &:target .anchor {
+            color: $brandColor;
             visibility: visible;
         }
     }
