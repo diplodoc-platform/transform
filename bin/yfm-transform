@@ -12,7 +12,7 @@ const cwd = process.env.INIT_CWD || process.cwd();
 let source = argv.source || cwd;
 let dest = argv.dest || cwd;
 const styles = argv.styles || false;
-const vars = JSON.parse(argv.vars) || {};
+const vars = JSON.parse(argv.vars || '{}');
 
 source = path.resolve(cwd, source);
 dest = path.resolve(cwd, dest);
