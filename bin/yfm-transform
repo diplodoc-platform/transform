@@ -27,8 +27,9 @@ if (sourceStats.isDirectory()) {
     files = glob.sync(base, {cwd: source});
 }
 
-const githubMarkdownStyles = fs.readFileSync(path.join(__dirname, '../node_modules/github-markdown-css/github-markdown.css'));
 const hljsStyles = fs.readFileSync(path.join(__dirname, '../node_modules/highlight.js/styles/default.css'));
+const yfmStyles = fs.readFileSync(path.join(__dirname, '../dist/css/yfm.min.css'));
+const yfmJS = fs.readFileSync(path.join(__dirname, '../dist/js/yfm.min.js'));
 function styledHtml(html, meta) {
     return `
 <!doctype html>
@@ -37,7 +38,7 @@ function styledHtml(html, meta) {
     <meta charset="UTF-8"/>
     <title>${meta.title || ''}</title>
     <style>
-        ${githubMarkdownStyles}
+        ${yfmStyles}
     </style>
     <style>
         ${hljsStyles}
@@ -53,6 +54,9 @@ function styledHtml(html, meta) {
 </head>
 <body class="markdown-body yfm">
     ${html}
+    <script>
+        ${yfmJS}
+</script>
 </body>
 </html>
     `.trim();
