@@ -27,8 +27,8 @@ if (sourceStats.isDirectory()) {
     files = glob.sync(base, {cwd: source});
 }
 
-const githubMarkdownStyles = fs.readFileSync(require.resolve('github-markdown-css/github-markdown.css'), 'utf8');
-const hljsStyles = fs.readFileSync(require.resolve('highlight.js/styles/default.css'), 'utf8');
+const githubMarkdownStyles = fs.readFileSync(path.join(__dirname, '../node_modules/github-markdown-css/github-markdown.css'));
+const hljsStyles = fs.readFileSync(path.join(__dirname, '../node_modules/highlight.js/styles/default.css'));
 function styledHtml(html, meta) {
     return `
 <!doctype html>
