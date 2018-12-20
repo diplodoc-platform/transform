@@ -56,7 +56,7 @@ function styledHtml(html, meta) {
     ${html}
     <script>
         ${yfmJS}
-</script>
+    </script>
 </body>
 </html>
     `.trim();
