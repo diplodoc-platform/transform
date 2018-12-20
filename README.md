@@ -13,6 +13,12 @@ npm install
 npm run transform -- --source ./md-sources-dir --dest ./html-output --styles
 ```
 
+### Сборка bin-файла
+```bash
+npm install -g pkg
+pkg ./
+```
+
 ## npm-пакет
 ### Установка
 ```bash
