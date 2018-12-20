@@ -12,6 +12,7 @@ const cwd = process.env.INIT_CWD || process.cwd();
 let source = argv.source || cwd;
 let dest = argv.dest || cwd;
 const styles = argv.styles || false;
+const vars = JSON.parse(argv.vars || '{}');
 
 source = path.resolve(cwd, source);
 dest = path.resolve(cwd, dest);
@@ -71,7 +72,7 @@ files.forEach((sourceFile) => {
     const sourcePath = path.resolve(source, sourceFile);
     const destPath = path.resolve(dest, destFile);
     const sourceFileContent = fs.readFileSync(sourcePath, 'utf8');
-    const {html, meta} = transform(sourceFileContent, {path: sourcePath, root: source, assetsPublicPath: '/'});
+    const {html, meta} = transform(sourceFileContent, {path: sourcePath, root: source, assetsPublicPath: '/', vars});
 
     const destFileContent = styles ? styledHtml(html, meta) : html;
 

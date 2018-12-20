@@ -10,7 +10,7 @@ npm install
 
 ### Использование
 ```bash
-npm run transform -- --source ./md-sources-dir --dest ./html-output --styles
+npm run transform -- --source ./md-sources-dir --dest ./html-output --styles --vars {\"user\":{\"name\":\"Alice\"}}
 ```
 
 ### Сборка bin-файла
@@ -33,7 +33,7 @@ sudo npm install -g yfm-transform
 ### Использование
 **CLI**
 ```bash
-yfm-transform --source ./md-sources-dir --dest ./html-output --styles
+yfm-transform --source ./md-sources-dir --dest ./html-output --styles --vars {\"user\":{\"name\":\"Alice\"}}
 ```
 
 **API**
@@ -44,6 +44,7 @@ const transform = require('yfm-transform');
 const root = '/path/to/docs/root'; // optional
 const path = '/path/to/markdown/file.md';
 const content = fs.readFileSync(filePath, 'utf');
+const vars = { user: { name: 'Alice' } };
 
-const {html, meta} = transform(content, {root, path});
+const {html, meta} = transform(content, {root, path, vars});
 ```
