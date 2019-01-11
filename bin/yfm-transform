@@ -13,6 +13,7 @@ let source = argv.source || cwd;
 let dest = argv.dest || cwd;
 const styles = argv.styles || false;
 const vars = JSON.parse(argv.vars || '{}');
+const outputFormat = argv.outputFormat || 'html';
 
 source = path.resolve(cwd, source);
 dest = path.resolve(cwd, dest);
@@ -67,12 +68,18 @@ files.forEach((sourceFile) => {
     const destFile = path.format({
         ...path.parse(sourceFile),
         base: undefined,
-        ext: '.html'
+        ext: outputFormat === 'yfm' ? '.md' : '.html'
     });
     const sourcePath = path.resolve(source, sourceFile);
     const destPath = path.resolve(dest, destFile);
     const sourceFileContent = fs.readFileSync(sourcePath, 'utf8');
-    const {html, meta} = transform(sourceFileContent, {path: sourcePath, root: source, assetsPublicPath: '/', vars});
+    const {html, meta} = transform(sourceFileContent, {
+        path: sourcePath,
+        root: source,
+        assetsPublicPath: '/',
+        vars,
+        outputFormat
+    });
 
     const destFileContent = styles ? styledHtml(html, meta) : html;
 
