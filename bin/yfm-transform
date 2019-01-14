@@ -6,7 +6,8 @@ const fs = require('fs');
 const argv = require('yargs').argv;
 const glob = require('glob');
 const mkdirp = require('mkdirp');
-const transform = require('../lib');
+const transformToHTML = require('../lib');
+const transformToMD = require('../lib/transformToMD');
 
 const cwd = process.env.INIT_CWD || process.cwd();
 let source = argv.source || cwd;
@@ -68,20 +69,32 @@ files.forEach((sourceFile) => {
     const destFile = path.format({
         ...path.parse(sourceFile),
         base: undefined,
-        ext: outputFormat === 'yfm' ? '.md' : '.html'
+        ext: `.${outputFormat}`
     });
     const sourcePath = path.resolve(source, sourceFile);
     const destPath = path.resolve(dest, destFile);
     const sourceFileContent = fs.readFileSync(sourcePath, 'utf8');
-    const {html, meta} = transform(sourceFileContent, {
-        path: sourcePath,
-        root: source,
-        assetsPublicPath: '/',
-        vars,
-        outputFormat
-    });
 
-    const destFileContent = styles ? styledHtml(html, meta) : html;
+    let destFileContent;
+    switch (outputFormat) {
+        case 'html': {
+            const {html, meta} = transformToHTML(sourceFileContent, {
+                path: sourcePath,
+                root: source,
+                assetsPublicPath: '/',
+                vars
+            });
+
+            destFileContent = styles ? styledHtml(html, meta) : html;
+
+            break;
+        }
+        case 'md': {
+            destFileContent = transformToMD(sourceFileContent, {vars, path: sourcePath});
+
+            break;
+        }
+    }
 
     const {dir: fileDestDir} = path.parse(destPath);
     mkdirp.sync(fileDestDir);
