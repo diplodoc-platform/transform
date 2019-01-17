@@ -9,19 +9,27 @@ const mkdirp = require('mkdirp');
 const cwd = process.env.INIT_CWD || process.cwd();
 const dataExample = JSON.stringify({'user': {'name': 'Alice'}});
 const argv = require('yargs')
-    .default({
-        'source': cwd,
-        'dest': cwd,
-        'styles': false,
-        'vars': {},
-        'outputFormat': 'html'
-    })
-    .describe({
-        'source': 'Путь до папки с markdown файлами',
-        'dest': 'Путь до папки где будет размещен результат трансформации',
-        'styles': 'Нужно ли стилизовать выходной HTML',
-        'vars': 'Данные для подстановки и вычисления условных операторов',
-        'outputFormat': 'Формат трансформации: html или md'
+    .options({
+        'source': {
+            'default': cwd,
+            'describe': 'Путь до папки с markdown файлами'
+        },
+        'dest': {
+            'default': cwd,
+            'describe': 'Путь до папки где будет размещен результат трансформации'
+        },
+        'styles': {
+            'default': false,
+            'describe': 'Нужно ли стилизовать выходной HTML'
+        },
+        'vars': {
+            'default': '{}',
+            'describe': 'Данные для подстановки и вычисления условных операторов'
+        },
+        'outputFormat': {
+            'default': 'html',
+            'describe': 'Формат трансформации: html или md'
+        }
     })
     .example(
         `yfm-transform --source ./md-sources-dir --dest ./html-output --styles --vars ${dataExample}`,
@@ -36,11 +44,11 @@ const argv = require('yargs')
 const transformToHTML = require('../lib');
 const transformToMD = require('../lib/transformToMD');
 
-let source = argv.source || cwd;
-let dest = argv.dest || cwd;
-const styles = argv.styles || false;
-const vars = JSON.parse(argv.vars || '{}');
-const outputFormat = argv.outputFormat || 'html';
+let source = argv.source;
+let dest = argv.dest;
+const styles = argv.styles;
+const vars = JSON.parse(argv.vars);
+const outputFormat = argv.outputFormat;
 
 source = path.resolve(cwd, source);
 dest = path.resolve(cwd, dest);
