@@ -3,13 +3,39 @@
 'use strict';
 const path = require('path');
 const fs = require('fs');
-const argv = require('yargs').argv;
 const glob = require('glob');
 const mkdirp = require('mkdirp');
+
+const cwd = process.env.INIT_CWD || process.cwd();
+const dataExample = JSON.stringify({'user': {'name': 'Alice'}});
+const argv = require('yargs')
+    .default({
+        'source': cwd,
+        'dest': cwd,
+        'styles': false,
+        'vars': {},
+        'outputFormat': 'html'
+    })
+    .describe({
+        'source': 'Путь до папки с markdown файлами',
+        'dest': 'Путь до папки где будет размещен результат трансформации',
+        'styles': 'Нужно ли стилизовать выходной HTML',
+        'vars': 'Данные для подстановки и вычисления условных операторов',
+        'outputFormat': 'Формат трансформации: html или md'
+    })
+    .example(
+        `yfm-transform --source ./md-sources-dir --dest ./html-output --styles --vars ${dataExample}`,
+        'Трансформация в стилизованный HTML'
+    )
+    .example(
+        `yfm-transform --source ./md-sources-dir --dest ./md-output outputFormat md  --vars ${dataExample}`,
+        'Трансформация в Markdown с примененными условными операторами'
+    )
+    .argv;
+
 const transformToHTML = require('../lib');
 const transformToMD = require('../lib/transformToMD');
 
-const cwd = process.env.INIT_CWD || process.cwd();
 let source = argv.source || cwd;
 let dest = argv.dest || cwd;
 const styles = argv.styles || false;
