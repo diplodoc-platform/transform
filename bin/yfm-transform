@@ -28,6 +28,10 @@ const argv = require('yargs')
         },
         'outputFormat': {
             'default': 'html',
+            'describe': 'DEPRECATED'
+        },
+        'output-format': {
+            'default': 'html',
             'describe': 'Формат трансформации: html или md'
         },
         'one-file': {
@@ -53,7 +57,7 @@ let source = argv.source;
 let dest = argv.dest;
 const styles = argv.styles;
 const vars = JSON.parse(argv.vars);
-const outputFormat = argv.outputFormat;
+const outputFormat = argv['output-format'] !== 'html' ? argv['output-format'] : argv.outputFormat;
 const oneFile = argv['one-file'];
 
 source = path.resolve(cwd, source);
