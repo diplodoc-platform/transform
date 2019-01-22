@@ -29,6 +29,10 @@ const argv = require('yargs')
         'outputFormat': {
             'default': 'html',
             'describe': 'Формат трансформации: html или md'
+        },
+        'one-file': {
+            'default': false,
+            'describe': 'Объединить файлы в один'
         }
     })
     .example(
@@ -43,12 +47,14 @@ const argv = require('yargs')
 
 const transformToHTML = require('../lib');
 const transformToMD = require('../lib/transformToMD');
+const concat = require('../lib/concat');
 
 let source = argv.source;
 let dest = argv.dest;
 const styles = argv.styles;
 const vars = JSON.parse(argv.vars);
 const outputFormat = argv.outputFormat;
+const oneFile = argv['one-file'];
 
 source = path.resolve(cwd, source);
 dest = path.resolve(cwd, dest);
@@ -99,6 +105,7 @@ function styledHtml(html, meta) {
     `.trim();
 }
 
+const results = {};
 files.forEach((sourceFile) => {
     const destFile = path.format({
         ...path.parse(sourceFile),
@@ -116,10 +123,11 @@ files.forEach((sourceFile) => {
                 path: sourcePath,
                 root: source,
                 assetsPublicPath: '/',
-                vars
+                vars,
+                oneFile
             });
 
-            destFileContent = styles ? styledHtml(html, meta) : html;
+            destFileContent = styles && !oneFile ? styledHtml(html, meta) : html;
 
             break;
         }
@@ -130,7 +138,19 @@ files.forEach((sourceFile) => {
         }
     }
 
-    const {dir: fileDestDir} = path.parse(destPath);
-    mkdirp.sync(fileDestDir);
-    fs.writeFileSync(destPath, destFileContent, 'utf8');
+    if (oneFile) {
+        results[sourceFile] = destFileContent;
+    } else {
+        const {dir: fileDestDir} = path.parse(destPath);
+        mkdirp.sync(fileDestDir);
+        fs.writeFileSync(destPath, destFileContent, 'utf8');
+    }
 });
+
+if (!oneFile) {
+    return;
+}
+
+const {content, meta} = concat(source, results);
+
+fs.writeFileSync(dest, styles ? styledHtml(content, meta) : content, 'utf-8');
