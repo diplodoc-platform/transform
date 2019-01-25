@@ -52,13 +52,16 @@ const argv = require('yargs')
 const transformToHTML = require('../lib');
 const transformToMD = require('../lib/transformToMD');
 const concat = require('../lib/concat');
+const styledHtml = require('../lib/styledHtml');
+const createPDF = require('../lib/createPDF');
 
 let source = argv.source;
 let dest = argv.dest;
 const styles = argv.styles;
 const vars = JSON.parse(argv.vars);
 const outputFormat = argv['output-format'] !== 'html' ? argv['output-format'] : argv.outputFormat;
-const oneFile = argv['one-file'];
+const needPDF = outputFormat === 'pdf';
+const oneFile = needPDF || argv['one-file'];
 
 source = path.resolve(cwd, source);
 dest = path.resolve(cwd, dest);
@@ -74,41 +77,6 @@ if (sourceStats.isDirectory()) {
     files = glob.sync(base, {cwd: source});
 }
 
-const hljsStyles = fs.readFileSync(path.join(__dirname, '../node_modules/highlight.js/styles/default.css'));
-const yfmStyles = fs.readFileSync(path.join(__dirname, '../dist/css/yfm.min.css'));
-const yfmJS = fs.readFileSync(path.join(__dirname, '../dist/js/yfm.min.js'));
-function styledHtml(html, meta) {
-    return `
-<!doctype html>
-<html>
-<head>
-    <meta charset="UTF-8"/>
-    <title>${meta.title || ''}</title>
-    <style>
-        ${yfmStyles}
-    </style>
-    <style>
-        ${hljsStyles}
-    </style>
-    <style>
-        .markdown-body {
-            margin: 0 auto;
-            min-width: 200px;
-            max-width: 980px;
-            padding: 45px;
-        }
-    </style>
-</head>
-<body class="markdown-body yfm">
-    ${html}
-    <script>
-        ${yfmJS}
-    </script>
-</body>
-</html>
-    `.trim();
-}
-
 const results = {};
 files.forEach((sourceFile) => {
     const destFile = path.format({
@@ -122,6 +90,7 @@ files.forEach((sourceFile) => {
 
     let destFileContent;
     switch (outputFormat) {
+        case 'pdf':
         case 'html': {
             const {html, meta} = transformToHTML(sourceFileContent, {
                 path: sourcePath,
@@ -156,5 +125,9 @@ if (!oneFile) {
 }
 
 const {content, meta} = concat(source, results);
+const htmlDest = needPDF ? path.join(path.dirname(dest), 'pdf.html') : dest;
+fs.writeFileSync(htmlDest, styles ? styledHtml(content, meta) : content, 'utf-8');
 
-fs.writeFileSync(dest, styles ? styledHtml(content, meta) : content, 'utf-8');
+if (needPDF) {
+    createPDF(htmlDest, dest);
+}
