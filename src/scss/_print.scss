@@ -1,0 +1,20 @@
+@media print {
+    .tab-list {
+        display: none !important;
+    }
+
+    .tab-panel:before {
+        content: attr(data-title);
+        margin-bottom: -1px;
+        margin-right: 20px;
+        border-bottom: 2px solid transparent;
+        line-height: 33px;
+        font-weight: 700;
+        outline: 0;
+        cursor: pointer;
+    }
+
+    .tab-panel {
+        display: block !important;
+    }
+}
