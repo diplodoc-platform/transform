@@ -1,10 +1,7 @@
 #!/usr/bin/env node
 
 'use strict';
-const path = require('path');
-const fs = require('fs');
-const glob = require('glob');
-const mkdirp = require('mkdirp');
+const filesProcessing = require('../lib/filesProcessing');
 
 const cwd = process.env.INIT_CWD || process.cwd();
 const dataExample = JSON.stringify({'user': {'name': 'Alice'}});
@@ -49,85 +46,9 @@ const argv = require('yargs')
     )
     .argv;
 
-const transformToHTML = require('../lib');
-const transformToMD = require('../lib/transformToMD');
-const concat = require('../lib/concat');
-const styledHtml = require('../lib/styledHtml');
-const createPDF = require('../lib/createPDF');
-
-let source = argv.source;
-let dest = argv.dest;
-const styles = argv.styles;
-const vars = JSON.parse(argv.vars);
-const outputFormat = argv['output-format'] !== 'html' ? argv['output-format'] : argv.outputFormat;
-const needPDF = outputFormat === 'pdf';
-const oneFile = needPDF || argv['one-file'];
-
-source = path.resolve(cwd, source);
-dest = path.resolve(cwd, dest);
-
-let files;
-const sourceStats = fs.statSync(source);
-if (sourceStats.isDirectory()) {
-    files = glob.sync('**/*.md', {cwd: source});
-} else {
-    const {dir, base} = path.parse(source);
-    source = dir;
-
-    files = glob.sync(base, {cwd: source});
-}
-
-const results = {};
-files.forEach((sourceFile) => {
-    const destFile = path.format({
-        ...path.parse(sourceFile),
-        base: undefined,
-        ext: `.${outputFormat}`
-    });
-    const sourcePath = path.resolve(source, sourceFile);
-    const destPath = path.resolve(dest, destFile);
-    const sourceFileContent = fs.readFileSync(sourcePath, 'utf8');
-
-    let destFileContent;
-    switch (outputFormat) {
-        case 'pdf':
-        case 'html': {
-            const {html, meta} = transformToHTML(sourceFileContent, {
-                path: sourcePath,
-                root: source,
-                assetsPublicPath: '/',
-                vars,
-                oneFile
-            });
-
-            destFileContent = styles && !oneFile ? styledHtml(html, meta) : html;
-
-            break;
-        }
-        case 'md': {
-            destFileContent = transformToMD(sourceFileContent, {vars, path: sourcePath});
-
-            break;
-        }
-    }
-
-    if (oneFile) {
-        results[sourceFile] = destFileContent;
-    } else {
-        const {dir: fileDestDir} = path.parse(destPath);
-        mkdirp.sync(fileDestDir);
-        fs.writeFileSync(destPath, destFileContent, 'utf8');
-    }
+filesProcessing({
+    ...argv,
+    vars: JSON.parse(argv.vars),
+    outputFormat: argv['output-format'] !== 'html' ? argv['output-format'] : argv.outputFormat,
+    oneFile: argv['one-file']
 });
-
-if (!oneFile) {
-    return;
-}
-
-const {content, meta} = concat(source, results);
-const htmlDest = needPDF ? path.join(path.dirname(dest), 'pdf.html') : dest;
-fs.writeFileSync(htmlDest, styles ? styledHtml(content, meta) : content, 'utf-8');
-
-if (needPDF) {
-    createPDF(htmlDest, dest);
-}
