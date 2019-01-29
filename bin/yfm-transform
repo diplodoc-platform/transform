@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 'use strict';
-const filesProcessing = require('../lib/filesProcessing');
+const filesProcessing = require('../lib/filesProcess');
 
 const cwd = process.env.INIT_CWD || process.cwd();
 const dataExample = JSON.stringify({'user': {'name': 'Alice'}});
