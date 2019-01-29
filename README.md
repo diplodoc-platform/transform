@@ -19,24 +19,6 @@ npm install -g pkg
 pkg ./
 ```
 
-Если нужно собирать полученным bin-файлом pdf-ки:
-
-then, copy contents of node_modules/puppeteer/.local-chromium folder to chromium folder, next to your binaries.
-
-for example:
-
-project/\
-├── build/\
-│   ├── app-linux\
-│   ├── app-macos\
-│   ├── app-win.exe\
-│   ├── chromium/\
-│       ├── mac-526987/\
-├── index.js\
-├── package.json
-
-https://github.com/zeit/pkg/issues/204#issuecomment-363219758
-
 ## npm-пакет
 ### Установка
 ```bash
