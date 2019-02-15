@@ -9,6 +9,22 @@ const ClassName = {
     ACTIVE: 'active'
 };
 
+// matches polyfill for old edge
+(function (e) {
+    const matches = e.matches || e.matchesSelector || e.webkitMatchesSelector || e.mozMatchesSelector || e.msMatchesSelector || e.oMatchesSelector;
+    if (!matches) {
+        e.matches = e.matchesSelector = function matches(selector) {
+            const matches = document.querySelectorAll(selector);
+            const th = this;
+            return Array.prototype.some.call(matches, function (e) {
+                return e === th;
+            });
+        };
+    } else {
+        e.matches = e.matchesSelector = matches;
+    }
+})(Element.prototype);
+
 function selectTab(element) {
     if (
         !element.parentNode ||
@@ -43,8 +59,6 @@ function selectTab(element) {
             panel.classList.toggle(ClassName.ACTIVE, false);
         }
     }
-
-
 }
 
 if (typeof document !== 'undefined') {

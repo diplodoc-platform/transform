@@ -12,7 +12,23 @@
     };
     var ClassName = {
       ACTIVE: 'active'
-    };
+    }; // matches polyfill for old edge
+
+    (function (e) {
+      var matches = e.matches || e.matchesSelector || e.webkitMatchesSelector || e.mozMatchesSelector || e.msMatchesSelector || e.oMatchesSelector;
+
+      if (!matches) {
+        e.matches = e.matchesSelector = function matches(selector) {
+          var matches = document.querySelectorAll(selector);
+          var th = this;
+          return Array.prototype.some.call(matches, function (e) {
+            return e === th;
+          });
+        };
+      } else {
+        e.matches = e.matchesSelector = matches;
+      }
+    })(Element.prototype);
 
     function selectTab(element) {
       if (!element.parentNode || !element.parentNode.matches(Selector.TAB_LIST) || !element.parentNode.parentNode || !element.parentNode.parentNode.matches(Selector.TABS) || element.classList.contains(ClassName.ACTIVE)) {
