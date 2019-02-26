@@ -23,6 +23,10 @@ const argv = require('yargs')
             'default': '{}',
             'describe': 'Данные для подстановки и вычисления условных операторов'
         },
+        'vars-preset': {
+            'default': null,
+            'describe': 'Название пресета переменных из файла presets.yaml'
+        },
         'outputFormat': {
             'default': 'html',
             'describe': 'DEPRECATED'
@@ -49,6 +53,7 @@ const argv = require('yargs')
 filesProcessing({
     ...argv,
     vars: JSON.parse(argv.vars),
+    varsPreset: argv['vars-preset'],
     outputFormat: argv['output-format'] !== 'html' ? argv['output-format'] : argv.outputFormat,
     oneFile: argv['one-file']
 });
