@@ -1,8 +1,5 @@
 @import 'variables';
 
-$codeBorder: 1px solid #dce6f0;
-$codeBackground: #f7fbff;
-
 .yfm {
     font-family: 'YS Text', 'Segoe UI', Arial, Helvetica, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
     font-size: 16px;
@@ -286,7 +283,7 @@ $codeBackground: #f7fbff;
         word-wrap: normal;
     }
 
-    pre code {
+    pre * code {
         display: inline;
         padding: 0;
         margin: 0;
