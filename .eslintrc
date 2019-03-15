@@ -1,8 +1,7 @@
 {
     "extends": ["data-ui"],
     "env": {
-        "node": true,
-        "jest": true
+        "node": true
     },
     "rules": {
         "no-negated-condition": 0,

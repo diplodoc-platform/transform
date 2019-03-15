@@ -1,4 +1,6 @@
-const conditions = require('./conditions');
+'use strict';
+
+const conditions = require('../../lib/liquid/conditions');
 
 describe('Conditions', () => {
     describe('location', () => {

@@ -1,4 +1,6 @@
-const substitutions = require('./substitutions');
+'use strict';
+
+const substitutions = require('../../lib/liquid/substitutions');
 
 describe('Substitutions', () => {
     test('Should substitute to inline text', () => {
