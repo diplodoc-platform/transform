@@ -48,3 +48,8 @@ const vars = { user: { name: 'Alice' } };
 
 const {html, meta} = transform(content, {root, path, vars});
 ```
+
+## License
+
+Mozilla Public License
+Version 2.0
