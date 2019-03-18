@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "transform": "bin/yfm-transform",
-    "test": "jest",
+    "test": "jest --coverage",
     "css": "npm run css:compile && npm run css:prefix && npm run css:minify",
     "css:compile": "node-sass src/scss/yfm.scss dist/css/yfm.css",
     "css:prefix": "postcss dist/css/yfm.css --output dist/css/yfm.css",

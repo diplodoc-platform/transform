@@ -10,7 +10,8 @@ function callPlugin(plugin, tokens, opts) {
     const fakeMd = {
         core: {
             ruler: {
-                push: (name, cb) => cb(state)
+                push: (name, cb) => cb(state),
+                before: (anotherPlugin, name, cb) => cb(state)
             }
         }
     };
