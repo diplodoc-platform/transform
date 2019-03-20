@@ -2,6 +2,8 @@
 
 Трансформер YFM (Yandex Flavored Markdown) -> HTML
 
+[Описание синтаксиса YFM](./DOCS.md)
+
 ## Исходники
 ### Установка
 ```bash
