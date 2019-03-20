@@ -14,7 +14,7 @@ describe('Tabs', () => {
         const result = callIncludesPlugin(tokenize([
             'Text before include',
             '',
-            '{% include \'[create-folder](./mocks/include.md)\' %}',
+            '{% include [create-folder](./mocks/include.md) %}',
             '',
             'After include'
         ]), {
@@ -31,7 +31,7 @@ describe('Tabs', () => {
         const result = callIncludesPlugin(tokenize([
             'Text before include',
             '',
-            '{% include notitle \'[create-folder](./mocks/include.md)\' %}',
+            '{% include notitle [create-folder](./mocks/include.md) %}',
             '',
             'After include'
         ]), {
@@ -49,7 +49,7 @@ describe('Tabs', () => {
         callIncludesPlugin(tokenize([
             'Text before include',
             '',
-            '{% include notitle \'[create-folder](./mocks/fake.md)\' %}',
+            '{% include notitle [create-folder](./mocks/fake.md) %}',
             '',
             'After include'
         ]), {
