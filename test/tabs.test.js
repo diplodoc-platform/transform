@@ -1,13 +1,8 @@
 'use strict';
-const MarkdownIt = require('markdown-it');
 
 const tabs = require('../lib/plugins/tabs');
-const {callPlugin} = require('./utils');
+const {callPlugin, tokenize} = require('./utils');
 const {base} = require('./data/tabs');
-
-const md = new MarkdownIt();
-
-const tokenize = (lines = []) => md.parse(lines.join('\n'), {});
 
 const callTabsPlugin = callPlugin.bind(null, tabs);
 

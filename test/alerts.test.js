@@ -1,15 +1,8 @@
 'use strict';
-const MarkdownIt = require('markdown-it');
 
 const alerts = require('../lib/plugins/alerts');
-const {callPlugin} = require('./utils');
+const {callPlugin, tokenize} = require('./utils');
 const {base} = require('./data/alerts');
-
-const md = new MarkdownIt();
-
-function tokenize(lines = []) {
-    return md.parse(lines.join('\n\n'), {});
-}
 
 const callAlertsPlugin = callPlugin.bind(null, alerts);
 
@@ -17,9 +10,13 @@ describe('Alerts', () => {
     test('Should transform to new tokens', () => {
         const result = callAlertsPlugin(tokenize([
             'Text before',
+            '',
             '{% alert warning %}',
+            '',
             'Текст примечания.',
+            '',
             '{% endnote %}',
+            '',
             'Text after'
         ]), {});
 
@@ -36,7 +33,9 @@ describe('Alerts', () => {
             test(`should support type: ${type}`, () => {
                 const result = callAlertsPlugin(tokenize([
                     `{% alert ${type} %}`,
+                    '',
                     'Текст примечания.',
+                    '',
                     '{% endnote %}'
                 ]), {});
 

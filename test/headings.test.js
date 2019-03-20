@@ -1,12 +1,7 @@
 'use strict';
-const MarkdownIt = require('markdown-it');
+
 const getHeadings = require('../lib/headings');
-
-const md = new MarkdownIt();
-
-function tokenize(lines = []) {
-    return md.parse(lines.join('\n'));
-}
+const {tokenize} = require('./utils');
 
 function item(title, level, items) {
     const result = {

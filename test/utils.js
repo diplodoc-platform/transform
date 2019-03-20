@@ -1,10 +1,14 @@
 const Token = require('markdown-it/lib/token');
+const MarkdownIt = require('markdown-it');
+
+const md = new MarkdownIt();
 
 function callPlugin(plugin, tokens, opts) {
     const state = {
         tokens,
         env: {},
-        Token
+        Token,
+        md
     };
 
     const fakeMd = {
@@ -40,4 +44,6 @@ const paragraph = (content) => [
     }
 ];
 
-module.exports = {callPlugin, paragraph};
+const tokenize = (lines = []) => md.parse(lines.join('\n'), {});
+
+module.exports = {callPlugin, paragraph, tokenize};
