@@ -7,7 +7,7 @@ const {title, notitle} = require('./data/includes');
 
 const callIncludesPlugin = callPlugin.bind(null, includes);
 
-describe('Tabs', () => {
+describe('Includes', () => {
     test('Should include with title', () => {
         const mocksPath = require.resolve('./utils.js');
 

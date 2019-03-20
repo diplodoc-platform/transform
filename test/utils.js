@@ -4,6 +4,9 @@ const MarkdownIt = require('markdown-it');
 const md = new MarkdownIt();
 
 function callPlugin(plugin, tokens, opts) {
+    md.disable = () => {};
+    md.enable = () => {};
+
     const state = {
         tokens,
         env: {},
