@@ -12,11 +12,11 @@ describe('Links', () => {
         const mocksPath = require.resolve('./utils.js');
 
         const result = callLinksPlugin(tokenize([
-            'Text before include',
+            'Text before link',
             '',
             '[Custom title](./mocks/link.md) %}',
             '',
-            'After include'
+            'After link'
         ]), {
             path: mocksPath,
             root: dirname(mocksPath)
@@ -25,15 +25,15 @@ describe('Links', () => {
         expect(result).toEqual(customTitle);
     });
 
-    test('Should create link with custom title', () => {
+    test('Should create link with title from target', () => {
         const mocksPath = require.resolve('./utils.js');
 
         const result = callLinksPlugin(tokenize([
-            'Text before include',
+            'Text before link',
             '',
             '[#T](./mocks/include.md)',
             '',
-            'After include'
+            'After link'
         ]), {
             path: mocksPath,
             root: dirname(mocksPath)

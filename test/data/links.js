@@ -37,7 +37,7 @@ module.exports = {
                     'nesting': 0,
                     'level': 0,
                     'children': null,
-                    'content': 'Text before include',
+                    'content': 'Text before link',
                     'markup': '',
                     'info': '',
                     'meta': null,
@@ -45,7 +45,7 @@ module.exports = {
                     'hidden': false
                 }
             ],
-            'content': 'Text before include',
+            'content': 'Text before link',
             'markup': '',
             'info': '',
             'meta': null,
@@ -102,7 +102,7 @@ module.exports = {
                     'attrs': [
                         [
                             'href',
-                            './mocks/include.html'
+                            './mocks/link.html'
                         ]
                     ],
                     'map': null,
@@ -147,7 +147,7 @@ module.exports = {
                     'hidden': false
                 }
             ],
-            'content': '[#T](./mocks/include.md)',
+            'content': '[#T](./mocks/link.md)',
             'markup': '',
             'info': '',
             'meta': null,
@@ -206,7 +206,7 @@ module.exports = {
                     'nesting': 0,
                     'level': 0,
                     'children': null,
-                    'content': 'After include',
+                    'content': 'After link',
                     'markup': '',
                     'info': '',
                     'meta': null,
@@ -214,7 +214,7 @@ module.exports = {
                     'hidden': false
                 }
             ],
-            'content': 'After include',
+            'content': 'After link',
             'markup': '',
             'info': '',
             'meta': null,
@@ -275,7 +275,7 @@ module.exports = {
                     'nesting': 0,
                     'level': 0,
                     'children': null,
-                    'content': 'Text before include',
+                    'content': 'Text before link',
                     'markup': '',
                     'info': '',
                     'meta': null,
@@ -283,7 +283,7 @@ module.exports = {
                     'hidden': false
                 }
             ],
-            'content': 'Text before include',
+            'content': 'Text before link',
             'markup': '',
             'info': '',
             'meta': null,
@@ -459,7 +459,7 @@ module.exports = {
                     'nesting': 0,
                     'level': 0,
                     'children': null,
-                    'content': 'After include',
+                    'content': 'After link',
                     'markup': '',
                     'info': '',
                     'meta': null,
@@ -467,7 +467,7 @@ module.exports = {
                     'hidden': false
                 }
             ],
-            'content': 'After include',
+            'content': 'After link',
             'markup': '',
             'info': '',
             'meta': null,
