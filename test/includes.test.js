@@ -42,7 +42,7 @@ describe('Includes', () => {
         expect(result).toEqual(notitle);
     });
 
-    test('Should call notFoundCb for exception with skipErrors', () => {
+    test('Should call notFoundCb for exception', () => {
         const mocksPath = require.resolve('./utils.js');
         const cb = jest.fn();
 
@@ -55,7 +55,6 @@ describe('Includes', () => {
         ]), {
             path: mocksPath,
             root: dirname(mocksPath),
-            skipErrors: true,
             notFoundCb: cb
         });
 
