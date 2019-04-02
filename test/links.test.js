@@ -31,7 +31,7 @@ describe('Links', () => {
         const result = callLinksPlugin(tokenize([
             'Text before link',
             '',
-            '[#T](./mocks/include.md)',
+            '[#T](./mocks/link.md)',
             '',
             'After link'
         ]), {

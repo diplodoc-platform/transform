@@ -15,7 +15,7 @@ describe('Alerts', () => {
             '',
             'Текст примечания.',
             '',
-            '{% endnote %}',
+            '{% endalert %}',
             '',
             'Text after'
         ]), {});
@@ -36,7 +36,7 @@ describe('Alerts', () => {
                     '',
                     'Текст примечания.',
                     '',
-                    '{% endnote %}'
+                    '{% endalert %}'
                 ]), {});
 
                 expect(result[0].attrs[0][1]).toEqual(`alert ${type}`);

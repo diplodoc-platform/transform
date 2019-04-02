@@ -237,20 +237,20 @@ let a = 10;
 
 #### Примечание <a name="comments"></a>
 ```markdown
-{% alert %}
+{% alert note %}
 
 Это примечание.
 
-{% endnote %}
+{% endalert %}
 ```
 
 #### Предупреждение <a name="warnings"></a>
 ```markdown
-{% alert warning%}
+{% alert warning %}
 
 Это предупреждение.
 
-{% endnote %}
+{% endalert %}
 ```
 #### Совет <a name="advice"></a>
 ```markdown
@@ -258,7 +258,7 @@ let a = 10;
 
 Это совет.
 
-{% endnote %}
+{% endalert %}
 ```
 #### Важно <a name="important"></a>
 ```markdown
@@ -266,7 +266,7 @@ let a = 10;
 
 Это важная информация.
 
-{% endnote %}
+{% endalert %}
 ```
 
 ### Вставки (инклуды) <a name="includes"></a>

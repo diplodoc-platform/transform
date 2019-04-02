@@ -1,3 +1,3 @@
-# Custom title
+# Title
 
 Content
