@@ -1,3 +1,5 @@
+[![oko health](https://badger.yandex-team.ru/oko/repo/data-ui/yfm/health.svg)](https://oko.yandex-team.ru/repo/data-ui/yfm)
+
 Трансформер YFM (Yandex Flavored Markdown) -> HTML
 
 ## Исходники
