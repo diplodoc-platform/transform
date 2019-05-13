@@ -24,7 +24,7 @@ const argv = require('yargs')
             'describe': 'Данные для подстановки и вычисления условных операторов'
         },
         'vars-preset': {
-            'default': null,
+            'default': 'default',
             'describe': 'Название пресета переменных из файла presets.yaml'
         },
         'outputFormat': {
