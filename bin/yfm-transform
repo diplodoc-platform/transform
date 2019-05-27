@@ -38,6 +38,10 @@ const argv = require('yargs')
         'one-file': {
             'default': false,
             'describe': 'Объединить файлы в один'
+        },
+        'document': {
+            'default': null,
+            'describe': 'Конфигурация сборки'
         }
     })
     .example(
