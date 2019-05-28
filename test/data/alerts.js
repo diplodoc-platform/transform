@@ -1,5 +1,5 @@
-module.exports = {
-    base: [
+function getTokens(title) {
+    return [
         {
             'type': 'paragraph_open',
             'tag': 'p',
@@ -73,7 +73,7 @@ module.exports = {
             'attrs': [
                 [
                     'class',
-                    'alert warning'
+                    'note info'
                 ]
             ],
             'map': null,
@@ -133,7 +133,7 @@ module.exports = {
                     'nesting': 0,
                     'level': 0,
                     'children': null,
-                    'content': 'Предупреждение',
+                    'content': title,
                     'markup': '',
                     'info': '',
                     'meta': null,
@@ -327,5 +327,11 @@ module.exports = {
             'block': true,
             'hidden': false
         }
-    ]
+    ];
+}
+
+module.exports = {
+    base: getTokens('Примечание'),
+    customTitle: getTokens('Custom title'),
+    emptyTitle: getTokens('')
 };

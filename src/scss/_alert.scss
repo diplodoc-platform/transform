@@ -1,12 +1,12 @@
 @import 'variables';
 
-$noteColor: $accentColor;
+$infoColor: $accentColor;
 $tipColor: #56bd67;
-$warningColor: #f19518;
+$alertColor: #f19518;
 $importantColor: #ff4645;
 
 .yfm {
-    .alert {
+    .note {
         max-width: 600px;
         margin: 20px 0;
         padding: 20px 20px 20px 64px;
@@ -37,10 +37,11 @@ $importantColor: #ff4645;
         }
 
         $colors: (
-            note: $noteColor,
+            info: $infoColor,
             tip: $tipColor,
-            warning: $warningColor,
-            important: $importantColor
+            alert: $alertColor,
+            important: $importantColor,
+            error: $importantColor
         );
 
         @each $type, $color in $colors {

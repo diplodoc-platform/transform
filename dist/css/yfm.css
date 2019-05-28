@@ -193,16 +193,16 @@
     background-color: #f7fbff;
     white-space: pre; }
 
-.yfm .alert {
+.yfm .note {
   max-width: 600px;
   margin: 20px 0;
   padding: 20px 20px 20px 64px;
   background-color: #fff;
   border: 1px solid #e7e7e7;
   border-radius: 10px; }
-  .yfm .alert > p {
+  .yfm .note > p {
     margin: 0 0 10px 0; }
-    .yfm .alert > p:first-child::before {
+    .yfm .note > p:first-child::before {
       box-sizing: content-box;
       display: block;
       width: 24px;
@@ -211,15 +211,17 @@
       margin-left: -44px;
       padding-right: 20px;
       float: left; }
-    .yfm .alert > p:last-child {
+    .yfm .note > p:last-child {
       margin-bottom: 0; }
-  .yfm .alert.note > p:first-child::before {
+  .yfm .note.info > p:first-child::before {
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(2,123,243)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
-  .yfm .alert.tip > p:first-child::before {
+  .yfm .note.tip > p:first-child::before {
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(86,189,103)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
-  .yfm .alert.warning > p:first-child::before {
+  .yfm .note.alert > p:first-child::before {
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(241,149,24)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
-  .yfm .alert.important > p:first-child::before {
+  .yfm .note.important > p:first-child::before {
+    content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(255,70,69)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
+  .yfm .note.error > p:first-child::before {
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(255,70,69)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
 
 .yfm h1 .anchor, .yfm h2 .anchor, .yfm h3 .anchor, .yfm h4 .anchor, .yfm h5 .anchor, .yfm h6 .anchor {
