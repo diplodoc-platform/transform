@@ -6,7 +6,7 @@ $alertColor: #f19518;
 $importantColor: #ff4645;
 
 .yfm {
-    .note {
+    .yfm-note {
         max-width: 600px;
         margin: 20px 0;
         padding: 20px 20px 20px 64px;
@@ -37,11 +37,11 @@ $importantColor: #ff4645;
         }
 
         $colors: (
-            info: $infoColor,
-            tip: $tipColor,
-            alert: $alertColor,
-            important: $importantColor,
-            error: $importantColor
+            yfm-info: $infoColor,
+            yfm-tip: $tipColor,
+            yfm-alert: $alertColor,
+            yfm-important: $importantColor,
+            yfm-error: $importantColor
         );
 
         @each $type, $color in $colors {

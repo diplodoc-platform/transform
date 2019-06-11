@@ -193,16 +193,16 @@
     background-color: #f7fbff;
     white-space: pre; }
 
-.yfm .note {
+.yfm .yfm-note {
   max-width: 600px;
   margin: 20px 0;
   padding: 20px 20px 20px 64px;
   background-color: #fff;
   border: 1px solid #e7e7e7;
   border-radius: 10px; }
-  .yfm .note > p {
+  .yfm .yfm-note > p {
     margin: 0 0 10px 0; }
-    .yfm .note > p:first-child::before {
+    .yfm .yfm-note > p:first-child::before {
       box-sizing: content-box;
       display: block;
       width: 24px;
@@ -211,20 +211,20 @@
       margin-left: -44px;
       padding-right: 20px;
       float: left; }
-    .yfm .note > p:last-child {
+    .yfm .yfm-note > p:last-child {
       margin-bottom: 0; }
-  .yfm .note.info > p:first-child::before {
+  .yfm .yfm-note.yfm-info > p:first-child::before {
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(2,123,243)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
-  .yfm .note.tip > p:first-child::before {
+  .yfm .yfm-note.yfm-tip > p:first-child::before {
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(86,189,103)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
-  .yfm .note.alert > p:first-child::before {
+  .yfm .yfm-note.yfm-alert > p:first-child::before {
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(241,149,24)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
-  .yfm .note.important > p:first-child::before {
+  .yfm .yfm-note.yfm-important > p:first-child::before {
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(255,70,69)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
-  .yfm .note.error > p:first-child::before {
+  .yfm .yfm-note.yfm-error > p:first-child::before {
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(255,70,69)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
 
-.yfm h1 .anchor, .yfm h2 .anchor, .yfm h3 .anchor, .yfm h4 .anchor, .yfm h5 .anchor, .yfm h6 .anchor {
+.yfm h1 .yfm-anchor, .yfm h2 .yfm-anchor, .yfm h3 .yfm-anchor, .yfm h4 .yfm-anchor, .yfm h5 .yfm-anchor, .yfm h6 .yfm-anchor {
   display: inline-block;
   width: 24px;
   padding-right: 4px;
@@ -233,28 +233,28 @@
   text-align: center;
   font-size: 18px; }
 
-.yfm h1 .anchor::before, .yfm h2 .anchor::before, .yfm h3 .anchor::before, .yfm h4 .anchor::before, .yfm h5 .anchor::before, .yfm h6 .anchor::before {
+.yfm h1 .yfm-anchor::before, .yfm h2 .yfm-anchor::before, .yfm h3 .yfm-anchor::before, .yfm h4 .yfm-anchor::before, .yfm h5 .yfm-anchor::before, .yfm h6 .yfm-anchor::before {
   content: '#';
   visibility: hidden; }
 
-.yfm h1:hover .anchor::before, .yfm h2:hover .anchor::before, .yfm h3:hover .anchor::before, .yfm h4:hover .anchor::before, .yfm h5:hover .anchor::before, .yfm h6:hover .anchor::before {
+.yfm h1:hover .yfm-anchor::before, .yfm h2:hover .yfm-anchor::before, .yfm h3:hover .yfm-anchor::before, .yfm h4:hover .yfm-anchor::before, .yfm h5:hover .yfm-anchor::before, .yfm h6:hover .yfm-anchor::before {
   visibility: visible; }
 
-.yfm .tabs {
+.yfm .yfm-tabs {
   margin-bottom: 15px; }
-  .yfm .tabs ol {
+  .yfm .yfm-tabs ol {
     counter-reset: tabs-list; }
-    .yfm .tabs ol > li {
+    .yfm .yfm-tabs ol > li {
       counter-increment: tabs-list; }
-      .yfm .tabs ol > li::before {
+      .yfm .yfm-tabs ol > li::before {
         content: counters(tabs-list, ".") ". "; }
 
-.yfm .tab-list {
+.yfm .yfm-tab-list {
   display: flex;
   margin-bottom: 15px;
   border-bottom: 1px solid #e7e7e7; }
 
-.yfm .tab {
+.yfm .yfm-tab {
   margin-bottom: -1px;
   margin-right: 20px;
   border-bottom: 2px solid transparent;
@@ -266,20 +266,20 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none; }
-  .yfm .tab:last-child {
+  .yfm .yfm-tab:last-child {
     margin-right: 0; }
-  .yfm .tab:hover, .yfm .tab:active {
+  .yfm .yfm-tab:hover, .yfm .yfm-tab:active {
     color: #d00; }
-  .yfm .tab.active {
+  .yfm .yfm-tab.active {
     border-bottom-color: #d00; }
 
-.yfm .tab-panel {
+.yfm .yfm-tab-panel {
   display: none; }
-  .yfm .tab-panel:first-child {
+  .yfm .yfm-tab-panel:first-child {
     margin-top: 0 !important; }
-  .yfm .tab-panel:last-child {
+  .yfm .yfm-tab-panel:last-child {
     margin-bottom: 0 !important; }
-  .yfm .tab-panel.active {
+  .yfm .yfm-tab-panel.active {
     display: block; }
 
 .yfm .hljs {

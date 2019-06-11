@@ -40,7 +40,7 @@ describe('Alerts', () => {
                     '{% endnote %}'
                 ]), {});
 
-                expect(result[0].attrs[0][1]).toEqual(`note ${type}`);
+                expect(result[0].attrs[0][1]).toEqual(`yfm-note yfm-${type}`);
                 expect(result[2].children[1].content).toEqual(title);
             });
         });
