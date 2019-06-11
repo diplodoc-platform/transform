@@ -1,7 +1,7 @@
 @import 'variables';
 
 .yfm {
-    .tabs {
+    .yfm-tabs {
         margin-bottom: 15px;
 
         ol {
@@ -17,14 +17,14 @@
         }
     }
 
-    .tab-list {
+    .yfm-tab-list {
         display: flex;
         margin-bottom: 15px;
 
         border-bottom: 1px solid $borderColor;
     }
 
-    .tab {
+    .yfm-tab {
         margin-bottom: -1px;
         margin-right: 20px;
         border-bottom: 2px solid transparent;
@@ -48,7 +48,7 @@
         }
     }
 
-    .tab-panel {
+    .yfm-tab-panel {
         display: none;
 
         &:first-child {

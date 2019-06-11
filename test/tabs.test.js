@@ -60,7 +60,7 @@ describe('Tabs', () => {
             const attrsObject = convertAttrsToObject(tab);
 
             expect(Object.keys(attrsObject)).toEqual(attrs);
-            expect(attrsObject['class']).toEqual(`tab${i === 0 ? ' active' : ''}`);
+            expect(attrsObject['class']).toEqual(`yfm-tab${i === 0 ? ' active' : ''}`);
             expect(attrsObject['role']).toEqual('tab');
         });
     });

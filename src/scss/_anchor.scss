@@ -1,6 +1,6 @@
 .yfm {
     h1, h2, h3, h4, h5, h6 {
-        .anchor {
+        .yfm-anchor {
             display: inline-block;
             width: 24px;
             padding-right: 4px;
@@ -11,12 +11,12 @@
             font-size: 18px;
         }
 
-        .anchor::before {
+        .yfm-anchor::before {
             content: '#';
             visibility: hidden;
         }
 
-        &:hover .anchor::before {
+        &:hover .yfm-anchor::before {
             visibility: visible;
         }
     }

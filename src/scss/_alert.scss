@@ -5,53 +5,51 @@ $tipColor: #56bd67;
 $alertColor: #f19518;
 $importantColor: #ff4645;
 
-.yfm {
-    .note {
-        max-width: 600px;
-        margin: 20px 0;
-        padding: 20px 20px 20px 64px;
+.yfm-note {
+    max-width: 600px;
+    margin: 20px 0;
+    padding: 20px 20px 20px 64px;
 
-        background-color: #fff;
-        border: 1px solid $borderColor;
-        border-radius: 10px;
+    background-color: #fff;
+    border: 1px solid $borderColor;
+    border-radius: 10px;
 
-        & > p {
-            margin: 0 0 10px 0;
+    & > p {
+        margin: 0 0 10px 0;
 
-            &:first-child {
-                &::before {
-                    box-sizing: content-box;
-                    display: block;
-                    width: 24px;
-                    height: 24px;
-                    margin-top: -2px;
-                    margin-left: -44px;
-                    padding-right: 20px;
-                    float: left;
-                }
-            }
-
-            &:last-child {
-                margin-bottom: 0;
+        &:first-child {
+            &::before {
+                box-sizing: content-box;
+                display: block;
+                width: 24px;
+                height: 24px;
+                margin-top: -2px;
+                margin-left: -44px;
+                padding-right: 20px;
+                float: left;
             }
         }
 
-        $colors: (
-            info: $infoColor,
-            tip: $tipColor,
-            alert: $alertColor,
-            important: $importantColor,
-            error: $importantColor
-        );
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
 
-        @each $type, $color in $colors {
-            &.#{$type} > p:first-child::before {
-                $r: red($color);
-                $g: green($color);
-                $b: blue($color);
-                $rgbColor: 'rgb(' + $r + ',' + $g + ',' + $b + ')';
-                content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="' + $rgbColor + '"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E');
-            }
+    $colors: (
+        yfm-accent-info: $infoColor,
+        yfm-accent-tip: $tipColor,
+        yfm-accent-alert: $alertColor,
+        yfm-accent-important: $importantColor,
+        yfm-accent-error: $importantColor
+    );
+
+    @each $type, $color in $colors {
+        &.#{$type} > p:first-child::before {
+            $r: red($color);
+            $g: green($color);
+            $b: blue($color);
+            $rgbColor: 'rgb(' + $r + ',' + $g + ',' + $b + ')';
+            content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="' + $rgbColor + '"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E');
         }
     }
 }

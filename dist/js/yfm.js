@@ -1,14 +1,13 @@
-(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory() :
+(function (factory) {
     typeof define === 'function' && define.amd ? define(factory) :
-    (factory());
-}(this, (function () { 'use strict';
+    factory();
+}(function () { 'use strict';
 
     var Selector = {
-      TABS: '.yfm .tabs',
-      TAB_LIST: '.yfm .tab-list',
-      TAB: '.yfm .tab',
-      TAB_PANEL: '.yfm .tab-panel'
+      TABS: '.yfm .yfm-tabs',
+      TAB_LIST: '.yfm .yfm-tab-list',
+      TAB: '.yfm .yfm-tab',
+      TAB_PANEL: '.yfm .yfm-tab-panel'
     };
     var ClassName = {
       ACTIVE: 'active'
@@ -77,4 +76,4 @@
       });
     }
 
-})));
+}));
