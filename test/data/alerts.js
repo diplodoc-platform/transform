@@ -73,7 +73,7 @@ function getTokens(title) {
             'attrs': [
                 [
                     'class',
-                    'yfm-note yfm-info'
+                    'yfm-note yfm-accent-info'
                 ]
             ],
             'map': null,
