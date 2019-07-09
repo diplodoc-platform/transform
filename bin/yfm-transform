@@ -42,6 +42,10 @@ const argv = require('yargs')
         'document': {
             'default': null,
             'describe': 'Конфигурация сборки'
+        },
+        'allow-html': {
+            'default': false,
+            'describe': 'Разрешено ли использование HTML'
         }
     })
     .example(
@@ -59,5 +63,6 @@ filesProcessing({
     vars: JSON.parse(argv.vars),
     varsPreset: argv['vars-preset'],
     outputFormat: argv['output-format'] !== 'html' ? argv['output-format'] : argv.outputFormat,
-    oneFile: argv['one-file']
+    oneFile: argv['one-file'],
+    allowHTML: argv['allow-html']
 });
