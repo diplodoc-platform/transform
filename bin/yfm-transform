@@ -53,7 +53,7 @@ const argv = require('yargs')
         'Трансформация в стилизованный HTML'
     )
     .example(
-        `yfm-transform --source ./md-sources-dir --dest ./md-output outputFormat md  --vars ${dataExample}`,
+        `yfm-transform --source ./md-sources-dir --dest ./md-output output-format md  --vars ${dataExample}`,
         'Трансформация в Markdown с примененными условными операторами'
     )
     .argv;
