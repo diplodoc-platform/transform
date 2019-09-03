@@ -1,0 +1,14 @@
+.yfm {
+    &-clipboard {
+        position: relative;
+        z-index: 1;
+    }
+    
+    &-clipboard-button {
+        position: absolute;
+        z-index: 2;
+        cursor: pointer;
+        top: 16px;
+        right: 16px;
+    }
+}
