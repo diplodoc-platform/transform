@@ -182,7 +182,7 @@ Markdown под названием GitHub Flavored Markdown (GFM).
 текста ссылки. Например:
 
 ```markdown
-[#T](file-name.md)
+[{#T}](file-name.md)
 ```
 
 В этом случае ссылка подставится автоматически из заголовка файла указанного

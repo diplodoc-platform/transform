@@ -147,7 +147,7 @@ module.exports = {
                     'hidden': false
                 }
             ],
-            'content': '[#T](./mocks/link.md)',
+            'content': '[{#T}](./mocks/link.md)',
             'markup': '',
             'info': '',
             'meta': null,
