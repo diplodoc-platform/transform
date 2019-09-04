@@ -2,9 +2,12 @@ const BUTTON_SELECTOR = '.yfm-clipboard-button';
 
 function copyToClipboard(text) {
     if (!text) {
-        return;
+        return Promise.resolve();
     }
 
+    if (navigator.clipboard && typeof navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+    }
     const textarea = document.createElement('textarea');
     textarea.setAttribute('style', 'position: absolute; left: 1000%');
     textarea.textContent = text;
@@ -14,6 +17,8 @@ function copyToClipboard(text) {
     document.execCommand('copy');
 
     document.body.removeChild(textarea);
+
+    return Promise.resolve();
 }
 
 function notifySuccess(svgButton) {
@@ -48,7 +53,9 @@ if (typeof document !== 'undefined') {
             return;
         }
 
-        copyToClipboard(code.innerText);
-        notifySuccess(parent.querySelector('.yfm-clipboard-button'));
+        copyToClipboard(code.innerText)
+            .then(() => {
+                notifySuccess(parent.querySelector('.yfm-clipboard-button'));
+            });
     });
 }
