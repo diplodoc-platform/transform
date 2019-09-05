@@ -297,8 +297,6 @@
         display: block;
         padding: 15px;
         overflow: auto;
-        position: relative;
-        z-index: 1;
 
         border-radius: 10px;
         border: $codeBorder;
@@ -306,4 +304,16 @@
 
         white-space: pre;
     }
+
+    // highlight.js colors
+    --yfm-color-hljs-background: #{$codeBackground};
+    --yfm-color-hljs-subst: #444;
+    --yfm-color-hljs-comment: #888888;
+    --yfm-color-hljs-deletion: #880000;
+    --yfm-color-hljs-section: #880000;
+    --yfm-color-hljs-pseudo: #BC6060;
+    --yfm-color-hljs-literal: #78A960;
+    --yfm-color-hljs-addition: #397300;
+    --yfm-color-hljs-meta: #1f7199;
+    --yfm-color-hljs-meta-string: #4d99bf;
 }
