@@ -3,6 +3,25 @@
     factory();
 }(function () { 'use strict';
 
+    if (document !== 'undefined') {
+      // matches polyfill for old edge
+      (function (e) {
+        var matches = e.matches || e.matchesSelector || e.webkitMatchesSelector || e.mozMatchesSelector || e.msMatchesSelector || e.oMatchesSelector;
+
+        if (!matches) {
+          e.matches = e.matchesSelector = function matches(selector) {
+            var matches = document.querySelectorAll(selector);
+            var th = this;
+            return Array.prototype.some.call(matches, function (e) {
+              return e === th;
+            });
+          };
+        } else {
+          e.matches = e.matchesSelector = matches;
+        }
+      })(Element.prototype);
+    }
+
     var Selector = {
       TABS: '.yfm .yfm-tabs',
       TAB_LIST: '.yfm .yfm-tab-list',
@@ -50,29 +69,72 @@
     }
 
     if (typeof document !== 'undefined') {
-      // matches polyfill for old edge
-      (function (e) {
-        var matches = e.matches || e.matchesSelector || e.webkitMatchesSelector || e.mozMatchesSelector || e.msMatchesSelector || e.oMatchesSelector;
-
-        if (!matches) {
-          e.matches = e.matchesSelector = function matches(selector) {
-            var matches = document.querySelectorAll(selector);
-            var th = this;
-            return Array.prototype.some.call(matches, function (e) {
-              return e === th;
-            });
-          };
-        } else {
-          e.matches = e.matchesSelector = matches;
-        }
-      })(Element.prototype);
-
       document.addEventListener('click', function (event) {
         if (!event.target.matches(Selector.TAB)) {
           return;
         }
 
         selectTab(event.target);
+      });
+    }
+
+    var BUTTON_SELECTOR = '.yfm-clipboard-button';
+
+    function copyToClipboard(text) {
+      if (!text) {
+        return Promise.resolve();
+      }
+
+      if (navigator.clipboard && typeof navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+      }
+
+      var textarea = document.createElement('textarea');
+      textarea.setAttribute('style', 'position: absolute; left: 1000%');
+      textarea.textContent = text;
+      document.body.append(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      return Promise.resolve();
+    }
+
+    function notifySuccess(svgButton) {
+      if (!svgButton) {
+        return;
+      }
+
+      var id = svgButton.getAttribute('data-animation');
+      var icon = document.getElementById("visibileAnimation-" + id);
+
+      if (!icon) {
+        return;
+      }
+
+      icon.beginElement();
+    }
+
+    if (typeof document !== 'undefined') {
+      document.addEventListener('click', function (event) {
+        if (!event.target.matches(BUTTON_SELECTOR)) {
+          return;
+        }
+
+        var parent = event.target.parentNode;
+
+        if (!parent) {
+          return;
+        }
+
+        var code = parent.querySelector('pre code');
+
+        if (!code) {
+          return;
+        }
+
+        copyToClipboard(code.innerText).then(function () {
+          notifySuccess(parent.querySelector('.yfm-clipboard-button'));
+        });
       });
     }
 
