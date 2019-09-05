@@ -25,7 +25,8 @@
     "js": "npm run js:compile && npm run js:minify",
     "js:compile": "rollup -c",
     "js:minify": "uglifyjs dist/js/yfm.js --output dist/js/yfm.min.js",
-    "dist": "npm run css && npm run js"
+    "dist": "npm run css && npm run js",
+    "prepublish": "npm run dist"
   },
   "dependencies": {
     "chalk": "^2.4.1",
