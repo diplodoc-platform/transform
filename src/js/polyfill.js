@@ -1,4 +1,4 @@
-if (document !== 'undefined') {
+if (typeof document !== 'undefined') {
     // matches polyfill for old edge
     (function (e) {
         const matches = e.matches
