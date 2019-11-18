@@ -34,6 +34,11 @@ npm install yfm-transform
 sudo npm install -g yfm-transform
 ```
 
+При добавлении изменений в файлы из директории src перед обновлением версии пакета нужно выполнить
+```bash
+npm run dist
+```
+
 ### Использование
 **CLI**
 ```bash
