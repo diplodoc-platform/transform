@@ -3,7 +3,7 @@
     factory();
 }(function () { 'use strict';
 
-    if (document !== 'undefined') {
+    if (typeof document !== 'undefined') {
       // matches polyfill for old edge
       (function (e) {
         var matches = e.matches || e.matchesSelector || e.webkitMatchesSelector || e.mozMatchesSelector || e.msMatchesSelector || e.oMatchesSelector;
