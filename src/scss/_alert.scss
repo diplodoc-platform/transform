@@ -2,8 +2,8 @@
 
 $infoColor: $accentColor;
 $tipColor: #56bd67;
-$alertColor: #f19518;
 $importantColor: #ff4645;
+$warningColor: #f19518;
 
 .yfm-note {
     max-width: 600px;
@@ -38,9 +38,10 @@ $importantColor: #ff4645;
     $colors: (
         yfm-accent-info: $infoColor,
         yfm-accent-tip: $tipColor,
-        yfm-accent-alert: $alertColor,
+        yfm-accent-alert: $importantColor,
         yfm-accent-important: $importantColor,
-        yfm-accent-error: $importantColor
+        yfm-accent-error: $importantColor,
+        yfm-accent-warning: $warningColor
     );
 
     @each $type, $color in $colors {
