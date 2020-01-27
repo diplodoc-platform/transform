@@ -246,7 +246,7 @@ let a = 10;
 
 #### Предупреждение <a name="warnings"></a>
 ```markdown
-{% note alert %}
+{% note warning %}
 
 Это предупреждение.
 
@@ -269,7 +269,16 @@ let a = 10;
 {% endnote %}
 ```
 
-#### Ошибка <a name="error></a>
+#### Ошибка <a name="error"></a>
+```markdown
+{% note alert %}
+
+Это важная информация.
+
+{% endnote %}
+```
+
+####  Ошибка <a name="error"></a> - deprecated
 ```markdown
 {% note error %}
 
@@ -278,7 +287,7 @@ let a = 10;
 {% endnote %}
 ```
 
-#### Кастомизированный заголовок <a name="error></a>
+#### Кастомизированный заголовок <a name="error"></a>
 Любая заметка может иметь кастомизированный заголовок.
 
 ```markdown
@@ -362,21 +371,21 @@ description: Описание
 ```toc.yaml```.
 
 ```yaml
-- title: Yandex Cloud Marketplace
-  href: index.md
-  items:
-    - name: Тестовый топикхед
-      items:
-        - name: Создание виртуальной машины
-          href: create.md
-    - name: Первичная настройка программного обеспечения
-      href: setup.md
-    - name: Работа с виртуальной машиной
-      href: operate.md
-    - name: Справочник API
-      include:
-        repo: docs-api
-        path: ru/compute/toc.yaml
+title: Yandex Cloud Marketplace
+href: index.md
+items:
+  - name: Тестовый топикхед
+    items:
+      - name: Создание виртуальной машины
+        href: create.md
+  - name: Первичная настройка программного обеспечения
+    href: setup.md
+  - name: Работа с виртуальной машиной
+    href: operate.md
+  - name: Справочник API
+    include:
+      repo: docs-api
+      path: ru/compute/toc.yaml
 ```
 
 Если это папка, то у неё появляются вложенные элементы ```items```. Уровень
