@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 
 'use strict';
+const now = require('performance-now');
+
 const filesProcessing = require('../lib/filesProcess');
+const log = require('../lib/log');
 
 const cwd = process.env.INIT_CWD || process.cwd();
 const dataExample = JSON.stringify({'user': {'name': 'Alice'}});
@@ -58,6 +61,8 @@ const argv = require('yargs')
     )
     .argv;
 
+const start = now();
+
 filesProcessing({
     ...argv,
     vars: JSON.parse(argv.vars),
@@ -66,3 +71,5 @@ filesProcessing({
     oneFile: argv['one-file'],
     allowHTML: argv['allow-html']
 });
+
+log(`Build time: ${Math.round(now() - start) / 1000} s`);
