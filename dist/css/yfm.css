@@ -73,7 +73,6 @@
   .yfm pre {
     font-family: monospace, monospace;
     font-size: 1em;
-    -webkit-font-feature-settings: normal;
     font-feature-settings: normal; }
   .yfm input {
     margin: 0;

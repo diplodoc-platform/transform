@@ -1,0 +1,10 @@
+{
+    "extends": "data-ui/server",
+    "rules": {
+        "no-loop-func": "off",
+        "security/detect-non-literal-fs-filename": "off",
+        "security/detect-non-literal-regexp": "off",
+        "security/detect-non-literal-require": "off",
+        "security/detect-unsafe-regex": "off"
+    }
+}

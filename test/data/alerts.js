@@ -6,7 +6,7 @@ function getTokens(title) {
             'attrs': null,
             'map': [
                 0,
-                1
+                1,
             ],
             'nesting': 1,
             'level': 0,
@@ -16,7 +16,7 @@ function getTokens(title) {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -24,7 +24,7 @@ function getTokens(title) {
             'attrs': null,
             'map': [
                 0,
-                1
+                1,
             ],
             'nesting': 0,
             'level': 1,
@@ -42,15 +42,15 @@ function getTokens(title) {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'Text before',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -65,7 +65,7 @@ function getTokens(title) {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
@@ -73,8 +73,8 @@ function getTokens(title) {
             'attrs': [
                 [
                     'class',
-                    'yfm-note yfm-accent-info'
-                ]
+                    'yfm-note yfm-accent-info',
+                ],
             ],
             'map': null,
             'nesting': 1,
@@ -85,7 +85,7 @@ function getTokens(title) {
             'info': '',
             'meta': null,
             'block': false,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
@@ -100,7 +100,7 @@ function getTokens(title) {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -123,7 +123,7 @@ function getTokens(title) {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
+                    'hidden': false,
                 },
                 {
                     'type': 'text',
@@ -138,7 +138,7 @@ function getTokens(title) {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
+                    'hidden': false,
                 },
                 {
                     'type': 'strong_close',
@@ -153,15 +153,15 @@ function getTokens(title) {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': '',
             'markup': '',
             'info': '',
             'meta': null,
             'block': false,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -176,7 +176,7 @@ function getTokens(title) {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
@@ -184,7 +184,7 @@ function getTokens(title) {
             'attrs': null,
             'map': [
                 4,
-                5
+                5,
             ],
             'nesting': 1,
             'level': 0,
@@ -194,7 +194,7 @@ function getTokens(title) {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -202,7 +202,7 @@ function getTokens(title) {
             'attrs': null,
             'map': [
                 4,
-                5
+                5,
             ],
             'nesting': 0,
             'level': 1,
@@ -220,15 +220,15 @@ function getTokens(title) {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'Текст примечания.',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -243,7 +243,7 @@ function getTokens(title) {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -258,7 +258,7 @@ function getTokens(title) {
             'info': '',
             'meta': null,
             'block': false,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
@@ -266,7 +266,7 @@ function getTokens(title) {
             'attrs': null,
             'map': [
                 8,
-                9
+                9,
             ],
             'nesting': 1,
             'level': 0,
@@ -276,7 +276,7 @@ function getTokens(title) {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -284,7 +284,7 @@ function getTokens(title) {
             'attrs': null,
             'map': [
                 8,
-                9
+                9,
             ],
             'nesting': 0,
             'level': 1,
@@ -302,15 +302,15 @@ function getTokens(title) {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'Text after',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -325,13 +325,13 @@ function getTokens(title) {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
-        }
+            'hidden': false,
+        },
     ];
 }
 
 module.exports = {
     base: getTokens('Примечание'),
     customTitle: getTokens('Custom title'),
-    emptyTitle: getTokens('')
+    emptyTitle: getTokens(''),
 };

@@ -2,11 +2,11 @@ const Selector = {
     TABS: '.yfm .yfm-tabs',
     TAB_LIST: '.yfm .yfm-tab-list',
     TAB: '.yfm .yfm-tab',
-    TAB_PANEL: '.yfm .yfm-tab-panel'
+    TAB_PANEL: '.yfm .yfm-tab-panel',
 };
 
 const ClassName = {
-    ACTIVE: 'active'
+    ACTIVE: 'active',
 };
 
 function selectTab(element) {

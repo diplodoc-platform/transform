@@ -6,7 +6,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 0,
-                1
+                1,
             ],
             'nesting': 1,
             'level': 0,
@@ -16,7 +16,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -24,7 +24,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 0,
-                1
+                1,
             ],
             'nesting': 0,
             'level': 1,
@@ -42,15 +42,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'Text before link',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -65,7 +65,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
@@ -73,7 +73,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 2,
-                3
+                3,
             ],
             'nesting': 1,
             'level': 0,
@@ -83,7 +83,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -91,7 +91,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 2,
-                3
+                3,
             ],
             'nesting': 0,
             'level': 1,
@@ -102,19 +102,19 @@ module.exports = {
                     'attrs': [
                         [
                             'href',
-                            './mocks/link.html'
-                        ]
+                            './mocks/link.html',
+                        ],
                     ],
                     'map': null,
                     'nesting': 1,
-                    'level': 1,
+                    'level': 0,
                     'children': null,
                     'content': '',
                     'markup': '',
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
+                    'hidden': false,
                 },
                 {
                     'type': 'text',
@@ -129,7 +129,7 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
+                    'hidden': false,
                 },
                 {
                     'type': 'link_close',
@@ -144,15 +144,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': '[{#T}](./mocks/link.md)',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -167,7 +167,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
@@ -175,7 +175,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 4,
-                5
+                5,
             ],
             'nesting': 1,
             'level': 0,
@@ -185,7 +185,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -193,7 +193,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 4,
-                5
+                5,
             ],
             'nesting': 0,
             'level': 1,
@@ -211,15 +211,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'After link',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -234,8 +234,8 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
-        }
+            'hidden': false,
+        },
     ],
     customTitle: [
         {
@@ -244,7 +244,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 0,
-                1
+                1,
             ],
             'nesting': 1,
             'level': 0,
@@ -254,7 +254,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -262,7 +262,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 0,
-                1
+                1,
             ],
             'nesting': 0,
             'level': 1,
@@ -280,15 +280,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'Text before link',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -303,7 +303,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
@@ -311,7 +311,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 2,
-                3
+                3,
             ],
             'nesting': 1,
             'level': 0,
@@ -321,7 +321,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -329,7 +329,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 2,
-                3
+                3,
             ],
             'nesting': 0,
             'level': 1,
@@ -340,19 +340,19 @@ module.exports = {
                     'attrs': [
                         [
                             'href',
-                            './mocks/link.html'
-                        ]
+                            './mocks/link.html',
+                        ],
                     ],
                     'map': null,
                     'nesting': 1,
-                    'level': 1,
+                    'level': 0,
                     'children': null,
                     'content': '',
                     'markup': '',
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
+                    'hidden': false,
                 },
                 {
                     'type': 'text',
@@ -367,7 +367,7 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
+                    'hidden': false,
                 },
                 {
                     'type': 'link_close',
@@ -382,7 +382,7 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
+                    'hidden': false,
                 },
                 {
                     'type': 'text',
@@ -397,15 +397,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': '[Custom title](./mocks/link.md) %}',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -420,7 +420,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
@@ -428,7 +428,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 4,
-                5
+                5,
             ],
             'nesting': 1,
             'level': 0,
@@ -438,7 +438,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -446,7 +446,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 4,
-                5
+                5,
             ],
             'nesting': 0,
             'level': 1,
@@ -464,15 +464,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'After link',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -487,7 +487,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
-        }
-    ]
+            'hidden': false,
+        },
+    ],
 };

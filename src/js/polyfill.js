@@ -8,7 +8,9 @@ if (typeof document !== 'undefined') {
             || e.msMatchesSelector
             || e.oMatchesSelector;
 
-        if (!matches) {
+        if (matches) {
+            e.matches = e.matchesSelector = matches;
+        } else {
             e.matches = e.matchesSelector = function matches(selector) {
                 const matches = document.querySelectorAll(selector);
                 const th = this;
@@ -16,8 +18,6 @@ if (typeof document !== 'undefined') {
                     return e === th;
                 });
             };
-        } else {
-            e.matches = e.matchesSelector = matches;
         }
     })(Element.prototype);
 }

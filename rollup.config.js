@@ -1,4 +1,4 @@
-'use strict';
+
 const babel = require('rollup-plugin-babel');
 
 module.exports = {
@@ -6,7 +6,7 @@ module.exports = {
     output: {
         file: 'dist/js/yfm.js',
         format: 'umd',
-        name: 'yfm'
+        name: 'yfm',
     },
     plugins: [
         babel({
@@ -16,8 +16,8 @@ module.exports = {
                 'createClass',
                 'inheritsLoose',
                 'defineProperty',
-                'objectSpread'
-            ]
-        })
-    ]
+                'objectSpread',
+            ],
+        }),
+    ],
 };

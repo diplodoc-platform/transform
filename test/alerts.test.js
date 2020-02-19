@@ -1,4 +1,4 @@
-'use strict';
+
 
 const alerts = require('../lib/plugins/alerts');
 const {callPlugin, tokenize} = require('./utils');
@@ -17,7 +17,7 @@ describe('Alerts', () => {
             '',
             '{% endnote %}',
             '',
-            'Text after'
+            'Text after',
         ]), {});
 
         expect(result).toEqual(base);
@@ -27,9 +27,9 @@ describe('Alerts', () => {
         [
             {type: 'info', title: 'Примечание'},
             {type: 'tip', title: 'Совет'},
-            {type: 'alert', title: 'Предупреждение'},
+            {type: 'alert', title: 'Ошибка'},
             {type: 'important', title: 'Важная информация'},
-            {type: 'error', title: 'Ошибка'}
+            {type: 'error', title: 'Ошибка'},
         ].forEach(({type, title}) => {
             test(`should support type: ${type}`, () => {
                 const result = callAlertsPlugin(tokenize([
@@ -37,7 +37,7 @@ describe('Alerts', () => {
                     '',
                     'Текст примечания.',
                     '',
-                    '{% endnote %}'
+                    '{% endnote %}',
                 ]), {});
 
                 expect(result[0].attrs[0][1]).toEqual(`yfm-note yfm-accent-${type}`);
@@ -56,7 +56,7 @@ describe('Alerts', () => {
             '',
             '{% endnote %}',
             '',
-            'Text after'
+            'Text after',
         ]), {});
 
         expect(result).toEqual(customTitle);
@@ -72,7 +72,7 @@ describe('Alerts', () => {
             '',
             '{% endnote %}',
             '',
-            'Text after'
+            'Text after',
         ]), {});
 
         expect(result).toEqual(emptyTitle);

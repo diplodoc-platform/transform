@@ -1,4 +1,4 @@
-'use strict';
+
 
 const tabs = require('../lib/plugins/tabs');
 const {callPlugin, tokenize} = require('./utils');
@@ -36,7 +36,7 @@ describe('Tabs', () => {
             '',
             '{% endlist %}',
             '',
-            'After tabs'
+            'After tabs',
         ]), {});
 
         tabs = result.filter(({type}) => type === 'tab_open');
@@ -46,8 +46,9 @@ describe('Tabs', () => {
     test('Should convert to correct new token array', () => {
         const clearJSON = JSON.parse(
             JSON.stringify(
-                result.map(({attrs, ...item}) => item)
-            )
+                // eslint-disable-next-line
+                result.map(({attrs, ...item}) => item),
+            ),
         );
 
         expect(clearJSON).toEqual(base);
