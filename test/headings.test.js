@@ -1,4 +1,4 @@
-'use strict';
+
 
 const getHeadings = require('../lib/headings');
 const {tokenize} = require('./utils');
@@ -7,7 +7,7 @@ function item(title, level, items) {
     const result = {
         title,
         level,
-        href: '#'
+        href: '#',
     };
 
     if (items) {
@@ -28,19 +28,19 @@ describe('Headings', () => {
                 '## Level 2 (2)',
                 '## Level 2 (3)',
                 '### Level 3 (2)',
-                '### Level 3 (3)'
-            ]))
+                '### Level 3 (3)',
+            ])),
         ).toEqual([
             item('Level 2 (1)', 2, [
                 item('Level 3 (1)', 3, [
-                    item('Level 4 (1)', 4)
-                ])
+                    item('Level 4 (1)', 4),
+                ]),
             ]),
             item('Level 2 (2)', 2),
             item('Level 2 (3)', 2, [
                 item('Level 3 (2)', 3),
-                item('Level 3 (3)', 3)
-            ])
+                item('Level 3 (3)', 3),
+            ]),
         ]);
     });
 
@@ -51,14 +51,14 @@ describe('Headings', () => {
                 '#### Level 4 (1)',
                 '### Level 3 (1)',
                 '##### Level 5 (1)',
-                '#### Level 4 (2)'
-            ]))
+                '#### Level 4 (2)',
+            ])),
         ).toEqual([
             item('Level 2 (1)', 2, [
                 item('Level 3 (1)', 3, [
-                    item('Level 4 (2)', 4)
-                ])
-            ])
+                    item('Level 4 (2)', 4),
+                ]),
+            ]),
         ]);
     });
 
@@ -66,10 +66,10 @@ describe('Headings', () => {
         expect(
             getHeadings(tokenize([
                 '#### Level 4',
-                '## Level 2'
-            ]))
+                '## Level 2',
+            ])),
         ).toEqual([
-            item('Level 2', 2)
+            item('Level 2', 2),
         ]);
     });
 
@@ -77,8 +77,8 @@ describe('Headings', () => {
         expect(
             getHeadings(tokenize([
                 '### Level 3 (1)',
-                '### Level 3 (2)'
-            ]))
+                '### Level 3 (2)',
+            ])),
         ).toEqual([]);
     });
 });

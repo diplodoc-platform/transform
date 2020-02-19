@@ -5,7 +5,7 @@ module.exports = {
             'tag': 'h1',
             'map': [
                 0,
-                1
+                1,
             ],
             'nesting': 1,
             'level': 0,
@@ -15,14 +15,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
             'tag': '',
             'map': [
                 0,
-                1
+                1,
             ],
             'nesting': 0,
             'level': 1,
@@ -40,15 +40,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'Create a folder',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'heading_close',
@@ -62,7 +62,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'tabs_open',
@@ -76,7 +76,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'tab-list_open',
@@ -90,7 +90,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'tab_open',
@@ -104,7 +104,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -126,15 +126,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': '',
             'markup': '',
             'info': '',
             'meta': null,
             'block': false,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'tab_close',
@@ -148,7 +148,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'tab_open',
@@ -162,7 +162,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -184,15 +184,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': '',
             'markup': '',
             'info': '',
             'meta': null,
             'block': false,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'tab_close',
@@ -206,7 +206,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'tab_open',
@@ -220,7 +220,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -242,15 +242,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': '',
             'markup': '',
             'info': '',
             'meta': null,
             'block': false,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'tab_close',
@@ -264,7 +264,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'tab-list_open',
@@ -278,7 +278,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'tab-panel_open',
@@ -292,14 +292,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
             'tag': 'p',
             'map': [
                 6,
-                7
+                7,
             ],
             'nesting': 1,
             'level': 2,
@@ -309,14 +309,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
             'tag': '',
             'map': [
                 6,
-                7
+                7,
             ],
             'nesting': 0,
             'level': 3,
@@ -334,15 +334,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'About python',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -356,7 +356,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'tab-panel_close',
@@ -370,7 +370,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'tab-panel_open',
@@ -384,14 +384,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'bullet_list_open',
             'tag': 'ul',
             'map': [
                 9,
-                12
+                12,
             ],
             'nesting': 1,
             'level': 2,
@@ -401,14 +401,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'list_item_open',
             'tag': 'li',
             'map': [
                 9,
-                10
+                10,
             ],
             'nesting': 1,
             'level': 3,
@@ -418,14 +418,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
             'tag': 'p',
             'map': [
                 9,
-                10
+                10,
             ],
             'nesting': 1,
             'level': 4,
@@ -435,14 +435,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': true
+            'hidden': true,
         },
         {
             'type': 'inline',
             'tag': '',
             'map': [
                 9,
-                10
+                10,
             ],
             'nesting': 0,
             'level': 5,
@@ -460,15 +460,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'One',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -482,7 +482,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': true
+            'hidden': true,
         },
         {
             'type': 'list_item_close',
@@ -496,14 +496,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'list_item_open',
             'tag': 'li',
             'map': [
                 10,
-                12
+                12,
             ],
             'nesting': 1,
             'level': 3,
@@ -513,14 +513,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
             'tag': 'p',
             'map': [
                 10,
-                11
+                11,
             ],
             'nesting': 1,
             'level': 4,
@@ -530,14 +530,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': true
+            'hidden': true,
         },
         {
             'type': 'inline',
             'tag': '',
             'map': [
                 10,
-                11
+                11,
             ],
             'nesting': 0,
             'level': 5,
@@ -555,15 +555,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'Two',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -577,7 +577,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': true
+            'hidden': true,
         },
         {
             'type': 'list_item_close',
@@ -591,7 +591,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'bullet_list_close',
@@ -605,7 +605,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'tab-panel_close',
@@ -619,7 +619,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'tab-panel_open',
@@ -633,14 +633,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'ordered_list_open',
             'tag': 'ol',
             'map': [
                 13,
-                16
+                16,
             ],
             'nesting': 1,
             'level': 2,
@@ -650,14 +650,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'list_item_open',
             'tag': 'li',
             'map': [
                 13,
-                14
+                14,
             ],
             'nesting': 1,
             'level': 3,
@@ -667,14 +667,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
             'tag': 'p',
             'map': [
                 13,
-                14
+                14,
             ],
             'nesting': 1,
             'level': 4,
@@ -684,14 +684,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': true
+            'hidden': true,
         },
         {
             'type': 'inline',
             'tag': '',
             'map': [
                 13,
-                14
+                14,
             ],
             'nesting': 0,
             'level': 5,
@@ -709,15 +709,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'One',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -731,7 +731,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': true
+            'hidden': true,
         },
         {
             'type': 'list_item_close',
@@ -745,14 +745,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'list_item_open',
             'tag': 'li',
             'map': [
                 14,
-                16
+                16,
             ],
             'nesting': 1,
             'level': 3,
@@ -762,14 +762,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
             'tag': 'p',
             'map': [
                 14,
-                15
+                15,
             ],
             'nesting': 1,
             'level': 4,
@@ -779,14 +779,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': true
+            'hidden': true,
         },
         {
             'type': 'inline',
             'tag': '',
             'map': [
                 14,
-                15
+                15,
             ],
             'nesting': 0,
             'level': 5,
@@ -804,15 +804,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'Two',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -826,7 +826,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': true
+            'hidden': true,
         },
         {
             'type': 'list_item_close',
@@ -840,7 +840,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'ordered_list_close',
@@ -854,7 +854,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'tab-panel_close',
@@ -868,7 +868,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'tabs_open',
@@ -882,14 +882,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
             'tag': 'p',
             'map': [
                 18,
-                19
+                19,
             ],
             'nesting': 1,
             'level': 0,
@@ -899,14 +899,14 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
             'tag': '',
             'map': [
                 18,
-                19
+                19,
             ],
             'nesting': 0,
             'level': 1,
@@ -924,15 +924,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'After tabs',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -946,7 +946,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
-        }
-    ]
+            'hidden': false,
+        },
+    ],
 };

@@ -1,12 +1,11 @@
 {
-    "extends": ["data-ui"],
+    "extends": "data-ui/common",
+    "root": true,
     "env": {
         "node": true
     },
     "rules": {
-        "no-negated-condition": 0,
-        "no-param-reassign": 0,
-        "no-shadow": 0,
-        "no-use-before-define": 0
+        "no-confusing-arrow": "off",
+        "no-shadow": "off"
     }
 }

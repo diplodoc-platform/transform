@@ -18,6 +18,7 @@
   "scripts": {
     "transform": "bin/yfm-transform",
     "test": "jest --coverage",
+    "lint": "eslint \"**/*.js\"",
     "css": "npm run css:compile && npm run css:prefix && npm run css:minify",
     "css:compile": "node-sass src/scss/yfm.scss dist/css/yfm.css",
     "css:prefix": "postcss dist/css/yfm.css --output dist/css/yfm.css",
@@ -25,40 +26,44 @@
     "js": "npm run js:compile && npm run js:minify",
     "js:compile": "rollup -c",
     "js:minify": "uglifyjs dist/js/yfm.js --output dist/js/yfm.min.js",
-    "dist": "npm run css && npm run js"
+    "dist": "npm run css && npm run js",
+    "precommit": "npm run lint && npm run test"
   },
   "dependencies": {
-    "chalk": "^2.4.1",
+    "chalk": "^3.0.0",
     "glob": "^7.1.2",
-    "highlight.js": "^9.12.0",
-    "js-yaml": "^3.12.0",
-    "markdown-it": "^8.4.2",
-    "markdown-it-attrs": "^2.3.1",
+    "highlight.js": "^9.18.1",
+    "js-yaml": "^3.13.1",
+    "markdown-it": "^10.0.0",
+    "markdown-it-attrs": "^3.0.2",
     "markdown-it-deflist": "^2.0.3",
     "markdown-it-meta": "^0.0.1",
-    "mkdirp": "^0.5.1",
+    "mkdirp": "^1.0.3",
     "performance-now": "^2.1.0",
     "slugify": "^1.3.1",
-    "yargs": "^12.0.1"
+    "typescript": "^3.7.5",
+    "yargs": "^15.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/plugin-proposal-object-rest-spread": "7.0.0-rc.1",
-    "@babel/preset-env": "7.0.0-rc.1",
-    "@types/jest": "^24.0.11",
-    "autoprefixer": "^9.1.1",
-    "babel-core": "^7.0.0-bridge.0",
-    "babel-eslint": "^8.2.6",
-    "babel-jest": "^23.6.0",
-    "clean-css-cli": "^4.2.1",
-    "eslint": "^4.19.1",
-    "eslint-config-data-ui": "^3.0.1",
-    "jest": "^23.6.0",
-    "node-sass": "^4.9.3",
-    "postcss-cli": "^6.0.0",
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.8.4",
+    "autoprefixer": "^9.7.4",
+    "babel-eslint": "^10.0.3",
+    "clean-css-cli": "^4.3.0",
+    "eslint": "^6.8.0",
+    "eslint-config-data-ui": "^8.2.0",
+    "husky": "^4.2.3",
+    "jest": "^25.1.0",
+    "node-sass": "^4.13.1",
+    "postcss-cli": "^7.1.0",
     "regenerator-runtime": "^0.13.1",
-    "rollup": "^1.15.5",
+    "rollup": "^1.31.1",
     "rollup-plugin-babel": "^4.3.2",
-    "uglify-js": "^3.4.7"
+    "uglify-js": "^3.8.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run precommit"
+    }
   }
 }

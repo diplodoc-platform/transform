@@ -6,7 +6,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 0,
-                1
+                1,
             ],
             'nesting': 1,
             'level': 0,
@@ -16,7 +16,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -24,7 +24,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 0,
-                1
+                1,
             ],
             'nesting': 0,
             'level': 1,
@@ -42,15 +42,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'Text before include',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -65,7 +65,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'heading_open',
@@ -73,7 +73,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 0,
-                1
+                1,
             ],
             'nesting': 1,
             'level': 0,
@@ -83,7 +83,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -91,7 +91,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 0,
-                1
+                1,
             ],
             'nesting': 0,
             'level': 1,
@@ -109,15 +109,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'Title',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'heading_close',
@@ -132,7 +132,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
@@ -140,7 +140,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 2,
-                3
+                3,
             ],
             'nesting': 1,
             'level': 0,
@@ -150,7 +150,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -158,7 +158,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 2,
-                3
+                3,
             ],
             'nesting': 0,
             'level': 1,
@@ -176,15 +176,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'Content',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -199,7 +199,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
@@ -207,7 +207,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 4,
-                5
+                5,
             ],
             'nesting': 1,
             'level': 0,
@@ -217,7 +217,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -225,7 +225,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 4,
-                5
+                5,
             ],
             'nesting': 0,
             'level': 1,
@@ -243,15 +243,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'After include',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -266,8 +266,8 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
-        }
+            'hidden': false,
+        },
     ],
     notitle: [
         {
@@ -276,7 +276,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 0,
-                1
+                1,
             ],
             'nesting': 1,
             'level': 0,
@@ -286,7 +286,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -294,7 +294,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 0,
-                1
+                1,
             ],
             'nesting': 0,
             'level': 1,
@@ -312,15 +312,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'Text before include',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -335,7 +335,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
@@ -343,7 +343,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 2,
-                3
+                3,
             ],
             'nesting': 1,
             'level': 0,
@@ -353,7 +353,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -361,7 +361,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 2,
-                3
+                3,
             ],
             'nesting': 0,
             'level': 1,
@@ -379,15 +379,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'Content',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -402,7 +402,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_open',
@@ -410,7 +410,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 4,
-                5
+                5,
             ],
             'nesting': 1,
             'level': 0,
@@ -420,7 +420,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'inline',
@@ -428,7 +428,7 @@ module.exports = {
             'attrs': null,
             'map': [
                 4,
-                5
+                5,
             ],
             'nesting': 0,
             'level': 1,
@@ -446,15 +446,15 @@ module.exports = {
                     'info': '',
                     'meta': null,
                     'block': false,
-                    'hidden': false
-                }
+                    'hidden': false,
+                },
             ],
             'content': 'After include',
             'markup': '',
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
+            'hidden': false,
         },
         {
             'type': 'paragraph_close',
@@ -469,7 +469,7 @@ module.exports = {
             'info': '',
             'meta': null,
             'block': true,
-            'hidden': false
-        }
-    ]
+            'hidden': false,
+        },
+    ],
 };

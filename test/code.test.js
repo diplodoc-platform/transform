@@ -1,4 +1,4 @@
-'use strict';
+
 
 const code = require('../lib/plugins/code');
 
@@ -6,9 +6,9 @@ const code = require('../lib/plugins/code');
 const getMd = (fence) => ({
     renderer: {
         rules: {
-            fence
-        }
-    }
+            fence,
+        },
+    },
 });
 
 describe('Code', () => {

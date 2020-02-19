@@ -1,14 +1,16 @@
 (function (factory) {
     typeof define === 'function' && define.amd ? define(factory) :
     factory();
-}(function () { 'use strict';
+}((function () { 'use strict';
 
     if (typeof document !== 'undefined') {
       // matches polyfill for old edge
       (function (e) {
         var matches = e.matches || e.matchesSelector || e.webkitMatchesSelector || e.mozMatchesSelector || e.msMatchesSelector || e.oMatchesSelector;
 
-        if (!matches) {
+        if (matches) {
+          e.matches = e.matchesSelector = matches;
+        } else {
           e.matches = e.matchesSelector = function matches(selector) {
             var matches = document.querySelectorAll(selector);
             var th = this;
@@ -16,8 +18,6 @@
               return e === th;
             });
           };
-        } else {
-          e.matches = e.matchesSelector = matches;
         }
       })(Element.prototype);
     }
@@ -138,4 +138,4 @@
       });
     }
 
-}));
+})));

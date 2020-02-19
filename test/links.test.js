@@ -1,4 +1,4 @@
-'use strict';
+
 const {dirname} = require('path');
 
 const links = require('../lib/plugins/links');
@@ -16,10 +16,10 @@ describe('Links', () => {
             '',
             '[Custom title](./mocks/link.md) %}',
             '',
-            'After link'
+            'After link',
         ]), {
             path: mocksPath,
-            root: dirname(mocksPath)
+            root: dirname(mocksPath),
         });
 
         expect(result).toEqual(customTitle);
@@ -33,10 +33,10 @@ describe('Links', () => {
             '',
             '[{#T}](./mocks/link.md)',
             '',
-            'After link'
+            'After link',
         ]), {
             path: mocksPath,
-            root: dirname(mocksPath)
+            root: dirname(mocksPath),
         });
 
         expect(result).toEqual(title);

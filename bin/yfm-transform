@@ -12,52 +12,53 @@ const argv = require('yargs')
     .options({
         'source': {
             'default': cwd,
-            'describe': 'Путь до папки с markdown файлами'
+            'describe': 'Путь до папки с markdown файлами',
         },
         'dest': {
             'default': cwd,
-            'describe': 'Путь до папки где будет размещен результат трансформации'
+            'describe': 'Путь до папки где будет размещен результат трансформации',
         },
         'styles': {
             'default': false,
-            'describe': 'Нужно ли стилизовать выходной HTML'
+            'describe': 'Нужно ли стилизовать выходной HTML',
+            type: 'boolean',
         },
         'vars': {
             'default': '{}',
-            'describe': 'Данные для подстановки и вычисления условных операторов'
+            'describe': 'Данные для подстановки и вычисления условных операторов',
         },
         'vars-preset': {
             'default': 'default',
-            'describe': 'Название пресета переменных из файла presets.yaml'
+            'describe': 'Название пресета переменных из файла presets.yaml',
         },
         'outputFormat': {
             'default': 'html',
-            'describe': 'DEPRECATED'
+            'describe': 'DEPRECATED',
         },
         'output-format': {
             'default': 'html',
-            'describe': 'Формат трансформации: html или md'
+            'describe': 'Формат трансформации: html или md',
         },
         'one-file': {
             'default': false,
-            'describe': 'Объединить файлы в один'
+            'describe': 'Объединить файлы в один',
         },
         'document': {
             'default': null,
-            'describe': 'Конфигурация сборки'
+            'describe': 'Конфигурация сборки',
         },
         'allow-html': {
             'default': false,
-            'describe': 'Разрешено ли использование HTML'
-        }
+            'describe': 'Разрешено ли использование HTML',
+        },
     })
     .example(
         `yfm-transform --source ./md-sources-dir --dest ./html-output --styles --vars ${dataExample}`,
-        'Трансформация в стилизованный HTML'
+        'Трансформация в стилизованный HTML',
     )
     .example(
         `yfm-transform --source ./md-sources-dir --dest ./md-output output-format md  --vars ${dataExample}`,
-        'Трансформация в Markdown с примененными условными операторами'
+        'Трансформация в Markdown с примененными условными операторами',
     )
     .argv;
 
@@ -69,7 +70,7 @@ filesProcessing({
     varsPreset: argv['vars-preset'],
     outputFormat: argv['output-format'] !== 'html' ? argv['output-format'] : argv.outputFormat,
     oneFile: argv['one-file'],
-    allowHTML: argv['allow-html']
+    allowHTML: argv['allow-html'],
 });
 
 log(`Build time: ${Math.round(now() - start) / 1000} s`);

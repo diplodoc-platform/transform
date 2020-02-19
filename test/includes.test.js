@@ -1,4 +1,4 @@
-'use strict';
+
 const {dirname} = require('path');
 
 const includes = require('../lib/plugins/includes');
@@ -16,10 +16,10 @@ describe('Includes', () => {
             '',
             '{% include [create-folder](./mocks/include.md) %}',
             '',
-            'After include'
+            'After include',
         ]), {
             path: mocksPath,
-            root: dirname(mocksPath)
+            root: dirname(mocksPath),
         });
 
         expect(result).toEqual(title);
@@ -33,10 +33,10 @@ describe('Includes', () => {
             '',
             '{% include notitle [create-folder](./mocks/include.md) %}',
             '',
-            'After include'
+            'After include',
         ]), {
             path: mocksPath,
-            root: dirname(mocksPath)
+            root: dirname(mocksPath),
         });
 
         expect(result).toEqual(notitle);
@@ -51,11 +51,11 @@ describe('Includes', () => {
             '',
             '{% include notitle [create-folder](./mocks/fake.md) %}',
             '',
-            'After include'
+            'After include',
         ]), {
             path: mocksPath,
             root: dirname(mocksPath),
-            notFoundCb: cb
+            notFoundCb: cb,
         });
 
         expect(cb.mock.calls[0][0]).toEqual('/mocks/fake.md');
