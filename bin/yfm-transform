@@ -21,7 +21,7 @@ const argv = require('yargs')
         'styles': {
             'default': false,
             'describe': 'Нужно ли стилизовать выходной HTML',
-            type: 'boolean',
+            'type': 'boolean',
         },
         'vars': {
             'default': '{}',
@@ -42,6 +42,7 @@ const argv = require('yargs')
         'one-file': {
             'default': false,
             'describe': 'Объединить файлы в один',
+            'type': 'boolean',
         },
         'document': {
             'default': null,
@@ -50,6 +51,7 @@ const argv = require('yargs')
         'allow-html': {
             'default': false,
             'describe': 'Разрешено ли использование HTML',
+            'type': 'boolean',
         },
     })
     .example(
