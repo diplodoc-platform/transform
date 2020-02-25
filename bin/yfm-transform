@@ -2,6 +2,7 @@
 
 'use strict';
 const now = require('performance-now');
+const camelize = require('camelize');
 
 const filesProcessing = require('../lib/filesProcess');
 const log = require('../lib/log');
@@ -53,6 +54,11 @@ const argv = require('yargs')
             'describe': 'Разрешено ли использование HTML',
             'type': 'boolean',
         },
+        'process-toc': {
+            'default': false,
+            'type': 'boolean',
+            'describe': 'Включать toc.yaml в результат трансформации'
+        }
     })
     .example(
         `yfm-transform --source ./md-sources-dir --dest ./html-output --styles --vars ${dataExample}`,
@@ -67,12 +73,8 @@ const argv = require('yargs')
 const start = now();
 
 filesProcessing({
-    ...argv,
+    ...camelize(argv),
     vars: JSON.parse(argv.vars),
-    varsPreset: argv['vars-preset'],
-    outputFormat: argv['output-format'] !== 'html' ? argv['output-format'] : argv.outputFormat,
-    oneFile: argv['one-file'],
-    allowHTML: argv['allow-html'],
 });
 
 log(`Build time: ${Math.round(now() - start) / 1000} s`);

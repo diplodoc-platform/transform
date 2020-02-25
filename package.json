@@ -30,6 +30,7 @@
     "precommit": "npm run lint && npm run test"
   },
   "dependencies": {
+    "camelize": "^1.0.0",
     "chalk": "^3.0.0",
     "glob": "^7.1.2",
     "highlight.js": "^9.18.1",
