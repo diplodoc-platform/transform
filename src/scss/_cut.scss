@@ -1,0 +1,42 @@
+.yfm-cut {
+    $class: &;
+
+    &-title {
+        cursor: pointer;
+        position: relative;
+        user-select: none;
+        padding-left: 30px;
+
+        &:before {
+            content: '';
+            z-index: 100;
+            left: 0;
+            top: 50%;
+            background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+CiAgICA8cGF0aCBzdHJva2U9ImN1cnJlbnRDb2xvciIgZmlsbD0ibm9uZSIgZD0iTTMgNmw1IDUgNS01Ii8+Cjwvc3ZnPgo=");
+            transform: translateY(-50%) rotate(-90deg);
+            transition: transform 0.3s ease;
+            height: 20px;
+            width: 20px;
+            position: absolute;
+        }
+    }
+
+    &-content {
+        height: 0;
+        overflow: hidden;
+        transition: height 0.3s ease-in-out;
+    }
+
+    &.open {
+        #{$class}-content {
+            padding-top: 10px;
+            height: auto;
+        }
+
+        #{$class}-title:before {
+            transform: translateY(-50%);
+        }
+    }
+}
+
+
