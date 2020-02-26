@@ -5,7 +5,7 @@
         cursor: pointer;
         position: relative;
         user-select: none;
-        padding-left: 30px;
+        padding: 5px 0 5px 30px;
 
         &:before {
             content: '';
@@ -29,7 +29,7 @@
 
     &.open {
         #{$class}-content {
-            padding-top: 10px;
+            padding-top: 5px;
             height: auto;
         }
 

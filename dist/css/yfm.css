@@ -398,7 +398,7 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  padding-left: 30px; }
+  padding: 5px 0 5px 30px; }
   .yfm-cut-title:before {
     content: '';
     z-index: 100;
@@ -417,7 +417,7 @@
   transition: height 0.3s ease-in-out; }
 
 .yfm-cut.open .yfm-cut-content {
-  padding-top: 10px;
+  padding-top: 5px;
   height: auto; }
 
 .yfm-cut.open .yfm-cut-title:before {
