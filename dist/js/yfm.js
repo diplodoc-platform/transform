@@ -138,4 +138,28 @@
       });
     }
 
+    var Selector$1 = {
+      CUT: '.yfm .yfm-cut',
+      TITLE: '.yfm .yfm-cut-title',
+      CONTENT: '.yfm .yfm-cut-content'
+    };
+    var ClassName$1 = {
+      OPEN: 'open'
+    };
+
+    function toggleCut(element) {
+      var cutEl = element.parentNode;
+      cutEl.classList.toggle(ClassName$1.OPEN);
+    }
+
+    if (typeof document !== 'undefined') {
+      document.addEventListener('click', function (event) {
+        if (!event.target.matches(Selector$1.TITLE)) {
+          return;
+        }
+
+        toggleCut(event.target);
+      });
+    }
+
 })));
