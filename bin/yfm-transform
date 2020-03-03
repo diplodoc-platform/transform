@@ -6,11 +6,11 @@ const camelize = require('camelize');
 
 const filesProcessing = require('../lib/filesProcess');
 const log = require('../lib/log');
-const getConfigVars = require('../lib/getConfigArgs');
+const getConfigParams = require('../lib/getConfigParams');
 
 const cwd = process.env.INIT_CWD || process.cwd();
 const dataExample = JSON.stringify({'user': {'name': 'Alice'}});
-const argsFromConfig = getConfigVars(require('yargs').argv.config);
+const argsFromConfig = getConfigParams(require('yargs').argv.config);
 
 const argv = require('yargs')
     .config(argsFromConfig)
@@ -89,7 +89,7 @@ const start = now();
 
 filesProcessing({
     ...camelize(argv),
-    vars: JSON.parse(argv.vars),
+    vars: typeof argv.vars === 'string' ? JSON.parse(argv.vars) : argv.vars,
 });
 
 log(`Build time: ${Math.round(now() - start) / 1000} s`);
