@@ -3,6 +3,7 @@
 'use strict';
 const now = require('performance-now');
 const camelize = require('camelize');
+const yargs = require('yargs');
 
 const filesProcessing = require('../lib/filesProcess');
 const log = require('../lib/log');
@@ -10,9 +11,9 @@ const getConfigParams = require('../lib/getConfigParams');
 
 const cwd = process.env.INIT_CWD || process.cwd();
 const dataExample = JSON.stringify({'user': {'name': 'Alice'}});
-const argsFromConfig = getConfigParams(require('yargs').argv.config);
+const argsFromConfig = getConfigParams(yargs.argv.config, yargs.argv.source);
 
-const argv = require('yargs')
+const argv = yargs
     .config(argsFromConfig)
     .options({
         'source': {
