@@ -1,3 +1,4 @@
+[![build status](https://teamcity.yandex-team.ru/app/rest/builds/buildType:DataUI_Cloud_Yfm_Publish/statusIcon.svg)](https://teamcity.yandex-team.ru/viewType.html?buildTypeId=DataUI_Cloud_Yfm_Publish)
 [![oko health](https://badger.yandex-team.ru/oko/repo/data-ui/yfm/health.svg)](https://oko.yandex-team.ru/repo/data-ui/yfm)
 
 Трансформер YFM (Yandex Flavored Markdown) -> HTML
@@ -60,12 +61,12 @@ const {html, meta} = transform(content, {root, path, vars});
 
 **Config**
 
-В yfm-transform можно использовать конфигурационный файл для указания параметров запуска по умолчанию. 
+В yfm-transform можно использовать конфигурационный файл для указания параметров запуска по умолчанию.
 Для этого в cli достаточно указать параметр `--config` с путем до конфигурационного файла.
 
 Переменные в cli имеют больший приоритет, чем переменные внутри конфигурационного файла.
 Если путь до конфигурационного файла указан неверно - yfm-transform выдаст ошибку.
-Если путь до конфигурационного файла не указан, yfm-transform по умолчанию будет искать дефолтную конфигурацию `.yfm` 
+Если путь до конфигурационного файла не указан, yfm-transform по умолчанию будет искать дефолтную конфигурацию `.yfm`
 в папке `--source`.
 
 Конфигурационный файл представляет собой yaml-файл с плоской структурой, например:
