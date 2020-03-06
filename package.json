@@ -63,6 +63,9 @@
     "rollup-plugin-babel": "^4.3.2",
     "uglify-js": "^3.8.0"
   },
+  "pkg": {
+    "scripts": ["node_modules/markdown-it-imsize/lib/**/*.js", "lib/plugins/*.js"]
+  },
   "husky": {
     "hooks": {
       "pre-commit": "npm run precommit"
