@@ -1,6 +1,6 @@
 {
   "name": "yfm-transform",
-  "version": "2.12.1",
+  "version": "2.12.2",
   "description": "Yandex Flavored Markdown utilities",
   "author": "Data UI Team <data-ui@yandex-team.ru>",
   "license": "UNLICENSED",
@@ -64,7 +64,10 @@
     "uglify-js": "^3.8.0"
   },
   "pkg": {
-    "scripts": ["node_modules/markdown-it-imsize/lib/**/*.js", "lib/plugins/*.js"]
+    "scripts": [
+      "node_modules/markdown-it-imsize/lib/**/*.js",
+      "lib/plugins/*.js"
+    ]
   },
   "husky": {
     "hooks": {
