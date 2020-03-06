@@ -65,6 +65,7 @@
   },
   "pkg": {
     "scripts": [
+      "../markdown-it-imsize/lib/**/*.js",
       "node_modules/markdown-it-imsize/lib/**/*.js",
       "lib/plugins/*.js"
     ]
