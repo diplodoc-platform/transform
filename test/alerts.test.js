@@ -27,7 +27,8 @@ describe('Alerts', () => {
         [
             {type: 'info', title: 'Примечание'},
             {type: 'tip', title: 'Совет'},
-            {type: 'alert', title: 'Ошибка'},
+            {type: 'alert', title: 'Внимание'},
+            {type: 'warning', title: 'Важно'},
             {type: 'important', title: 'Важная информация'},
             {type: 'error', title: 'Ошибка'},
         ].forEach(({type, title}) => {
