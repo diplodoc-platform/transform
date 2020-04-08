@@ -11,10 +11,8 @@ const getConfigParams = require('../lib/getConfigParams');
 
 const cwd = process.env.INIT_CWD || process.cwd();
 const dataExample = JSON.stringify({'user': {'name': 'Alice'}});
-const argsFromConfig = getConfigParams(yargs.argv.config, yargs.argv.source);
 
-const argv = yargs
-    .config(argsFromConfig)
+let argv = yargs
     .options({
         'source': {
             'default': cwd,
@@ -70,7 +68,6 @@ const argv = yargs
             'describe': 'При наличии ошибок в логах завершаться с ненулевым кодом возврата',
         },
         'config': {
-            'default': null,
             'type': 'string',
             'describe': `Использовать переменные из конфигурационного файла при запуске yfm-transform.
                          Переменные в cli имеют больший приоритет, чем переменные файла config`,
@@ -84,6 +81,11 @@ const argv = yargs
         `yfm-transform --source ./md-sources-dir --dest ./md-output output-format md  --vars ${dataExample}`,
         'Трансформация в Markdown с примененными условными операторами',
     )
+    .argv;
+
+const argsFromConfig = getConfigParams(argv.config, argv.source);
+argv = yargs
+    .config(argsFromConfig)
     .argv;
 
 const start = now();
