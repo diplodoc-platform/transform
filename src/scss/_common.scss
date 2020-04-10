@@ -126,18 +126,32 @@
     }
 
     table {
-        display: block;
-        width: 100%;
+        color: #333333;
+
+        display: inline-block;
+        max-width: 100%;
+        width: auto;
         overflow: auto;
         position: relative;
         z-index: 1;
 
+        border: 1px solid rgba(0, 0, 0, 0.07);
+        box-sizing: border-box;
+        border-radius: 8px;
         border-collapse: collapse;
         border-spacing: 0;
         background: #fff;
 
+        thead {
+            background: rgba(0, 0, 0, 0.02);
+        }
+
         tr {
             border-bottom: 1px solid $borderColor;
+        }
+
+        tr:last-child {
+            border-bottom: none;
         }
 
         th, td {
