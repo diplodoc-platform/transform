@@ -67,6 +67,11 @@ let argv = yargs
             'type': 'boolean',
             'describe': 'При наличии ошибок в логах завершаться с ненулевым кодом возврата',
         },
+        'fail-on-warns': {
+            'default': false,
+            'type': 'boolean',
+            'describe': 'При наличии предупреждений в логах завершаться с ненулевым кодом возврата',
+        },
         'config': {
             'type': 'string',
             'describe': `Использовать переменные из конфигурационного файла при запуске yfm-transform.
