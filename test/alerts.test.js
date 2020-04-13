@@ -29,8 +29,6 @@ describe('Alerts', () => {
             {type: 'tip', title: 'Совет'},
             {type: 'alert', title: 'Внимание'},
             {type: 'warning', title: 'Важно'},
-            {type: 'important', title: 'Важная информация'},
-            {type: 'error', title: 'Ошибка'},
         ].forEach(({type, title}) => {
             test(`should support type: ${type}`, () => {
                 const result = callAlertsPlugin(tokenize([

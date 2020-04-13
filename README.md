@@ -13,15 +13,9 @@ cd yfm
 npm install
 ```
 
-### Использование
+При добавлении изменений в файлы из директории src перед обновлением версии пакета нужно выполнить
 ```bash
-npm run transform -- --source ./md-sources-dir --dest ./html-output --styles --vars {\"user\":{\"name\":\"Alice\"}}
-```
-
-### Сборка bin-файла
-```bash
-npm install -g pkg
-pkg ./
+npm run dist
 ```
 
 ## npm-пакет
@@ -30,23 +24,22 @@ pkg ./
 npm install yfm-transform
 ```
 
-Для использования CLI будет удобнее поставить пакет глобально:
-```bash
-sudo npm install -g yfm-transform
-```
-
-При добавлении изменений в файлы из директории src перед обновлением версии пакета нужно выполнить
-```bash
-npm run dist
-```
-
 ### Использование
-**CLI**
-```bash
-yfm-transform --source ./md-sources-dir --dest ./html-output --styles --vars {\"user\":{\"name\":\"Alice\"}}
-```
 
-**API**
+#### Параметры
+
+Имя | Описание | Тип | Значение по-умолчанию
+:--- | :--- | :--- | :---
+vars | Переменные | Object | {}
+plugins | Используемые плагины | function[] | alerts, attrs, anchors, code, cut, deflist, imsize, meta, sup, tabs, titles
+extractTitle | Вернуть первый заголовок первого уровня в качестве заголовка всего документа | bool | false
+needTitle | Вернуть первый заголовок первого уровня не удалив его из контента | bool | false
+allowHTML | Разрешено ли использование HTML | bool | false
+linkify | Делать ли ссылками ссылкоподобные строки | bool | false
+breaks | Переносить ли строки по символу перевода каретки | bool | true
+
+#### Подключение и вызов
+
 ```js
 const fs = require('fs');
 const transform = require('yfm-transform');
@@ -57,24 +50,6 @@ const content = fs.readFileSync(filePath, 'utf');
 const vars = { user: { name: 'Alice' } };
 
 const {html, meta} = transform(content, {root, path, vars});
-```
-
-**Config**
-
-В yfm-transform можно использовать конфигурационный файл для указания параметров запуска по умолчанию.
-Для этого в cli достаточно указать параметр `--config` с путем до конфигурационного файла.
-
-Переменные в cli имеют больший приоритет, чем переменные внутри конфигурационного файла.
-Если путь до конфигурационного файла указан неверно - yfm-transform выдаст ошибку.
-Если путь до конфигурационного файла не указан, yfm-transform по умолчанию будет искать дефолтную конфигурацию `.yfm`
-в папке `--source`.
-
-Конфигурационный файл представляет собой yaml-файл с плоской структурой, например:
-
-```yaml
-process-toc: true
-fail-on-errors: true
-output-format: md
 ```
 
 ## License
