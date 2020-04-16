@@ -47,7 +47,7 @@ const transform = require('yfm-transform');
 const content = fs.readFileSync(filePath, 'utf');
 const vars = { user: { name: 'Alice' } };
 
-const {html, meta} = transform(content, {vars});
+const {result: {html, meta}, logs} = transform(content, {vars});
 ```
 
 #### Плагины
@@ -63,7 +63,7 @@ const video = require('markdown-it-video');
 const content = fs.readFileSync(filePath, 'utf');
 const vars = { user: { name: 'Alice' } };
 
-const {html, meta} = transform(content, {vars, plugins: [cut, sup, video]});
+const {result: {html, meta}, logs} = transform(content, {vars, plugins: [cut, sup, video]});
 ```
 
 ##### Предоставляемые плагины
