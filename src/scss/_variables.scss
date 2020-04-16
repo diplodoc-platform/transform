@@ -1,7 +1,12 @@
-$textColor: #4b4b4b;
-$borderColor: #e7e7e7;
+$baseColor: #ffffff;
 $accentColor: #027bf3;
-$brandColor: #d00;
 
-$codeBorder: 1px solid #dce6f0;
-$codeBackground: #f7fbff;
+$textColor: rgba(0, 0, 0, 0.7);
+$borderColor: rgba(0, 0, 0, 0.07);
+$backgroundColor: rgba(0, 0, 0, 0.02);
+
+$codeBorderColor: #dcedfd;
+$codeBackgroundColor: rgba(2, 123, 243, 0.08);
+
+$linkColor: $accentColor;
+$linkHoverColor: #004080;

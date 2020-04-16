@@ -1,9 +1,11 @@
 @import 'variables';
 
+$codeBorder: 1px solid $codeBorderColor;
+
 .yfm {
     font-family: 'YS Text', 'Segoe UI', Arial, Helvetica, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-    font-size: 16px;
-    line-height: 25px;
+    font-size: 15px;
+    line-height: 20px;
     word-wrap: break-word;
     color: $textColor;
 
@@ -22,43 +24,45 @@
     h1, h2, h3, h4, h5, h6 {
         margin-bottom: 15px;
         font-weight: 500;
-        line-height: 1.4em;
     }
 
     h1 {
-        font-size: 36px;
+        font-size: 32px;
+        line-height: 40px;
     }
 
     h2 {
-        font-size: 26px;
+        font-size: 24px;
+        line-height: 28px;
     }
 
     h3 {
         font-size: 20px;
+        line-height: 24px;
     }
 
     h4 {
-        font-size: 18px;
-        font-weight: 700;
+        font-size: 17px;
+        line-height: 24px;
     }
 
     h5 {
-        font-size: 16px;
-        font-weight: 700;
+        font-size: 15px;
+        line-height: 20px;
     }
 
     h6 {
-        font-size: 14px;
-        font-weight: 700;
+        font-size: 13px;
+        line-height: 18px;
     }
 
     a {
         background-color: transparent;
-        color: $accentColor;
+        color: $linkColor;
         text-decoration: none;
 
         &:hover, &:active {
-            color: $brandColor;
+            color: $linkHoverColor;
         }
 
         &:not([href]) {
@@ -75,7 +79,7 @@
         box-sizing: content-box;
         max-width: 100%;
         border: none;
-        background-color: #fff;
+        background-color: $baseColor;
 
         &[align=right] {
             padding-left: 20px;
@@ -135,15 +139,15 @@
         position: relative;
         z-index: 1;
 
-        border: 1px solid rgba(0, 0, 0, 0.07);
+        border: 1px solid $borderColor;
         box-sizing: border-box;
         border-radius: 8px;
         border-collapse: collapse;
         border-spacing: 0;
-        background: #fff;
+        background: $baseColor;
 
         thead {
-            background: rgba(0, 0, 0, 0.02);
+            background: $backgroundColor;
         }
 
         tr {
@@ -162,7 +166,7 @@
         }
 
         th {
-            font-weight: 700;
+            font-weight: 500;
             text-align: left;
         }
 
@@ -222,7 +226,7 @@
         dt {
             margin-bottom: 5px;
             font-size: 1em;
-            font-weight: 700;
+            font-weight: 500;
             font-style: italic;
         }
 
@@ -286,7 +290,7 @@
 
     code {
         padding: 0.1em 0.4em 0.15em;
-        background-color: $codeBackground;
+        background-color: $codeBackgroundColor;
         border: $codeBorder;
         border-radius: 4px;
         font-size: 0.875em;
@@ -314,13 +318,13 @@
 
         border-radius: 10px;
         border: $codeBorder;
-        background-color: $codeBackground;
+        background-color: $codeBackgroundColor;
 
         white-space: pre;
     }
 
     // highlight.js colors
-    --yfm-color-hljs-background: #{$codeBackground};
+    --yfm-color-hljs-background: #{$codeBackgroundColor};
     --yfm-color-hljs-subst: #444;
     --yfm-color-hljs-comment: #888888;
     --yfm-color-hljs-deletion: #880000;
