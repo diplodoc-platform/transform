@@ -70,13 +70,13 @@ const {result: {html, meta}, logs} = transform(content, {vars, plugins: [cut, su
 
 Имя | Описание | Параметры
 :--- | :--- | :---
-alerts | [Заметки](./DOCS.md#notes) | {lang? = ru - язык, нужен для локализации дефолтных текстов}
 anchors | Добавляет якоря заголовкам | {extractTitleOption? = false - нужно ли учитывать заголовок первого уровня}
 code | Добавляет кнопку копирования в блоки кода | -
 cut | [Сворачиваемые блоки](./DOCS.md#cutes) | -
 images | [Вставка изображений](./DOCS.md#images) | {assetsPublicPath = '/' - путь до расположения иконок, root - путь до корня проекта, path - путь до текущего трансформируемого файла}
 includes | [Вставки](./DOCS.md#includes) | {path - путь до текущего трансформируемого файла, getVarsPerFile? - функция, которая должна по пути файла вернуть вычисленные переменные}
 links | [Расширенные ссылки](./DOCS.md#links) | {path - путь до текущего трансформируемого файла, root - путь до корня проекта}
+notes | [Заметки](./DOCS.md#notes) | {lang? = ru - язык, нужен для локализации дефолтных текстов}
 tabs | [Табы](./DOCS.md#tabs) | -
 
 Набор плагинов подключаемый по умолчанию: attrs, meta, deflist, cut, alerts, anchors, tabs, code, imsize, sup.

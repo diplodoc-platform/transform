@@ -1,7 +1,4 @@
-
-
 const code = require('../lib/plugins/code');
-
 
 const getMd = (fence) => ({
     renderer: {

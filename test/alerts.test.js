@@ -1,6 +1,4 @@
-
-
-const alerts = require('../lib/plugins/alerts');
+const alerts = require('../lib/plugins/notes');
 const {callPlugin, tokenize} = require('./utils');
 const {base, customTitle, emptyTitle} = require('./data/alerts');
 

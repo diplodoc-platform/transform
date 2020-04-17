@@ -1,5 +1,3 @@
-
-
 const getHeadings = require('../lib/headings');
 const {tokenize} = require('./utils');
 
