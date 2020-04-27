@@ -1,12 +1,17 @@
-interface Output {
-    html: string;
-    title: string;
-    headings: any[];
-    assets: any[];
-    meta: object;
+import {Logs} from './log';
+
+export interface Output {
+    result: {
+        html: string;
+        title: string;
+        headings: any[];
+        assets: any[];
+        meta: object;
+    };
+    logs: Logs;
 }
 
-interface Options {
+export interface Options {
     [key: string]: any;
 }
 
