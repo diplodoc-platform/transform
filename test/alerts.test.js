@@ -1,6 +1,4 @@
-
-
-const alerts = require('../lib/plugins/alerts');
+const alerts = require('../lib/plugins/notes');
 const {callPlugin, tokenize} = require('./utils');
 const {base, customTitle, emptyTitle} = require('./data/alerts');
 
@@ -29,8 +27,6 @@ describe('Alerts', () => {
             {type: 'tip', title: 'Совет'},
             {type: 'alert', title: 'Внимание'},
             {type: 'warning', title: 'Важно'},
-            {type: 'important', title: 'Важная информация'},
-            {type: 'error', title: 'Ошибка'},
         ].forEach(({type, title}) => {
             test(`should support type: ${type}`, () => {
                 const result = callAlertsPlugin(tokenize([

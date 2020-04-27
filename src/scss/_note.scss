@@ -2,15 +2,15 @@
 
 $infoColor: $accentColor;
 $tipColor: #56bd67;
-$importantColor: #ff4645;
 $warningColor: #f19518;
+$importantColor: #ff4645;
 
 .yfm-note {
     max-width: 1296px;
     margin: 20px 0;
     padding: 20px 20px 20px 64px;
 
-    background-color: #fff;
+    background-color: $backgroundColor;
     border: 1px solid $borderColor;
     border-radius: 10px;
 
@@ -39,8 +39,6 @@ $warningColor: #f19518;
         yfm-accent-info: $infoColor,
         yfm-accent-tip: $tipColor,
         yfm-accent-alert: $importantColor,
-        yfm-accent-important: $importantColor,
-        yfm-accent-error: $importantColor,
         yfm-accent-warning: $warningColor
     );
 

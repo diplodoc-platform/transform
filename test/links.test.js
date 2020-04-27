@@ -1,4 +1,3 @@
-
 const {dirname} = require('path');
 
 const links = require('../lib/plugins/links');

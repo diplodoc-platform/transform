@@ -40,11 +40,11 @@
         }
 
         &:hover, &:active {
-            color: $brandColor;
+            color: $linkHoverColor;
         }
 
         &.active {
-            border-bottom-color: $brandColor;
+            border-bottom-color: $accentColor;
         }
     }
 

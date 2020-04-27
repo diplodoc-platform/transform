@@ -1,10 +1,10 @@
 .yfm {
   font-family: 'YS Text', 'Segoe UI', Arial, Helvetica, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-  font-size: 16px;
-  line-height: 25px;
+  font-size: 15px;
+  line-height: 20px;
   word-wrap: break-word;
-  color: #4b4b4b;
-  --yfm-color-hljs-background: #f7fbff;
+  color: rgba(0, 0, 0, 0.7);
+  --yfm-color-hljs-background: rgba(2, 123, 243, 0.08);
   --yfm-color-hljs-subst: #444;
   --yfm-color-hljs-comment: #888888;
   --yfm-color-hljs-deletion: #880000;
@@ -22,29 +22,31 @@
     margin-bottom: 0 !important; }
   .yfm h1, .yfm h2, .yfm h3, .yfm h4, .yfm h5, .yfm h6 {
     margin-bottom: 15px;
-    font-weight: 500;
-    line-height: 1.4em; }
+    font-weight: 500; }
   .yfm h1 {
-    font-size: 36px; }
+    font-size: 32px;
+    line-height: 40px; }
   .yfm h2 {
-    font-size: 26px; }
+    font-size: 24px;
+    line-height: 28px; }
   .yfm h3 {
-    font-size: 20px; }
+    font-size: 20px;
+    line-height: 24px; }
   .yfm h4 {
-    font-size: 18px;
-    font-weight: 700; }
+    font-size: 17px;
+    line-height: 24px; }
   .yfm h5 {
-    font-size: 16px;
-    font-weight: 700; }
+    font-size: 15px;
+    line-height: 20px; }
   .yfm h6 {
-    font-size: 14px;
-    font-weight: 700; }
+    font-size: 13px;
+    line-height: 18px; }
   .yfm a {
     background-color: transparent;
     color: #027bf3;
     text-decoration: none; }
     .yfm a:hover, .yfm a:active {
-      color: #d00; }
+      color: #004080; }
     .yfm a:not([href]) {
       color: inherit; }
   .yfm strong {
@@ -53,7 +55,7 @@
     box-sizing: content-box;
     max-width: 100%;
     border: none;
-    background-color: #fff; }
+    background-color: #ffffff; }
     .yfm img[align=right] {
       padding-left: 20px; }
     .yfm img[align=left] {
@@ -96,11 +98,11 @@
     border-radius: 8px;
     border-collapse: collapse;
     border-spacing: 0;
-    background: #fff; }
+    background: #ffffff; }
     .yfm table thead {
       background: rgba(0, 0, 0, 0.02); }
     .yfm table tr {
-      border-bottom: 1px solid #e7e7e7; }
+      border-bottom: 1px solid rgba(0, 0, 0, 0.07); }
     .yfm table tr:last-child {
       border-bottom: none; }
     .yfm table th, .yfm table td {
@@ -109,7 +111,7 @@
       overflow: hidden;
       text-overflow: ellipsis; }
     .yfm table th {
-      font-weight: 700;
+      font-weight: 500;
       text-align: left; }
     .yfm table td {
       white-space: normal;
@@ -120,7 +122,7 @@
     padding: 0;
     margin: 1.5em 0;
     overflow: hidden;
-    background-color: #e7e7e7;
+    background-color: rgba(0, 0, 0, 0.07);
     border: none; }
     .yfm hr::before {
       content: '';
@@ -146,7 +148,7 @@
     .yfm dl dt {
       margin-bottom: 5px;
       font-size: 1em;
-      font-weight: 700;
+      font-weight: 500;
       font-style: italic; }
     .yfm dl dd {
       margin-bottom: 15px;
@@ -185,8 +187,8 @@
     margin-top: 15px; }
   .yfm code {
     padding: 0.1em 0.4em 0.15em;
-    background-color: #f7fbff;
-    border: 1px solid #dce6f0;
+    background-color: rgba(2, 123, 243, 0.08);
+    border: 1px solid #dcedfd;
     border-radius: 4px;
     font-size: 0.875em;
     white-space: nowrap; }
@@ -205,16 +207,16 @@
     padding: 15px;
     overflow: auto;
     border-radius: 10px;
-    border: 1px solid #dce6f0;
-    background-color: #f7fbff;
+    border: 1px solid #dcedfd;
+    background-color: rgba(2, 123, 243, 0.08);
     white-space: pre; }
 
 .yfm-note {
   max-width: 1296px;
   margin: 20px 0;
   padding: 20px 20px 20px 64px;
-  background-color: #fff;
-  border: 1px solid #e7e7e7;
+  background-color: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.07);
   border-radius: 10px; }
   .yfm-note > p {
     margin: 0 0 10px 0; }
@@ -234,10 +236,6 @@
   .yfm-note.yfm-accent-tip > p:first-child::before {
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(86,189,103)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
   .yfm-note.yfm-accent-alert > p:first-child::before {
-    content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(255,70,69)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
-  .yfm-note.yfm-accent-important > p:first-child::before {
-    content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(255,70,69)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
-  .yfm-note.yfm-accent-error > p:first-child::before {
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(255,70,69)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
   .yfm-note.yfm-accent-warning > p:first-child::before {
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(241,149,24)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
@@ -270,7 +268,7 @@
 .yfm .yfm-tab-list {
   display: flex;
   margin-bottom: 15px;
-  border-bottom: 1px solid #e7e7e7; }
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07); }
 
 .yfm .yfm-tab {
   margin-bottom: -1px;
@@ -287,9 +285,9 @@
   .yfm .yfm-tab:last-child {
     margin-right: 0; }
   .yfm .yfm-tab:hover, .yfm .yfm-tab:active {
-    color: #d00; }
+    color: #004080; }
   .yfm .yfm-tab.active {
-    border-bottom-color: #d00; }
+    border-bottom-color: #027bf3; }
 
 .yfm .yfm-tab-panel {
   display: none; }
@@ -304,7 +302,7 @@
   display: block;
   overflow-x: auto;
   padding: 15px;
-  background: #f7fbff;
+  background: rgba(2, 123, 243, 0.08);
   background: var(--yfm-color-hljs-background); }
 
 .yfm .hljs,
@@ -383,7 +381,8 @@
   position: absolute;
   cursor: pointer;
   top: 16px;
-  right: 16px; }
+  right: 16px;
+  z-index: 1; }
 
 @media print {
   .tab-list {

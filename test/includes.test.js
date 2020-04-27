@@ -1,4 +1,3 @@
-
 const {dirname} = require('path');
 
 const includes = require('../lib/plugins/includes');

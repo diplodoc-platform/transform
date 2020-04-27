@@ -1,5 +1,3 @@
-
-
 const tabs = require('../lib/plugins/tabs');
 const {callPlugin, tokenize} = require('./utils');
 const {base} = require('./data/tabs');
