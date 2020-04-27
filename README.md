@@ -5,28 +5,9 @@
 
 [Описание синтаксиса YFM](./DOCS.md)
 
-## Исходники
-### Установка
-```bash
-git clone git@github.yandex-team.ru:data-ui/yfm.git
-cd yfm
-npm install
-```
+## Использование
 
-При добавлении изменений в файлы из директории src перед обновлением версии пакета нужно выполнить
-```bash
-npm run dist
-```
-
-## npm-пакет
-### Установка
-```bash
-npm install yfm-transform
-```
-
-### Использование
-
-#### Параметры
+### Параметры
 
 Имя | Описание | Тип | Значение по-умолчанию
 :--- | :--- | :--- | :---
@@ -38,7 +19,7 @@ allowHTML | Разрешено ли использование HTML | bool | fal
 linkify | Делать ли ссылками ссылкоподобные строки | bool | false
 breaks | Переносить ли строки по символу перевода каретки | bool | true
 
-#### Подключение и вызов
+### Подключение и вызов
 
 ```js
 const fs = require('fs');
@@ -50,7 +31,7 @@ const vars = { user: { name: 'Alice' } };
 const {result: {html, meta}, logs} = transform(content, {vars});
 ```
 
-#### Плагины
+### Плагины
 
 Вы можете использовать произвольный набор плагинов, как предоставленные этим пакетом, так и любые [markdown-it плагины](https://www.npmjs.com/search?q=keywords:markdown-it-plugin)
 
@@ -66,7 +47,7 @@ const vars = { user: { name: 'Alice' } };
 const {result: {html, meta}, logs} = transform(content, {vars, plugins: [cut, sup, video]});
 ```
 
-##### Предоставляемые плагины
+#### Предоставляемые плагины
 
 Имя | Описание | Параметры
 :--- | :--- | :---
@@ -82,6 +63,19 @@ tabs | [Табы](./DOCS.md#tabs) | -
 Набор плагинов подключаемый по умолчанию: attrs, meta, deflist, cut, alerts, anchors, tabs, code, imsize, sup.
 
 Все плагины принимают опциональным параметром path путь до файла, который будет добавлен в лог ошибок.
+
+## Исходники
+### Установка
+```bash
+git clone git@github.yandex-team.ru:data-ui/yfm.git
+cd yfm
+npm install
+```
+
+При добавлении изменений в файлы из директории src перед обновлением версии пакета нужно выполнить
+```bash
+npm run dist
+```
 
 ## License
 
