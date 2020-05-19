@@ -1,9 +1,20 @@
 [![build status](https://teamcity.yandex-team.ru/app/rest/builds/buildType:DataUI_Cloud_Yfm_Publish/statusIcon.svg)](https://teamcity.yandex-team.ru/viewType.html?buildTypeId=DataUI_Cloud_Yfm_Publish)
 [![oko health](https://badger.yandex-team.ru/oko/repo/data-ui/yfm/health.svg)](https://oko.yandex-team.ru/repo/data-ui/yfm)
 
-Трансформер YFM (Yandex Flavored Markdown) -> HTML
+Простой трансформер текста на YFM (Yandex Flavored Markdown) в HTML.
 
-[Описание синтаксиса YFM](./DOCS.md)
+## Yandex Flavored Markdown
+
+Yandex Flavored Markdown (YFM) является диалектом Markdown, который используется сейчас для
+[документации Яндекс.Облака](https://cloud.yandex.ru/docs), [контента сайта Я.Облака](https://cloud.yandex.ru) и в
+различных внутренних проектах Яндекса.
+
+Синтаксис базируется на CommonMark Spec, расширяя его дополнительными возможностями. В том числе, для создания
+полноценного сложного документационного проекта, такого как документация Яндекс.Облака.
+
+Для сборки своего документационного проекта на YFM вы можете использовать пакет [yfm-docs](https://www.npmjs.com/package/@yfm/docs).
+
+[Более подробное описание синтаксиса YFM](./DOCS.md)
 
 ## Использование
 
@@ -22,6 +33,9 @@ breaks | Переносить ли строки по символу перево
 conditionsInCode | Выполнять ли условия в блоках кода | bool | false
 
 ### Подключение и вызов
+
+Трансформер возвращает результат преобразования и лог, разделенный по типу сообщения: ошибки, предупреждения и информационные.
+Вы можете обработать сообщения об ошибках и предупреждениях исходя из необходимого вам уровня строгости.
 
 ```js
 const fs = require('fs');
@@ -83,14 +97,14 @@ const {result: {html, meta}, logs} = transform(content, {highlightLangs});
 
 ## Исходники
 ### Установка
-```bash
+```shell script
 git clone git@github.yandex-team.ru:data-ui/yfm.git
 cd yfm
 npm install
 ```
 
 При добавлении изменений в файлы из директории src перед обновлением версии пакета нужно выполнить
-```bash
+```shell script
 npm run dist
 ```
 
