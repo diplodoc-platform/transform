@@ -13,6 +13,7 @@
 :--- | :--- | :--- | :---
 vars | Переменные | Object | {}
 plugins | Используемые плагины | function[] | alerts, attrs, anchors, code, cut, deflist, imsize, meta, sup, tabs, titles
+highlightLangs | Дополнительные языки для подсветки |  {'lang': function} | {}
 extractTitle | Вернуть первый заголовок первого уровня в качестве заголовка всего документа | bool | false
 needTitle | Вернуть первый заголовок первого уровня не удалив его из контента | bool | false
 allowHTML | Разрешено ли использование HTML | bool | false
@@ -64,6 +65,21 @@ tabs | [Табы](./DOCS.md#tabs) | -
 Набор плагинов подключаемый по умолчанию: attrs, meta, deflist, cut, alerts, anchors, tabs, code, imsize, sup.
 
 Все плагины принимают опциональным параметром path путь до файла, который будет добавлен в лог ошибок.
+
+### Дополнительные языки для подсветки
+
+Трансформер YFM использует highlight.js для подсветки языков. Вы можете передать дополнительный набор языков,
+который будет зарегистрирован для использования. Набор языков представляет собой обьект, где ключ - это имя языка, 
+а значение - функция, определяющая язык. Смотрите [уже существующие языки](https://github.com/highlightjs/highlight.js/tree/master/src/languages).
+
+```js
+const transform = require('yfm-transform');
+const customLang = require('./custom-lang');
+
+const highlightLangs = { 'custom-lang': customLang };
+
+const {result: {html, meta}, logs} = transform(content, {highlightLangs});
+```
 
 ## Исходники
 ### Установка
