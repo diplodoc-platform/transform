@@ -49,4 +49,6 @@ const paragraph = (content) => [
 
 const tokenize = (lines = []) => md.parse(lines.join('\n'), {});
 
-module.exports = {callPlugin, paragraph, tokenize};
+const log = require('../lib/log');
+
+module.exports = {callPlugin, paragraph, tokenize, log};

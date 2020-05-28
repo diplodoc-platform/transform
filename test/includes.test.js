@@ -1,7 +1,7 @@
 const {dirname} = require('path');
 
 const includes = require('../lib/plugins/includes');
-const {callPlugin, tokenize} = require('./utils');
+const {callPlugin, tokenize, log} = require('./utils');
 const {title, notitle} = require('./data/includes');
 
 const callIncludesPlugin = callPlugin.bind(null, includes);
@@ -55,6 +55,7 @@ describe('Includes', () => {
             path: mocksPath,
             root: dirname(mocksPath),
             notFoundCb: cb,
+            log,
         });
 
         expect(cb.mock.calls[0][0]).toEqual('/mocks/fake.md');
