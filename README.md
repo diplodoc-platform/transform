@@ -96,5 +96,4 @@ npm run dist
 
 ## License
 
-Mozilla Public License
-Version 2.0
+MIT
