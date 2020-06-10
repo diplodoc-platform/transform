@@ -51,7 +51,7 @@
     "postcss-cli": "^7.1.0",
     "regenerator-runtime": "^0.13.1",
     "rollup": "^2.13.1",
-    "rollup-plugin-babel": "^4.3.2",
+    "rollup-plugin-babel": "^4.4.0",
     "uglify-js": "^3.9.4"
   },
   "husky": {
