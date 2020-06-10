@@ -1,12 +1,12 @@
 {
-  "name": "yfm-transform",
-  "version": "3.4.0",
-  "description": "Yandex Flavored Markdown utilities",
-  "author": "Data UI Team <data-ui@yandex-team.ru>",
-  "license": "UNLICENSED",
+  "name": "@yfm/transform",
+  "version": "0.0.1",
+  "description": "Yandex Flavored Markdown",
+  "author": "YFM Team <yfm-team@yandex.ru>",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.yandex-team.ru/data-ui/yfm"
+    "url": "https://github.com/yandex-cloud/yfm-transform"
   },
   "main": "lib/index.js",
   "files": [

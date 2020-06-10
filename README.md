@@ -1,6 +1,3 @@
-[![build status](https://teamcity.yandex-team.ru/app/rest/builds/buildType:DataUI_Cloud_Yfm_Publish/statusIcon.svg)](https://teamcity.yandex-team.ru/viewType.html?buildTypeId=DataUI_Cloud_Yfm_Publish)
-[![oko health](https://badger.yandex-team.ru/oko/repo/data-ui/yfm/health.svg)](https://oko.yandex-team.ru/repo/data-ui/yfm)
-
 Простой трансформер текста на YFM (Yandex Flavored Markdown) в HTML.
 
 ## Yandex Flavored Markdown
@@ -39,7 +36,7 @@ conditionsInCode | Выполнять ли условия в блоках код
 
 ```js
 const fs = require('fs');
-const transform = require('yfm-transform');
+const transform = require('@yfm/transform');
 
 const content = fs.readFileSync(filePath, 'utf');
 const vars = { user: { name: 'Alice' } };
@@ -53,8 +50,8 @@ const {result: {html, meta}, logs} = transform(content, {vars});
 
 ```js
 const fs = require('fs');
-const transform = require('yfm-transform');
-const {plugins: {cut, sup}} = require('yfm-transform');
+const transform = require('@yfm/transform');
+const {plugins: {cut, sup}} = require('@yfm/transform');
 const video = require('markdown-it-video');
 
 const content = fs.readFileSync(filePath, 'utf');
@@ -83,11 +80,11 @@ tabs | [Табы](./DOCS.md#tabs) | -
 ### Дополнительные языки для подсветки
 
 Трансформер YFM использует highlight.js для подсветки языков. Вы можете передать дополнительный набор языков,
-который будет зарегистрирован для использования. Набор языков представляет собой обьект, где ключ - это имя языка, 
+который будет зарегистрирован для использования. Набор языков представляет собой обьект, где ключ - это имя языка,
 а значение - функция, определяющая язык. Смотрите [уже существующие языки](https://github.com/highlightjs/highlight.js/tree/master/src/languages).
 
 ```js
-const transform = require('yfm-transform');
+const transform = require('@yfm/transform');
 const customLang = require('./custom-lang');
 
 const highlightLangs = { 'custom-lang': customLang };
@@ -98,8 +95,8 @@ const {result: {html, meta}, logs} = transform(content, {highlightLangs});
 ## Исходники
 ### Установка
 ```shell script
-git clone git@github.yandex-team.ru:data-ui/yfm.git
-cd yfm
+git clone git@github.com:yandex-cloud/yfm-transform.git
+cd yfm-transform
 npm install
 ```
 
