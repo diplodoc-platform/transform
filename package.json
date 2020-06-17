@@ -1,12 +1,12 @@
 {
-  "name": "@yfm/transform",
+  "name": "@doc-tools/transform",
   "version": "0.0.1",
-  "description": "Yandex Flavored Markdown",
+  "description": "Простой трансформер текста на Yandex Flavored Markdown в HTML",
   "author": "YFM Team <yfm-team@yandex.ru>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yandex-cloud/yfm-transform"
+    "url": "git+https://github.com/yandex-cloud/yfm-transform.git"
   },
   "main": "lib/index.js",
   "files": [
@@ -58,5 +58,15 @@
     "hooks": {
       "pre-commit": "npm run precommit"
     }
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/yandex-cloud/yfm-transform/issues"
+  },
+  "homepage": "https://github.com/yandex-cloud/yfm-transform#readme",
+  "keywords": [
+    "markdown",
+    "yandex",
+    "docs",
+    "yfm"
+  ]
 }
