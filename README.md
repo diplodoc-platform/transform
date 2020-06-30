@@ -1,3 +1,5 @@
+[![NPM version](https://img.shields.io/npm/v/@doc-tools/transform.svg?style=flat)](https://www.npmjs.org/package/@doc-tools/transform)
+
 Простой трансформер текста на YFM (Yandex Flavored Markdown) в HTML.
 
 ## Yandex Flavored Markdown
