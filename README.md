@@ -38,7 +38,7 @@ conditionsInCode | Выполнять ли условия в блоках код
 
 ```js
 const fs = require('fs');
-const transform = require('@yfm/transform');
+const transform = require('@doc-tools/transform');
 
 const content = fs.readFileSync(filePath, 'utf');
 const vars = { user: { name: 'Alice' } };
@@ -52,8 +52,8 @@ const {result: {html, meta}, logs} = transform(content, {vars});
 
 ```js
 const fs = require('fs');
-const transform = require('@yfm/transform');
-const {plugins: {cut, sup}} = require('@yfm/transform');
+const transform = require('@doc-tools/transform');
+const {plugins: {cut, sup}} = require('@doc-tools/transform');
 const video = require('markdown-it-video');
 
 const content = fs.readFileSync(filePath, 'utf');
@@ -86,7 +86,7 @@ tabs | [Табы](./DOCS.md#tabs) | -
 а значение - функция, определяющая язык. Смотрите [уже существующие языки](https://github.com/highlightjs/highlight.js/tree/master/src/languages).
 
 ```js
-const transform = require('@yfm/transform');
+const transform = require('@doc-tools/transform');
 const customLang = require('./custom-lang');
 
 const highlightLangs = { 'custom-lang': customLang };
