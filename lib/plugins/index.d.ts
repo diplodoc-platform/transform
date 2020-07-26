@@ -12,6 +12,7 @@ export interface Plugins {
     meta: Function;
     sup: Function;
     tabs: Function;
+    video: Function;
 }
 
 declare let plugins: Plugins;
