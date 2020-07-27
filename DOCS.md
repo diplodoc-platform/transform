@@ -23,6 +23,7 @@
 - [Переиспользование контента](#includes)
 - [Табы](#tabs)
 - [Каты](#cuts)
+- [Видео](#video)
 - [Переменные](#vars)
     - [Подстановки](#substitudes)
     - [Условные операторы](#conditions)
@@ -428,6 +429,19 @@ let a= 10;
 
 {% endcut %}
 ```
+
+## Видео <a name="video"></a>
+
+Вы можете вставлять в страницу видео с наиболее популярных платформ:
+
+```
+@[youtube](dQw4w9WgXcQ)
+@[vimeo](19706846)
+@[vine](etVpwB7uHlw)
+@[prezi](1kkxdtlp4241)
+```
+
+Больше подробностей на [странице плагина](https://www.npmjs.com/package/markdown-it-video).
 
 ## Переменные <a name="vars"></a>
 
