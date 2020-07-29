@@ -91,6 +91,10 @@ $codeBorder: 1px solid $codeBorderColor;
 
     }
 
+    img + small {
+        display: block;
+    }
+
     p,
     blockquote,
     ul,
