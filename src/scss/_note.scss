@@ -5,13 +5,15 @@ $tipColor: #56bd67;
 $warningColor: #f19518;
 $importantColor: #ff4645;
 
+$infoBackgroundColor: rgba(2, 123, 243, 0.08);
+$tipBackgroundColor: rgba(63, 201, 46, 0.1);
+$warningBackgroundColor: rgba(255, 136, 0, 0.15);
+$importantBackgroundColor: rgba(235, 50, 38, 0.08);
+
 .yfm-note {
     max-width: 1296px;
     margin: 20px 0;
     padding: 20px 20px 20px 64px;
-
-    background-color: $backgroundColor;
-    border: 1px solid $borderColor;
     border-radius: 10px;
 
     & > p {
@@ -49,6 +51,19 @@ $importantColor: #ff4645;
             $b: blue($color);
             $rgbColor: 'rgb(' + $r + ',' + $g + ',' + $b + ')';
             content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="' + $rgbColor + '"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E');
+        }
+    }
+
+    $backgroundColors: (
+        yfm-accent-info: $infoBackgroundColor,
+        yfm-accent-tip: $tipBackgroundColor,
+        yfm-accent-alert: $importantBackgroundColor,
+        yfm-accent-warning: $warningBackgroundColor
+    );
+
+    @each $type, $color in $backgroundColors {
+        &.#{$type} {
+            background: $color;
         }
     }
 }
