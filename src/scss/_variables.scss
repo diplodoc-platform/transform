@@ -5,8 +5,12 @@ $textColor: rgba(0, 0, 0, 0.7);
 $borderColor: rgba(0, 0, 0, 0.07);
 $backgroundColor: rgba(0, 0, 0, 0.02);
 
-$codeBorderColor: #dcedfd;
-$codeBackgroundColor: rgba(2, 123, 243, 0.08);
+$inlineCodeColor: rgba(59, 96, 128, 1);
+$inlineCodeBackgroundColor: rgba(107, 132, 153, 0.12);
+
+$codeBackgroundColor: rgba(107, 132, 153, 0.12);
+
+$tableRowBackgroundColor: rgba(0, 0, 0, 0.02);
 
 $linkColor: $accentColor;
 $linkHoverColor: #004080;
