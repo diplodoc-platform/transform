@@ -4,7 +4,7 @@
   line-height: 20px;
   word-wrap: break-word;
   color: rgba(0, 0, 0, 0.7);
-  --yfm-color-hljs-background: rgba(2, 123, 243, 0.08);
+  --yfm-color-hljs-background: rgba(107, 132, 153, 0.12);
   --yfm-color-hljs-subst: #444;
   --yfm-color-hljs-comment: #888888;
   --yfm-color-hljs-deletion: #880000;
@@ -60,6 +60,8 @@
       padding-left: 20px; }
     .yfm img[align=left] {
       padding-right: 20px; }
+  .yfm img + small {
+    display: block; }
   .yfm p,
   .yfm blockquote,
   .yfm ul,
@@ -73,7 +75,7 @@
   .yfm code,
   .yfm kbd,
   .yfm pre {
-    font-family: monospace, monospace;
+    font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Ubuntu Mono', 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', 'Courier', monospace;
     font-size: 1em;
     font-feature-settings: normal; }
   .yfm input {
@@ -99,12 +101,8 @@
     border-collapse: collapse;
     border-spacing: 0;
     background: #ffffff; }
-    .yfm table thead {
-      background: rgba(0, 0, 0, 0.02); }
-    .yfm table tr {
-      border-bottom: 1px solid rgba(0, 0, 0, 0.07); }
-    .yfm table tr:last-child {
-      border-bottom: none; }
+    .yfm table thead, .yfm table tr:nth-child(2n) {
+      background-color: rgba(0, 0, 0, 0.02); }
     .yfm table th, .yfm table td {
       padding: 10px 15px;
       white-space: nowrap;
@@ -186,12 +184,13 @@
   .yfm li blockquote {
     margin-top: 15px; }
   .yfm code {
+    display: inline-block;
     padding: 0.1em 0.4em 0.15em;
-    background-color: rgba(2, 123, 243, 0.08);
-    border: 1px solid #dcedfd;
+    background-color: rgba(107, 132, 153, 0.12);
     border-radius: 4px;
     font-size: 0.875em;
-    white-space: nowrap; }
+    white-space: normal;
+    color: #3b6080; }
   .yfm pre {
     word-wrap: normal; }
   .yfm pre * code {
@@ -201,22 +200,20 @@
     overflow: visible;
     word-wrap: normal;
     background-color: transparent;
-    border: 0; }
+    border: 0;
+    color: rgba(0, 0, 0, 0.7); }
   .yfm pre > code {
     display: block;
-    padding: 15px;
+    padding: 16px;
     overflow: auto;
-    border-radius: 10px;
-    border: 1px solid #dcedfd;
-    background-color: rgba(2, 123, 243, 0.08);
+    background-color: rgba(107, 132, 153, 0.12);
+    color: rgba(0, 0, 0, 0.7);
     white-space: pre; }
 
 .yfm-note {
   max-width: 1296px;
   margin: 20px 0;
   padding: 20px 20px 20px 64px;
-  background-color: rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(0, 0, 0, 0.07);
   border-radius: 10px; }
   .yfm-note > p {
     margin: 0 0 10px 0; }
@@ -239,6 +236,14 @@
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(255,70,69)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
   .yfm-note.yfm-accent-warning > p:first-child::before {
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(241,149,24)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
+  .yfm-note.yfm-accent-info {
+    background: rgba(2, 123, 243, 0.08); }
+  .yfm-note.yfm-accent-tip {
+    background: rgba(63, 201, 46, 0.1); }
+  .yfm-note.yfm-accent-alert {
+    background: rgba(235, 50, 38, 0.08); }
+  .yfm-note.yfm-accent-warning {
+    background: rgba(255, 136, 0, 0.15); }
 
 .yfm h1 .yfm-anchor, .yfm h2 .yfm-anchor, .yfm h3 .yfm-anchor, .yfm h4 .yfm-anchor, .yfm h5 .yfm-anchor, .yfm h6 .yfm-anchor {
   display: inline-block;
@@ -301,8 +306,8 @@
 .yfm .hljs {
   display: block;
   overflow-x: auto;
-  padding: 15px;
-  background: rgba(2, 123, 243, 0.08);
+  padding: 16px;
+  background: rgba(107, 132, 153, 0.12);
   background: var(--yfm-color-hljs-background); }
 
 .yfm .hljs,
@@ -376,8 +381,14 @@
 
 .yfm-clipboard {
   position: relative; }
+  .yfm-clipboard:hover .yfm-clipboard-button {
+    display: block; }
+  .yfm-clipboard > pre {
+    border-radius: 10px;
+    overflow: hidden; }
 
 .yfm-clipboard-button {
+  display: none;
   position: absolute;
   cursor: pointer;
   top: 16px;

@@ -1,7 +1,5 @@
 @import 'variables';
 
-$codeBorder: 1px solid $codeBorderColor;
-
 .yfm {
     font-family: 'YS Text', 'Segoe UI', Arial, Helvetica, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
     font-size: 15px;
@@ -91,6 +89,10 @@ $codeBorder: 1px solid $codeBorderColor;
 
     }
 
+    img + small {
+        display: block;
+    }
+
     p,
     blockquote,
     ul,
@@ -110,7 +112,7 @@ $codeBorder: 1px solid $codeBorderColor;
     code,
     kbd,
     pre {
-        font-family: monospace, monospace;
+        font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Ubuntu Mono', 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', 'Courier', monospace;
         font-size: 1em;
         font-feature-settings: normal;
     }
@@ -146,16 +148,8 @@ $codeBorder: 1px solid $codeBorderColor;
         border-spacing: 0;
         background: $baseColor;
 
-        thead {
-            background: $backgroundColor;
-        }
-
-        tr {
-            border-bottom: 1px solid $borderColor;
-        }
-
-        tr:last-child {
-            border-bottom: none;
+        thead, tr:nth-child(2n) {
+            background-color: $tableRowBackgroundColor;
         }
 
         th, td {
@@ -289,12 +283,13 @@ $codeBorder: 1px solid $codeBorderColor;
     }
 
     code {
+        display: inline-block;
         padding: 0.1em 0.4em 0.15em;
-        background-color: $codeBackgroundColor;
-        border: $codeBorder;
+        background-color: $inlineCodeBackgroundColor;
         border-radius: 4px;
         font-size: 0.875em;
-        white-space: nowrap;
+        white-space: normal;
+        color: $inlineCodeColor;
     }
 
     pre {
@@ -309,16 +304,16 @@ $codeBorder: 1px solid $codeBorderColor;
         word-wrap: normal;
         background-color: transparent;
         border: 0;
+        color: $textColor;
     }
 
     pre > code {
         display: block;
-        padding: 15px;
+        padding: 16px;
         overflow: auto;
 
-        border-radius: 10px;
-        border: $codeBorder;
         background-color: $codeBackgroundColor;
+        color: $textColor;
 
         white-space: pre;
     }

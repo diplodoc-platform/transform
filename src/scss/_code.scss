@@ -1,9 +1,19 @@
 .yfm {
     &-clipboard {
         position: relative;
+
+        &:hover &-button {
+            display: block;
+        }
+
+        & > pre {
+            border-radius: 10px;
+            overflow: hidden;
+        }
     }
 
     &-clipboard-button {
+        display: none;
         position: absolute;
         cursor: pointer;
         top: 16px;
