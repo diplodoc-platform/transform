@@ -283,7 +283,6 @@
     }
 
     code {
-        display: inline-block;
         padding: 0.1em 0.4em 0.15em;
         background-color: $inlineCodeBackgroundColor;
         border-radius: 4px;
@@ -294,6 +293,10 @@
 
     pre {
         word-wrap: normal;
+    }
+
+    table code {
+        white-space: nowrap;
     }
 
     pre * code {
