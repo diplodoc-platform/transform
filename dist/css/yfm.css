@@ -184,7 +184,6 @@
   .yfm li blockquote {
     margin-top: 15px; }
   .yfm code {
-    display: inline-block;
     padding: 0.1em 0.4em 0.15em;
     background-color: rgba(107, 132, 153, 0.12);
     border-radius: 4px;
@@ -193,6 +192,8 @@
     color: #3b6080; }
   .yfm pre {
     word-wrap: normal; }
+  .yfm table code {
+    white-space: nowrap; }
   .yfm pre * code {
     display: inline;
     padding: 0;
