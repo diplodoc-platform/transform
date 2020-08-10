@@ -1,498 +1,480 @@
-# Синтаксис Yandex Flavored Markdown (YFM)
+**english** | [русский](https://github.com/yandex-cloud/yfm-transform/blob/master/DOCS.ru.md)
+- - -
 
-## Содержание
+# Yandex Flavored Markdown (YFM) syntax
 
-- [Заголовки](#headers)
-- [Начертания](#tracings)
-- [Списки](#lists)
-    - [Неупорядоченный список](#unordered_list)
-    - [Упорядоченный список](#ordered_list)
-- [Таблицы](#tabels)
-- [Ссылки](#links)
-- [Вставка кода](#code)
-    - [Фрагмент кода внутри текста](#inline-code)
-    - [Фрагмент кода отдельным блоком](#codeblock)
-- [Изображения](#images)
-    - [Прямая вставка](#direct_insert)
-    - [Вставка через ссылку](#link_insert)
-- [Заметки](#notes)
-    - [Примечание](#info)
-    - [Совет](#tip)
-    - [Важно](#warning)
-    - [Внимание](#alert)
-- [Переиспользование контента](#includes)
-- [Табы](#tabs)
-- [Каты](#cuts)
-- [Видео](#video)
-- [Переменные](#vars)
-    - [Подстановки](#substitudes)
-    - [Условные операторы](#conditions)
-- [Метаданные](#meta)
+## Table of contents
 
-## Заголовки <a name="headers"></a>
+- [Headers](#headers)
+- [Styles](#tracings)
+- [Lists](#lists)
+    - [Unordered list](#unordered_list)
+    - [Ordered list](#ordered_list)
+- [Tables](#tabels)
+- [Links](#links)
+- [Code inserts](#code)
+    - [Inline code](#inline-code)
+    - [Code block](#codeblock)
+- [Images](#images)
+    - [Direct insert](#direct_insert)
+    - [Link insert](#link_insert)
+- [Notes](#notes)
+    - [Comment](#info)
+    - [Tip](#tip)
+    - [Warning](#warning)
+    - [Alert](#alert)
+- [Content reuse](#includes)
+- [Tabs](#tabs)
+- [Cuts](#cuts)
+- [Variables](#vars)
+    - [Substitutions](#substitudes)
+    - [Conditional operators](#conditions)
+- [Metadata](#meta)
 
-Чтобы создать заголовок, используйте символ (#), например:
+## Headers <a name="headers"></a>
 
-```markdown
-# Заголовок h1
-## Заголовок h2
-### Заголовок h3
-#### Заголовок h4
-```
-
-В YFM используется 4 уровня заголовков. Заголовок страницы должен быть первого уровня. Для заголовков подразделов можно использовать второй, третий и четвертый уровни.
-
-**Важно!** Нельзя пропускать вложенность заголовков.
-
-### Якоря
-
-Чтобы на заголовки документа можно было сослаться, во время сборки для каждого заголовка формируется якорь. По умолчанию якорь — это текст заголовка, записанный в латинской транслитерации. Такой якорь изменится, если вы измените текст заголовка.
-
-Чтобы якорь не изменялся, укажите его в явном виде после заголовка. Вы можете указать несколько якорей одновременно:
-```markdown
-## Заголовок h2 {#custom} {#header} {#custom-header}
-``` 
-
-## Начертания <a name="tracings"></a>
-
-Чтобы задать для текста **полужирное** начертание, заключите его в двойные звездочки (`*`):
+To create a header, use the (#) character, for example:
 
 ```markdown
-Этот текст выделен **полужирным шрифтом**.
+# H1 header
+## H2 header
+### H3 header
+#### H4 header
 ```
 
-Чтобы задать для текста _курсивное_ начертание, заключите его в знаки подчеркивания:
+YFM uses four levels of headers. A page header must be the first level. You can use the second, third, and fourth levels for subsection headers.
+
+**Important!** Make sure you maintain the nesting structure of headers.
+
+## Styles <a name="tracings"></a>
+
+To make text **bold**, wrap it in double asterisks (`*`):
 
 ```markdown
-Этот текст выделен _курсивом_.
+This text will be **bold**.
 ```
 
-Чтобы задать для текста _**полужирное и курсивное**_ начертание, заключите
-его одновременно в двойные звездочки и знаки подчеркивания:
+To make text _italic_, wrap it in underscores:
 
 ```markdown
-Этот текст _**жирный и наклонный**_.
-Этот текст **_жирный и наклонный_**.
+This text will be _italic_.
 ```
 
-Чтобы ввести символы в <sup>верхнем индексе</sup> их нужно обернуть в ^:
+To make text _**bold and italic**_, use both double asterisks and underscores:
 
 ```markdown
-Этот текст в ^верхнем индексе^.
+This text will be _**bold and italic**_.
+This text will be **_bold and italic_**.
 ```
 
-## Списки <a name="lists"></a>
-
-### Неупорядоченный список <a name="unordered_list"></a>
-
-Чтобы оформить неупорядоченный маркированный список, используйте символы `*`, `-` или `+`.
-
-Например, разметка:
+To format characters in <sup>superscript</sup>, wrap them in ^:
 
 ```markdown
-- Элемент 1
-- Элемент 2
-- Элемент 3
+This text is in ^superscript^.
 ```
 
-будет отображаться как:
+## Lists <a name="lists"></a>
 
-- Элемент 1
-- Элемент 2
-- Элемент 3
+### Unordered list <a name="unordered_list"></a>
 
-Чтобы оформить вложенный маркированный список, добавьте отступ для элементов дочернего списка. Допустимый размер отступа — от двух до пяти пробелов. Рекомендуемый размер отступа — три пробела.
+To make an unordered bulleted list, use such characters as `*`, `-`, or `+`.
 
-Например, разметка:
+For example, markdown like:
 
 ```markdown
-- Элемент 1
-   - Элемент A
-   - Элемент B
-- Элемент 2
+- Element 1
+- Element 2
+- Element 3
 ```
 
-будет отображаться как:
+will be displayed as:
 
-- Элемент 1
-   - Элемент A
-   - Элемент B
-- Элемент 2
+- Element 1
+- Element 2
+- Element 3
 
-### Упорядоченный список <a name="ordered_list"></a>
+To make a nested bulleted list, add an indent for items in a child list. The indent can be from two to five spaces. We recommend indenting three spaces.
 
-Чтобы оформить упорядоченный нумерованый список, используйте цифры с символом `.` или `)`. Рекомендованный формат разметки: цифра `1` и символ `.`.
-
-Например, разметка:
-
-```
-1. Первый пункт
-1. Второй пункт
-1. Третий пункт
-```
-
-будет отображаться как:
-
-1. Первый пункт
-2. Второй пункт
-3. Третий пункт
-
-Чтобы оформить вложенный упорядоченный список, добавьте отступ для элементов дочернего списка. Допустимый размер отступа — от двух до пяти пробелов. Рекомендуемый размер отступа — три пробела.
-
-Например, разметка:
-
-```
-1. Первый пункт
-    1. Вложенный пункт
-    1. Вложенный пункт
-1. Второй пункт
-```
-
-будет отображаться как:
-
-1. Первый пункт
-   1. Вложенный пункт
-   1. Вложенный пункт
-1. Второй пункт
-
-
-## Таблицы <a name="tabels"></a>
-
-Таблицы состоят из одной строки с заголовками, разделительной строки и строк с данными.
-
-Каждая строка таблицы состоит из ячеек, отделенных друг от друга символами `|`.
-
-В ячейках разделительной строки используются только символы `-` и `:`. Символ `:` ставится в начале, в конце или с обеих сторон содержимого ячейки разделительной строки, чтобы обозначить выравнивание текста в соответствующем столбце по левой стороне, по правкой стороне или по центру.
-
-Таблицу нужно отделять от предшествующего и последующего текста пустыми строками.
-
-Например, разметка:
+For example, markdown like:
 
 ```markdown
-Колонка по левому краю | Колонка по правому краю | Колонка по центру
+- Element 1
+   - Element A
+   - Element B
+- Element 2
+```
+
+will be displayed as:
+
+- Element 1
+   - Element A
+   - Element B
+- Element 2
+
+### Ordered list <a name="ordered_list"></a>
+
+To make an ordered numbered list, use numbers with the `.` or `)` character. The recommended markdown format is `1` and `.`.
+
+For example, markdown like:
+
+```
+1. First item
+1. Second item
+1. Third item
+```
+
+will be displayed as:
+
+1. First item
+2. Second item
+3. Third item
+
+To make a nested ordered list, add an indent for child list items. The indent can be from two to five spaces. We recommend indenting three spaces.
+
+For example, markdown like:
+
+```
+1. First item
+    1. Nested item
+    1. Nested item
+1. Second item
+```
+
+will be displayed as:
+
+1. First item
+   1. Nested item
+   1. Nested item
+1. Second item
+
+## Tables <a name="tabels"></a>
+
+Tables consist of a single row with headers, a separator row, and rows with data.
+
+Each row in a table consists of cells that are separated from each other by `|` characters.
+
+The cells of the separator row only allow the `-` and `:` characters. The colon (`:`) is used at the beginning, end, or on both sides of the cell content of the separator row to indicate left, right, or center alignment of text in the corresponding column.
+
+A table should be separated from the surrounding text with empty lines.
+
+For example, markdown like:
+
+```markdown
+Left column | Right column | Center column
 :--- | ---: | :---:
-Текст | Текст | Текст
+Text | Text | Text
 ```
 
-будет отображаться как:
+will be displayed as:
 
-Колонка по левому краю | Колонка по правому краю | Колонка по центру
-:--- | ---: | :---:
-Текст | Текст | Текст
+| Left column | Right column | Center column |
+| :--- | ---: | :---: |
+| Text | Text | Text |
 
-## Ссылки <a name="links"></a>
+## Links <a name="links"></a>
 
-Ссылки имеют вид  `[текст](ссылка)`, где:
+Links are presented in the format `[text](link)`, where:
 
-  * `[текст]` — текст ссылки.
-  * `(ссылка)` — URL или путь до файла, на который делается ссылка.
+  * `[text]` is the link text.
+  * `(link)` is the URL or path to the file referenced.
 
-Например, разметка:
+For example, markdown like:
+
 ```markdown
-[ссылка на README.md](README.md)
+[link to README.md](README.md)
 ```
 
-будет отображаться так:
+will be displayed as:
 
-[ссылка на README.md](README.md)
+[link to README.md](README.md)
 
-### Ссылки с автоматической подстановкой текста из заголовка <a name="linkTitle"></a>
+### Links with automatic text substitution from the header <a name="linkTitle"></a>
 
-В YFM вы можете добавлять ссылки на другие md-файлы без указания текста ссылки. Он подставится автоматически из заголовка указанного файла.
+YFM lets you add links to other MD files without specifying the link text. It's substituted automatically from the header of the specified file.
 
-Например, ссылка:
+For example, a link like:
 
 ```markdown
 [{#T}](README.md)
 ```
 
-будет отображаться так:
+will be displayed as:
 
 [Yandex Flavored Markdown](README.md)
 
-## Вставка кода <a name="code"></a>
+## Code inserts <a name="code"></a>
 
-Вы можете встроить фрагмент кода в текст абзаца или вынести его в отдельный блок.
+You can insert a piece of code in the text of a paragraph or put it in a separate block.
 
-### <a name="inline-code"></a>Фрагмент кода внутри текста
+### <a name="inline-code"></a>Inline code
 
-Чтобы вставить фрагмент кода в текст, используйте символ <code>`</code>.
+To insert a code fragment into text, use the <code>`</code> character.
 
-Например, разметка:
+For example, markdown like:
 
 ```markdown
-Предложение с `фрагментом кода`.
+A sentence with a `code snippet`.
 ```
 
-будет отображаться так:
+will be displayed as:
 
-Предложение с `фрагментом кода`.
+A sentence with a `code snippet`.
 
-### <a name="codeblock"></a>Фрагмент кода отдельным блоком
+### <a name="codeblock"></a>Code block
 
-Чтобы оформить фрагмент кода как отдельный блок, используйте утроенный символ <code>`</code>. Для подсветки синтаксиса укажите язык, на котором написан код.
+To format a code fragment as a separate block, place it in triple <code>`</code>. To highlight the syntax, specify the language that the code is written in.
 
-Например, разметка:
+For example, markdown like:
 
     ```js
     let a= 10;
     ```
 
-будет отобраться как фрагмент кода с подсветкой:
+will be displayed as a highlighted code fragment:
 
 ```js
 let a= 10;
 ```
 
-## Изображения <a name="images"></a>
+## Images <a name="images"></a>
 
-### Прямая вставка <a name="direct_insert"></a>
+### Direct insert <a name="direct_insert"></a>
 
-Чтобы вставить изображение в документ, воспользуйтесь разметкой вида
+To insert an image in a document, use markdown like
 
 ```markdown
-![alt text](_assets/image.png "Текст подсказки" =100x200)
+![alt text](_assets/image.png "Hint text" =100x200)
 ```
 
-Здесь:
+Where:
 
-* `[alt text]` —  альтернативный текст изображения;
-*  `_assets/image.png` — путь до файла изображения;
+* `[alt text]` is the alternative text for the image.
 
-   **Важно!** изображения должны храниться в каталоге, имя которого начинается с символа `_`, иначе они будут удалены при сборке.
+* `_assets/image.png` is the path to the image file.
 
-* `"Текст подсказки"` — текст подсказки при наведении указателя на изображение;
-* `=100x200` — размер изображения в пикселях.
+   **Important!** Images should be stored in a directory whose name starts with `_`. Otherwise, they will be deleted when making a build.
 
-### Вставка через ссылку <a name="link_insert"></a>
+* `"Hint text"`: Text of a hint displayed when hovering over the image.
 
-Вы можете один раз объявить изображение в тексте документа, а затем вызывать его в тексте с помощью короткой сслки. Для этого:
+* `=100x200`: Image size in pixels.
 
-1. Объявите изображение:
+### Link insert <a name="link_insert"></a>
+
+You can declare an image in document text once and then invoke it in the text using a short link. To do this:
+
+1. Declare an image:
 
    ```markdown
-   [image]: _assets/image.png "Текст подсказки"
+   [image]: _assets/image.png "Hint text"
    ```
 
-1. Вставьте изображение с помощью разметки:
+1. Insert the image using markdown:
 
    ```markdown
    ![alt text][image]
    ```
 
-Такой способ может быть удобен, когда нужно вставить одно изображение несколько раз.
+This method can be useful when you need to insert the same image multiple times.
 
-## Заметки <a name="notes"></a>
+## Notes <a name="notes"></a>
 
-Заметка — это визуально выделенный блок, который позволяет привлечь внимание к определенному содержимому.
+A note is a visually highlighted block that lets you draw attention to content.
 
-Существует 4 типа заметок: примечание (info), совет (tip), важно (warning) и внимание (alert).
+There are four types of notes: info, tip, warning, and alert.
 
-Не следует часто использовать блоки заметок, так как они могут отвлекать пользователя от основного содержимого.
-Также, хотя эти элементы могут содержать YFM, лучше не перегружать их, делая простыми и понятными.
+Don't overuse note blocks, as they may distract the user from the main content.
+Although these elements may contain YFM, it's better not to overload them. Make them simple and clear.
 
-### Примечание <a name="info"></a>
+### Comment <a name="info"></a>
 
 ```markdown
 {% note info %}
 
-Это примечание.
+This is info.
 
 {% endnote %}
 ```
 
 ![note-info](docsAssets/note.jpg)
 
-### Совет <a name="tip"></a>
+### Tip <a name="tip"></a>
 
 ```markdown
 {% note tip %}
 
-Это совет.
+This is a tip.
 
 {% endnote %}
 ```
 
 ![note-tip](docsAssets/note-tip.jpg)
 
-### Важно <a name="warning"></a>
+### Warning <a name="warning"></a>
 
 ```markdown
 {% note warning %}
 
-Это важная информация.
+This is a warning.
 
 {% endnote %}
 ```
 
 ![note-warning](docsAssets/note-warning.jpg)
 
-### Внимание <a name="alert"></a>
+### Alert <a name="alert"></a>
 
 ```markdown
 {% note alert %}
 
-Это предупреждение.
+This is an alert.
 
 {% endnote %}
 ```
 
 ![note-alert](docsAssets/note-alert.jpg)
 
-### Свой заголовок <a name="error"></a>
+### Custom header <a name="error"></a>
 
-По умолчанию заметки имеют стандартный заголовок, но его можно переопределить:
+By default, a note has a standard header, but you can override it:
 
 ```markdown
 {% note info "Custom title" %}
 
-Это важная информация.
+This is a warning.
 
 {% endnote %}
 ```
 
-Если в кавычках ничего не указывать, у заметки не будет никакого заголовка:
+If there is nothing inside the quotes, the note will not have a header:
 
 ```markdown
 {% note info "" %}
 
-Это важная информация.
+This is a warning.
 
 {% endnote %}
 ```
 
-## Переиспользование контента <a name="includes"></a>
+## Reusing content <a name="includes"></a>
 
-Вы можете вынести повторяющийся контент в отдельный файл и вставлять его в документ с помощью элемента **{% include %}**. Часто такой подход оказывается удобнне, чем "копировать-вставить".
+You can store duplicate content in a separate file and insert it into a document using the **{% include %}** element. This is often more convenient than copying and pasting it.
 
-Чтобы  использовать один и тот же контент в нескольких местах:
+To use the same content in multiple places:
 
-1. Сохраните такой текст в отдельном md-файле.
+1. Save this text in a separate MD file.
 
-   **Важно!** Такие файлы должны храниться в каталоге, имя которого начинается с символа `_`, например `_includes`. Если этого не сделать, файлы будут удалены при сборке.
+   **Important!** Make sure these files are stored in a directory whose name starts with `_` (for example, `_includes`). Otherwise, the files are deleted when making a build.
 
-1. Вставьте в документ ссылку на файл:
+1. Insert a link to the file in the document:
 
    ```markdown
    {% include notitle [Описание](_includes/file.md) %}
    ```
 
-   Здесь:
-   * `notitle` — если параметр указан, заголовок файла будет не будет вставлен в текст.
-   * `[Описание]` — описание файла. Не влияет на сборку, нужно только для удобства рефакторинга документа.
-   * `(_includes/file.md)` — путь до файла.
+   Where:
+   * `notitle`: If the parameter is specified, the file header isn't inserted into the text.
+   * `[Description]`: File description. Doesn't affect the build, used only for document refactoring.
+   * `(_includes/file.md)`: File path.
 
-В результате при сборке контент файла будет вставлен в документ. Если в файле есть относительные ссылки на другие документы или изображения, они будут перестроены.
+As a result, the file content is inserted into the document while making the build. If the file has relative links to other documents or images, they will be rebuilt.
 
-## Вкладки <a name="tabs"></a>
+## Tabs <a name="tabs"></a>
 
-Вы можете оформить текст в виде вкладок. Это может быть полезно, например, чтобы разделить схожий контент и не перегружать страницу текстом:
+You can format text as tabs. This can be useful, for example, to distinguish similar content and not to overload the page with text:
 
 ![tabs](docsAssets/tabs.jpg)
 
-Чтобы создать вкладки используйте разметку вида:
+To create a tab, use markdown like:
 
 ```markdown
 {% list tabs %}
 
-- Название таба1
+- Name of tab1
 
-  Контент таба1.
+  Content of tab1.
 
-  - Можно исполдьзовать списки.
-  - И **другую** разметку.
+  - You can use lists.
+  - And **other** markdown.
 
-- Название таба2
+- Name of tab2
 
-  Контент таба2.
+  Content of tab2.
 
 {% endlist %}
 ```
 
-**Важно!** При использовании вкладок обязательно оставлять пустые строки:
+**Important!** When using tabs, be sure to leave empty lines:
 
-* Перед и после строк `{% list tabs %}` и `{% endlist %}`.
-* Между текстом одной вкладки и заголовком следующей вкладки.
+* Before and after lines `{% list tabs %}` and `{% endlist %}`.
+* Between the text of one tab and the title of the next tab.
 
-Внутри вкладок можно использовать YFM-разметку: списки, таблицы, изображения, код и т.д.
+You can use YFM inside tabs: lists, tables, images, code, and so on.
 
-## Каты <a name="cuts"></a>
+## Cuts <a name="cuts"></a>
 
-Каты позволяют сворачивать контент ("убирать под кат"). Это можно использовать в длинных листингах, примерах кода и тд. Внутри катов можно использовать YFM.
+Cuts let you hide content ("cut it"). You can use them in long listings, code examples, and so on. You can use YFM inside a cut.
 
-Чтобы создать кат используйте разметку вида:
+To make a cut, use markdown like:
 
 ```markdown
 {% cut "Заголовок ката" %}
 
-Контент который мы хотим скрыть
+Content we want to hide
 
 {% endcut %}
 ```
 
-## Видео <a name="video"></a>
+## Variables <a name="vars"></a>
 
-Вы можете вставлять в страницу видео с наиболее популярных платформ:
+In YFM, you can declare and use variables. When making a build, variables are substituted into the text of a document or used to calculate conditions. This is useful, for example, when building the documentation for different versions of a service from the same source files.
 
-```
-@[youtube](dQw4w9WgXcQ)
-@[vimeo](19706846)
-@[vine](etVpwB7uHlw)
-@[prezi](1kkxdtlp4241)
-```
+### Substitutions <a name="substitudes"></a>
 
-Больше подробностей на [странице плагина](https://www.npmjs.com/package/markdown-it-video).
+To declare and use variables in a document:
 
-## Переменные <a name="vars"></a>
+1. In the document root directory, create a file named `presets.yaml`.
 
-В YFM вы можете объявлять и использовать переменные. При сборке переменные будут подставлены в текст документации или использованы для вычисления условий. Это удобно, например, для сборки документации разных версий сервиса из одних и тех же исходных файлов.
-
-### Подстановки <a name="substitudes"></a>
-
-Чтобы объявить и использовать переменные в документе:
-
-1. Создайте в корневом каталоге документа файл `presets.yaml`.
-1. Объявите переменные в файле `presets.yaml` в формате:
+1. Declare the variables in `presets.yaml` in the following format:
 
    ```
    default:
-     variable-name-1: значение переменной 1
-     variable-name-2: значение переменной 2
+     variable-name-1: value of variable 1
+     variable-name-2: value of variable 2
    ```
 
-1. Чтобы вставить значение переменной в документ как текст, используйте разметку:
+1. To insert a variable value into a document as text, use markdown like:
 
    ```
-   Какой-то текст {{ variable-name-1 }} продолжение текста.
+   Some text {{ variable-name-1 }} text continued.
    ```
 
-### Условные операторы <a name="conditions"></a>
+### Conditional operators <a name="conditions"></a>
 
-Вы можете включать в сборку документа тот или иной фрагмент текста в зависимости от значений переменных.
+You can include a fragment of text in a document build, depending on variable values.
 
-Например, чтобы собрать две версии документа для разных ОС используйте разметку вида:
+For example, to build two versions of a document for different operating systems, use markdown like:
 
 ```
 {% if  OS == 'iOS' %}
 
-Скачайте приложение в [App Store](https://www.apple.com/ios/app-store/).
+Download the app from the [App Store](https://www.apple.com/ios/app-store/).
 
 {% else %}
 
-Скачайте приложение в [Google Play](https://play.google.com).
+Download the app from [Google Play] (https://play.google.com).
 
 {% endif %}
 ```
 
-Доступны условные операторы `if`, `else if`, `else` и операторы сравнения: `==`, `!=`, `<`, `>`, `<=`, `>=`.
+Available conditional operators are `if`, `else if`, and `else`. Available comparison operators are `==`, `!=`, `<`, `>`, `<=`, and `>=`.
 
-## Метаданные <a name="meta"></a>
+## Metadata <a name="meta"></a>
 
-В начале файла можно добавить метаданные в формате yaml.
+You can add YAML metadata at the beginning of a file.
 
 ```
 ---
-title: Заголовок
-description: Описание
+title: Title
+description: Description
 ---
 ```
