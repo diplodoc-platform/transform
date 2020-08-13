@@ -437,7 +437,7 @@
   transition: height 0.3s ease-in-out; }
 
 .yfm-cut.open .yfm-cut-content {
-  padding-top: 5px;
+  padding: 5px 0 15px 30px;
   height: auto; }
 
 .yfm-cut.open .yfm-cut-title:before {
