@@ -1,6 +1,6 @@
 {
   "name": "@doc-tools/transform",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "A simple transformer of text in YFM (Yandex Flavored Markdown) to HTML",
   "author": "YFM Team <yfm-team@yandex.ru>",
   "license": "MIT",
