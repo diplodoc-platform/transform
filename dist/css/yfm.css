@@ -51,15 +51,17 @@
       color: inherit; }
   .yfm strong {
     font-weight: 700; }
-  .yfm img {
+  .yfm img, .yfm svg {
     box-sizing: content-box;
     max-width: 100%;
     border: none;
     background-color: #ffffff; }
-    .yfm img[align=right] {
+    .yfm img[align=right], .yfm svg[align=right] {
       padding-left: 20px; }
-    .yfm img[align=left] {
+    .yfm img[align=left], .yfm svg[align=left] {
       padding-right: 20px; }
+  .yfm svg {
+    height: auto; }
   .yfm img + small {
     display: block; }
   .yfm p,
