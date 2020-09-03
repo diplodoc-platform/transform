@@ -77,7 +77,6 @@
         box-sizing: content-box;
         max-width: 100%;
         border: none;
-        background-color: $baseColor;
 
         &[align=right] {
             padding-left: 20px;
@@ -86,6 +85,10 @@
         &[align=left] {
             padding-right: 20px;
         }
+    }
+
+    img {
+        background-color: $baseColor;
     }
 
     svg {
