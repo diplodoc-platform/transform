@@ -214,14 +214,14 @@
     color: rgba(0, 0, 0, 0.7);
     white-space: pre; }
 
-.yfm-note {
+.yfm .yfm-note {
   max-width: 1296px;
   margin: 20px 0;
   padding: 20px 20px 20px 64px;
   border-radius: 10px; }
-  .yfm-note > p {
+  .yfm .yfm-note > p {
     margin: 0 0 10px 0; }
-    .yfm-note > p:first-child::before {
+    .yfm .yfm-note > p:first-child::before {
       box-sizing: content-box;
       display: block;
       width: 24px;
@@ -230,23 +230,23 @@
       margin-left: -44px;
       padding-right: 20px;
       float: left; }
-    .yfm-note > p:last-child {
+    .yfm .yfm-note > p:last-child {
       margin-bottom: 0; }
-  .yfm-note.yfm-accent-info > p:first-child::before {
+  .yfm .yfm-note.yfm-accent-info > p:first-child::before {
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(2,123,243)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
-  .yfm-note.yfm-accent-tip > p:first-child::before {
+  .yfm .yfm-note.yfm-accent-tip > p:first-child::before {
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(86,189,103)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
-  .yfm-note.yfm-accent-alert > p:first-child::before {
+  .yfm .yfm-note.yfm-accent-alert > p:first-child::before {
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(255,70,69)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
-  .yfm-note.yfm-accent-warning > p:first-child::before {
+  .yfm .yfm-note.yfm-accent-warning > p:first-child::before {
     content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="rgb(241,149,24)"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E'); }
-  .yfm-note.yfm-accent-info {
+  .yfm .yfm-note.yfm-accent-info {
     background: rgba(2, 123, 243, 0.08); }
-  .yfm-note.yfm-accent-tip {
+  .yfm .yfm-note.yfm-accent-tip {
     background: rgba(63, 201, 46, 0.1); }
-  .yfm-note.yfm-accent-alert {
+  .yfm .yfm-note.yfm-accent-alert {
     background: rgba(235, 50, 38, 0.08); }
-  .yfm-note.yfm-accent-warning {
+  .yfm .yfm-note.yfm-accent-warning {
     background: rgba(255, 136, 0, 0.15); }
 
 .yfm h1 .yfm-anchor, .yfm h2 .yfm-anchor, .yfm h3 .yfm-anchor, .yfm h4 .yfm-anchor, .yfm h5 .yfm-anchor, .yfm h6 .yfm-anchor {

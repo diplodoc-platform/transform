@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "test": "jest --coverage",
-    "lint": "eslint \"**/*.js\"",
+    "lint": "eslint \"lib/**/*.js\"",
     "css": "npm run css:compile && npm run css:prefix && npm run css:minify",
     "css:compile": "node-sass src/scss/yfm.scss dist/css/yfm.css",
     "css:prefix": "postcss dist/css/yfm.css --output dist/css/yfm.css",
