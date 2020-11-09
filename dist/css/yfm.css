@@ -54,7 +54,8 @@
   .yfm img, .yfm svg {
     box-sizing: content-box;
     max-width: 100%;
-    border: none; }
+    border: none;
+    vertical-align: middle; }
     .yfm img[align=right], .yfm svg[align=right] {
       padding-left: 20px; }
     .yfm img[align=left], .yfm svg[align=left] {

@@ -22,6 +22,10 @@
       })(Element.prototype);
     }
 
+    var isCustom = function isCustom(event) {
+      return !event.target || !event.target.matches;
+    };
+
     var Selector = {
       TABS: '.yfm .yfm-tabs',
       TAB_LIST: '.yfm .yfm-tab-list',
@@ -70,7 +74,7 @@
 
     if (typeof document !== 'undefined') {
       document.addEventListener('click', function (event) {
-        if (!event.target.matches(Selector.TAB)) {
+        if (isCustom(event) || !event.target.matches(Selector.TAB)) {
           return;
         }
 
@@ -116,7 +120,7 @@
 
     if (typeof document !== 'undefined') {
       document.addEventListener('click', function (event) {
-        if (!event.target.matches(BUTTON_SELECTOR)) {
+        if (isCustom(event) || event.target.matches(BUTTON_SELECTOR)) {
           return;
         }
 
@@ -154,7 +158,7 @@
 
     if (typeof document !== 'undefined') {
       document.addEventListener('click', function (event) {
-        if (!event.target.matches(Selector$1.TITLE)) {
+        if (isCustom(event) || !event.target.matches(Selector$1.TITLE)) {
           return;
         }
 

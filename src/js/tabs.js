@@ -1,3 +1,5 @@
+import {isCustom} from './utils';
+
 const Selector = {
     TABS: '.yfm .yfm-tabs',
     TAB_LIST: '.yfm .yfm-tab-list',
@@ -47,7 +49,7 @@ function selectTab(element) {
 
 if (typeof document !== 'undefined') {
     document.addEventListener('click', (event) => {
-        if (!event.target.matches(Selector.TAB)) {
+        if (isCustom(event) || !event.target.matches(Selector.TAB)) {
             return;
         }
 

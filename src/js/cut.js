@@ -1,3 +1,5 @@
+import {isCustom} from './utils';
+
 const Selector = {
     CUT: '.yfm .yfm-cut',
     TITLE: '.yfm .yfm-cut-title',
@@ -15,7 +17,7 @@ function toggleCut(element) {
 
 if (typeof document !== 'undefined') {
     document.addEventListener('click', (event) => {
-        if (!event.target || !event.target.matches || !event.target.matches(Selector.TITLE)) {
+        if (isCustom(event) || !event.target.matches(Selector.TITLE)) {
             return;
         }
 
