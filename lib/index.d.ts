@@ -1,7 +1,5 @@
 import {Logs} from './log';
 
-export {default as plugins} from './plugins';
-
 export interface Output {
     result: {
         html: string;

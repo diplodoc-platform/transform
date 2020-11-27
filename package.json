@@ -1,6 +1,6 @@
 {
   "name": "@doc-tools/transform",
-  "version": "1.6.4",
+  "version": "2.0.0-alpha.1",
   "description": "A simple transformer of text in YFM (Yandex Flavored Markdown) to HTML",
   "author": "YFM Team <yfm-team@yandex.ru>",
   "license": "MIT",
@@ -28,7 +28,6 @@
   },
   "dependencies": {
     "chalk": "^4.0.0",
-    "highlight.js": "^10.0.3",
     "markdown-it": "^10.0.0",
     "markdown-it-attrs": "^3.0.2",
     "markdown-it-deflist": "^2.0.3",
@@ -54,6 +53,9 @@
     "rollup": "^2.13.1",
     "rollup-plugin-babel": "^4.4.0",
     "uglify-js": "^3.9.4"
+  },
+  "peerDependencies": {
+    "highlight.js": "^10.0.3"
   },
   "husky": {
     "hooks": {
