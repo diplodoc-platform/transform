@@ -56,7 +56,8 @@ const {result: {html, meta}, logs} = transform(content, {vars});
 ```js
 const fs = require('fs');
 const transform = require('@doc-tools/transform');
-const {plugins: {cut, sup}} = require('@doc-tools/transform');
+const cut = require('@doc-tools/transform/lib/plugins/cut');
+const sup = require('@doc-tools/transform/lib/plugins/sup');
 const video = require('markdown-it-video');
 
 const content = fs.readFileSync(filePath, 'utf');
@@ -82,7 +83,11 @@ tabs | [Табы](./DOCS.ru.md#tabs) | -
 
 Все плагины принимают опциональным параметром path путь до файла, который будет добавлен в лог ошибок.
 
-### Дополнительные языки для подсветки
+### Подсветка кода
+
+Для работы подсветки кода необходимо установить пакет [highlight.js](https://www.npmjs.com/package/highlight.js).
+
+#### Дополнительные языки для подсветки
 
 Трансформер YFM использует highlight.js для подсветки языков. Вы можете передать дополнительный набор языков,
 который будет зарегистрирован для использования. Набор языков представляет собой обьект, где ключ - это имя языка,
