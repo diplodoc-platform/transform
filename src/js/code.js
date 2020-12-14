@@ -41,7 +41,7 @@ function notifySuccess(svgButton) {
 
 if (typeof document !== 'undefined') {
     document.addEventListener('click', (event) => {
-        if (isCustom(event) || event.target.matches(BUTTON_SELECTOR)) {
+        if (isCustom(event) || !event.target.matches(BUTTON_SELECTOR)) {
             return;
         }
 
