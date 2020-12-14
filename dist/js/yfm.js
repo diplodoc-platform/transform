@@ -120,7 +120,7 @@
 
     if (typeof document !== 'undefined') {
       document.addEventListener('click', function (event) {
-        if (isCustom(event) || event.target.matches(BUTTON_SELECTOR)) {
+        if (isCustom(event) || !event.target.matches(BUTTON_SELECTOR)) {
           return;
         }
 
