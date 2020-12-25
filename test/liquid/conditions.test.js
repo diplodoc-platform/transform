@@ -40,6 +40,19 @@ describe('Conditions', () => {
             ).toEqual(
                 'Prefix else Postfix');
         });
+        test('Should works for multiple if block', () => {
+            expect(
+                conditions(
+                    'Prefix\n' +
+                    '{% if test %}\n' +
+                    '    How are you?\n' +
+                    '{%- endif %}\n' +
+                    'Postfix',
+                    {test: true},
+                ),
+            ).toEqual(
+                'Prefix\nHow are you?\nPostfix');
+        });
     });
 
     describe('Conditions', () => {
