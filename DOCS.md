@@ -448,6 +448,12 @@ To declare and use variables in a document:
    Some text {{ variable-name-1 }} text continued.
    ```
 
+1. To insert a value into a document as text, use markdown like:
+
+   ```
+   Some text not_var{{ variable-name-1 }} text continued.
+   ```
+
 ### Conditional operators <a name="conditions"></a>
 
 You can include a fragment of text in a document build, depending on variable values.
