@@ -1,5 +1,3 @@
-
-
 const substitutions = require('../../lib/liquid/substitutions');
 
 describe('Filters', () => {

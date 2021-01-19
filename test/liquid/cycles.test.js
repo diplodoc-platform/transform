@@ -1,5 +1,3 @@
-
-
 const liquid = require('../../lib/liquid');
 const vars = {
     users: ['Alice', 'Ivan', 'Petr'],

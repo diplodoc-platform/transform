@@ -1,5 +1,3 @@
-
-
 const conditions = require('../../lib/liquid/conditions');
 
 describe('Conditions', () => {
