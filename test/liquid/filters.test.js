@@ -33,4 +33,66 @@ describe('Filters', () => {
             ).toEqual('\\`\\*\\_\\{\\}\\[\\]\\(\\)\\#\\+\\-\\.\\!\\|');
         });
     });
+
+    describe('There is no a space after and before the filter operator. It can only be a variable.', () => {
+        test('Existent filter and non-existent variable', () => {
+            expect(
+                substitutions('{{ test|capitalize }}', {'test|capitalize': 'Alice', test: 'mark'}),
+            ).toEqual('Alice');
+        });
+        test('Non-existent filter and non-existent variable', () => {
+            expect(
+                substitutions('{{ test|testFilter }}', {'test|testFilter': 'Alice', test: 'mark'}),
+            ).toEqual('Alice');
+        });
+        test('Non-existent filter and existent variable', () => {
+            expect(
+                substitutions('{{ test|test }}', {'test|test': 'Alice', test: 'mark'}),
+            ).toEqual('Alice');
+        });
+        test('Existent filter and existent variable', () => {
+            expect(
+                substitutions('{{ test|capitalize }}', {'test|capitalize': 'Alice', test: 'mark'}),
+            ).toEqual('Alice');
+        });
+    });
+
+    describe('There is a space after and beefore filter operator. It can only be a filter.', () => {
+        test('Existent filter', () => {
+            expect(
+                substitutions('{{ test | capitalize }}', {test: 'mark'}),
+            ).toEqual('Mark');
+        });
+        test('Non-existent filter', () => {
+            expect(
+                substitutions('{{ test | testFilter }}', {test: 'Alice'}),
+            ).toEqual('Alice');
+        });
+    });
+
+    describe('There is a space after the filter operator. It can only be a filter.', () => {
+        test('Existent filter', () => {
+            expect(
+                substitutions('{{ test| capitalize }}', {test: 'mark'}),
+            ).toEqual('false');
+        });
+        test('Non-existent filter', () => {
+            expect(
+                substitutions('{{ test| testFilter }}', {test: 'Alice'}),
+            ).toEqual('false');
+        });
+    });
+
+    describe('There is a space before the filter operator. It can only be a filter.', () => {
+        test('Existent filter', () => {
+            expect(
+                substitutions('{{ test |capitalize }}', {test: 'mark'}),
+            ).toEqual('false');
+        });
+        test('Non-existent filter', () => {
+            expect(
+                substitutions('{{ test |testFilter }}', {test: 'Alice'}),
+            ).toEqual('false');
+        });
+    });
 });
