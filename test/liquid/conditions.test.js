@@ -44,12 +44,65 @@ describe('Conditions', () => {
                     'Prefix\n' +
                     '{% if test %}\n' +
                     '    How are you?\n' +
-                    '{%- endif %}\n' +
+                    '{% endif %}\n' +
                     'Postfix',
                     {test: true},
                 ),
             ).toEqual(
-                'Prefix\nHow are you?\nPostfix');
+                'Prefix\n' +
+                '    How are you?\n' +
+                'Postfix',
+            );
+        });
+
+        test('Multiple if block with indent', () => {
+            expect(
+                conditions(
+                    'Prefix\n' +
+                    '    {% if test %}\n' +
+                    '        How are you?\n' +
+                    '    {% endif %}\n' +
+                    'Postfix',
+                    {test: true},
+                ),
+            ).toEqual(
+                'Prefix\n' +
+                '        How are you?\n' +
+                'Postfix',
+            );
+        });
+
+        test('Multiple if block with indent and negative condition', () => {
+            expect(
+                conditions(
+                    'Prefix\n' +
+                    '     {% if test %}\n' +
+                    '         How are you?\n' +
+                    '     {% endif %}\n' +
+                    'Postfix',
+                    {test: false},
+                ),
+            ).toEqual(
+                'Prefix\n' +
+                'Postfix',
+            );
+        });
+
+        test('Two multiple if blocks in a row', () => {
+            expect(
+                conditions(
+                    '{% if test %}\n' +
+                    '    How are you?\n' +
+                    '{% endif %}\n' +
+                    '{% if test %}\n' +
+                    '    How are you?\n' +
+                    '{% endif %}',
+                    {test: true},
+                ),
+            ).toEqual(
+                '    How are you?\n' +
+                '    How are you?',
+            );
         });
     });
 
