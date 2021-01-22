@@ -30,6 +30,9 @@
 - [Переменные](#vars)
     - [Подстановки](#substitudes)
     - [Условные операторы](#conditions)
+    - [Фильтры](#filters)
+    - [Циклы](#cycles)
+    - [Функции](#functions)
 - [Метаданные](#meta)
 
 ## Заголовки <a name="headers"></a>
@@ -493,7 +496,91 @@ let a= 10;
 {% endif %}
 ```
 
-Доступны условные операторы `if`, `else if`, `else` и операторы сравнения: `==`, `!=`, `<`, `>`, `<=`, `>=`.
+### Фильтры <a name="filters"></a>
+
+**Важно!** Перед и после оператора фильтра обязательно ставить пробел
+
+Переменные в `presets.yaml` для примеров ниже:
+
+```
+default:
+  user:
+    name: Alice
+  users:
+    - Alice
+    - Mark
+```
+
+#### capitalize
+
+```
+Hello {{ user.name | capitalize }}! => Hello Alice!
+```
+
+#### length
+```
+{{ users | length }} => 2
+
+{{ user.name | length }} | length => 5
+```
+
+
+### Циклы <a name="cycles"></a>
+
+Переменные в `presets.yaml` для примеров ниже:
+
+```
+default:
+  users:
+    - Alice
+    - Mark
+```
+
+#### Примеры циклов
+```
+Prefix {% for user in users %} {{user}} {% endfor %} Postfix
+
+Prefix Alice Mark Postfix
+```
+
+```
+Prefix
+{% for user in users %}
+{{user}}
+{% endfor %}
+Postfix
+
+Prefix
+Alice
+Mark
+Postfix
+```
+
+```
+Prefix {% for user1 in users %} {% for user2 in users %} {{user1}}+{{user2}} {% endfor %} {% endfor %} Postfix
+
+Prefix Alice+Alice Alice+Mark Mark+Alice Mark+Mark Postfix
+```
+
+### Функции <a name="functions"></a>
+
+Переменные в `presets.yaml` для примеров ниже:
+
+```
+default:
+  user:
+    name: Pasha
+```
+
+#### slice
+
+```
+Hello M{{ user.name.slice(1) }}! => Hello Masha!
+```
+
+```
+Hello M{{ user.name.slice(1, 2) }}sha! => Hello Masha!
+```
 
 ## Метаданные <a name="meta"></a>
 
