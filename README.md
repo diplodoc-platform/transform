@@ -24,7 +24,7 @@ To build your documentation project in YFM, use the [@doc-tools/docs](https://ww
 | Name | Description | Type | Default value |
 | :--- | :--- | :--- | :--- |
 | vars | Variables | Object | {} |
-| plugins | Plugins in use | function[] | alerts, attrs, anchors, code, cut, deflist, imsize, meta, sup, tabs, titles |
+| plugins | Plugins in use | function[] | alerts, attrs, anchors, code, cut, deflist, meta, sup, tabs, titles |
 | highlightLangs | Additional languages for highlighting | {'lang': function} | {} |
 | extractTitle | Return the first title of the first level as the title of the entire document | bool | false |
 | needTitle | Return the first title of the first level without deleting it from the content | bool | false |
