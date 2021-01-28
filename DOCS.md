@@ -29,6 +29,9 @@
 - [Variables](#vars)
     - [Substitutions](#substitudes)
     - [Conditional operators](#conditions)
+    - [Filters](#filters)
+    - [Cycles](#cycles)
+    - [Functions](#functions)
 - [Metadata](#meta)
 
 ## Headers <a name="headers"></a>
@@ -473,6 +476,92 @@ Download the app from [Google Play] (https://play.google.com).
 ```
 
 Available conditional operators are `if`, `else if`, and `else`. Available comparison operators are `==`, `!=`, `<`, `>`, `<=`, and `>=`.
+
+### Filters <a name="filters"></a>
+
+**Important!** When using filters, be sure to leave a space before and after the filter operator
+
+Variables in `presets.yaml` for the examples below:
+
+```
+default:
+  user:
+    name: Alice
+  users:
+    - Alice
+    - Mark
+```
+
+#### capitalize
+
+```
+Hello {{ user.name | capitalize }}! => Hello Alice!
+```
+
+#### length
+```
+{{ users | length }} => 2
+
+{{ user.name | length }} | length => 5
+```
+
+
+### Cycles <a name="cycles"></a>
+
+Variables in `presets.yaml` for the examples below:
+
+```
+default:
+  users:
+    - Alice
+    - Mark
+```
+
+#### Examples
+```
+Prefix {% for user in users %} {{user}} {% endfor %} Postfix
+
+Prefix Alice Mark Postfix
+```
+
+```
+Prefix
+{% for user in users %}
+{{user}}
+{% endfor %}
+Postfix
+
+Prefix
+Alice
+Mark
+Postfix
+```
+
+```
+Prefix {% for user1 in users %} {% for user2 in users %} {{user1}}+{{user2}} {% endfor %} {% endfor %} Postfix
+
+Prefix Alice+Alice Alice+Mark Mark+Alice Mark+Mark Postfix
+```
+
+### Functions <a name="functions"></a>
+
+Variables in `presets.yaml` for the examples below:
+
+```
+default:
+  user:
+    name: Pasha
+```
+
+#### slice
+
+```
+Hello M{{ user.name.slice(1) }}! => Hello Masha!
+```
+
+```
+Hello M{{ user.name.slice(1, 2) }}sha! => Hello Masha!
+```
 
 ## Metadata <a name="meta"></a>
 
