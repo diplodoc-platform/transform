@@ -5,5 +5,6 @@ export default function liquid(
     settings?: {
         conditions?: boolean;
         substitutions?: boolean;
+        conditionsInCode?: boolean;
     }
 ): string;
