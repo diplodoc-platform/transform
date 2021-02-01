@@ -4,7 +4,8 @@ export default function liquid(
     path: string,
     settings?: {
         conditions?: boolean;
-        substitutions?: boolean;
         conditionsInCode?: boolean;
+        cycle?: boolean;
+        substitutions?: boolean;
     }
 ): string;
