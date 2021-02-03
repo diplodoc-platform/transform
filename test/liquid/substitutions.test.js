@@ -6,4 +6,9 @@ describe('Substitutions', () => {
             substitutions('Hello {{ user.name }}!', {user: {name: 'Alice'}}),
         ).toEqual('Hello Alice!');
     });
+    test('Should not substitute variables start with dot', () => {
+        expect(
+            substitutions('Hello {{ .name }}'),
+        ).toEqual('Hello {{ .name }}');
+    });
 });
