@@ -69,13 +69,13 @@ const {result: {html, meta}, logs} = transform(content, {vars, plugins: [cut, su
 
 Имя | Описание | Параметры
 :--- | :--- | :---
-anchors | Добавляет якоря заголовкам | {extractTitleOption? = false - нужно ли учитывать заголовок первого уровня}
+anchors | Добавляет якоря заголовкам | extractTitleOption? = false - нужно ли учитывать заголовок первого уровня
 code | Добавляет кнопку копирования в блоки кода | -
 cut | [Сворачиваемые блоки](./DOCS.ru.md#cutes) | -
-images | [Вставка изображений](./DOCS.ru.md#images) | {assetsPublicPath = '/' - путь до расположения иконок, root - путь до корня проекта, path - путь до текущего трансформируемого файла}
-includes | [Вставки](./DOCS.ru.md#includes) | {path - путь до текущего трансформируемого файла, getVarsPerFile? - функция, которая должна по пути файла вернуть вычисленные переменные}
-links | [Расширенные ссылки](./DOCS.ru.md#links) | {path - путь до текущего трансформируемого файла, root - путь до корня проекта}
-notes | [Заметки](./DOCS.ru.md#notes) | {lang? = ru - язык, нужен для локализации дефолтных текстов}
+images | [Вставка изображений](./DOCS.ru.md#images) | assetsPublicPath = '/' - путь до расположения иконок<br>root - путь до корня проекта<br>path - путь до текущего трансформируемого файла
+includes | [Вставки](./DOCS.ru.md#includes) | path - путь до текущего трансформируемого файла<br>getVarsPerFile? - функция, которая должна по пути файла вернуть вычисленные переменные
+links | [Расширенные ссылки](./DOCS.ru.md#links) | path - путь до текущего трансформируемого файла<br>root - путь до корня проекта
+notes | [Заметки](./DOCS.ru.md#notes) | lang? = ru - язык, нужен для локализации дефолтных текстов
 tabs | [Табы](./DOCS.ru.md#tabs) | -
 
 Набор плагинов подключаемый по умолчанию: attrs, meta, deflist, cut, alerts, anchors, tabs, code, imsize, sup.

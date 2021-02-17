@@ -68,13 +68,13 @@ const {result: {html, meta}, logs} = transform(content, {vars, plugins: [cut, su
 
 | Name | Description | Parameters |
 | :--- | :--- | :--- |
-| anchors | Adds anchors to headings | {extractTitleOption? = false - нужно ли учитывать заголовок первого уровня} |
+| anchors | Adds anchors to headings | extractTitleOption? = false - нужно ли учитывать заголовок первого уровня |
 | code | Adds the copy button to code blocks | - |
 | cut | [Collapsible blocks](./DOCS.md#cutes) | - |
-| images | [Inserting images](./DOCS.md#images) | {assetsPublicPath = '/' - путь до расположения иконок, root - путь до корня проекта, path - путь до текущего трансформируемого файла} |
-| includes | [Inserts](./DOCS.md#includes) | {path - путь до текущего трансформируемого файла, getVarsPerFile? - функция, которая должна по пути файла вернуть вычисленные переменные} |
-| links | [Extended links](./DOCS.md#links) | {path - путь до текущего трансформируемого файла, root - путь до корня проекта} |
-| notes | [Notes](./DOCS.md#notes) | {lang? = ru - язык, нужен для локализации дефолтных текстов} |
+| images | [Inserting images](./DOCS.md#images) | assetsPublicPath = '/' - путь до расположения иконок<br>root - путь до корня проекта<br>path - путь до текущего трансформируемого файла |
+| includes | [Inserts](./DOCS.md#includes) | path - путь до текущего трансформируемого файла<br>getVarsPerFile? - функция, которая должна по пути файла вернуть вычисленные переменные |
+| links | [Extended links](./DOCS.md#links) | path - путь до текущего трансформируемого файла<br>root - путь до корня проекта |
+| notes | [Notes](./DOCS.md#notes) | lang? = ru - язык, нужен для локализации дефолтных текстов |
 | tabs | [Tabs](./DOCS.md#tabs) | - |
 
 A set of plugins added by default: attrs, meta, deflist, cut, alerts, anchors, tabs, code, imsize, sup.
