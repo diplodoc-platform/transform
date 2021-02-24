@@ -1,6 +1,6 @@
 const tabs = require('../lib/plugins/tabs');
 const {callPlugin, tokenize} = require('./utils');
-const {base} = require('./data/tabs');
+const {base, escaped} = require('./data/tabs');
 
 const callTabsPlugin = callPlugin.bind(null, tabs);
 
@@ -74,5 +74,13 @@ describe('Tabs', () => {
 
             expect(attrsObject['aria-controls']).toEqual(panelAttrsObject['id']);
         });
+    });
+
+    test('Tab syntax is escaped', () => {
+        const escapedTabTokens = callTabsPlugin(tokenize([
+            '`{% list tabs %}`',
+        ]), {});
+
+        expect(escapedTabTokens).toEqual(escaped);
     });
 });
