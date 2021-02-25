@@ -66,7 +66,7 @@ describe('Filters', () => {
         test('Non-existent filter', () => {
             expect(
                 substitutions('{{ test | testFilter }}', {test: 'Alice'}),
-            ).toEqual('Alice');
+            ).toEqual('{{ test | testFilter }}');
         });
     });
 
@@ -74,12 +74,12 @@ describe('Filters', () => {
         test('Existent filter', () => {
             expect(
                 substitutions('{{ test| capitalize }}', {test: 'mark'}),
-            ).toEqual('false');
+            ).toEqual('Mark');
         });
         test('Non-existent filter', () => {
             expect(
                 substitutions('{{ test| testFilter }}', {test: 'Alice'}),
-            ).toEqual('false');
+            ).toEqual('{{ test| testFilter }}');
         });
     });
 
@@ -87,12 +87,12 @@ describe('Filters', () => {
         test('Existent filter', () => {
             expect(
                 substitutions('{{ test |capitalize }}', {test: 'mark'}),
-            ).toEqual('false');
+            ).toEqual('Mark');
         });
         test('Non-existent filter', () => {
             expect(
                 substitutions('{{ test |testFilter }}', {test: 'Alice'}),
-            ).toEqual('false');
+            ).toEqual('{{ test |testFilter }}');
         });
     });
 });
