@@ -8,14 +8,15 @@ A simple transformer of text in YFM (Yandex Flavored Markdown) to HTML.
 ## Yandex Flavored Markdown
 
 Yandex Flavored Markdown (YFM) is a Markdown dialect that is now used for
-[Yandex.Cloud documentation](https://cloud.yandex.ru/docs), [Yandex.Cloud website content](https://cloud.yandex.ru), and in a variety of internal Yandex projects.
+[Yandex.Cloud documentation](https://cloud.yandex.com/docs), [Yandex.Cloud website content](https://cloud.yandex.com), and in
+a variety of internal Yandex projects.
 
 The syntax is based on the CommonMark Spec, extending it with additional features. It's designed for creating
-a full-fledged complex documentation project, such as Yandex.Cloud documentation.
+a full-fledged complex documentation project, such as the Yandex.Cloud documentation.
 
 To build your documentation project in YFM, use the [@doc-tools/docs](https://www.npmjs.com/package/@doc-tools/docs) package.
 
-[Learn more about YFM syntax](./DOCS.md)
+[Learn more about YFM syntax](./DOCS.md) 
 
 ## Usage
 
@@ -32,7 +33,6 @@ To build your documentation project in YFM, use the [@doc-tools/docs](https://ww
 | linkify | Shows whether to convert clickable lines into links | bool | false |
 | breaks | Shows whether to use the carriage return character for a line break | bool | true |
 | conditionsInCode | Shows whether to meet conditions in code blocks | bool | false |
-| disableLiquid | Disable template engine | bool | false |
 
 ### Connect and run
 
@@ -69,13 +69,13 @@ const {result: {html, meta}, logs} = transform(content, {vars, plugins: [cut, su
 
 | Name | Description | Parameters |
 | :--- | :--- | :--- |
-| anchors | Adds anchors to headings | extractTitleOption? = false - нужно ли учитывать заголовок первого уровня |
+| anchors | Adds anchors to headings | extractTitleOption? = false — Whether the first-level title should be considered |
 | code | Adds the copy button to code blocks | - |
 | cut | [Collapsible blocks](./DOCS.md#cutes) | - |
-| images | [Inserting images](./DOCS.md#images) | assetsPublicPath = '/' - путь до расположения иконок<br>root - путь до корня проекта<br>path - путь до текущего трансформируемого файла |
-| includes | [Inserts](./DOCS.md#includes) | path - путь до текущего трансформируемого файла<br>getVarsPerFile? - функция, которая должна по пути файла вернуть вычисленные переменные |
-| links | [Extended links](./DOCS.md#links) | path - путь до текущего трансформируемого файла<br>root - путь до корня проекта |
-| notes | [Notes](./DOCS.md#notes) | lang? = ru - язык, нужен для локализации дефолтных текстов |
+| images | [Inserting images](./DOCS.md#images) | assetsPublicPath = '/' — Path to icons<br>root — Path to the project root<br>path — Path to the current file being transformed |
+| includes | [Inserts](./DOCS.md#includes) | path — Path to the current file being transformed<br>getVarsPerFile? — A function that should return the calculated variables to the file path |
+| links | [Extended links](./DOCS.md#links) | path — Path to the current file being transformed<br>root — Path to the project root |
+| notes | [Notes](./DOCS.md#notes) | lang? = ru — Language, needed for localizing default texts |
 | tabs | [Tabs](./DOCS.md#tabs) | - |
 
 A set of plugins added by default: attrs, meta, deflist, cut, alerts, anchors, tabs, code, imsize, sup.
@@ -116,3 +116,4 @@ npm run dist
 ## License
 
 MIT
+
