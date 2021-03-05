@@ -32,6 +32,7 @@ To build your documentation project in YFM, use the [@doc-tools/docs](https://ww
 | linkify | Shows whether to convert clickable lines into links | bool | false |
 | breaks | Shows whether to use the carriage return character for a line break | bool | true |
 | conditionsInCode | Shows whether to meet conditions in code blocks | bool | false |
+| disableLiquid | Disable template engine | bool | false |
 
 ### Connect and run
 
