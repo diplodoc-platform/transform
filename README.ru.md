@@ -33,6 +33,7 @@ allowHTML | Разрешено ли использование HTML | bool | fal
 linkify | Делать ли ссылками ссылкоподобные строки | bool | false
 breaks | Переносить ли строки по символу перевода каретки | bool | true
 conditionsInCode | Выполнять ли условия в блоках кода | bool | false
+disableLiquid | Отключить шаблонизатор| bool | false
 
 ### Подключение и вызов
 
