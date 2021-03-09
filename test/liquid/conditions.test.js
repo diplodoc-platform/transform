@@ -60,7 +60,7 @@ describe('Conditions', () => {
                 conditions(
                     'Prefix\n' +
                     '    {% if test %}\n' +
-                    '        How are you?\n' +
+                    '    How are you?\n' +
                     '    {% endif %}\n' +
                     'Postfix',
                     {test: true},
@@ -102,6 +102,22 @@ describe('Conditions', () => {
             ).toEqual(
                 '    How are you?\n' +
                 '    How are you?',
+            );
+        });
+
+        test('Condition inside the list item content', () => {
+            expect(
+                conditions(
+                    '1. list item 1\n\n' +
+                    '    {% if true %} Test {% endif %}\n',
+                    '1. list item 2\n\n' +
+                    '    Test\n',
+                ),
+            ).toEqual(
+                '1. list item 1\n\n' +
+                '    Test\n',
+                '1. list item 2\n\n' +
+                '    Test\n',
             );
         });
     });

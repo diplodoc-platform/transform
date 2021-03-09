@@ -73,32 +73,6 @@ describe('Cycles', () => {
             );
         });
 
-        test('Multiline nested for block with indent', () => {
-            expect(
-                liquid(
-                    'Prefix\n' +
-                    '{% for user1 in users %}\n' +
-                    '    {% for user2 in users %}\n' +
-                    '{{user1}}+{{user2}}\n' +
-                    '    {% endfor %}\n' +
-                    '{% endfor %}\n' +
-                    'Postfix',
-                    vars,
-                ),
-            ).toEqual(
-                'Prefix\n' +
-                'Alice+Alice\n' +
-                'Alice+Ivan\n' +
-                'Alice+Petr\n' +
-                'Ivan+Alice\n' +
-                'Ivan+Ivan\n' +
-                'Ivan+Petr\n' +
-                'Petr+Alice\n' +
-                'Petr+Ivan\n' +
-                'Petr+Petr\n' +
-                'Postfix',
-            );
-        });
     });
 
     describe('with conditions, filters, substitutions', () => {
