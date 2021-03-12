@@ -3,6 +3,7 @@
 
 [![NPM version](https://img.shields.io/npm/v/@doc-tools/transform.svg?style=flat)](https://www.npmjs.org/package/@doc-tools/transform)
 
+
 A simple transformer of text in YFM (Yandex Flavored Markdown) to HTML.
 
 ## Yandex Flavored Markdown
@@ -16,7 +17,7 @@ a full-fledged complex documentation project, such as the Yandex.Cloud documenta
 
 To build your documentation project in YFM, use the [@doc-tools/docs](https://www.npmjs.com/package/@doc-tools/docs) package.
 
-[Learn more about YFM syntax](./DOCS.md) 
+[Learn more about YFM syntax](./DOCS.md)
 
 ## Usage
 
