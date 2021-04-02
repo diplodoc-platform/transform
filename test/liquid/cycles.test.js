@@ -5,6 +5,16 @@ const vars = {
     needCapitalize: true,
     user: 'Alex',
     user2: 'Alex',
+    'commentsByPage': [
+        {
+            'linkUrl': 'https://example.com',
+            'comments': ['First comment', 'Second comment'],
+        },
+        {
+            'linkUrl': 'https://example2.com',
+            'comments': ['Third comment', 'Fourth comment'],
+        },
+    ],
 };
 
 describe('Cycles', () => {
@@ -44,6 +54,43 @@ describe('Cycles', () => {
                 'Petr\n' +
                 'Postfix',
             );
+        });
+
+        test('Multiline for block2', () => {
+            const input = `
+Prefix 
+
+{% for item in commentsByPage %}
+
+[{{item.linkUrl}}]({{item.linkUrl}})
+{% for item2 in item.comments %}
+* {{item2}}
+{% endfor %}
+
+{% endfor %}
+
+Postfix
+`.trim();
+            const result = `           
+Prefix 
+
+
+[https://example.com](https://example.com)
+* First comment
+* Second comment
+
+[https://example2.com](https://example2.com)
+* Third comment
+* Fourth comment
+
+Postfix
+                `.trim();
+            expect(
+                liquid(
+                    input,
+                    vars,
+                ),
+            ).toEqual(result);
         });
 
         test('Multiline nested for block without indent', () => {
