@@ -1,19 +1,24 @@
 const liquid = require('../../lib/liquid');
+
+const commentsByPage = [
+    {
+        'linkUrl': 'https://example.com',
+        'comments': ['First comment', 'Second comment'],
+    },
+    {
+        'linkUrl': 'https://example2.com',
+        'comments': ['Third comment', 'Fourth comment'],
+    },
+];
 const vars = {
     users: ['Alice', 'Ivan', 'Petr'],
     users2: ['alice', 'ivan', 'petr'],
     needCapitalize: true,
     user: 'Alex',
     user2: 'Alex',
-    'commentsByPage': [
-        {
-            'linkUrl': 'https://example.com',
-            'comments': ['First comment', 'Second comment'],
-        },
-        {
-            'linkUrl': 'https://example2.com',
-            'comments': ['Third comment', 'Fourth comment'],
-        },
+    projects: [
+        {projectName: 'First project', commentsByPage},
+        {projectName: 'Second project', commentsByPage},
     ],
 };
 
@@ -60,7 +65,10 @@ describe('Cycles', () => {
             const input = `
 Prefix 
 
-{% for item in commentsByPage %}
+{% for project in projects %}
+
+## {{project.projectName}}
+{% for item in project.commentsByPage %}
 
 [{{item.linkUrl}}]({{item.linkUrl}})
 {% for item2 in item.comments %}
@@ -68,12 +76,25 @@ Prefix
 {% endfor %}
 
 {% endfor %}
+{% endfor %}
 
 Postfix
 `.trim();
             const result = `           
 Prefix 
 
+
+## First project
+
+[https://example.com](https://example.com)
+* First comment
+* Second comment
+
+[https://example2.com](https://example2.com)
+* Third comment
+* Fourth comment
+
+## Second project
 
 [https://example.com](https://example.com)
 * First comment
