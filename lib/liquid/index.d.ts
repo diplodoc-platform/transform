@@ -1,3 +1,5 @@
+import {LintRulesOptions} from '../lintRules/models';
+
 export default function liquid(
     originInput: string,
     options?: {
@@ -7,5 +9,7 @@ export default function liquid(
         conditionsInCode?: boolean;
         cycle?: boolean;
         substitutions?: boolean;
+        disableLint?: boolean;
+        lintOptions?: LintRulesOptions
     },
 ): string;
