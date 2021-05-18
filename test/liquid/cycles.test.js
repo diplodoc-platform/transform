@@ -28,7 +28,7 @@ describe('Cycles', () => {
             expect(
                 liquid(
                     'Prefix {% for user in users %} {{user}} {% endfor %} Postfix',
-                    vars,
+                    {vars},
                 ),
             ).toEqual('Prefix Alice Ivan Petr Postfix');
         });
@@ -37,7 +37,7 @@ describe('Cycles', () => {
             expect(
                 liquid(
                     'Prefix {% for user1 in users %} {% for user2 in users %} {{user1}}+{{user2}} {% endfor %} {% endfor %} Postfix',
-                    vars,
+                    {vars},
                 ),
             ).toEqual('Prefix Alice+Alice Alice+Ivan Alice+Petr Ivan+Alice Ivan+Ivan Ivan+Petr Petr+Alice Petr+Ivan Petr+Petr Postfix');
         });
@@ -50,7 +50,7 @@ describe('Cycles', () => {
                     '{{user}}\n' +
                     '{% endfor %}\n' +
                     'Postfix',
-                    vars,
+                    {vars},
                 ),
             ).toEqual(
                 'Prefix\n' +
@@ -109,7 +109,7 @@ Postfix
             expect(
                 liquid(
                     input,
-                    vars,
+                    {vars},
                 ),
             ).toEqual(result);
         });
@@ -124,7 +124,7 @@ Postfix
                     '{% endfor %}\n' +
                     '{% endfor %}\n' +
                     'Postfix',
-                    vars,
+                    {vars},
                 ),
             ).toEqual(
                 'Prefix\n' +
@@ -148,7 +148,7 @@ Postfix
             expect(
                 liquid(
                     'Prefix {% for user in users2 %} {% if needCapitalize %} {{user | capitalize}}+{{user2}} {% else %} {{user}} {% endif %} {% endfor %} Postfix',
-                    vars,
+                    {vars},
                 ),
             ).toEqual('Prefix Alice+Alex Ivan+Alex Petr+Alex Postfix');
         });

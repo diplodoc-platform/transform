@@ -4,12 +4,12 @@ describe('Functions', () => {
     describe('slice', () => {
         test('Test 1', () => {
             expect(
-                substitutions('Hello M{{ user.name.slice(1) }}!', {user: {name: 'Pasha'}}),
+                substitutions('Hello M{{ user.name.slice(1) }}!', {vars: {user: {name: 'Pasha'}}}),
             ).toEqual('Hello Masha!');
         });
         test('Test 2', () => {
             expect(
-                substitutions('Hello M{{ user.name.slice(1, 2) }}sha!', {user: {name: 'Pasha'}}),
+                substitutions('Hello M{{ user.name.slice(1, 2) }}sha!', {vars: {user: {name: 'Pasha'}}}),
             ).toEqual('Hello Masha!');
         });
         test('Test 3', () => {

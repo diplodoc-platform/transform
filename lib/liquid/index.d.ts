@@ -1,11 +1,11 @@
 export default function liquid(
     originInput: string,
-    vars: Record<string, string>,
-    path: string,
-    settings?: {
+    options?: {
+        vars: Record<string, string>;
+        path: string;
         conditions?: boolean;
         conditionsInCode?: boolean;
         cycle?: boolean;
         substitutions?: boolean;
-    }
+    },
 ): string;
