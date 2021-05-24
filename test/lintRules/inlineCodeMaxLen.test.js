@@ -25,6 +25,11 @@ prefix \`another inline quotes inside block code\` postfix
 \`\`\`sql
 block code
 \`\`\`
+
+\`, ?, !
+
+Some text for testing not escaped and not closed quote
+\`
 `.trim();
 
 const inlineCodes = [
