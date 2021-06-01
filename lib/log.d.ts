@@ -9,6 +9,14 @@ export interface Logger {
     warn: Function;
     error: Function;
     get: () => Logs;
+    clear: () => void;
+    isEmpty: () => boolean;
+    LOG_LEVELS: {
+        DISABLED: string;
+        INFO: string;
+        WARN: string;
+        ERROR: string;
+    };
 }
 
 declare let log: Logger;
