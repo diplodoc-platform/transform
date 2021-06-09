@@ -11,9 +11,16 @@ export interface LintConfig {
     [key: string]: any;
 }
 
+export interface LintMarkdownFunctionOptions {
+    input: string;
+    path: string;
+}
+
 export interface PluginOptions {
     log: Logger;
     path?: string;
+    disableLint?: boolean;
+    lintMarkdown?: (opts: LintMarkdownFunctionOptions) => void;
     [key: string]: any;
 }
 
