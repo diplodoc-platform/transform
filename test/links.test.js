@@ -4,6 +4,8 @@ const links = require('../lib/plugins/links');
 const {callPlugin, tokenize} = require('./utils');
 const {title, customTitle} = require('./data/links');
 
+const {log} = require('./utils');
+
 const callLinksPlugin = callPlugin.bind(null, links);
 
 describe('Links', () => {
@@ -19,6 +21,7 @@ describe('Links', () => {
         ]), {
             path: mocksPath,
             root: dirname(mocksPath),
+            log,
         });
 
         expect(result).toEqual(customTitle);
