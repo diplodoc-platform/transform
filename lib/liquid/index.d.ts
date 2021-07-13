@@ -1,6 +1,6 @@
 export default function liquid(
     originInput: string,
-    vars: Record<string, string>,
+    vars: Record<string, unknown>,
     path: string,
     settings?: {
         conditions?: boolean;
