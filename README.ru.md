@@ -34,6 +34,7 @@ linkify | Делать ли ссылками ссылкоподобные стр
 breaks | Переносить ли строки по символу перевода каретки | bool | true
 conditionsInCode | Выполнять ли условия в блоках кода | bool | false
 disableLiquid | Отключить шаблонизатор| bool | false
+supportGithubAnchors | Генерировать дополнительные якоря совместимые с GitHub (GFM) | bool | false
 
 ### Подключение и вызов
 
@@ -70,7 +71,7 @@ const {result: {html, meta}, logs} = transform(content, {vars, plugins: [cut, su
 
 Имя | Описание | Параметры
 :--- | :--- | :---
-anchors | Добавляет якоря заголовкам | extractTitleOption? = false - нужно ли учитывать заголовок первого уровня
+anchors | Добавляет якоря заголовкам | extractTitleOption? = false - нужно ли учитывать заголовок первого уровня<br>supportGithubAnchors? = false - нужно ли генерировать дополнительные якоря совместимые с GitHub (GFM)
 code | Добавляет кнопку копирования в блоки кода | -
 cut | [Сворачиваемые блоки](./DOCS.ru.md#cutes) | -
 images | [Вставка изображений](./DOCS.ru.md#images) | assetsPublicPath = '/' - путь до расположения иконок<br>root - путь до корня проекта<br>path - путь до текущего трансформируемого файла
