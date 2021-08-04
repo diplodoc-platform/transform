@@ -79,6 +79,8 @@ includes | [Вставки](./DOCS.ru.md#includes) | path - путь до тек
 links | [Расширенные ссылки](./DOCS.ru.md#links) | path - путь до текущего трансформируемого файла<br>root - путь до корня проекта
 notes | [Заметки](./DOCS.ru.md#notes) | lang? = ru - язык, нужен для локализации дефолтных текстов
 tabs | [Табы](./DOCS.ru.md#tabs) | -
+attrs | [markdown-it-attrs](https://www.npmjs.com/package/markdown-it-attrs) | -
+deflist | [markdown-it-deflist](https://www.npmjs.com/package/markdown-it-deflist) | -
 
 Набор плагинов подключаемый по умолчанию: attrs, meta, deflist, cut, alerts, anchors, tabs, code, imsize, sup.
 
