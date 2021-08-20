@@ -57,7 +57,8 @@ You can use any set of plugins provided by this package or any [markdown-it plug
 ```js
 const fs = require('fs');
 const transform = require('@doc-tools/transform');
-const {plugins: {cut, sup}} = require('@doc-tools/transform');
+const cut = require('@doc-tools/transform/lib/plugins/cut');
+const sup = require('@doc-tools/transform/lib/plugins/sup');
 const video = require('markdown-it-video');
 
 const content = fs.readFileSync(filePath, 'utf');
