@@ -475,7 +475,7 @@ Download the app from [Google Play] (https://play.google.com).
 {% endif %}
 ```
 
-Available conditional operators are `if`, `else if`, and `else`. Available comparison operators are `==`, `!=`, `<`, `>`, `<=`, and `>=`.
+Available conditional operators are `if`, `elsif`, and `else`. Available comparison operators are `==`, `!=`, `<`, `>`, `<=`, and `>=`.
 
 ### Filters <a name="filters"></a>
 
