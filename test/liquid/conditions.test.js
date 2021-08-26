@@ -325,5 +325,14 @@ describe('Conditions', () => {
                 ),
             ).toEqual('Prefix Alice Postfix');
         });
+        test('Should supported in inline text', () => {
+            expect(
+                conditions(
+                    'Prefix {% if yandex %} if {% elsif user.name == \'Bob\' %} Bob ' +
+                    '{% elsif user.name == \'Alice\' %} Alice {% endif %} Postfix',
+                    {user: {name: 'Bob'}},
+                ),
+            ).toEqual('Prefix Bob Postfix');
+        });
     });
 });
