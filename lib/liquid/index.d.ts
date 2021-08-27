@@ -7,5 +7,6 @@ export default function liquid(
         conditionsInCode?: boolean;
         cycle?: boolean;
         substitutions?: boolean;
+        withSourceMap?: boolean
     }
-): string;
+): string | {output: string; sourceMap: object};
