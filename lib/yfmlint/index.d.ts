@@ -30,6 +30,7 @@ export interface Options {
     pluginOptions: PluginOptions;
     lintConfig?: LintConfig;
     customLintRules?: LintRule[];
+    sourceMap?: object;
 }
 
 export default function yfmlint(options: Options): void;
