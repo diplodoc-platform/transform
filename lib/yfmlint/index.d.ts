@@ -28,6 +28,7 @@ export interface Options {
     input: string;
     plugins?: Function[];
     pluginOptions: PluginOptions;
+    defaultLintConfig?: LintConfig;
     lintConfig?: LintConfig;
     customLintRules?: LintRule[];
     sourceMap?: object;
