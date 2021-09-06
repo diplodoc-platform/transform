@@ -7,6 +7,13 @@ const vars = {
     test: true,
 };
 
+const getDefaultSourceMap = (linesCount) => {
+    return Array(linesCount).fill('').reduce((acc, cur, index) => {
+        acc[index + 1] = String(index + 1);
+        return acc;
+    }, {});
+};
+
 describe('Check source map after liquid', () => {
     beforeEach(() => {
         log.clear();
@@ -83,5 +90,43 @@ describe('Check source map after liquid', () => {
         const {sourceMap} = liquid(input, vars, testFn, {withSourceMap: true});
 
         expect(sourceMap).toEqual({'1': '1', '4': '5', '11': '7'});
+    });
+
+    it('Should works with fences: 2 lines', () => {
+        const input =
+            /*1*/ 'Prefix\n' +
+            /*2*/ '```' +
+            /*3*/ 'some code there\n' +
+            /*4*/ 'test\n' +
+            /*5*/ '```\n' +
+            /*6*/ 'Postfix';
+
+        const {sourceMap} = liquid(input, vars, testFn, {withSourceMap: true});
+
+        expect(sourceMap).toEqual(getDefaultSourceMap(6));
+    });
+
+    it('Should works with fences: 1 line', () => {
+        const input =
+            /*1*/ 'Prefix\n' +
+            /*2*/ '```' +
+            /*3*/ 'some code there\n' +
+            /*4*/ '```\n' +
+            /*5*/ 'Postfix';
+
+        const {sourceMap} = liquid(input, vars, testFn, {withSourceMap: true});
+
+        expect(sourceMap).toEqual(getDefaultSourceMap(5));
+    });
+
+    it('Should works with fences: inline', () => {
+        const input =
+            /*1*/ 'Prefix\n' +
+            /*2*/ '```some code there```\n' +
+            /*3*/ 'Postfix';
+
+        const {sourceMap} = liquid(input, vars, testFn, {withSourceMap: true});
+
+        expect(sourceMap).toEqual(getDefaultSourceMap(3));
     });
 });
