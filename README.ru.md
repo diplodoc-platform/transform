@@ -25,7 +25,7 @@ Yandex Flavored Markdown (YFM) является диалектом Markdown, к�
 Имя | Описание | Тип | Значение по-умолчанию
 :--- | :--- | :--- | :---
 vars | Переменные | Object | {}
-plugins | Используемые плагины | function[] | alerts, attrs, anchors, code, cut, deflist, imsize, meta, sup, tabs, titles
+plugins | Используемые плагины | function[] | alerts, anchors, code, cut, deflist, meta, sup, tabs, titles
 highlightLangs | Дополнительные языки для подсветки |  {'lang': function} | {}
 extractTitle | Вернуть первый заголовок первого уровня в качестве заголовка всего документа | bool | false
 needTitle | Вернуть первый заголовок первого уровня не удалив его из контента | bool | false
@@ -58,7 +58,8 @@ const {result: {html, meta}, logs} = transform(content, {vars});
 ```js
 const fs = require('fs');
 const transform = require('@doc-tools/transform');
-const {plugins: {cut, sup}} = require('@doc-tools/transform');
+const cut = require('@doc-tools/transform/lib/plugins/cut');
+const sup = require('@doc-tools/transform/lib/plugins/sup');
 const video = require('markdown-it-video');
 
 const content = fs.readFileSync(filePath, 'utf');
@@ -79,14 +80,17 @@ includes | [Вставки](./DOCS.ru.md#includes) | path - путь до тек
 links | [Расширенные ссылки](./DOCS.ru.md#links) | path - путь до текущего трансформируемого файла<br>root - путь до корня проекта
 notes | [Заметки](./DOCS.ru.md#notes) | lang? = ru - язык, нужен для локализации дефолтных текстов
 tabs | [Табы](./DOCS.ru.md#tabs) | -
-attrs | [markdown-it-attrs](https://www.npmjs.com/package/markdown-it-attrs) | -
 deflist | [markdown-it-deflist](https://www.npmjs.com/package/markdown-it-deflist) | -
 
-Набор плагинов подключаемый по умолчанию: attrs, meta, deflist, cut, alerts, anchors, tabs, code, imsize, sup.
+Набор плагинов подключаемый по умолчанию: meta, deflist, cut, alerts, anchors, tabs, code, imsize, sup.
 
 Все плагины принимают опциональным параметром path путь до файла, который будет добавлен в лог ошибок.
 
-### Дополнительные языки для подсветки
+### Подсветка кода
+
+Для работы подсветки кода необходимо установить пакет [highlight.js](https://www.npmjs.com/package/highlight.js).
+
+#### Дополнительные языки для подсветки
 
 Трансформер YFM использует highlight.js для подсветки языков. Вы можете передать дополнительный набор языков,
 который будет зарегистрирован для использования. Набор языков представляет собой обьект, где ключ - это имя языка,

@@ -26,7 +26,7 @@ To build your documentation project in YFM, use the [@doc-tools/docs](https://ww
 | Name | Description | Type | Default value |
 | :--- | :--- | :--- | :--- |
 | vars | Variables | Object | {} |
-| plugins | Plugins in use | function[] | alerts, attrs, anchors, code, cut, deflist, imsize, meta, sup, tabs, titles |
+| plugins | Plugins in use | function[] | alerts, anchors, code, cut, deflist, meta, sup, tabs, titles |
 | highlightLangs | Additional languages for highlighting | {'lang': function} | {} |
 | extractTitle | Return the first title of the first level as the title of the entire document | bool | false |
 | needTitle | Return the first title of the first level without deleting it from the content | bool | false |
@@ -57,7 +57,8 @@ You can use any set of plugins provided by this package or any [markdown-it plug
 ```js
 const fs = require('fs');
 const transform = require('@doc-tools/transform');
-const {plugins: {cut, sup}} = require('@doc-tools/transform');
+const cut = require('@doc-tools/transform/lib/plugins/cut');
+const sup = require('@doc-tools/transform/lib/plugins/sup');
 const video = require('markdown-it-video');
 
 const content = fs.readFileSync(filePath, 'utf');
@@ -79,7 +80,7 @@ const {result: {html, meta}, logs} = transform(content, {vars, plugins: [cut, su
 | notes | [Notes](./DOCS.md#notes) | lang? = ru — Language, needed for localizing default texts |
 | tabs | [Tabs](./DOCS.md#tabs) | - |
 
-A set of plugins added by default: attrs, meta, deflist, cut, alerts, anchors, tabs, code, imsize, sup.
+A set of plugins added by default: meta, deflist, cut, alerts, anchors, tabs, code, imsize, sup.
 
 All plugins accept the path to the file to be added to the error log as an optional path parameter.
 
