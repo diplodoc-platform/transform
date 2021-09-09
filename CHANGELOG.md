@@ -8,7 +8,7 @@
 
 Пакет highlight.js нужно устанавливать самостоятельно.
 
-Плагин [markdown-it-attrs](https://www.npmjs.com/package/markdown-it-attrs) больше не предоставляется из коробки.
+Плагин [markdown-it-attrs](https://www.npmjs.com/package/markdown-it-attrs) теперь подключен всегда.
 
 ## 1.9.0
 
