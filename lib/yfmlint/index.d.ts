@@ -14,6 +14,7 @@ export interface LintConfig {
 export interface LintMarkdownFunctionOptions {
     input: string;
     path: string;
+    sourceMap?: object;
 }
 
 export interface PluginOptions {
