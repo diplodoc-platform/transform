@@ -76,7 +76,7 @@ describe('YFM001', () => {
             lintConfig: merge({}, lintConfig, {
                 'YFM001': {maximum: 5},
                 'log-levels': {
-                    'inline-code-length': 'error',
+                    'YFM001': 'error',
                 },
             }),
         });

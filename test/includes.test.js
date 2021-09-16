@@ -89,8 +89,8 @@ describe('Includes', () => {
 
         lintMarkdown({input, path: mocksPath});
 
-        const errorMessage = log.get().error[0];
-        const expectedCondition = errorMessage.includes('include-lint-test.md: 3: MD033');
+        const errorMessage = log.get().warn[0];
+        const expectedCondition = errorMessage.includes('include-lint-test.md: 3: YFM001/inline-code-length');
 
         expect(expectedCondition).toEqual(true);
     });
