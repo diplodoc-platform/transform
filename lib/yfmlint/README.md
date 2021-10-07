@@ -29,4 +29,12 @@ Aliases: unreachable-link
 
 This rule is triggered when there is no file referenced by the link.
 
+## YFM004 - Link is unreachable, hash does not exist
+
+Tags: links
+
+Aliases: unreachable-link-with-hash
+
+This rule is triggered when the file referenced by the link does not contain a hash.
+
 
