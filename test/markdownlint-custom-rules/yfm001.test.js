@@ -35,7 +35,6 @@ Some text for testing not escaped and not closed quote
 \`
 `.trim();
 
-const testFn = 'test.md';
 const lintConfig = {
     'log-levels': {
         'MD046': 'disabled',
@@ -52,7 +51,7 @@ describe('YFM001', () => {
     it('All inline codes are shorter than value', () => {
         yfmlint({
             input: testInput,
-            pluginOptions: {log, path: testFn},
+            pluginOptions: {log, path: 'test1.md'},
             lintConfig,
         });
 
@@ -62,7 +61,7 @@ describe('YFM001', () => {
     it('All inline codes are longer than value', () => {
         yfmlint({
             input: testInput,
-            pluginOptions: {log, path: testFn},
+            pluginOptions: {log, path: 'test2.md'},
             lintConfig: {...lintConfig, 'YFM001': {maximum: 5}},
         });
 
@@ -72,7 +71,7 @@ describe('YFM001', () => {
     it('Change log level', () => {
         yfmlint({
             input: testInput,
-            pluginOptions: {log, path: testFn},
+            pluginOptions: {log, path: 'test3.md'},
             lintConfig: merge({}, lintConfig, {
                 'YFM001': {maximum: 5},
                 'log-levels': {
