@@ -122,6 +122,7 @@ module.exports = {
                     'attrs': null,
                     'map': null,
                     'nesting': 0,
+                    'prevContent': '{#T}',
                     'level': 1,
                     'children': null,
                     'content': 'Title',
