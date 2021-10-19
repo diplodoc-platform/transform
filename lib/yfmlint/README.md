@@ -29,4 +29,12 @@ Aliases: unreachable-link
 
 This rule is triggered when there is no file referenced by the link.
 
+## YFM004 - Table not closed
+
+Tags: table
+
+Aliases: table-not-closed
+
+This rule is triggered when table don't have close token.
+
 

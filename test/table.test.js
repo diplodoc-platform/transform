@@ -284,6 +284,7 @@ describe('Table plugin', () => {
             '|Cell in column 1, row 3\n' +
             '|Cell in column 2, row 3',
         )).toBe(
+            '<table YFM004="true">\n' +
             '<p>|===<br>\n' +
             '|Cell in column 1, row 1<br>\n' +
             '|Cell in column 2, row 1</p>\n' +
