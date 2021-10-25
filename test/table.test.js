@@ -254,7 +254,7 @@ describe('Table plugin', () => {
             '<tr>\n' +
             '<td>1</td>\n' +
             '<td>\n' +
-            '<pre><code>|===\n' +
+            '<pre><code class="hljs">|===\n' +
             '| 4\n' +
             '| 5\n' +
             '\n' +
