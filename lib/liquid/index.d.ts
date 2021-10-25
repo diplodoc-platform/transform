@@ -19,6 +19,7 @@ export default function liquid(
         conditionsInCode?: boolean;
         cycle?: boolean;
         substitutions?: boolean;
-        withSourceMap: boolean;
+        keepNotVar?: boolean;
+        withSourceMap?: boolean;
     }
 ): {output: string; sourceMap: object};
