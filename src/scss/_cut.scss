@@ -28,12 +28,12 @@
     }
 
     &.open {
-        #{$class}-content {
+        > #{$class}-content {
             padding: 5px 0 15px 30px;
             height: auto;
         }
 
-        #{$class}-title:before {
+        > #{$class}-title:before {
             transform: translateY(-50%);
         }
     }
