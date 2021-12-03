@@ -267,7 +267,7 @@ module.exports = {
             'hidden': false,
         },
         {
-            'type': 'tab-list_open',
+            'type': 'tab-list_close',
             'tag': 'div',
             'map': null,
             'nesting': -1,
@@ -871,7 +871,7 @@ module.exports = {
             'hidden': false,
         },
         {
-            'type': 'tabs_open',
+            'type': 'tabs_close',
             'tag': 'div',
             'map': null,
             'nesting': -1,
