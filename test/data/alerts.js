@@ -68,12 +68,16 @@ function getTokens(title) {
             'hidden': false,
         },
         {
-            'type': 'paragraph_open',
+            'type': 'yfm_note_open',
             'tag': 'div',
             'attrs': [
                 [
                     'class',
                     'yfm-note yfm-accent-info',
+                ],
+                [
+                    'note-type',
+                    'info',
                 ],
             ],
             'map': null,
@@ -88,7 +92,7 @@ function getTokens(title) {
             'hidden': false,
         },
         {
-            'type': 'paragraph_open',
+            'type': 'yfm_note_title_open',
             'tag': 'p',
             'attrs': null,
             'map': null,
@@ -164,7 +168,7 @@ function getTokens(title) {
             'hidden': false,
         },
         {
-            'type': 'paragraph_close',
+            'type': 'yfm_note_title_close',
             'tag': 'p',
             'attrs': null,
             'map': null,
@@ -246,7 +250,7 @@ function getTokens(title) {
             'hidden': false,
         },
         {
-            'type': 'paragraph_close',
+            'type': 'yfm_note_close',
             'tag': 'div',
             'attrs': null,
             'map': null,
