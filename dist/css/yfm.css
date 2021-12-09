@@ -169,13 +169,13 @@
   .yfm ol ul {
     margin-top: 0;
     margin-bottom: 0; }
-  .yfm ol {
+  .yfm:not(.yfm_no-list-reset) ol {
     list-style-type: none;
     counter-reset: list; }
-    .yfm ol > li {
+    .yfm:not(.yfm_no-list-reset) ol > li {
       position: relative;
       counter-increment: list; }
-      .yfm ol > li::before {
+      .yfm:not(.yfm_no-list-reset) ol > li::before {
         position: absolute;
         right: 100%;
         margin-right: 4px;
