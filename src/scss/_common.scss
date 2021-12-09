@@ -259,19 +259,21 @@
         margin-bottom: 0;
     }
 
-    ol {
-        list-style-type: none;
-        counter-reset: list;
-
-        & > li {
-            position: relative;
-            counter-increment: list;
-
-            &::before {
-                position: absolute;
-                right: 100%;
-                margin-right: 4px;
-                content: counters(list, '.') '. ';
+    &:not(.yfm_no-list-reset){
+        ol {
+            list-style-type: none;
+            counter-reset: list;
+    
+            & > li {
+                position: relative;
+                counter-increment: list;
+    
+                &::before {
+                    position: absolute;
+                    right: 100%;
+                    margin-right: 4px;
+                    content: counters(list, '.') '. ';
+                }
             }
         }
     }
