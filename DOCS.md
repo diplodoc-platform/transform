@@ -371,7 +371,7 @@ To use the same content in multiple places:
 1. Insert a link to the file in the document:
 
    ```markdown
-   {% include notitle [Описание](_includes/file.md) %}
+   {% include notitle [Description](_includes/file.md) %}
    ```
 
    Where:
