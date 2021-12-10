@@ -420,7 +420,7 @@ Cuts let you hide content ("cut it"). You can use them in long listings, code ex
 To make a cut, use markdown like:
 
 ```markdown
-{% cut "Заголовок ката" %}
+{% cut "Name of cut" %}
 
 Content we want to hide
 
