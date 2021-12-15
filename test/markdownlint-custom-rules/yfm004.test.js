@@ -4,22 +4,22 @@ const {yfm004} = require('../../lib/yfmlint/markdownlint-custom-rule');
 const {log} = require('../utils');
 
 const tableWithoutCloseToken = `
-|===
-|Cell in column 1, row 1
-|Cell in column 2, row 1
+#|
+|| Cell in column 1, row 1
+|Cell in column 2, row 1 ||
 
-|Cell in column 1, row 2
-|Cell in column 2, row 2
+|| Cell in column 1, row 2
+|Cell in column 2, row 2 ||
 `.trim();
 
 const tableWithCloseToken = `
-|===
-|Cell in column 1, row 1
-|Cell in column 2, row 1
+#|
+|| Cell in column 1, row 1
+|Cell in column 2, row 1 ||
 
-|Cell in column 1, row 2
-|Cell in column 2, row 2
-|===
+|| Cell in column 1, row 2
+|Cell in column 2, row 2 ||
+|#
 `.trim();
 
 const lint = (input) => {
@@ -30,6 +30,7 @@ const lint = (input) => {
             'log-levels': {
                 MD047: 'disabled',
                 YFM004: 'error',
+                MD018: 'disabled',
             },
         },
         customLintRules: [yfm004],
