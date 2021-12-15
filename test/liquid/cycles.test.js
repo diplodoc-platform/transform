@@ -27,7 +27,7 @@ describe('Cycles', () => {
         test('Inline for block', () => {
             expect(
                 liquid(
-                    'Prefix {% for user in users %} {{user}} {% endfor %} Postfix',
+                    'Prefix {% for user in users %}{{user}} {% endfor %}Postfix',
                     vars,
                 ),
             ).toEqual('Prefix Alice Ivan Petr Postfix');
@@ -36,7 +36,7 @@ describe('Cycles', () => {
         test('Nested inline for block', () => {
             expect(
                 liquid(
-                    'Prefix {% for user1 in users %} {% for user2 in users %} {{user1}}+{{user2}} {% endfor %} {% endfor %} Postfix',
+                    'Prefix {% for user1 in users %}{% for user2 in users %}{{user1}}+{{user2}} {% endfor %}{% endfor %}Postfix',
                     vars,
                 ),
             ).toEqual('Prefix Alice+Alice Alice+Ivan Alice+Petr Ivan+Alice Ivan+Ivan Ivan+Petr Petr+Alice Petr+Ivan Petr+Petr Postfix');
@@ -53,15 +53,34 @@ describe('Cycles', () => {
                     vars,
                 ),
             ).toEqual(
-                'Prefix\n' +
-                'Alice\n' +
-                'Ivan\n' +
-                'Petr\n' +
+                'Prefix\n\n' +
+                'Alice\n\n' +
+                'Ivan\n\n' +
+                'Petr\n\n' +
                 'Postfix',
             );
         });
 
-        test('Multiline for block2', () => {
+        test('Multiline for block 2', () => {
+            expect(
+                liquid(
+                    'Prefix\n' +
+                    '    {% for user in users %}\n' +
+                    '    {{user}}\n' +
+                    '    {% endfor %}\n' +
+                    'Postfix',
+                    vars,
+                ),
+            ).toEqual(
+                'Prefix\n    \n' +
+                '    Alice\n    \n' +
+                '    Ivan\n    \n' +
+                '    Petr\n    \n' +
+                'Postfix',
+            );
+        });
+
+        test('Multiline for block 3', () => {
             const input = `
 Prefix 
 
@@ -84,25 +103,50 @@ Postfix
 Prefix 
 
 
+
 ## First project
 
+
 [https://example.com](https://example.com)
+
 * First comment
+
 * Second comment
 
+
+
+
 [https://example2.com](https://example2.com)
+
 * Third comment
+
 * Fourth comment
+
+
+
+
 
 ## Second project
 
+
 [https://example.com](https://example.com)
+
 * First comment
+
 * Second comment
 
+
+
+
 [https://example2.com](https://example2.com)
+
 * Third comment
+
 * Fourth comment
+
+
+
+
 
 Postfix
                 `.trim();
@@ -127,16 +171,16 @@ Postfix
                     vars,
                 ),
             ).toEqual(
-                'Prefix\n' +
-                'Alice+Alice\n' +
-                'Alice+Ivan\n' +
-                'Alice+Petr\n' +
-                'Ivan+Alice\n' +
-                'Ivan+Ivan\n' +
-                'Ivan+Petr\n' +
-                'Petr+Alice\n' +
-                'Petr+Ivan\n' +
-                'Petr+Petr\n' +
+                'Prefix\n\n\n' +
+                'Alice+Alice\n\n' +
+                'Alice+Ivan\n\n' +
+                'Alice+Petr\n\n\n\n' +
+                'Ivan+Alice\n\n' +
+                'Ivan+Ivan\n\n' +
+                'Ivan+Petr\n\n\n\n' +
+                'Petr+Alice\n\n' +
+                'Petr+Ivan\n\n' +
+                'Petr+Petr\n\n\n' +
                 'Postfix',
             );
         });
@@ -147,7 +191,7 @@ Postfix
         test('Test 1', () => {
             expect(
                 liquid(
-                    'Prefix {% for user in users2 %} {% if needCapitalize %} {{user | capitalize}}+{{user2}} {% else %} {{user}} {% endif %} {% endfor %} Postfix',
+                    'Prefix {% for user in users2 %}{% if needCapitalize %}{{user | capitalize}}+{{user2}}{% else %}{{user}}{% endif %} {% endfor %}Postfix',
                     vars,
                 ),
             ).toEqual('Prefix Alice+Alex Ivan+Alex Petr+Alex Postfix');

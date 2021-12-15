@@ -34,14 +34,20 @@ describe('Check source map after liquid', () => {
         /*
               New line                 Source line
               1    Prefix              1  Prefix
-              2    Alice               3  {{user}}
-              3    Ivan                -
-              4    Petr                -
-              5    How are you?        6  How are you?
-              6    Postfix             8  Postfix
+              2
+              3    Alice               3  {{user}}
+              4
+              5    Ivan
+              6
+              7    Petr
+              8
+              9
+              10    How are you?       6  How are you?
+              11
+              12    Postfix            8  Postfix
          */
 
-        expect(sourceMap).toEqual({'1': '1', '2': '3', '5': '6', '6': '8'});
+        expect(sourceMap).toEqual({'1': '1', '3': '3', '10': '6', '12': '8'});
     });
 
     it('Should works with two conditions in a row', () => {
@@ -55,7 +61,49 @@ describe('Check source map after liquid', () => {
 
         const {sourceMap} = liquid(input, vars, testFn, {withSourceMap: true});
 
-        expect(sourceMap).toEqual({'1': '2', '2': '5'});
+        expect(sourceMap).toEqual({'2': '2', '5': '5'});
+    });
+
+    it('Should works with two conditions in a row', () => {
+        const input =
+            /*1*/ '{% if test %}\n' +
+            /*2*/ '    How are you?\n' +
+            /*3*/ '{% endif %}\n' +
+            /*4*/ '{% if test %}\n' +
+            /*5*/ '    How are you?\n' +
+            /*6*/ '{% endif %}';
+
+        const {sourceMap} = liquid(input, vars, testFn, {withSourceMap: true});
+
+        expect(sourceMap).toEqual({'2': '2', '5': '5'});
+    });
+
+    it('Should works with negative condition', () => {
+        const input =
+            /*1*/ 'Prefix\n' +
+            /*2*/ '{% if lie %}\n' +
+            /*3*/ '    How are you?\n' +
+            /*4*/ '{% endif %}\n' +
+            /*5*/ 'Postfix';
+
+        const {sourceMap} = liquid(input, vars, testFn, {withSourceMap: true});
+
+        expect(sourceMap).toEqual({'1': '1', '2': '5'});
+    });
+
+    it('Should works with else condition', () => {
+        const input =
+            /*1*/ 'Prefix\n' +
+            /*2*/ '{% if lie %}\n' +
+            /*3*/ 'How are you?\n' +
+            /*4*/ '{% else %}\n' +
+            /*5*/ 'Fine\n' +
+            /*6*/ '{% endif %}\n' +
+            /*7*/ 'Postfix';
+
+        const {sourceMap} = liquid(input, vars, testFn, {withSourceMap: true});
+
+        expect(sourceMap).toEqual({'1': '1', '3': '5', '5': '7'});
     });
 
     it('Should works with nested conditions', () => {
@@ -74,7 +122,7 @@ describe('Check source map after liquid', () => {
 
         const {sourceMap} = liquid(input, vars, testFn, {withSourceMap: true});
 
-        expect(sourceMap).toEqual({'1': '1', '2': '3', '5': '9', '6': '11'});
+        expect(sourceMap).toEqual({'1': '1', '3': '3', '10': '9', '12': '11'});
     });
 
     it('Should works with nested cycles', () => {
@@ -89,7 +137,7 @@ describe('Check source map after liquid', () => {
 
         const {sourceMap} = liquid(input, vars, testFn, {withSourceMap: true});
 
-        expect(sourceMap).toEqual({'1': '1', '4': '5', '11': '7'});
+        expect(sourceMap).toEqual({'1': '1', '4': '4', '27': '7'});
     });
 
     it('Should works with fences: 2 lines', () => {
