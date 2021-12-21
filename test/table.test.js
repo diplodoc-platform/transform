@@ -11,31 +11,53 @@ const transformYfm = (text) => {
 };
 
 describe('Table plugin', () => {
-    it('should render simple table', () => {
-        expect(transformYfm(
-            '|===\n' +
-            '|Cell in column 1, row 1\n' +
-            '|Cell in column 2, row 1\n' +
-            '\n' +
-            '|Cell in column 1, row 2\n' +
-            '|Cell in column 2, row 2\n' +
-            '\n' +
-            '|Cell in column 1, row 3\n' +
-            '|Cell in column 2, row 3\n' +
-            '|===',
-        )).toBe(
+    it('should render simple inline table', () => {
+        expect(transformYfm('#|\n||1|2||\n||3|4||\n|#')).toBe(
             '<table>\n' +
             '<tbody>\n' +
             '<tr>\n' +
-            '<td>Cell in column 1, row 1</td>\n' +
+            '<td>1</td>\n' +
+            '<td>2</td>\n' +
+            '</tr>\n' +
+            '<tr>\n' +
+            '<td>3</td>\n' +
+            '<td>4</td>\n' +
+            '</tr>\n' +
+            '</tbody>\n' +
+            '</table>\n',
+        );
+    });
+    it('should render simple table', () => {
+        expect(
+            transformYfm(
+                '#|\n' +
+                '||Cell in column 1, row 1\n' +
+                '|Cell in column 2, row 1||\n' +
+                '||Cell in column 1, row 2\n' +
+                '|Cell in column 2, row 2||\n' +
+                '||Cell in column 1, row 3\n' +
+                '|Cell in column 2, row 3||\n' +
+                '|#',
+            ),
+        ).toBe(
+            '<table>\n' +
+            '<tbody>\n' +
+            '<tr>\n' +
+            '<td>\n' +
+            '<p>Cell in column 1, row 1</p>\n' +
+            '</td>\n' +
             '<td>Cell in column 2, row 1</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
-            '<td>Cell in column 1, row 2</td>\n' +
+            '<td>\n' +
+            '<p>Cell in column 1, row 2</p>\n' +
+            '</td>\n' +
             '<td>Cell in column 2, row 2</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
-            '<td>Cell in column 1, row 3</td>\n' +
+            '<td>\n' +
+            '<p>Cell in column 1, row 3</p>\n' +
+            '</td>\n' +
             '<td>Cell in column 2, row 3</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
@@ -43,28 +65,33 @@ describe('Table plugin', () => {
         );
     });
     it('should render table between paragraphs', () => {
-        expect(transformYfm(
-            'Text\n' +
-            '\n' +
-            '|===\n' +
-            '|Cell in column 1, row 1\n' +
-            '|Cell in column 2, row 1\n' +
-            '\n' +
-            '|Cell in column 1, row 2\n' +
-            '|Cell in column 2, row 2\n' +
-            '|===\n' +
-            '\n' +
-            'Text',
-        )).toBe(
+        expect(
+            transformYfm(
+                'Text\n' +
+                '\n' +
+                '#|\n' +
+                '||Cell in column 1, row 1\n' +
+                '|Cell in column 2, row 1||\n' +
+                '||Cell in column 1, row 2\n' +
+                '|Cell in column 2, row 2||\n' +
+                '|#\n' +
+                '\n' +
+                'Text',
+            ),
+        ).toBe(
             '<p>Text</p>\n' +
             '<table>\n' +
             '<tbody>\n' +
             '<tr>\n' +
-            '<td>Cell in column 1, row 1</td>\n' +
+            '<td>\n' +
+            '<p>Cell in column 1, row 1</p>\n' +
+            '</td>\n' +
             '<td>Cell in column 2, row 1</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
-            '<td>Cell in column 1, row 2</td>\n' +
+            '<td>\n' +
+            '<p>Cell in column 1, row 2</p>\n' +
+            '</td>\n' +
             '<td>Cell in column 2, row 2</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
@@ -73,30 +100,36 @@ describe('Table plugin', () => {
         );
     });
     it('should render table with inline elements', () => {
-        expect(transformYfm(
-            '|===\n' +
-            '|**bold**\n' +
-            '|_italic_\n' +
-            '\n' +
-            '|_**bold and italic**_\n' +
-            '|`code snippet`\n' +
-            '\n' +
-            '| ![alt text](image.png)\n' +
-            '| [link to README.md](README.md)\n' +
-            '|===',
-        )).toBe(
+        expect(
+            transformYfm(
+                '#|\n' +
+                '||**bold**\n' +
+                '|_italic_||\n' +
+                '||_**bold and italic**_\n' +
+                '|`code snippet`||\n' +
+                '|| ![alt text](image.png)\n' +
+                '| [link to README.md](README.md)||\n' +
+                '|#',
+            ),
+        ).toBe(
             '<table>\n' +
             '<tbody>\n' +
             '<tr>\n' +
-            '<td><strong>bold</strong></td>\n' +
+            '<td>\n' +
+            '<p><strong>bold</strong></p>\n' +
+            '</td>\n' +
             '<td><em>italic</em></td>\n' +
             '</tr>\n' +
             '<tr>\n' +
-            '<td><em><strong>bold and italic</strong></em></td>\n' +
+            '<td>\n' +
+            '<p><em><strong>bold and italic</strong></em></p>\n' +
+            '</td>\n' +
             '<td><code>code snippet</code></td>\n' +
             '</tr>\n' +
             '<tr>\n' +
-            '<td><img src="image.png" alt="alt text"></td>\n' +
+            '<td>\n' +
+            '<p><img src="image.png" alt="alt text"></p>\n' +
+            '</td>\n' +
             '<td><a href="README.md">link to README.md</a></td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
@@ -104,30 +137,28 @@ describe('Table plugin', () => {
         );
     });
     it('should render table with block elements', () => {
-        expect(transformYfm(
-            '|===\n' +
-            '|Text with\n' +
-            'new line\n' +
-            '|- Element 1\n' +
-            '- Element 2\n' +
-            '- Element 3\n' +
-            '- Element 4\n' +
-            '\n' +
-            '|\n' +
-            '- Element 1\n' +
-            '   - Element A\n' +
-            '   - Element B\n' +
-            '- Element 2\n' +
-            '|Left column | Right column | Center column\n' +
-            ':--- | ---: | :---:\n' +
-            'Text | Text | Text\n' +
-            '\n' +
-            '| test\n' +
-            '# h1\n' +
-            'test\n' +
-            '|test\n' +
-            '|===\n',
-        )).toBe(
+        expect(
+            transformYfm(
+                '#|\n' +
+                '||Text with\n' +
+                'new line\n' +
+                '|- Element 1\n' +
+                '- Element 2\n' +
+                '- Element 3\n' +
+                '- Element 4||\n' +
+                '||\n' +
+                '- Element 1\n' +
+                '   - Element A\n' +
+                '   - Element B\n' +
+                '- Element 2\n' +
+                'test||\n' +
+                '|| test\n' +
+                '# h1\n' +
+                'test\n' +
+                '|test||\n' +
+                '|#\n',
+            ),
+        ).toBe(
             '<table>\n' +
             '<tbody>\n' +
             '<tr>\n' +
@@ -153,27 +184,11 @@ describe('Table plugin', () => {
             '<li>Element B</li>\n' +
             '</ul>\n' +
             '</li>\n' +
-            '<li>Element 2</li>\n' +
+            '<li>Element 2<br>\n' +
+            'test</li>\n' +
             '</ul>\n' +
             '</td>\n' +
-            '<td>\n' +
-            '<table>\n' +
-            '<thead>\n' +
-            '<tr>\n' +
-            '<th style="text-align:left">Left column</th>\n' +
-            '<th style="text-align:right">Right column</th>\n' +
-            '<th style="text-align:center">Center column</th>\n' +
-            '</tr>\n' +
-            '</thead>\n' +
-            '<tbody>\n' +
-            '<tr>\n' +
-            '<td style="text-align:left">Text</td>\n' +
-            '<td style="text-align:right">Text</td>\n' +
-            '<td style="text-align:center">Text</td>\n' +
-            '</tr>\n' +
-            '</tbody>\n' +
-            '</table>\n' +
-            '</td>\n' +
+            '<td></td>\n' +
             '</tr>\n' +
             '<tr>\n' +
             '<td>\n' +
@@ -188,30 +203,35 @@ describe('Table plugin', () => {
         );
     });
     it('should render two tables', () => {
-        expect(transformYfm(
-            '|===\n' +
-            '| 1\n' +
-            '| 2\n' +
-            '\n' +
-            '| 3\n' +
-            '| 4\n' +
-            '|===\n' +
-            '|===\n' +
-            '| 5\n' +
-            '| 6\n' +
-            '\n' +
-            '| 7\n' +
-            '| 8\n' +
-            '|===',
-        )).toBe(
+        expect(
+            transformYfm(
+                '#|\n' +
+                '|| 1\n' +
+                '| 2||\n' +
+                '|| 3\n' +
+                '| 4||\n' +
+                '|#\n' +
+                '\n' +
+                '#|\n' +
+                '|| 5\n' +
+                '| 6||\n' +
+                '|| 7\n' +
+                '| 8||\n' +
+                '|#',
+            ),
+        ).toBe(
             '<table>\n' +
             '<tbody>\n' +
             '<tr>\n' +
-            '<td>1</td>\n' +
+            '<td>\n' +
+            '<p>1</p>\n' +
+            '</td>\n' +
             '<td>2</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
-            '<td>3</td>\n' +
+            '<td>\n' +
+            '<p>3</p>\n' +
+            '</td>\n' +
             '<td>4</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
@@ -219,11 +239,15 @@ describe('Table plugin', () => {
             '<table>\n' +
             '<tbody>\n' +
             '<tr>\n' +
-            '<td>5</td>\n' +
+            '<td>\n' +
+            '<p>5</p>\n' +
+            '</td>\n' +
             '<td>6</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
-            '<td>7</td>\n' +
+            '<td>\n' +
+            '<p>7</p>\n' +
+            '</td>\n' +
             '<td>8</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
@@ -231,41 +255,46 @@ describe('Table plugin', () => {
         );
     });
     it('should not render table inside code', () => {
-        expect(transformYfm(
-            '|===\n' +
-            '| 1\n' +
-            '|\n' +
-            '```\n' +
-            '|===\n' +
-            '| 4\n' +
-            '| 5\n' +
-            '\n' +
-            '| 6\n' +
-            '| 7\n' +
-            '|===\n' +
-            '```\n' +
-            '\n' +
-            '| 2\n' +
-            '| 3\n' +
-            '|===',
-        )).toBe(
+        expect(
+            transformYfm(
+                '#|\n' +
+                '|| 1\n' +
+                '|\n' +
+                '```\n' +
+                '#|\n' +
+                '|| 4\n' +
+                '| 5||\n' +
+                '\n' +
+                '|| 6\n' +
+                '| 7||\n' +
+                '|#\n' +
+                '```||\n' +
+                '|| 2\n' +
+                '| 3||\n' +
+                '|#',
+            ),
+        ).toBe(
             '<table>\n' +
             '<tbody>\n' +
             '<tr>\n' +
-            '<td>1</td>\n' +
             '<td>\n' +
-            '<pre><code>|===\n' +
-            '| 4\n' +
-            '| 5\n' +
+            '<p>1</p>\n' +
+            '</td>\n' +
+            '<td>\n' +
+            '<pre><code>#|\n' +
+            '|| 4\n' +
+            '| 5||\n' +
             '\n' +
-            '| 6\n' +
-            '| 7\n' +
-            '|===\n' +
+            '|| 6\n' +
+            '| 7||\n' +
+            '|#\n' +
             '</code></pre>\n' +
             '</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
-            '<td>2</td>\n' +
+            '<td>\n' +
+            '<p>2</p>\n' +
+            '</td>\n' +
             '<td>3</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
@@ -273,63 +302,277 @@ describe('Table plugin', () => {
         );
     });
     it('should not render table without close token', () => {
-        expect(transformYfm(
-            '|===\n' +
-            '|Cell in column 1, row 1\n' +
-            '|Cell in column 2, row 1\n' +
-            '\n' +
-            '|Cell in column 1, row 2\n' +
-            '|Cell in column 2, row 2\n' +
-            '\n' +
-            '|Cell in column 1, row 3\n' +
-            '|Cell in column 2, row 3',
-        )).toBe(
+        expect(
+            transformYfm(
+                '#|\n' +
+                '||Cell in column 1, row 1\n' +
+                '|Cell in column 2, row 1||\n' +
+                '||Cell in column 1, row 2\n' +
+                '|Cell in column 2, row 2||\n' +
+                '||Cell in column 1, row 3\n' +
+                '|Cell in column 2, row 3||',
+            ),
+        ).toBe(
             '<table YFM004="true">\n' +
-            '<p>|===<br>\n' +
-            '|Cell in column 1, row 1<br>\n' +
-            '|Cell in column 2, row 1</p>\n' +
-            '<p>|Cell in column 1, row 2<br>\n' +
-            '|Cell in column 2, row 2</p>\n' +
-            '<p>|Cell in column 1, row 3<br>\n' +
-            '|Cell in column 2, row 3</p>\n',
+            '<p>#|<br>\n' +
+            '||Cell in column 1, row 1<br>\n' +
+            '|Cell in column 2, row 1||<br>\n' +
+            '||Cell in column 1, row 2<br>\n' +
+            '|Cell in column 2, row 2||<br>\n' +
+            '||Cell in column 1, row 3<br>\n' +
+            '|Cell in column 2, row 3||</p>\n',
         );
     });
     it('should not render table without open token', () => {
-        expect(transformYfm('|Cell in column 1, row 1\n' +
-            '|Cell in column 2, row 1\n' +
-            '\n' +
-            '|Cell in column 1, row 2\n' +
-            '|Cell in column 2, row 2\n' +
-            '|===\n' +
-            '\n' +
-            'Test',
-        )).toBe(
-            '<p>|Cell in column 1, row 1<br>\n' +
-            '|Cell in column 2, row 1</p>\n' +
-            '<p>|Cell in column 1, row 2<br>\n' +
+        expect(
+            transformYfm(
+                '||Cell in column 1, row 1\n' +
+                '|Cell in column 2, row 1\n' +
+                '||Cell in column 1, row 2\n' +
+                '|Cell in column 2, row 2\n' +
+                '|#\n' +
+                '\n' +
+                'Test',
+            ),
+        ).toBe(
+            '<p>||Cell in column 1, row 1<br>\n' +
+            '|Cell in column 2, row 1<br>\n' +
+            '||Cell in column 1, row 2<br>\n' +
             '|Cell in column 2, row 2<br>\n' +
-            '|===</p>\n' +
+            '|#</p>\n' +
             '<p>Test</p>\n',
         );
     });
     it('should not render table if no empty line before table', () => {
-        expect(transformYfm(
-            'Test\n' +
-            '|===\n' +
-            '|Cell in column 1, row 1\n' +
-            '|Cell in column 2, row 1\n' +
-            '\n' +
-            '|Cell in column 1, row 2\n' +
-            '|Cell in column 2, row 2\n' +
-            '|===',
-        )).toBe(
+        expect(
+            transformYfm(
+                'Test\n' +
+                '#|\n' +
+                '||Cell in column 1, row 1\n' +
+                '|Cell in column 2, row 1||\n' +
+                '\n' +
+                '||Cell in column 1, row 2\n' +
+                '|Cell in column 2, row 2||\n' +
+                '|#',
+            ),
+        ).toBe(
+
             '<p>Test<br>\n' +
-            '|===<br>\n' +
-            '|Cell in column 1, row 1<br>\n' +
-            '|Cell in column 2, row 1</p>\n' +
-            '<p>|Cell in column 1, row 2<br>\n' +
-            '|Cell in column 2, row 2<br>\n' +
-            '|===</p>\n',
+            '#|<br>\n' +
+            '||Cell in column 1, row 1<br>\n' +
+            '|Cell in column 2, row 1||</p>\n' +
+            '<p>||Cell in column 1, row 2<br>\n' +
+            '|Cell in column 2, row 2||<br>\n' +
+            '|#</p>\n',
+        );
+    });
+    it('should render table inside table', () => {
+        expect(
+            transformYfm(
+                '#|\n' +
+                '|| 1\n' +
+                '|\n' +
+                '\n' +
+                'test\n' +
+                '\n' +
+                '#|\n' +
+                '|| 5\n' +
+                '| 6||\n' +
+                '|| 7\n' +
+                '| 8||\n' +
+                '|#\n' +
+                '\n' +
+                'test||\n' +
+                '|| 3\n' +
+                '| 4||\n' +
+                '|#',
+            ),
+        ).toBe(
+            '<table>\n' +
+            '<tbody>\n' +
+            '<tr>\n' +
+            '<td>\n' +
+            '<p>1</p>\n' +
+            '</td>\n' +
+            '<td>\n' +
+            '<p>test</p>\n' +
+            '<table>\n' +
+            '<tbody>\n' +
+            '<tr>\n' +
+            '<td>\n' +
+            '<p>5</p>\n' +
+            '</td>\n' +
+            '<td>6</td>\n' +
+            '</tr>\n' +
+            '<tr>\n' +
+            '<td>\n' +
+            '<p>7</p>\n' +
+            '</td>\n' +
+            '<td>8</td>\n' +
+            '</tr>\n' +
+            '</tbody>\n' +
+            '</table>\n' +
+            '<p>test</p>\n' +
+            '</td>\n' +
+            '</tr>\n' +
+            '<tr>\n' +
+            '<td>\n' +
+            '<p>3</p>\n' +
+            '</td>\n' +
+            '<td>4</td>\n' +
+            '</tr>\n' +
+            '</tbody>\n' +
+            '</table>\n',
+        );
+    });
+    it('should render table with spaces after new line', () => {
+        expect(
+            transformYfm(
+                '   #|\n' +
+                '  || row 1 col 1\n' +
+                '   | row 1 col 2||\n' +
+                '  || row 2 col 1\n' +
+                ' | row 2 col 2 ||\n' +
+                '    |#',
+            ),
+        ).toBe(
+            '<table>\n' +
+            '<tbody>\n' +
+            '<tr>\n' +
+            '<td>\n' +
+            '<p>row 1 col 1</p>\n' +
+            '</td>\n' +
+            '<td>row 1 col 2</td>\n' +
+            '</tr>\n' +
+            '<tr>\n' +
+            '<td>\n' +
+            '<p>row 2 col 1</p>\n' +
+            '</td>\n' +
+            '<td>row 2 col 2</td>\n' +
+            '</tr>\n' +
+            '</tbody>\n' +
+            '</table>\n',
+        );
+    });
+    it('should add empty cells', () => {
+        expect(
+            transformYfm(
+                '#|\n' +
+                '|| row 1 col 1\n' +
+                '| row 1 col 2||\n' +
+                '|| row 2 col 1\n' +
+                '| row 2 col 2||\n' +
+                '|| row 3 col 1\n' +
+                '| row 3 col 2\n' +
+                '| row 3 col 3||\n' +
+                '|#',
+            ),
+        ).toBe(
+            '<table>\n' +
+            '<tbody>\n' +
+            '<tr>\n' +
+            '<td>\n' +
+            '<p>row 1 col 1</p>\n' +
+            '</td>\n' +
+            '<td>row 1 col 2</td>\n' +
+            '<td></td>\n' +
+            '</tr>\n' +
+            '<tr>\n' +
+            '<td>\n' +
+            '<p>row 2 col 1</p>\n' +
+            '</td>\n' +
+            '<td>row 2 col 2</td>\n' +
+            '<td></td>\n' +
+            '</tr>\n' +
+            '<tr>\n' +
+            '<td>\n' +
+            '<p>row 3 col 1</p>\n' +
+            '</td>\n' +
+            '<td>\n' +
+            '<p>row 3 col 2</p>\n' +
+            '</td>\n' +
+            '<td>row 3 col 3</td>\n' +
+            '</tr>\n' +
+            '</tbody>\n' +
+            '</table>\n',
+        );
+    });
+    it('should render table inside quote on each line', () => {
+        expect(
+            transformYfm(
+                '> #|\n' +
+                '> ||Cell in column 1, row 1\n' +
+                '> |Cell in column 2, row 1||\n' +
+                '> ||Cell in column 1, row 2\n' +
+                '> |Cell in column 2, row 2||\n' +
+                '> ||Cell in column 1, row 3\n' +
+                '> |Cell in column 2, row 3||\n' +
+                '> |#',
+            ),
+        ).toBe(
+            '<blockquote>\n' +
+            '<table>\n' +
+            '<tbody>\n' +
+            '<tr>\n' +
+            '<td>\n' +
+            '<p>Cell in column 1, row 1</p>\n' +
+            '</td>\n' +
+            '<td>Cell in column 2, row 1</td>\n' +
+            '</tr>\n' +
+            '<tr>\n' +
+            '<td>\n' +
+            '<p>Cell in column 1, row 2</p>\n' +
+            '</td>\n' +
+            '<td>Cell in column 2, row 2</td>\n' +
+            '</tr>\n' +
+            '<tr>\n' +
+            '<td>\n' +
+            '<p>Cell in column 1, row 3</p>\n' +
+            '</td>\n' +
+            '<td>Cell in column 2, row 3</td>\n' +
+            '</tr>\n' +
+            '</tbody>\n' +
+            '</table>\n' +
+            '</blockquote>\n',
+        );
+    });
+    it('should correct render escaped cells', () => {
+        expect(transformYfm('#|\n||1 \\| 1.1|2||\n||3|4||\n|#')).toBe(
+            '<table>\n' +
+            '<tbody>\n' +
+            '<tr>\n' +
+            '<td>1 | 1.1</td>\n' +
+            '<td>2</td>\n' +
+            '</tr>\n' +
+            '<tr>\n' +
+            '<td>3</td>\n' +
+            '<td>4</td>\n' +
+            '</tr>\n' +
+            '</tbody>\n' +
+            '</table>\n',
+        );
+    });
+    it('should correct render escaped rows', () => {
+        expect(
+            transformYfm(
+                '#|\n' +
+                '|| cell text \\|| cell text ||\n' +
+                '|| cell text | cell text ||\n' +
+                '|#',
+            ),
+        ).toBe(
+            '<table>\n' +
+            '<tbody>\n' +
+            '<tr>\n' +
+            '<td>cell text |</td>\n' +
+            '<td>cell text</td>\n' +
+            '</tr>\n' +
+            '<tr>\n' +
+            '<td>cell text</td>\n' +
+            '<td>cell text</td>\n' +
+            '</tr>\n' +
+            '</tbody>\n' +
+            '</table>\n',
         );
     });
 });
