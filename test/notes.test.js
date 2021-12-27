@@ -4,6 +4,18 @@ const {base, customTitle, emptyTitle} = require('./data/alerts');
 
 const callAlertsPlugin = callPlugin.bind(null, alerts);
 
+const transform = require('../lib');
+const notes = require('../lib/plugins/notes');
+
+const transformYfm = (text) => {
+    const {
+        result: {html},
+    } = transform(text, {
+        plugins: [notes],
+    });
+    return html;
+};
+
 describe('Alerts', () => {
     test('Should transform to new tokens', () => {
         const result = callAlertsPlugin(tokenize([
@@ -73,5 +85,63 @@ describe('Alerts', () => {
         ]), {});
 
         expect(result).toEqual(emptyTitle);
+    });
+
+    test('should render simple note', () => {
+        expect(transformYfm(
+            '{% note info "Note title" %}\n' +
+            '\n' +
+            'Note content\n' +
+            '\n' +
+            '{% endnote %}',
+        )).toBe(
+            '<div class="yfm-note yfm-accent-info" note-type="info"><p><strong>Note title</strong></p>\n' +
+            '<p>Note content</p>\n' +
+            '</div>',
+        );
+    });
+
+    test('should render siblings notes', () => {
+        expect(transformYfm(
+            '{% note info "Note title 1" %}\n' +
+            '\n' +
+            'Note content 1\n' +
+            '\n' +
+            '{% endnote %}\n' +
+            '\n' +
+            '{% note info "Note title 2" %}\n' +
+            '\n' +
+            'Note content 2\n' +
+            '\n' +
+            '{% endnote %}',
+        )).toBe(
+            '<div class="yfm-note yfm-accent-info" note-type="info"><p><strong>Note title 1</strong></p>\n' +
+            '<p>Note content 1</p>\n' +
+            '</div><div class="yfm-note yfm-accent-info" note-type="info"><p><strong>Note title 2</strong></p>\n' +
+            '<p>Note content 2</p>\n' +
+            '</div>',
+        );
+    });
+
+    test('should render nested notes', () => {
+        expect(transformYfm(
+            '{% note info "Outer title" %}\n' +
+            '\n' +
+            'Outer content\n' +
+            '\n' +
+            '{% note info "Inner title" %}\n' +
+            '\n' +
+            'Inner content\n' +
+            '\n' +
+            '{% endnote %}\n' +
+            '\n' +
+            '{% endnote %}',
+        )).toBe(
+            '<div class="yfm-note yfm-accent-info" note-type="info"><p><strong>Outer title</strong></p>\n' +
+            '<p>Outer content</p>\n' +
+            '<div class="yfm-note yfm-accent-info" note-type="info"><p><strong>Inner title</strong></p>\n' +
+            '<p>Inner content</p>\n' +
+            '</div></div>',
+        );
     });
 });
