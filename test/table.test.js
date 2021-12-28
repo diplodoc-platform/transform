@@ -16,12 +16,20 @@ describe('Table plugin', () => {
             '<table>\n' +
             '<tbody>\n' +
             '<tr>\n' +
-            '<td>1</td>\n' +
-            '<td>2</td>\n' +
+            '<td>\n' +
+            '<p>1</p>\n' +
+            '</td>\n' +
+            '<td>\n' +
+            '<p>2</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
-            '<td>3</td>\n' +
-            '<td>4</td>\n' +
+            '<td>\n' +
+            '<p>3</p>\n' +
+            '</td>\n' +
+            '<td>\n' +
+            '<p>4</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
             '</table>\n',
@@ -46,19 +54,25 @@ describe('Table plugin', () => {
             '<td>\n' +
             '<p>Cell in column 1, row 1</p>\n' +
             '</td>\n' +
-            '<td>Cell in column 2, row 1</td>\n' +
+            '<td>\n' +
+            '<p>Cell in column 2, row 1</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
             '<td>\n' +
             '<p>Cell in column 1, row 2</p>\n' +
             '</td>\n' +
-            '<td>Cell in column 2, row 2</td>\n' +
+            '<td>\n' +
+            '<p>Cell in column 2, row 2</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
             '<td>\n' +
             '<p>Cell in column 1, row 3</p>\n' +
             '</td>\n' +
-            '<td>Cell in column 2, row 3</td>\n' +
+            '<td>\n' +
+            '<p>Cell in column 2, row 3</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
             '</table>\n',
@@ -86,13 +100,17 @@ describe('Table plugin', () => {
             '<td>\n' +
             '<p>Cell in column 1, row 1</p>\n' +
             '</td>\n' +
-            '<td>Cell in column 2, row 1</td>\n' +
+            '<td>\n' +
+            '<p>Cell in column 2, row 1</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
             '<td>\n' +
             '<p>Cell in column 1, row 2</p>\n' +
             '</td>\n' +
-            '<td>Cell in column 2, row 2</td>\n' +
+            '<td>\n' +
+            '<p>Cell in column 2, row 2</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
             '</table>\n' +
@@ -118,19 +136,25 @@ describe('Table plugin', () => {
             '<td>\n' +
             '<p><strong>bold</strong></p>\n' +
             '</td>\n' +
-            '<td><em>italic</em></td>\n' +
+            '<td>\n' +
+            '<p><em>italic</em></p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
             '<td>\n' +
             '<p><em><strong>bold and italic</strong></em></p>\n' +
             '</td>\n' +
-            '<td><code>code snippet</code></td>\n' +
+            '<td>\n' +
+            '<p><code>code snippet</code></p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
             '<td>\n' +
             '<p><img src="image.png" alt="alt text"></p>\n' +
             '</td>\n' +
-            '<td><a href="README.md">link to README.md</a></td>\n' +
+            '<td>\n' +
+            '<p><a href="README.md">link to README.md</a></p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
             '</table>\n',
@@ -196,7 +220,9 @@ describe('Table plugin', () => {
             '<h1>h1</h1>\n' +
             '<p>test</p>\n' +
             '</td>\n' +
-            '<td>test</td>\n' +
+            '<td>\n' +
+            '<p>test</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
             '</table>\n',
@@ -226,13 +252,17 @@ describe('Table plugin', () => {
             '<td>\n' +
             '<p>1</p>\n' +
             '</td>\n' +
-            '<td>2</td>\n' +
+            '<td>\n' +
+            '<p>2</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
             '<td>\n' +
             '<p>3</p>\n' +
             '</td>\n' +
-            '<td>4</td>\n' +
+            '<td>\n' +
+            '<p>4</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
             '</table>\n' +
@@ -242,13 +272,17 @@ describe('Table plugin', () => {
             '<td>\n' +
             '<p>5</p>\n' +
             '</td>\n' +
-            '<td>6</td>\n' +
+            '<td>\n' +
+            '<p>6</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
             '<td>\n' +
             '<p>7</p>\n' +
             '</td>\n' +
-            '<td>8</td>\n' +
+            '<td>\n' +
+            '<p>8</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
             '</table>\n',
@@ -295,7 +329,9 @@ describe('Table plugin', () => {
             '<td>\n' +
             '<p>2</p>\n' +
             '</td>\n' +
-            '<td>3</td>\n' +
+            '<td>\n' +
+            '<p>3</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
             '</table>\n',
@@ -402,13 +438,17 @@ describe('Table plugin', () => {
             '<td>\n' +
             '<p>5</p>\n' +
             '</td>\n' +
-            '<td>6</td>\n' +
+            '<td>\n' +
+            '<p>6</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
             '<td>\n' +
             '<p>7</p>\n' +
             '</td>\n' +
-            '<td>8</td>\n' +
+            '<td>\n' +
+            '<p>8</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
             '</table>\n' +
@@ -419,7 +459,9 @@ describe('Table plugin', () => {
             '<td>\n' +
             '<p>3</p>\n' +
             '</td>\n' +
-            '<td>4</td>\n' +
+            '<td>\n' +
+            '<p>4</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
             '</table>\n',
@@ -442,13 +484,17 @@ describe('Table plugin', () => {
             '<td>\n' +
             '<p>row 1 col 1</p>\n' +
             '</td>\n' +
-            '<td>row 1 col 2</td>\n' +
+            '<td>\n' +
+            '<p>row 1 col 2</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
             '<td>\n' +
             '<p>row 2 col 1</p>\n' +
             '</td>\n' +
-            '<td>row 2 col 2</td>\n' +
+            '<td>\n' +
+            '<p>row 2 col 2</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
             '</table>\n',
@@ -474,14 +520,18 @@ describe('Table plugin', () => {
             '<td>\n' +
             '<p>row 1 col 1</p>\n' +
             '</td>\n' +
-            '<td>row 1 col 2</td>\n' +
+            '<td>\n' +
+            '<p>row 1 col 2</p>\n' +
+            '</td>\n' +
             '<td></td>\n' +
             '</tr>\n' +
             '<tr>\n' +
             '<td>\n' +
             '<p>row 2 col 1</p>\n' +
             '</td>\n' +
-            '<td>row 2 col 2</td>\n' +
+            '<td>\n' +
+            '<p>row 2 col 2</p>\n' +
+            '</td>\n' +
             '<td></td>\n' +
             '</tr>\n' +
             '<tr>\n' +
@@ -491,7 +541,9 @@ describe('Table plugin', () => {
             '<td>\n' +
             '<p>row 3 col 2</p>\n' +
             '</td>\n' +
-            '<td>row 3 col 3</td>\n' +
+            '<td>\n' +
+            '<p>row 3 col 3</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
             '</table>\n',
@@ -517,19 +569,25 @@ describe('Table plugin', () => {
             '<td>\n' +
             '<p>Cell in column 1, row 1</p>\n' +
             '</td>\n' +
-            '<td>Cell in column 2, row 1</td>\n' +
+            '<td>\n' +
+            '<p>Cell in column 2, row 1</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
             '<td>\n' +
             '<p>Cell in column 1, row 2</p>\n' +
             '</td>\n' +
-            '<td>Cell in column 2, row 2</td>\n' +
+            '<td>\n' +
+            '<p>Cell in column 2, row 2</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
             '<td>\n' +
             '<p>Cell in column 1, row 3</p>\n' +
             '</td>\n' +
-            '<td>Cell in column 2, row 3</td>\n' +
+            '<td>\n' +
+            '<p>Cell in column 2, row 3</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
             '</table>\n' +
@@ -541,12 +599,20 @@ describe('Table plugin', () => {
             '<table>\n' +
             '<tbody>\n' +
             '<tr>\n' +
-            '<td>1 | 1.1</td>\n' +
-            '<td>2</td>\n' +
+            '<td>\n' +
+            '<p>1 | 1.1</p>\n' +
+            '</td>\n' +
+            '<td>\n' +
+            '<p>2</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
-            '<td>3</td>\n' +
-            '<td>4</td>\n' +
+            '<td>\n' +
+            '<p>3</p>\n' +
+            '</td>\n' +
+            '<td>\n' +
+            '<p>4</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
             '</table>\n',
@@ -564,12 +630,20 @@ describe('Table plugin', () => {
             '<table>\n' +
             '<tbody>\n' +
             '<tr>\n' +
-            '<td>cell text |</td>\n' +
-            '<td>cell text</td>\n' +
+            '<td>\n' +
+            '<p>cell text |</p>\n' +
+            '</td>\n' +
+            '<td>\n' +
+            '<p>cell text</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '<tr>\n' +
-            '<td>cell text</td>\n' +
-            '<td>cell text</td>\n' +
+            '<td>\n' +
+            '<p>cell text</p>\n' +
+            '</td>\n' +
+            '<td>\n' +
+            '<p>cell text</p>\n' +
+            '</td>\n' +
             '</tr>\n' +
             '</tbody>\n' +
             '</table>\n',
