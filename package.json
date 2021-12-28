@@ -50,7 +50,6 @@
     "clean-css-cli": "^5.2.1",
     "eslint": "^7.21.0",
     "eslint-plugin-security": "^1.4.0",
-    "husky": "^4.2.3",
     "jest": "^26.6.3",
     "node-sass": "^5.0.0",
     "postcss-cli": "^8.3.1",
@@ -61,11 +60,6 @@
   },
   "peerDependencies": {
     "highlight.js": "^10.0.3"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run precommit"
-    }
   },
   "bugs": {
     "url": "https://github.com/yandex-cloud/yfm-transform/issues"
