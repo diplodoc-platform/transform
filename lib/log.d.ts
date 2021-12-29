@@ -9,6 +9,7 @@ export interface Logger {
     warn: Function;
     error: Function;
     get: () => Logs;
+    add: (logs: Logs) => void;
     clear: () => void;
     isEmpty: () => boolean;
     LOG_LEVELS: {
