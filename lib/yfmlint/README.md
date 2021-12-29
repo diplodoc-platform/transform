@@ -37,4 +37,12 @@ Aliases: table-not-closed
 
 This rule is triggered when table don't have close token.
 
+## YFM005 - Tab list not closed
+
+Tags: tab
+
+Aliases: tab-list-not-closed
+
+This rule is triggered when tab list don't have close token.
+
 
