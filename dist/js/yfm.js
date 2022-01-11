@@ -1,7 +1,7 @@
 (function (factory) {
     typeof define === 'function' && define.amd ? define(factory) :
     factory();
-}((function () { 'use strict';
+})((function () { 'use strict';
 
     if (typeof document !== 'undefined') {
       // matches polyfill for old edge
@@ -166,4 +166,4 @@
       });
     }
 
-})));
+}));
