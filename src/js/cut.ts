@@ -10,14 +10,14 @@ const ClassName = {
     OPEN: 'open',
 };
 
-function toggleCut(element) {
-    const cutEl = element.parentNode;
+function toggleCut(element: HTMLElement) {
+    const cutEl = element.parentNode as HTMLElement;
     cutEl.classList.toggle(ClassName.OPEN);
 }
 
 if (typeof document !== 'undefined') {
     document.addEventListener('click', (event) => {
-        const target = getEventTarget(event);
+        const target = getEventTarget(event) as HTMLElement;
         if (isCustom(event) || !target.matches(Selector.TITLE)) {
             return;
         }

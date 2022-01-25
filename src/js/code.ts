@@ -2,7 +2,7 @@ import {getEventTarget, isCustom} from './utils';
 
 const BUTTON_SELECTOR = '.yfm-clipboard-button';
 
-function copyToClipboard(text) {
+function copyToClipboard(text: string) {
     if (!text) {
         return Promise.resolve();
     }
@@ -23,7 +23,7 @@ function copyToClipboard(text) {
     return Promise.resolve();
 }
 
-function notifySuccess(svgButton) {
+function notifySuccess(svgButton: HTMLElement | null) {
     if (!svgButton) {
         return;
     }
@@ -36,23 +36,23 @@ function notifySuccess(svgButton) {
     }
 
     icon.beginElement();
-
 }
 
 if (typeof document !== 'undefined') {
     document.addEventListener('click', (event) => {
-        const target = getEventTarget(event);
+        const target = getEventTarget(event) as HTMLElement;
 
         if (isCustom(event) || !target.matches(BUTTON_SELECTOR)) {
             return;
         }
 
         const parent = target.parentNode;
+
         if (!parent) {
             return;
         }
 
-        const code = parent.querySelector('pre code');
+        const code = parent.querySelector<HTMLElement>('pre code');
         if (!code) {
             return;
         }
