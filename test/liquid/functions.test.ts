@@ -1,4 +1,4 @@
-const substitutions = require('../../lib/liquid/substitutions');
+import {substitutions} from '../../src/transform/liquid/substitutions';
 
 describe('Functions', () => {
     describe('slice', () => {
@@ -14,7 +14,7 @@ describe('Functions', () => {
         });
         test('Test 3', () => {
             expect(
-                substitutions('Hello M{{ user.name.slice(1, 2) }}sha!'),
+                substitutions('Hello M{{ user.name.slice(1, 2) }}sha!', {}),
             ).toEqual('Hello M{{ user.name.slice(1, 2) }}sha!');
         });
     });

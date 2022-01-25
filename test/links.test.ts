@@ -1,17 +1,16 @@
-const {dirname} = require('path');
+import { dirname } from 'path';
 
-const transform = require('../lib');
-const links = require('../lib/plugins/links');
-const includes = require('../lib/plugins/includes');
-const {callPlugin, tokenize} = require('./utils');
-const {title, customTitle} = require('./data/links');
+import transform from '../src/transform';
+import links from '../src/transform/plugins/links';
+import includes from '../src/transform/plugins/includes';
+import { callPlugin, tokenize } from './utils';
+import { title, customTitle } from './data/links';
 
-const {log} = require('./utils');
+import {Logger as log} from '../src/transform/log';
 
-const callLinksPlugin = callPlugin.bind(null, links);
-const mocksPath = require.resolve('./utils.js');
+const mocksPath = require.resolve('./utils.ts');
 
-const transformYfm = (text) => {
+const transformYfm = (text: string) => {
     const {
         result: {html},
     } = transform(text, {
@@ -24,7 +23,7 @@ const transformYfm = (text) => {
 
 describe('Links', () => {
     test('Should create link with custom title', () => {
-        const result = callLinksPlugin(tokenize([
+        const result = callPlugin(links, tokenize([
             'Text before link',
             '',
             '[Custom title](./mocks/link.md) %}',
@@ -33,14 +32,14 @@ describe('Links', () => {
         ]), {
             path: mocksPath,
             root: dirname(mocksPath),
-            log,
+            log: log,
         });
 
         expect(result).toEqual(customTitle);
     });
 
     test('Should create link with title from target', () => {
-        const result = callLinksPlugin(tokenize([
+        const result = callPlugin(links, tokenize([
             'Text before link',
             '',
             '[{#T}](./mocks/link.md)',

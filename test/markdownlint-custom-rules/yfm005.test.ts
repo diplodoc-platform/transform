@@ -1,7 +1,7 @@
-const tabs = require('../../lib/plugins/tabs');
-const yfmlint = require('../../lib/yfmlint');
-const {yfm005} = require('../../lib/yfmlint/markdownlint-custom-rule');
-const {log} = require('../utils');
+import tabs from '../../src/transform/plugins/tabs';
+import yfmlint from '../../src/transform/yfmlint';
+import { yfm005 } from '../../src/transform/yfmlint/markdownlint-custom-rule';
+import {Logger as log} from '../../src/transform/log';
 
 const tabListWithoutCloseToken = `
 {% list tabs %}
@@ -36,7 +36,7 @@ const tabListWithCloseToken = `
 {% endlist %}
 `.trim();
 
-const lint = (input) => {
+const lint = (input: string) => {
     yfmlint({
         input,
         pluginOptions: {log, path: 'test.md'},
@@ -52,7 +52,7 @@ describe('YFM005', () => {
 
     it('Tab list without close token', () => {
         lint(tabListWithoutCloseToken);
-        console.log(log.get())
+
         expect(log.get().error[0]).toMatch('YFM005');
     });
 

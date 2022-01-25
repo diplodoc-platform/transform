@@ -1,6 +1,6 @@
-const yfmlint = require('../../lib/yfmlint');
-const merge = require('lodash/merge');
-const {log} = require('../utils');
+import yfmlint from '../../src/transform/yfmlint';
+import merge from 'lodash/merge';
+import {Logger as log, LogLevels } from '../../src/transform/log';
 
 const testInput = `
 \`single-line inline code\` \`another single-line inline code\`
@@ -37,9 +37,9 @@ Some text for testing not escaped and not closed quote
 
 const lintConfig = {
     'log-levels': {
-        'MD046': 'disabled',
-        'MD047': 'disabled',
-        'YFM002': 'disabled',
+        'MD046': LogLevels.DISABLED,
+        'MD047': LogLevels.DISABLED,
+        'YFM002': LogLevels.DISABLED,
     },
 };
 
@@ -75,7 +75,7 @@ describe('YFM001', () => {
             lintConfig: merge({}, lintConfig, {
                 'YFM001': {maximum: 5},
                 'log-levels': {
-                    'YFM001': 'error',
+                    'YFM001': LogLevels.ERROR,
                 },
             }),
         });

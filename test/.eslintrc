@@ -1,5 +1,9 @@
 {
-    "env": {
-        "jest": true
-    }
+    "extends": ["@yandex-cloud/eslint-config", "@yandex-cloud/eslint-config/prettier"],
+    "overrides": [{
+        "files": ["*"],
+        "rules": {
+            "@typescript-eslint/no-explicit-any": 2
+        }
+    }]
 }

@@ -1,7 +1,7 @@
-const transform = require('../lib');
-const cut = require('../lib/plugins/cut');
+import transform from '../src/transform';
+import cut from '../src/transform/plugins/cut';
 
-const transformYfm = (text) => {
+const transformYfm = (text: string) => {
     const {
         result: {html},
     } = transform(text, {

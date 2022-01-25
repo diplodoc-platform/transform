@@ -1,12 +1,12 @@
-const {dirname} = require('path');
+import { dirname } from 'path';
 
-const includes = require('../lib/plugins/includes');
-const anchors = require('../lib/plugins/anchors');
-const {log} = require('./utils');
-const transform = require('../lib');
+import includes from '../src/transform/plugins/includes';
+import anchors from '../src/transform/plugins/anchors';
+import {Logger as log} from '../src/transform/log';
+import transform from '../src/transform';
 
-const mocksPath = require.resolve('./utils.js');
-const transformYfm = (text) => {
+const mocksPath = require.resolve('./utils.ts');
+const transformYfm = (text: string) => {
     const {
         result: {html},
     } = transform(text, {

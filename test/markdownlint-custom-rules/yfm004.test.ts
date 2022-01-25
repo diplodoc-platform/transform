@@ -1,7 +1,7 @@
-const table = require('../../lib/plugins/table');
-const yfmlint = require('../../lib/yfmlint');
-const {yfm004} = require('../../lib/yfmlint/markdownlint-custom-rule');
-const {log} = require('../utils');
+import {Logger as log, LogLevels } from '../../src/transform/log';
+import table from '../../src/transform/plugins/table';
+import yfmlint from '../../src/transform/yfmlint';
+import { yfm004 } from '../../src/transform/yfmlint/markdownlint-custom-rule';
 
 const tableWithoutCloseToken = `
 #|
@@ -22,15 +22,15 @@ const tableWithCloseToken = `
 |#
 `.trim();
 
-const lint = (input) => {
+const lint = (input: string) => {
     yfmlint({
         input,
         pluginOptions: {log, path: 'test.md'},
         lintConfig: {
             'log-levels': {
-                MD047: 'disabled',
-                YFM004: 'error',
-                MD018: 'disabled',
+                MD047: LogLevels.DISABLED,
+                YFM004: LogLevels.ERROR,
+                MD018: LogLevels.DISABLED,
             },
         },
         customLintRules: [yfm004],
