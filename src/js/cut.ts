@@ -10,17 +10,17 @@ const ClassName = {
     OPEN: 'open',
 };
 
-function toggleCut(element) {
-    const cutEl = element.parentNode;
+function toggleCut(element: HTMLElement) {
+    const cutEl = element.parentNode as HTMLElement;
     cutEl.classList.toggle(ClassName.OPEN);
 }
 
 if (typeof document !== 'undefined') {
     document.addEventListener('click', (event) => {
-        if (isCustom(event) || !event.target.matches(Selector.TITLE)) {
+        if (isCustom(event) || !(event.target as HTMLElement).matches(Selector.TITLE)) {
             return;
         }
 
-        toggleCut(event.target);
+        toggleCut(event.target as HTMLElement);
     });
 }
