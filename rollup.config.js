@@ -3,7 +3,7 @@ import commonjs from '@rollup/plugin-commonjs';
 const babel = require('rollup-plugin-babel');
 
 module.exports = {
-    input: 'src/js/index.js',
+    input: 'dist/index.js',
     output: {
         file: 'dist/js/yfm.js',
         format: 'umd',
