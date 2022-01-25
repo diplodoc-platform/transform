@@ -36,6 +36,11 @@ export const Logger = {
     [LogLevels.ERROR]: createLogger(LogLevels.ERROR),
     LogLevels,
     get: () => problems,
+    add: (logs: Record<LogLevels, string[]>) => {
+        problems[LogLevels.INFO] = problems[LogLevels.INFO].concat(logs[LogLevels.INFO]);
+        problems[LogLevels.WARN] = problems[LogLevels.WARN].concat(logs[LogLevels.WARN]);
+        problems[LogLevels.ERROR] = problems[LogLevels.ERROR].concat(logs[LogLevels.ERROR]);
+    },
     clear: () => {
         problems[LogLevels.INFO] = [];
         problems[LogLevels.WARN] = [];
