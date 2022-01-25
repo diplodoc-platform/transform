@@ -1,4 +1,4 @@
-const substitutions = require('../../lib/liquid/substitutions');
+import {substitutions} from '../../src/transform/liquid/substitutions';
 
 describe('Filters', () => {
     test('capitalize', () => {

@@ -1,4 +1,4 @@
-const liquid = require('../../lib/liquid');
+import liquid from '../../src/transform/liquid';
 
 describe('Substitutions', () => {
     test('Should substitute to inline text', () => {
@@ -8,7 +8,7 @@ describe('Substitutions', () => {
     });
     test('Should not substitute variables start with dot', () => {
         expect(
-            liquid('Hello {{ .name }}'),
+            liquid('Hello {{ .name }}', {}),
         ).toEqual('Hello {{ .name }}');
     });
     test('Should not substitute variables wrapped not_var', () => {

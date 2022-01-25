@@ -1,4 +1,4 @@
-const liquid = require('../../lib/liquid');
+import liquid from '../../src/transform/liquid';
 
 const commentsByPage = [
     {
@@ -29,6 +29,7 @@ describe('Cycles', () => {
                 liquid(
                     'Prefix {% for user in users %} {{user}} {% endfor %} Postfix',
                     vars,
+                    ''
                 ),
             ).toEqual('Prefix Alice Ivan Petr Postfix');
         });
@@ -38,6 +39,7 @@ describe('Cycles', () => {
                 liquid(
                     'Prefix {% for user1 in users %} {% for user2 in users %} {{user1}}+{{user2}} {% endfor %} {% endfor %} Postfix',
                     vars,
+                    ''
                 ),
             ).toEqual('Prefix Alice+Alice Alice+Ivan Alice+Petr Ivan+Alice Ivan+Ivan Ivan+Petr Petr+Alice Petr+Ivan Petr+Petr Postfix');
         });
@@ -51,6 +53,7 @@ describe('Cycles', () => {
                     '{% endfor %}\n' +
                     'Postfix',
                     vars,
+                    ''
                 ),
             ).toEqual(
                 'Prefix\n' +
@@ -110,6 +113,7 @@ Postfix
                 liquid(
                     input,
                     vars,
+                    ''
                 ),
             ).toEqual(result);
         });
@@ -125,6 +129,7 @@ Postfix
                     '{% endfor %}\n' +
                     'Postfix',
                     vars,
+                    ''
                 ),
             ).toEqual(
                 'Prefix\n' +
@@ -149,6 +154,7 @@ Postfix
                 liquid(
                     'Prefix {% for user in users2 %} {% if needCapitalize %} {{user | capitalize}}+{{user2}} {% else %} {{user}} {% endif %} {% endfor %} Postfix',
                     vars,
+                    ''
                 ),
             ).toEqual('Prefix Alice+Alex Ivan+Alex Petr+Alex Postfix');
         });

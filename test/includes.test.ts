@@ -1,11 +1,10 @@
-const {dirname} = require('path');
+import { dirname } from 'path';
 
-const includes = require('../lib/plugins/includes');
-const yfmlint = require('../lib/yfmlint');
-const {callPlugin, tokenize, log} = require('./utils');
-const {title, notitle} = require('./data/includes');
-
-const callIncludesPlugin = callPlugin.bind(null, includes);
+import includes from '../src/transform/plugins/includes';
+import yfmlint from '../src/transform/yfmlint';
+import { callPlugin, tokenize } from './utils';
+import { title, notitle } from './data/includes';
+import {Logger as log} from '../src/transform/log';
 
 describe('Includes', () => {
     beforeEach(() => {
@@ -13,9 +12,9 @@ describe('Includes', () => {
     });
 
     test('Should include with title', () => {
-        const mocksPath = require.resolve('./utils.js');
+        const mocksPath = require.resolve('./utils.ts');
 
-        const result = callIncludesPlugin(tokenize([
+        const result = callPlugin(includes, tokenize([
             'Text before include',
             '',
             '{% include [create-folder](./mocks/include.md) %}',
@@ -30,9 +29,9 @@ describe('Includes', () => {
     });
 
     test('Should include without title', () => {
-        const mocksPath = require.resolve('./utils.js');
+        const mocksPath = require.resolve('./utils.ts');
 
-        const result = callIncludesPlugin(tokenize([
+        const result = callPlugin(includes, tokenize([
             'Text before include',
             '',
             '{% include notitle [create-folder](./mocks/include.md) %}',
@@ -47,10 +46,10 @@ describe('Includes', () => {
     });
 
     test('Should call notFoundCb for exception', () => {
-        const mocksPath = require.resolve('./utils.js');
+        const mocksPath = require.resolve('./utils.ts');
         const cb = jest.fn();
 
-        callIncludesPlugin(tokenize([
+        callPlugin(includes, tokenize([
             'Text before include',
             '',
             '{% include notitle [create-folder](./mocks/fake.md) %}',
@@ -67,14 +66,14 @@ describe('Includes', () => {
     });
 
     test('Lint include file', () => {
-        const mocksPath = require.resolve('./utils.js');
+        const mocksPath = require.resolve('./utils.ts');
         const input = [
             'Text before include',
             '{% include [create-folder](./mocks/include-lint-test.md) %}',
             'After include',
         ].join('\n\n');
 
-        function lintMarkdown({input, path}) {
+        function lintMarkdown({input, path}: {input: string, path: string}) {
             yfmlint({
                 input,
                 pluginOptions: {

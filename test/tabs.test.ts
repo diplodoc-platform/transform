@@ -1,21 +1,21 @@
-const tabs = require('../lib/plugins/tabs');
-const {callPlugin, tokenize} = require('./utils');
-const {base, escaped} = require('./data/tabs');
+import tabsPlugin from '../src/transform/plugins/tabs';
+import { callPlugin, tokenize } from './utils';
+import { base, escaped } from './data/tabs';
+import Token from 'markdown-it/lib/token';
 
-const callTabsPlugin = callPlugin.bind(null, tabs);
-
-const convertAttrsToObject = ({attrs}) => (
-    attrs.reduce((acc, [name, value]) => {
+const convertAttrsToObject = ({attrs}: Token) => (
+    attrs?.reduce((acc: Record<string, string>, [name, value]) => {
         acc[name] = value;
+
         return acc;
-    }, {})
+    }, {}) || {}
 );
 
 describe('Tabs', () => {
-    let result, tabs, tabPanels;
+    let result: Token[], tabs: Token[], tabPanels: Token[];
 
     beforeAll(() => {
-        result = callTabsPlugin(tokenize([
+        result = callPlugin(tabsPlugin, tokenize([
             '# Create a folder',
             '',
             '{% list tabs %}',
@@ -35,7 +35,7 @@ describe('Tabs', () => {
             '{% endlist %}',
             '',
             'After tabs',
-        ]), {});
+        ]));
 
         tabs = result.filter(({type}) => type === 'tab_open');
         tabPanels = result.filter(({type}) => type === 'tab-panel_open');
@@ -44,7 +44,6 @@ describe('Tabs', () => {
     test('Should convert to correct new token array', () => {
         const clearJSON = JSON.parse(
             JSON.stringify(
-                // eslint-disable-next-line
                 result.map(({attrs, ...item}) => item),
             ),
         );
@@ -77,9 +76,9 @@ describe('Tabs', () => {
     });
 
     test('Tab syntax is escaped', () => {
-        const escapedTabTokens = callTabsPlugin(tokenize([
+        const escapedTabTokens = callPlugin(tabsPlugin, tokenize([
             '`{% list tabs %}`',
-        ]), {});
+        ]));
 
         expect(escapedTabTokens).toEqual(escaped);
     });

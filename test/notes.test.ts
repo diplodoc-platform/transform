@@ -1,13 +1,11 @@
-const alerts = require('../lib/plugins/notes');
-const {callPlugin, tokenize} = require('./utils');
-const {base, customTitle, emptyTitle} = require('./data/alerts');
+import alerts from '../src/transform/plugins/notes';
+import { callPlugin, tokenize } from './utils';
+import { base, customTitle, emptyTitle } from './data/alerts';
 
-const callAlertsPlugin = callPlugin.bind(null, alerts);
+import transform from '../src/transform';
+import notes from '../src/transform/plugins/notes';
 
-const transform = require('../lib');
-const notes = require('../lib/plugins/notes');
-
-const transformYfm = (text) => {
+const transformYfm = (text: string) => {
     const {
         result: {html},
     } = transform(text, {
@@ -18,7 +16,7 @@ const transformYfm = (text) => {
 
 describe('Alerts', () => {
     test('Should transform to new tokens', () => {
-        const result = callAlertsPlugin(tokenize([
+        const result = callPlugin(alerts, tokenize([
             'Text before',
             '',
             '{% note info %}',
@@ -28,7 +26,7 @@ describe('Alerts', () => {
             '{% endnote %}',
             '',
             'Text after',
-        ]), {});
+        ]));
 
         expect(result).toEqual(base);
     });
@@ -41,22 +39,22 @@ describe('Alerts', () => {
             {type: 'warning', title: 'Важно'},
         ].forEach(({type, title}) => {
             test(`should support type: ${type}`, () => {
-                const result = callAlertsPlugin(tokenize([
+                const result = callPlugin(alerts, tokenize([
                     `{% note ${type} %}`,
                     '',
                     'Текст примечания.',
                     '',
                     '{% endnote %}',
-                ]), {});
+                ]));
 
-                expect(result[0].attrs[0][1]).toEqual(`yfm-note yfm-accent-${type}`);
-                expect(result[2].children[1].content).toEqual(title);
+                expect(result[0].attrs?.[0][1]).toEqual(`yfm-note yfm-accent-${type}`);
+                expect(result[2].children?.[1].content).toEqual(title);
             });
         });
     });
 
     test('Should support custom title', () => {
-        const result = callAlertsPlugin(tokenize([
+        const result = callPlugin(alerts, tokenize([
             'Text before',
             '',
             '{% note info "Custom title" %}',
@@ -66,13 +64,13 @@ describe('Alerts', () => {
             '{% endnote %}',
             '',
             'Text after',
-        ]), {});
+        ]));
 
         expect(result).toEqual(customTitle);
     });
 
     test('Should support empty title', () => {
-        const result = callAlertsPlugin(tokenize([
+        const result = callPlugin(alerts, tokenize([
             'Text before',
             '',
             '{% note info "" %}',
@@ -82,7 +80,7 @@ describe('Alerts', () => {
             '{% endnote %}',
             '',
             'Text after',
-        ]), {});
+        ]));
 
         expect(result).toEqual(emptyTitle);
     });

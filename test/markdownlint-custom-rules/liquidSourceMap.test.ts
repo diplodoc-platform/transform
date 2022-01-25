@@ -1,5 +1,5 @@
-const liquid = require('../../lib/liquid');
-const {log} = require('../utils');
+import liquid from '../../src/transform/liquid';
+import {Logger as log} from '../../src/transform/log';
 
 const testFn = 'test.md';
 const vars = {
@@ -7,8 +7,8 @@ const vars = {
     test: true,
 };
 
-const getDefaultSourceMap = (linesCount) => {
-    return Array(linesCount).fill('').reduce((acc, cur, index) => {
+const getDefaultSourceMap = (linesCount: number) => {
+    return Array(linesCount).fill('').reduce((acc, _, index) => {
         acc[index + 1] = String(index + 1);
         return acc;
     }, {});

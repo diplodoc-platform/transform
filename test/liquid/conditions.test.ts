@@ -1,4 +1,4 @@
-const conditions = require('../../lib/liquid/conditions');
+import conditions from '../../src/transform/liquid/conditions';
 
 describe('Conditions', () => {
     describe('location', () => {
@@ -7,6 +7,8 @@ describe('Conditions', () => {
                 conditions(
                     'Prefix {% if user %} Inline if {% endif %} Postfix',
                     {user: {name: 'Alice'}},
+                    '',
+                    {sourceMap: {}}
                 ),
             ).toEqual('Prefix Inline if Postfix');
         });
@@ -16,6 +18,8 @@ describe('Conditions', () => {
                 conditions(
                     'Prefix {% if user %} Inline if {% else %} else {% endif %} Postfix',
                     {user: {name: 'Alice'}},
+                    '',
+                    {sourceMap: {}}
                 ),
             ).toEqual('Prefix Inline if Postfix');
         });
@@ -25,6 +29,8 @@ describe('Conditions', () => {
                 conditions(
                     'Prefix {% if yandex %} Inline if {% else %} else {% endif %} Postfix',
                     {user: {name: 'Alice'}},
+                    '',
+                    {sourceMap: {}}
                 ),
             ).toEqual('Prefix else Postfix');
         });
@@ -34,6 +40,8 @@ describe('Conditions', () => {
                 conditions(
                     'Prefix {% if yandex %} Inline if {% elsif user %} else {% endif %} Postfix',
                     {user: {name: 'Alice'}},
+                    '',
+                    {sourceMap: {}}
                 ),
             ).toEqual(
                 'Prefix else Postfix');
@@ -47,6 +55,8 @@ describe('Conditions', () => {
                     '{% endif %}\n' +
                     'Postfix',
                     {test: true},
+                    '',
+                    {sourceMap: {}}
                 ),
             ).toEqual(
                 'Prefix\n' +
@@ -64,6 +74,8 @@ describe('Conditions', () => {
                     '    {% endif %}\n' +
                     'Postfix',
                     {test: true},
+                    '',
+                    {sourceMap: {}}
                 ),
             ).toEqual(
                 'Prefix\n' +
@@ -81,6 +93,8 @@ describe('Conditions', () => {
                     '     {% endif %}\n' +
                     'Postfix',
                     {test: false},
+                    '',
+                    {sourceMap: {}}
                 ),
             ).toEqual(
                 'Prefix\n' +
@@ -98,6 +112,8 @@ describe('Conditions', () => {
                     '    How are you?\n' +
                     '{% endif %}',
                     {test: true},
+                    '',
+                    {sourceMap: {}}
                 ),
             ).toEqual(
                 '    How are you?\n' +
@@ -110,13 +126,12 @@ describe('Conditions', () => {
                 conditions(
                     '1. list item 1\n\n' +
                     '    {% if true %} Test {% endif %}\n',
-                    '1. list item 2\n\n' +
-                    '    Test\n',
+                    {},
+                    '',
+                    {sourceMap: {}}
                 ),
             ).toEqual(
                 '1. list item 1\n\n' +
-                '    Test\n',
-                '1. list item 2\n\n' +
                 '    Test\n',
             );
         });
@@ -129,6 +144,8 @@ describe('Conditions', () => {
                     conditions(
                         'Prefix {% if user %} Inline if {% endif %} Postfix',
                         {user: {name: 'Alice'}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix Inline if Postfix');
             });
@@ -138,6 +155,8 @@ describe('Conditions', () => {
                     conditions(
                         'Prefix {% if user.name == \'Alice\' %} Inline if {% endif %} Postfix',
                         {user: {name: 'Alice'}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix Inline if Postfix');
             });
@@ -147,6 +166,8 @@ describe('Conditions', () => {
                     conditions(
                         'Prefix {% if user.name != \'Bob\' %} Inline if {% endif %} Postfix',
                         {user: {name: 'Alice'}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix Inline if Postfix');
             });
@@ -156,6 +177,8 @@ describe('Conditions', () => {
                     conditions(
                         'Prefix {% if user.age >= 18 %} Inline if {% endif %} Postfix',
                         {user: {age: 18}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix Inline if Postfix');
             });
@@ -165,6 +188,8 @@ describe('Conditions', () => {
                     conditions(
                         'Prefix {% if user.age > 18 %} Inline if {% endif %} Postfix',
                         {user: {age: 21}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix Inline if Postfix');
             });
@@ -174,6 +199,8 @@ describe('Conditions', () => {
                     conditions(
                         'Prefix {% if user.age <= 18 %} Inline if {% endif %} Postfix',
                         {user: {age: 18}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix Inline if Postfix');
             });
@@ -183,6 +210,8 @@ describe('Conditions', () => {
                     conditions(
                         'Prefix {% if user.age < 18 %} Inline if {% endif %} Postfix',
                         {user: {age: 1}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix Inline if Postfix');
             });
@@ -192,6 +221,8 @@ describe('Conditions', () => {
                     conditions(
                         'Prefix {% if user and user.age >= 18 %} Inline if {% endif %} Postfix',
                         {user: {age: 18}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix Inline if Postfix');
             });
@@ -201,6 +232,8 @@ describe('Conditions', () => {
                     conditions(
                         'Prefix {% if user.age < 18 or user.age >= 21 %} Inline if {% endif %} Postfix',
                         {user: {age: 21}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix Inline if Postfix');
             });
@@ -212,6 +245,8 @@ describe('Conditions', () => {
                     conditions(
                         'Prefix {% if yandex %} Inline if {% else %} else {% endif %} Postfix',
                         {user: {name: 'Alice'}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix else Postfix');
             });
@@ -221,6 +256,8 @@ describe('Conditions', () => {
                     conditions(
                         'Prefix {% if user.name == \'Alice\' %} Inline if {% else %} else {% endif %} Postfix',
                         {user: {name: 'Bob'}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix else Postfix');
             });
@@ -230,6 +267,8 @@ describe('Conditions', () => {
                     conditions(
                         'Prefix {% if user.name != \'Bob\' %} Inline if {% else %} else {% endif %} Postfix',
                         {user: {name: 'Bob'}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix else Postfix');
             });
@@ -239,6 +278,8 @@ describe('Conditions', () => {
                     conditions(
                         'Prefix {% if user.age >= 18 %} Inline if {% else %} else {% endif %} Postfix',
                         {user: {age: 1}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix else Postfix');
             });
@@ -248,6 +289,8 @@ describe('Conditions', () => {
                     conditions(
                         'Prefix {% if user.age > 18 %} Inline if {% else %} else {% endif %} Postfix',
                         {user: {age: 1}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix else Postfix');
             });
@@ -257,6 +300,8 @@ describe('Conditions', () => {
                     conditions(
                         'Prefix {% if user.age <= 18 %} Inline if {% else %} else {% endif %} Postfix',
                         {user: {age: 21}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix else Postfix');
             });
@@ -266,6 +311,8 @@ describe('Conditions', () => {
                     conditions(
                         'Prefix {% if user.age < 18 %} Inline if {% else %} else {% endif %} Postfix',
                         {user: {age: 21}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix else Postfix');
             });
@@ -275,6 +322,8 @@ describe('Conditions', () => {
                     conditions(
                         'Prefix {% if user and user.age >= 18 %} Inline if {% else %} else {% endif %} Postfix',
                         {user: {age: 1}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix else Postfix');
             });
@@ -285,6 +334,8 @@ describe('Conditions', () => {
                         'Prefix {% if user.age < 18 or user.age >= 21 %} Inline if {% else %} else ' +
                         '{% endif %} Postfix',
                         {user: {age: 20}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix else Postfix');
             });
@@ -299,6 +350,8 @@ describe('Conditions', () => {
                         'Prefix {% if user %} Before nested if {% if user.name == \'Alice\' %} nested if ' +
                         '{% endif %} After nested if {% endif %} Postfix',
                         {user: {name: 'Alice'}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix Before nested if nested if After nested if Postfix');
             });
@@ -309,6 +362,8 @@ describe('Conditions', () => {
                         'Prefix {% if user %} Before nested if {% if user.name == \'Alice\' %} nested if ' +
                         '{% endif %} After nested if {% endif %} Postfix',
                         {user: {name: 'Bob'}},
+                    '',
+                    {sourceMap: {}}
                     ),
                 ).toEqual('Prefix Before nested if  After nested if Postfix');
             });
@@ -322,6 +377,8 @@ describe('Conditions', () => {
                     'Prefix {% if yandex %} if {% elsif user.name == \'Bob\' %} Bob ' +
                     '{% elsif user.name == \'Alice\' %} Alice {% endif %} Postfix',
                     {user: {name: 'Alice'}},
+                    '',
+                    {sourceMap: {}}
                 ),
             ).toEqual('Prefix Alice Postfix');
         });
@@ -331,6 +388,8 @@ describe('Conditions', () => {
                     'Prefix {% if yandex %} if {% elsif user.name == \'Bob\' %} Bob ' +
                     '{% elsif user.name == \'Alice\' %} Alice {% endif %} Postfix',
                     {user: {name: 'Bob'}},
+                    '',
+                    {sourceMap: {}}
                 ),
             ).toEqual('Prefix Bob Postfix');
         });

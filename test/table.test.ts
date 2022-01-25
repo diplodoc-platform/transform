@@ -1,7 +1,7 @@
-const transform = require('../lib');
-const table = require('../lib/plugins/table');
+import transform from '../src/transform';
+import table from '../src/transform/plugins/table';
 
-const transformYfm = (text) => {
+const transformYfm = (text: string) => {
     const {
         result: {html},
     } = transform(text, {
@@ -315,7 +315,7 @@ describe('Table plugin', () => {
             '<p>1</p>\n' +
             '</td>\n' +
             '<td>\n' +
-            '<pre><code>#|\n' +
+            '<pre><code class="hljs">#|\n' +
             '|| 4\n' +
             '| 5||\n' +
             '\n' +

@@ -1,8 +1,12 @@
-const getHeadings = require('../lib/headings');
-const {tokenize} = require('./utils');
+import getHeadings from '../src/transform/headings';
+import {tokenize} from './utils';
 
-function item(title, level, items) {
-    const result = {
+type Head = {
+    title: string, level: number, href: string, items?: Head[]
+}
+
+function item(title: string, level: number, items?: Head[]) {
+    const result: Head = {
         title,
         level,
         href: '#',

@@ -1,7 +1,7 @@
-const transform = require('../lib');
-const monospace = require('../lib/plugins/monospace');
+import transform from '../src/transform';
+import monospace from '../src/transform/plugins/monospace';
 
-const transformYfm = (text) => {
+const transformYfm = (text: string) => {
     const {
         result: {html},
     } = transform(text, {
