@@ -1,0 +1,14 @@
+{
+  "extends": "@yandex-cloud/tsconfig/tsconfig",
+  "compilerOptions": {
+    "lib": ["DOM", "ESNext"],
+    "outDir": "dist",
+    "module": "esnext",
+    "baseUrl": ".",
+    "declaration": true,
+    "isolatedModules": true,
+    "noImplicitAny": true,
+    "types": ["node", "jest"],
+  },
+  "include": ["src/js/*"],
+}
