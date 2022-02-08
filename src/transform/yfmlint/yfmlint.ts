@@ -1,5 +1,5 @@
+import {LintConfig} from '.';
 import {LogLevels} from '../log';
-import {LintConfig} from './typings';
 
 const index: LintConfig = {
     // Default state for all rules

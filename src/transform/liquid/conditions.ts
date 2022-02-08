@@ -2,7 +2,7 @@ import {bold} from 'chalk';
 
 import evalExp from './evaluation';
 import {tagLine} from './lexical';
-import {Logger as log} from '../log';
+import {log} from '../log';
 import {getPreparedLeftContent} from './utils';
 import {createSourceMapApi, getLineNumber} from './sourceMap';
 

@@ -1,4 +1,5 @@
 // @ts-expect-error
 import sup from 'markdown-it-sup';
+import {MarkdownItPluginCb} from './typings';
 
-export default sup;
+export default sup as MarkdownItPluginCb;
