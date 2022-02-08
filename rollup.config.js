@@ -1,8 +1,8 @@
-
 const babel = require('rollup-plugin-babel');
+const typescript = require('@rollup/plugin-typescript');
 
 module.exports = {
-    input: 'dist/index.js',
+    input: 'src/js/index.ts',
     output: {
         file: 'dist/js/yfm.js',
         format: 'umd',
@@ -19,5 +19,6 @@ module.exports = {
                 'objectSpread',
             ],
         }),
+        typescript(),
     ],
 };
