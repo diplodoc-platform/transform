@@ -3,7 +3,8 @@
     "overrides": [{
         "files": ["*"],
         "rules": {
-            "@typescript-eslint/no-explicit-any": 2
+            "@typescript-eslint/no-explicit-any": 2,
+            "no-useless-concat": 0
         }
     }]
 }

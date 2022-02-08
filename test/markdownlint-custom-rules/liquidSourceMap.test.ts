@@ -1,5 +1,5 @@
 import liquid from '../../src/transform/liquid';
-import {Logger as log} from '../../src/transform/log';
+import {log} from '../../src/transform/log';
 
 const testFn = 'test.md';
 const vars = {
@@ -8,10 +8,12 @@ const vars = {
 };
 
 const getDefaultSourceMap = (linesCount: number) => {
-    return Array(linesCount).fill('').reduce((acc, _, index) => {
-        acc[index + 1] = String(index + 1);
-        return acc;
-    }, {});
+    return Array(linesCount)
+        .fill('')
+        .reduce((acc, _, index) => {
+            acc[index + 1] = String(index + 1);
+            return acc;
+        }, {});
 };
 
 describe('Check source map after liquid', () => {
@@ -120,10 +122,7 @@ describe('Check source map after liquid', () => {
     });
 
     it('Should works with fences: inline', () => {
-        const input =
-            /*1*/ 'Prefix\n' +
-            /*2*/ '```some code there```\n' +
-            /*3*/ 'Postfix';
+        const input = /*1*/ 'Prefix\n' + /*2*/ '```some code there```\n' + /*3*/ 'Postfix';
 
         const {sourceMap} = liquid(input, vars, testFn, {withSourceMap: true});
 

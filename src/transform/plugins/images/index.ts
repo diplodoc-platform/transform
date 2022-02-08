@@ -6,7 +6,7 @@ import {resolveRelativePath, isFileExists} from '../../utilsFS';
 import {isLocalUrl, isExternalHref} from '../../utils';
 import Token from 'markdown-it/lib/token';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
-import { StateCore } from '../../typings';
+import {StateCore} from '../../typings';
 
 interface ImageOpts extends MarkdownItPluginOpts {
     assetsPublicPath: string;

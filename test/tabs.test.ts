@@ -1,52 +1,50 @@
 import tabsPlugin from '../src/transform/plugins/tabs';
-import { callPlugin, tokenize } from './utils';
-import { base, escaped } from './data/tabs';
+import {callPlugin, tokenize} from './utils';
+import {base, escaped} from './data/tabs';
 import Token from 'markdown-it/lib/token';
 
-const convertAttrsToObject = ({attrs}: Token) => (
+const convertAttrsToObject = ({attrs}: Token) =>
     attrs?.reduce((acc: Record<string, string>, [name, value]) => {
         acc[name] = value;
 
         return acc;
-    }, {}) || {}
-);
+    }, {}) || {};
 
 describe('Tabs', () => {
     let result: Token[], tabs: Token[], tabPanels: Token[];
 
     beforeAll(() => {
-        result = callPlugin(tabsPlugin, tokenize([
-            '# Create a folder',
-            '',
-            '{% list tabs %}',
-            '',
-            '- Python',
-            '',
-            '  About python',
-            '',
-            '- Tab with list',
-            '  - One',
-            '  - Two',
-            '',
-            '- Tab with list',
-            '  1. One',
-            '  2. Two',
-            '',
-            '{% endlist %}',
-            '',
-            'After tabs',
-        ]));
+        result = callPlugin(
+            tabsPlugin,
+            tokenize([
+                '# Create a folder',
+                '',
+                '{% list tabs %}',
+                '',
+                '- Python',
+                '',
+                '  About python',
+                '',
+                '- Tab with list',
+                '  - One',
+                '  - Two',
+                '',
+                '- Tab with list',
+                '  1. One',
+                '  2. Two',
+                '',
+                '{% endlist %}',
+                '',
+                'After tabs',
+            ]),
+        );
 
         tabs = result.filter(({type}) => type === 'tab_open');
         tabPanels = result.filter(({type}) => type === 'tab-panel_open');
     });
 
     test('Should convert to correct new token array', () => {
-        const clearJSON = JSON.parse(
-            JSON.stringify(
-                result.map(({attrs, ...item}) => item),
-            ),
-        );
+        const clearJSON = JSON.parse(JSON.stringify(result.map(({attrs: _, ...item}) => item)));
 
         expect(clearJSON).toEqual(base);
     });
@@ -76,9 +74,7 @@ describe('Tabs', () => {
     });
 
     test('Tab syntax is escaped', () => {
-        const escapedTabTokens = callPlugin(tabsPlugin, tokenize([
-            '`{% list tabs %}`',
-        ]));
+        const escapedTabTokens = callPlugin(tabsPlugin, tokenize(['`{% list tabs %}`']));
 
         expect(escapedTabTokens).toEqual(escaped);
     });

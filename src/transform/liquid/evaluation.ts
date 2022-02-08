@@ -8,7 +8,11 @@ type Scope = Record<string, unknown>;
 
 type WithFilter = (l: string, filter: (s: string) => boolean, exp: string) => boolean;
 type NoFilter = (l: string, r: string, exp: string) => boolean;
-type DotOperator = (l: Record<string, (...args: any) => unknown>, r: string, exp: string) => boolean;
+type DotOperator = (
+    l: Record<string, (...args: unknown[]) => unknown>,
+    r: string,
+    exp: string,
+) => boolean;
 
 const operators: Record<string, WithFilter | NoFilter | DotOperator> = {
     '==': ((l, r) => l === r) as NoFilter,
@@ -32,7 +36,6 @@ const operators: Record<string, WithFilter | NoFilter | DotOperator> = {
     }) as WithFilter,
     '.': ((l, r, exp) => {
         const parsed = lexical.getParsedMethod(r);
-
 
         try {
             if (!parsed) throw new Error();
@@ -103,7 +106,11 @@ export function evalExp(
                 const op = operators[operator];
                 const r = evalExp(match[3], scope);
 
-                if (operator !== '.' || (operator === '.' && lexical.isSupportedMethod(r as string))) {
+                if (
+                    operator !== '.' ||
+                    (operator === '.' && lexical.isSupportedMethod(r as string))
+                ) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     return op(l as any, r as any, exp);
                 }
             }

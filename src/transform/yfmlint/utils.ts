@@ -5,8 +5,8 @@ import {Dictionary} from 'lodash';
 export function errorToString(path: string, error: LintError, sourceMap?: Dictionary<string>) {
     const ruleMoniker = error.ruleNames
         ? error.ruleNames.join('/')
-        // @ts-expect-error bad markdownlint typings
-        : error.ruleName + '/' + error.ruleAlias;
+        : // @ts-expect-error bad markdownlint typings
+          error.ruleName + '/' + error.ruleAlias;
     const lineNumber = sourceMap ? sourceMap[error.lineNumber] : error.lineNumber;
 
     return (

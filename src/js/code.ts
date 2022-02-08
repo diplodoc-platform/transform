@@ -57,9 +57,8 @@ if (typeof document !== 'undefined') {
             return;
         }
 
-        copyToClipboard(code.innerText)
-            .then(() => {
-                notifySuccess(parent.querySelector('.yfm-clipboard-button'));
-            });
+        copyToClipboard(code.innerText).then(() => {
+            notifySuccess(parent.querySelector('.yfm-clipboard-button'));
+        });
     });
 }

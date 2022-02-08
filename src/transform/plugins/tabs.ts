@@ -227,7 +227,6 @@ const tabs: MarkdownItPluginCb = (md) => {
         }
     };
 
-
     try {
         md.core.ruler.before('curly_attributes', 'tabs', plugin);
     } catch (e) {

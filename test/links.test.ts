@@ -1,12 +1,12 @@
-import { dirname } from 'path';
+import {dirname} from 'path';
 
 import transform from '../src/transform';
 import links from '../src/transform/plugins/links';
 import includes from '../src/transform/plugins/includes';
-import { callPlugin, tokenize } from './utils';
-import { title, customTitle } from './data/links';
+import {callPlugin, tokenize} from './utils';
+import {title, customTitle} from './data/links';
 
-import {Logger as log} from '../src/transform/log';
+import {log} from '../src/transform/log';
 
 const mocksPath = require.resolve('./utils.ts');
 
@@ -23,32 +23,34 @@ const transformYfm = (text: string) => {
 
 describe('Links', () => {
     test('Should create link with custom title', () => {
-        const result = callPlugin(links, tokenize([
-            'Text before link',
-            '',
-            '[Custom title](./mocks/link.md) %}',
-            '',
-            'After link',
-        ]), {
-            path: mocksPath,
-            root: dirname(mocksPath),
-            log: log,
-        });
+        const result = callPlugin(
+            links,
+            tokenize([
+                'Text before link',
+                '',
+                '[Custom title](./mocks/link.md) %}',
+                '',
+                'After link',
+            ]),
+            {
+                path: mocksPath,
+                root: dirname(mocksPath),
+                log: log,
+            },
+        );
 
         expect(result).toEqual(customTitle);
     });
 
     test('Should create link with title from target', () => {
-        const result = callPlugin(links, tokenize([
-            'Text before link',
-            '',
-            '[{#T}](./mocks/link.md)',
-            '',
-            'After link',
-        ]), {
-            path: mocksPath,
-            root: dirname(mocksPath),
-        });
+        const result = callPlugin(
+            links,
+            tokenize(['Text before link', '', '[{#T}](./mocks/link.md)', '', 'After link']),
+            {
+                path: mocksPath,
+                root: dirname(mocksPath),
+            },
+        );
 
         expect(result).toEqual(title);
     });
