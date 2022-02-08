@@ -3,7 +3,7 @@ import {bold} from 'chalk';
 import ArgvService from './services/argv';
 import getObject from '../getObject';
 import {evalExp} from './evaluation';
-import {Logger as log} from '../log';
+import {log} from '../log';
 import {vars as varsRe, isVariable} from './lexical';
 
 export const substitutions = (str: string, builtVars: Record<string, unknown>, path?: string) => {

@@ -48,7 +48,7 @@ type Options = {
     nextToken: Token;
     href: string;
     currentPath: string;
-    log: typeof Logger;
+    log: Logger;
 };
 
 const addTitle = (options: Options) => {

@@ -30,7 +30,7 @@ function createLogger(type: LogLevels) {
     };
 }
 
-export const Logger = {
+export const log = {
     [LogLevels.INFO]: createLogger(LogLevels.INFO),
     [LogLevels.WARN]: createLogger(LogLevels.WARN),
     [LogLevels.ERROR]: createLogger(LogLevels.ERROR),
@@ -54,3 +54,7 @@ export const Logger = {
         );
     },
 };
+
+export type Logger = typeof log;
+
+export default log;

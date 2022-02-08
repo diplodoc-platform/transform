@@ -1,4 +1,4 @@
-import {sync} from 'markdownlint';
+import {Rule, sync} from 'markdownlint';
 import merge from 'lodash/merge';
 import union from 'lodash/union';
 import baseDefaultLintConfig from './yfmlint';
@@ -7,6 +7,30 @@ import {yfm001, yfm002, yfm003, yfm004, yfm005} from './markdownlint-custom-rule
 
 import {errorToString, getLogLevel} from './utils';
 import {Options} from './typings';
+import {Dictionary} from 'lodash';
+import {Logger, LogLevels} from '../log';
+
+export interface LintMarkdownFunctionOptions {
+    input: string;
+    path: string;
+    sourceMap?: Dictionary<string>;
+}
+
+export interface PluginOptions {
+    log: Logger;
+    path?: string;
+    disableLint?: boolean;
+    lintMarkdown?: (opts: LintMarkdownFunctionOptions) => void;
+    [key: string]: unknown;
+}
+
+export interface LintConfig {
+    default?: boolean;
+    'log-levels': Record<string, LogLevels>;
+    [x: string]: unknown;
+}
+
+export type LintRule = Rule;
 
 const defaultLintRules = [yfm001, yfm002, yfm003, yfm004, yfm005];
 

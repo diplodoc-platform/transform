@@ -3,7 +3,7 @@ import {MarkdownIt} from '../typings';
 
 export interface MarkdownItPluginOpts {
     path: string;
-    log: typeof Logger;
+    log: Logger;
     lang: 'ru' | 'en';
     root: string;
 }

@@ -1,6 +1,6 @@
 import * as lexical from './lexical';
 import getObject from '../getObject';
-import {Logger as log} from '../log';
+import {log} from '../log';
 import filters from './filters';
 import {SkippedEvalError} from './errors';
 

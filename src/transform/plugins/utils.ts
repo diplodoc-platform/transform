@@ -10,7 +10,7 @@ export type MatchTokenFunction = (
 
 export const nestedCloseTokenIdxFactory =
     (tokenName: string, matchOpenToken: MatchTokenFunction, matchCloseToken: MatchTokenFunction) =>
-    (tokens: Token[], idx: number, path: string, log: typeof Logger) => {
+    (tokens: Token[], idx: number, path: string, log: Logger) => {
         let level = 0;
         let i = idx;
         while (i < tokens.length) {

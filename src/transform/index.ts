@@ -1,8 +1,8 @@
 import {bold} from 'chalk';
 import attrs from 'markdown-it-attrs';
 
-import {Logger as log} from './log';
-import makeHighlight from './highlight';
+import {log, LogLevels} from './log';
+import makeHighlight, {LangMap} from './highlight';
 import extractTitle from './title';
 import getHeadings from './headings';
 import liquid from './liquid';
@@ -18,10 +18,41 @@ import tabs from './plugins/tabs';
 import video from './plugins/video';
 import monospace from './plugins/monospace';
 import yfmTable from './plugins/table';
-import {PluginSimple} from 'markdown-it';
 import {initMd} from './md';
+import {MarkdownItPluginCb} from './plugins/typings';
 
-function transform(originInput: string, opts: Record<string, any> = {}) {
+export interface Output {
+    result: {
+        html: string;
+        title?: string;
+        headings: unknown[];
+        assets?: unknown[];
+        meta?: object;
+    };
+    logs: Record<LogLevels, string[]>;
+}
+
+interface Options {
+    vars?: Record<string, string>;
+    path?: string;
+    extractTitle?: boolean;
+    needTitle?: boolean;
+    allowHTML?: boolean;
+    linkify?: boolean;
+    breaks?: boolean;
+    conditionsInCode?: boolean;
+    disableLiquid?: boolean;
+    leftDelimiter?: string;
+    rightDelimiter?: string;
+    isLiquided?: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    plugins?: MarkdownItPluginCb<any>[];
+    highlightLangs?: LangMap;
+    root?: string;
+    [x: string]: unknown;
+}
+
+function transform(originInput: string, opts: Options = {}): Output {
     const {
         vars = {},
         path,
@@ -58,7 +89,7 @@ function transform(originInput: string, opts: Record<string, any> = {}) {
     const md = initMd({html: allowHTML, linkify, highlight, breaks});
     // Need for ids of headers
     md.use(attrs, {leftDelimiter, rightDelimiter});
-    plugins.forEach((plugin: PluginSimple) => md.use(plugin, pluginOptions));
+    plugins.forEach((plugin) => md.use(plugin, pluginOptions));
 
     try {
         let title;
