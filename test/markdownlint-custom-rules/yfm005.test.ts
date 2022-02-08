@@ -1,7 +1,7 @@
 import tabs from '../../src/transform/plugins/tabs';
 import yfmlint from '../../src/transform/yfmlint';
-import { yfm005 } from '../../src/transform/yfmlint/markdownlint-custom-rule';
-import {Logger as log} from '../../src/transform/log';
+import {yfm005} from '../../src/transform/yfmlint/markdownlint-custom-rule';
+import {log} from '../../src/transform/log';
 
 const tabListWithoutCloseToken = `
 {% list tabs %}

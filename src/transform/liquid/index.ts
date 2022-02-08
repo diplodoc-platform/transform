@@ -10,7 +10,12 @@ import {Dictionary} from 'lodash';
 const codes: string[] = [];
 const regexp = /`{3}(((?!`{3})[^])+)`{3}/g;
 
-function saveCode(str: string, vars: Record<string, unknown>, path?: string, substitutions?: boolean) {
+function saveCode(
+    str: string,
+    vars: Record<string, unknown>,
+    path?: string,
+    substitutions?: boolean,
+) {
     let i = 0;
 
     return str.replace(regexp, (_, code: string) => {

@@ -34,7 +34,14 @@ export type GetFileTokensOpts = {
 };
 
 export function getFileTokens(path: string, state: StateCore, options: GetFileTokensOpts) {
-    const {getVarsPerFile, vars, disableLiquid, disableLint, lintMarkdown, disableTitleRefSubstitution} = options;
+    const {
+        getVarsPerFile,
+        vars,
+        disableLiquid,
+        disableLint,
+        lintMarkdown,
+        disableTitleRefSubstitution,
+    } = options;
     let content;
 
     if (filesCache[path]) {

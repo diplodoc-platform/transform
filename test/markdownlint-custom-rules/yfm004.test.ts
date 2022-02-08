@@ -1,7 +1,7 @@
-import {Logger as log, LogLevels } from '../../src/transform/log';
+import {log, LogLevels} from '../../src/transform/log';
 import table from '../../src/transform/plugins/table';
 import yfmlint from '../../src/transform/yfmlint';
-import { yfm004 } from '../../src/transform/yfmlint/markdownlint-custom-rule';
+import {yfm004} from '../../src/transform/yfmlint/markdownlint-custom-rule';
 
 const tableWithoutCloseToken = `
 #|

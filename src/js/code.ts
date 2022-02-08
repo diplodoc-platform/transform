@@ -29,7 +29,9 @@ function notifySuccess(svgButton: HTMLElement | null) {
     }
 
     const id = svgButton.getAttribute('data-animation');
-    const icon = document.getElementById(`visibileAnimation-${id}`) as unknown as SVGAnimationElement;
+    const icon = document.getElementById(
+        `visibileAnimation-${id}`,
+    ) as unknown as SVGAnimationElement;
 
     if (!icon) {
         return;
@@ -54,9 +56,8 @@ if (typeof document !== 'undefined') {
             return;
         }
 
-        copyToClipboard(code.innerText)
-            .then(() => {
-                notifySuccess(parent.querySelector('.yfm-clipboard-button'));
-            });
+        copyToClipboard(code.innerText).then(() => {
+            notifySuccess(parent.querySelector('.yfm-clipboard-button'));
+        });
     });
 }

@@ -13,9 +13,9 @@ describe('Functions', () => {
             ).toEqual('Hello Masha!');
         });
         test('Test 3', () => {
-            expect(
-                substitutions('Hello M{{ user.name.slice(1, 2) }}sha!', {}),
-            ).toEqual('Hello M{{ user.name.slice(1, 2) }}sha!');
+            expect(substitutions('Hello M{{ user.name.slice(1, 2) }}sha!', {})).toEqual(
+                'Hello M{{ user.name.slice(1, 2) }}sha!',
+            );
         });
     });
 });

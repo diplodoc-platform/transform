@@ -52,7 +52,9 @@ export const collect = (input: string, options: Options) => {
                 const linkToken = childrenTokens[j];
                 const href = getHrefTokenAttr(linkToken);
 
-                const isIncludeLink = resolveRelativePath(startPath, href).includes(`_includes${sep}`);
+                const isIncludeLink = resolveRelativePath(startPath, href).includes(
+                    `_includes${sep}`,
+                );
 
                 if (!href || !isLocalUrl(href) || isIncludeLink) {
                     j++;

@@ -4,7 +4,7 @@ import {getFileTokens, GetFileTokensOpts, getFullIncludePath} from '../../utilsF
 import {findBlockTokens} from '../../utils';
 import Token from 'markdown-it/lib/token';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
-import { StateCore } from 'src/transform/typings';
+import {StateCore} from 'src/transform/typings';
 
 const INCLUDE_REGEXP = /^{%\s*include\s*(notitle)?\s*\[(.+?)]\((.+?)\)\s*%}$/;
 
@@ -14,10 +14,11 @@ function stripTitleTokens(tokens: Token[]) {
     }
 }
 
-type Options = MarkdownItPluginOpts & GetFileTokensOpts & {
-    notFoundCb: (v: string) => void;
-    noReplaceInclude: boolean;
-};
+type Options = MarkdownItPluginOpts &
+    GetFileTokensOpts & {
+        notFoundCb: (v: string) => void;
+        noReplaceInclude: boolean;
+    };
 
 function unfoldIncludes(state: StateCore, path: string, options: Options) {
     const {root, notFoundCb, log, noReplaceInclude = false} = options;

@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "test": "jest --coverage",
-    "lint": "npx eslint",
+    "lint": "npx eslint \"{src,test}/**/*.{js,jsx,ts,tsx}\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "css": "npm run css:compile && npm run css:prefix && npm run css:minify",
     "css:compile": "node-sass src/scss/yfm.scss dist/css/yfm.css",

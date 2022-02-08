@@ -1,13 +1,13 @@
 import url from 'url';
-import { bold } from 'chalk';
-import { isLocalUrl, findBlockTokens, headingInfo, getHrefTokenAttr } from '../../utils';
-import { isFileExists, getFileTokens } from '../../utilsFS';
-import { PAGE_LINK_REGEXP } from './constants';
+import {bold} from 'chalk';
+import {isLocalUrl, findBlockTokens, headingInfo, getHrefTokenAttr} from '../../utils';
+import {isFileExists, getFileTokens} from '../../utilsFS';
+import {PAGE_LINK_REGEXP} from './constants';
 import Token from 'markdown-it/lib/token';
-import { Logger } from 'src/transform/log';
-import { MarkdownItPluginCb, MarkdownItPluginOpts } from '../typings';
-import path, { parse, relative, resolve } from 'path';
-import { StateCore } from 'src/transform/typings';
+import {Logger} from 'src/transform/log';
+import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
+import path, {parse, relative, resolve} from 'path';
+import {StateCore} from 'src/transform/typings';
 
 function defaultTransformLink(href: string) {
     const parsed = url.parse(href);
@@ -56,7 +56,11 @@ const addTitle = (options: Options) => {
         options;
 
     const id = hash && hash.slice(1);
-    const fileTokens = getFileTokens(file, state, {...opts, disableLint: true, disableTitleRefSubstitution: true});
+    const fileTokens = getFileTokens(file, state, {
+        ...opts,
+        disableLint: true,
+        disableTitleRefSubstitution: true,
+    });
     const sourceTokens = id ? findBlockTokens(fileTokens, id) : fileTokens;
     const title = getTitleFromTokens(sourceTokens);
 
@@ -135,8 +139,25 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
 
     const isEmptyLink = nextToken.type === 'link_close';
     const isTitleRefLink = nextToken.type === 'text' && nextToken.content === '{#T}';
-    if ((isEmptyLink || isTitleRefLink) && fileExists && isPageFile && !state.env.disableTitleRefSubstitution) {
-        addTitle({hash, file, state, opts, isEmptyLink, tokens, idx, nextToken, href, currentPath, log});
+    if (
+        (isEmptyLink || isTitleRefLink) &&
+        fileExists &&
+        isPageFile &&
+        !state.env.disableTitleRefSubstitution
+    ) {
+        addTitle({
+            hash,
+            file,
+            state,
+            opts,
+            isEmptyLink,
+            tokens,
+            idx,
+            nextToken,
+            href,
+            currentPath,
+            log,
+        });
     }
 
     let newPathname = '';

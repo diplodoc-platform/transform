@@ -7,7 +7,6 @@ import {MarkdownItPluginOpts} from '../typings';
 
 const imsize = require('markdown-it-imsize');
 
-
 type Options = MarkdownItPluginOpts & {
     destPath: string;
     copyFile: (path: string, dest: string) => void;

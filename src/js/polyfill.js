@@ -1,12 +1,13 @@
 if (typeof document !== 'undefined') {
     // matches polyfill for old edge
     (function (e) {
-        const matches = e.matches
-            || e.matchesSelector
-            || e.webkitMatchesSelector
-            || e.mozMatchesSelector
-            || e.msMatchesSelector
-            || e.oMatchesSelector;
+        const matches =
+            e.matches ||
+            e.matchesSelector ||
+            e.webkitMatchesSelector ||
+            e.mozMatchesSelector ||
+            e.msMatchesSelector ||
+            e.oMatchesSelector;
 
         if (matches) {
             e.matches = e.matchesSelector = matches;
