@@ -1,4 +1,5 @@
-
+import {nodeResolve} from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 const babel = require('rollup-plugin-babel');
 
 module.exports = {
@@ -19,5 +20,7 @@ module.exports = {
                 'objectSpread',
             ],
         }),
+        commonjs(),
+        nodeResolve(),
     ],
 };
