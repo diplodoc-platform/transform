@@ -93,4 +93,17 @@ describe('Anchors', () => {
             '<p>Content</p>\n',
         );
     });
+
+    it('should be removed fences after transliteration', () => {
+        expect(transformYfm(
+            '## `Test`\n' +
+            '\n' +
+            'Content\n',
+        )).toBe(
+            '<h2 id="test">' +
+            '<a href="#test" class="yfm-anchor" aria-hidden="true"></a><code>Test</code>' +
+            '</h2>\n' +
+            '<p>Content</p>\n',
+        );
+    });
 });
