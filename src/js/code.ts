@@ -29,6 +29,7 @@ function notifySuccess(svgButton: HTMLElement | null) {
     }
 
     const id = svgButton.getAttribute('data-animation');
+    // @ts-expect-error
     const icon = svgButton.getRootNode().getElementById(`visibileAnimation-${id}`);
 
     if (!icon) {

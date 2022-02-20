@@ -50,7 +50,7 @@ function selectTab(element: HTMLElement) {
 
 if (typeof document !== 'undefined') {
     document.addEventListener('click', (event) => {
-        const target = getEventTarget(event)as HTMLElement;
+        const target = getEventTarget(event) as HTMLElement;
 
         if (isCustom(event) || !target.matches(Selector.TAB)) {
             return;
