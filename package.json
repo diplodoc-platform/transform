@@ -14,18 +14,18 @@
     "lib"
   ],
   "scripts": {
+    "build": "npm run build:css && npm run build:js",
+    "build:css": "npm run build:css:compile && npm run build:css:prefix && npm run build:css:minify",
+    "build:css:compile": "node-sass src/scss/yfm.scss dist/css/yfm.css",
+    "build:css:prefix": "postcss dist/css/yfm.css --output dist/css/yfm.css",
+    "build:css:minify": "cleancss dist/css/yfm.css --output dist/css/yfm.min.css",
+    "build:js": "npm run build:js:lib && npm run build:js:dist",
+    "build:js:lib": "tsc -p tsconfig.transform.json",
+    "build:js:dist": "rollup -c && npm run build:js:dist:minify",
+    "build:js:dist:minify": "uglifyjs dist/js/yfm.js --output dist/js/yfm.min.js",
     "test": "jest --coverage",
     "lint": "npx eslint \"{src,test}/**/*.{js,jsx,ts,tsx}\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "css": "npm run css:compile && npm run css:prefix && npm run css:minify",
-    "css:compile": "node-sass src/scss/yfm.scss dist/css/yfm.css",
-    "css:prefix": "postcss dist/css/yfm.css --output dist/css/yfm.css",
-    "css:minify": "cleancss dist/css/yfm.css --output dist/css/yfm.min.css",
-    "build": "npm run build:lib && npm run build:dist",
-    "build:lib": "tsc -p tsconfig.transform.json",
-    "build:dist": "rollup -c && npm run build:dist:minify",
-    "build:dist:minify": "uglifyjs dist/js/yfm.js --output dist/js/yfm.min.js",
-    "dist": "npm run css && npm run build",
     "precommit": "npm run lint && npm run test"
   },
   "dependencies": {
