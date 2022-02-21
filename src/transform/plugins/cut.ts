@@ -84,4 +84,4 @@ const cut: MarkdownItPluginCb = (md, {path, log}) => {
     }
 };
 
-export default cut;
+export = cut;

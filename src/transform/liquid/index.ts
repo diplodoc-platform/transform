@@ -1,4 +1,4 @@
-import {substitutions as applySubstitutions} from './substitutions';
+import applySubstitutions from './substitutions';
 import {prepareSourceMap} from './sourceMap';
 
 import applyCycles from './cycles';
@@ -105,4 +105,6 @@ function liquid<
     return output as unknown as C;
 }
 
+// 'export default' instead of 'export = ' because of circular dependency with './cycles.ts'.
+// somehow it breaks import in './cycles.ts' and imports nothing
 export default liquid;

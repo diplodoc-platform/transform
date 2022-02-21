@@ -13,7 +13,7 @@ type Options = MarkdownItPluginOpts & {
     singlePage: boolean;
 };
 
-export const collect = (input: string, options: Options) => {
+const collect = (input: string, options: Options) => {
     const md = new MarkdownIt().use(imsize);
 
     const {root, path, destPath = '', copyFile, singlePage} = options;
@@ -57,3 +57,5 @@ export const collect = (input: string, options: Options) => {
 
     return null;
 };
+
+export = collect;

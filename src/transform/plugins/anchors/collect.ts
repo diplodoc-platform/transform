@@ -20,7 +20,7 @@ const slugify: (str: string, opts: {}) => string = require('slugify');
  *    After: ## Title {data-original-article=/index} {#_index} {#_index_title} {#_index_CustomAnchor} {#_index_custom-anchor}
  *           ## Subtitle {#_index_subtitle}
  * */
-export const collect = (input: string, options: MarkdownItPluginOpts & {singlePage: boolean}) => {
+const collect = (input: string, options: MarkdownItPluginOpts & {singlePage: boolean}) => {
     const {root, path, singlePage} = options;
 
     if (!singlePage || path.includes(`_includes${sep}`)) {
@@ -96,3 +96,5 @@ export const collect = (input: string, options: MarkdownItPluginOpts & {singlePa
 
     return lines.join(сarriage);
 };
+
+export = collect;

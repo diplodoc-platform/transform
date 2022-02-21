@@ -1,4 +1,4 @@
-import {substitutions} from '../../src/transform/liquid/substitutions';
+import substitutions from '../../src/transform/liquid/substitutions';
 
 describe('Functions', () => {
     describe('slice', () => {

@@ -1,9 +1,8 @@
 import {escapeHtml} from 'markdown-it/lib/common/utils';
-import hljs, {LanguageFn} from 'highlight.js';
+import hljs from 'highlight.js';
+import {HighlightLangMap} from './typings';
 
-export type LangMap = Record<string, LanguageFn>;
-
-export default function makeHighlight(langs: LangMap = {}) {
+export = function makeHighlight(langs: HighlightLangMap = {}) {
     try {
         Object.keys(langs).forEach((lang) => {
             hljs.registerLanguage(lang, langs[lang]);
@@ -28,4 +27,4 @@ export default function makeHighlight(langs: LangMap = {}) {
     } catch {
         return (str: string) => escapeHtml(str);
     }
-}
+};

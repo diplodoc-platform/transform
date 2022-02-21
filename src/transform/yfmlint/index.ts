@@ -10,28 +10,6 @@ import {Options} from './typings';
 import {Dictionary} from 'lodash';
 import {Logger, LogLevels} from '../log';
 
-export interface LintMarkdownFunctionOptions {
-    input: string;
-    path: string;
-    sourceMap?: Dictionary<string>;
-}
-
-export interface PluginOptions {
-    log: Logger;
-    path?: string;
-    disableLint?: boolean;
-    lintMarkdown?: (opts: LintMarkdownFunctionOptions) => void;
-    [key: string]: unknown;
-}
-
-export interface LintConfig {
-    default?: boolean;
-    'log-levels': Record<string, LogLevels>;
-    [x: string]: unknown;
-}
-
-export type LintRule = Rule;
-
 const defaultLintRules = [yfm001, yfm002, yfm003, yfm004, yfm005];
 
 const lintCache = new Set();
@@ -112,4 +90,28 @@ function yfmlint(opts: Options) {
     }
 }
 
-export default yfmlint;
+export = yfmlint;
+
+namespace yfmlint {
+    export interface LintMarkdownFunctionOptions {
+        input: string;
+        path: string;
+        sourceMap?: Dictionary<string>;
+    }
+
+    export interface PluginOptions {
+        log: Logger;
+        path?: string;
+        disableLint?: boolean;
+        lintMarkdown?: (opts: LintMarkdownFunctionOptions) => void;
+        [key: string]: unknown;
+    }
+
+    export interface LintConfig {
+        default?: boolean;
+        'log-levels': Record<string, LogLevels>;
+        [x: string]: unknown;
+    }
+
+    export type LintRule = Rule;
+}

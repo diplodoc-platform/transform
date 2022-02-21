@@ -16,14 +16,14 @@ function getHref(token: Token) {
     return '#' + (token.attrGet('id') || '');
 }
 
-export type Heading = {
+type Heading = {
     title: string;
     href: string;
     level: number;
     items?: Heading[];
 };
 
-export default function getHeadings(tokens: Token[]) {
+export = function getHeadings(tokens: Token[]) {
     const headings: Heading[] = [];
     let parents = [headings];
     let prevLevel;
@@ -67,4 +67,4 @@ export default function getHeadings(tokens: Token[]) {
     }
 
     return headings;
-}
+};

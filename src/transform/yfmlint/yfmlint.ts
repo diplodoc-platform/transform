@@ -64,4 +64,4 @@ const index: LintConfig = {
     },
 };
 
-export default index;
+export = index;

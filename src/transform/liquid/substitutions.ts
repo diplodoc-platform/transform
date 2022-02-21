@@ -6,7 +6,7 @@ import {evalExp} from './evaluation';
 import {log} from '../log';
 import {vars as varsRe, isVariable} from './lexical';
 
-export const substitutions = (str: string, builtVars: Record<string, unknown>, path?: string) => {
+const substitutions = (str: string, builtVars: Record<string, unknown>, path?: string) => {
     const {keepNotVar} = ArgvService.getConfig();
 
     return str.replace(varsRe, (match, _groupNotVar, flag, groupVar, groupVarValue) => {
@@ -36,3 +36,5 @@ export const substitutions = (str: string, builtVars: Record<string, unknown>, p
         return value;
     });
 };
+
+export = substitutions;

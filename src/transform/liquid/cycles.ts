@@ -143,7 +143,7 @@ function inlineConditions({
     };
 }
 
-export type Tag = {
+type Tag = {
     item: string;
     variableName: string;
     collectionName: string;
@@ -151,7 +151,7 @@ export type Tag = {
     forRaw: string;
 };
 
-export default function cycles(
+export = function cycles(
     originInput: string,
     vars: Record<string, unknown>,
     path?: string,
@@ -228,4 +228,4 @@ export default function cycles(
     }
 
     return input;
-}
+};

@@ -1,6 +1,6 @@
 import Token from 'markdown-it/lib/token';
 
-export default function extractTitle(tokens: Token[]) {
+export = function extractTitle(tokens: Token[]) {
     let title = '',
         contentTokens = tokens,
         titleTokens: Token[] = [];
@@ -19,4 +19,4 @@ export default function extractTitle(tokens: Token[]) {
         title,
         tokens: contentTokens,
     };
-}
+};

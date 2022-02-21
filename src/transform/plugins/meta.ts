@@ -2,4 +2,4 @@
 import meta from 'markdown-it-meta';
 import {MarkdownItPluginCb} from './typings';
 
-export default meta as MarkdownItPluginCb;
+export = meta as MarkdownItPluginCb;

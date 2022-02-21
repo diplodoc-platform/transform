@@ -12,7 +12,7 @@ type Opts = MarkdownItPluginOpts & {
     singlePage: Boolean;
 };
 
-export const collect = (input: string, options: Opts) => {
+const collect = (input: string, options: Opts) => {
     const {root, path, destPath = '', log, copyFile, singlePage} = options;
     const INCLUDE_REGEXP = /{%\s*include\s*(notitle)?\s*\[(.+?)]\((.+?)\)\s*%}/g;
 
@@ -65,3 +65,5 @@ export const collect = (input: string, options: Opts) => {
 
     return null;
 };
+
+export = collect;

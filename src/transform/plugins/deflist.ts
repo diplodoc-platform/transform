@@ -2,4 +2,4 @@
 import deflist from 'markdown-it-deflist';
 import {MarkdownItPluginCb} from './typings';
 
-export default deflist as MarkdownItPluginCb;
+export = deflist as MarkdownItPluginCb;

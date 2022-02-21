@@ -42,7 +42,7 @@ const wrapInClipboard = (element: string | undefined, id: number) => {
 `;
 };
 
-export const code: MarkdownItPluginCb = (md) => {
+const code: MarkdownItPluginCb = (md) => {
     const superCodeRenderer = md.renderer.rules.fence;
     md.renderer.rules.fence = function (tokens, idx, options, env, self) {
         const superCode = superCodeRenderer?.(tokens, idx, options, env, self);
@@ -51,4 +51,4 @@ export const code: MarkdownItPluginCb = (md) => {
     };
 };
 
-export default code;
+export = code;

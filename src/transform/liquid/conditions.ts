@@ -167,7 +167,7 @@ type Tag = {
     elses: Elses[];
 };
 
-export default function conditions(
+export = function conditions(
     originInput: string,
     vars: Record<string, unknown>,
     path?: string,
@@ -245,4 +245,4 @@ export default function conditions(
     }
 
     return input;
-}
+};

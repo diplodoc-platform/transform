@@ -284,4 +284,4 @@ const yfmTable: MarkdownItPluginCb = (md) => {
     );
 };
 
-export default yfmTable;
+export = yfmTable;

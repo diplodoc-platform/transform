@@ -2,7 +2,7 @@ import {bold} from 'chalk';
 import attrs from 'markdown-it-attrs';
 
 import {log, LogLevels} from './log';
-import makeHighlight, {LangMap} from './highlight';
+import makeHighlight from './highlight';
 import extractTitle from './title';
 import getHeadings from './headings';
 import liquid from './liquid';
@@ -20,8 +20,9 @@ import monospace from './plugins/monospace';
 import yfmTable from './plugins/table';
 import {initMd} from './md';
 import {MarkdownItPluginCb} from './plugins/typings';
+import {HighlightLangMap} from './typings';
 
-export interface Output {
+interface OutputType {
     result: {
         html: string;
         title?: string;
@@ -31,7 +32,6 @@ export interface Output {
     };
     logs: Record<LogLevels, string[]>;
 }
-
 interface Options {
     vars?: Record<string, string>;
     path?: string;
@@ -47,12 +47,12 @@ interface Options {
     isLiquided?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     plugins?: MarkdownItPluginCb<any>[];
-    highlightLangs?: LangMap;
+    highlightLangs?: HighlightLangMap;
     root?: string;
     [x: string]: unknown;
 }
 
-function transform(originInput: string, opts: Options = {}): Output {
+function transform(originInput: string, opts: Options = {}): OutputType {
     const {
         vars = {},
         path,
@@ -127,4 +127,8 @@ function transform(originInput: string, opts: Options = {}): Output {
     }
 }
 
-export default transform;
+export = transform;
+
+namespace transform {
+    export type Output = OutputType;
+}

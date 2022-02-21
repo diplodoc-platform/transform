@@ -1,2 +1,5 @@
 // @ts-expect-error
-export * as imsize from 'markdown-it-imsize';
+import imsize from 'markdown-it-imsize';
+import {MarkdownItPluginCb} from './typings';
+
+export = imsize as MarkdownItPluginCb;

@@ -122,4 +122,4 @@ const notes: MarkdownItPluginCb = (md, {lang, path: optPath, log}) => {
     }
 };
 
-export default notes;
+export = notes;

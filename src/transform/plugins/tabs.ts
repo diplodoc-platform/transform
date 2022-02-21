@@ -234,4 +234,4 @@ const tabs: MarkdownItPluginCb = (md) => {
     }
 };
 
-export default tabs;
+export = tabs;

@@ -20,7 +20,7 @@ type Options = {
 /* Replace the links to the markdown and yaml files if the singlePage option is passed in the options
  *  Example: replace [Text](../../path/to/file.md#anchor) with [Text](#_path_to_file_anchor)
  * */
-export const collect = (input: string, options: Options) => {
+const collect = (input: string, options: Options) => {
     const {root, path: startPath, singlePage} = options;
 
     if (!singlePage) {
@@ -87,3 +87,5 @@ export const collect = (input: string, options: Options) => {
 
     return result;
 };
+
+export = collect;

@@ -23,6 +23,6 @@ module.exports = {
         }),
         commonjs(),
         nodeResolve(),
-        typescript(),
+        typescript({module: 'esnext', include: './src/js/**/*'}),
     ],
 };
