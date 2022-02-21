@@ -1,4 +1,4 @@
-import {isCustom} from './utils';
+import {getEventTarget, isCustom} from './utils';
 
 const BUTTON_SELECTOR = '.yfm-clipboard-button';
 
@@ -29,9 +29,8 @@ function notifySuccess(svgButton: HTMLElement | null) {
     }
 
     const id = svgButton.getAttribute('data-animation');
-    const icon = document.getElementById(
-        `visibileAnimation-${id}`,
-    ) as unknown as SVGAnimationElement;
+    // @ts-expect-error
+    const icon = svgButton.getRootNode().getElementById(`visibileAnimation-${id}`);
 
     if (!icon) {
         return;
@@ -42,11 +41,14 @@ function notifySuccess(svgButton: HTMLElement | null) {
 
 if (typeof document !== 'undefined') {
     document.addEventListener('click', (event) => {
-        if (isCustom(event) || !(event.target as HTMLElement).matches(BUTTON_SELECTOR)) {
+        const target = getEventTarget(event) as HTMLElement;
+
+        if (isCustom(event) || !target.matches(BUTTON_SELECTOR)) {
             return;
         }
 
-        const parent = (event.target as HTMLElement).parentNode;
+        const parent = target.parentNode;
+
         if (!parent) {
             return;
         }

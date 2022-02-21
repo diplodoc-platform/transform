@@ -1,4 +1,4 @@
-import {isCustom} from './utils';
+import {isCustom, getEventTarget} from './utils';
 
 const Selector = {
     TABS: '.yfm .yfm-tabs',
@@ -50,10 +50,12 @@ function selectTab(element: HTMLElement) {
 
 if (typeof document !== 'undefined') {
     document.addEventListener('click', (event) => {
-        if (isCustom(event) || !(event.target as HTMLElement).matches(Selector.TAB)) {
+        const target = getEventTarget(event) as HTMLElement;
+
+        if (isCustom(event) || !target.matches(Selector.TAB)) {
             return;
         }
 
-        selectTab(event.target as HTMLElement);
+        selectTab(target);
     });
 }

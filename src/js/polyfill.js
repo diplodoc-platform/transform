@@ -1,3 +1,5 @@
+import 'get-root-node-polyfill/implement';
+
 if (typeof document !== 'undefined') {
     // matches polyfill for old edge
     (function (e) {
@@ -13,7 +15,7 @@ if (typeof document !== 'undefined') {
             e.matches = e.matchesSelector = matches;
         } else {
             e.matches = e.matchesSelector = function matches(selector) {
-                const matches = document.querySelectorAll(selector);
+                const matches = e.getRootNode().querySelectorAll(selector);
                 const th = this;
                 return Array.prototype.some.call(matches, (e) => {
                     return e === th;

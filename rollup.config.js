@@ -1,5 +1,7 @@
+import {nodeResolve} from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import typescript from '@rollup/plugin-typescript';
 const babel = require('rollup-plugin-babel');
-const typescript = require('@rollup/plugin-typescript');
 
 module.exports = {
     input: 'src/js/index.ts',
@@ -19,6 +21,8 @@ module.exports = {
                 'objectSpread',
             ],
         }),
+        commonjs(),
+        nodeResolve(),
         typescript(),
     ],
 };
