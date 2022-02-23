@@ -1,9 +1,10 @@
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
+import typescript from '@rollup/plugin-typescript';
 const babel = require('rollup-plugin-babel');
 
 module.exports = {
-    input: 'src/js/index.js',
+    input: 'src/js/index.ts',
     output: {
         file: 'dist/js/yfm.js',
         format: 'umd',
@@ -22,5 +23,6 @@ module.exports = {
         }),
         commonjs(),
         nodeResolve(),
+        typescript({module: 'esnext', include: './src/js/**/*'}),
     ],
 };

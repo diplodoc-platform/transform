@@ -1,0 +1,15 @@
+{
+  "extends": "@yandex-cloud/tsconfig/tsconfig",
+  "compilerOptions": {
+    "lib": ["DOM", "ES6"],
+    "outDir": "lib",
+    "module": "commonjs",
+    "baseUrl": ".",
+    "declaration": true,
+    "isolatedModules": true,
+    "noImplicitAny": true,
+    "target": "ES6",
+    "types": ["node", "jest"],
+  },
+  "include": ["src/**/*", "test/**/*"],
+}
