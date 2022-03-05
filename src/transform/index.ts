@@ -22,7 +22,7 @@ import {initMd} from './md';
 import {MarkdownItPluginCb} from './plugins/typings';
 import {HighlightLangMap} from './typings';
 
-export interface Output {
+interface OutputType {
     result: {
         html: string;
         title?: string;
@@ -32,7 +32,7 @@ export interface Output {
     };
     logs: Record<LogLevels, string[]>;
 }
-export interface Options {
+interface Options {
     vars?: Record<string, string>;
     path?: string;
     extractTitle?: boolean;
@@ -52,7 +52,7 @@ export interface Options {
     [x: string]: unknown;
 }
 
-export default function transform(originInput: string, opts: Options = {}): Output {
+function transform(originInput: string, opts: Options = {}): OutputType {
     const {
         vars = {},
         path,
@@ -125,4 +125,10 @@ export default function transform(originInput: string, opts: Options = {}): Outp
         log.error(`Error occurred${path ? ` in ${bold(path)}` : ''}`);
         throw err;
     }
+}
+
+export = transform;
+
+namespace transform {
+    export type Output = OutputType;
 }
