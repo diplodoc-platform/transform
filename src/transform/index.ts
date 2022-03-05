@@ -32,7 +32,7 @@ interface OutputType {
     };
     logs: Record<LogLevels, string[]>;
 }
-interface Options {
+interface OptionsType {
     vars?: Record<string, string>;
     path?: string;
     extractTitle?: boolean;
@@ -52,7 +52,7 @@ interface Options {
     [x: string]: unknown;
 }
 
-function transform(originInput: string, opts: Options = {}): OutputType {
+function transform(originInput: string, opts: OptionsType = {}): OutputType {
     const {
         vars = {},
         path,
@@ -129,6 +129,8 @@ function transform(originInput: string, opts: Options = {}): OutputType {
 
 export = transform;
 
+// eslint-disable-next-line @typescript-eslint/no-namespace -- backward compatibility
 namespace transform {
+    export type Options = OptionsType;
     export type Output = OutputType;
 }
