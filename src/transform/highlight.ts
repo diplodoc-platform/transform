@@ -1,9 +1,12 @@
 import {escapeHtml} from 'markdown-it/lib/common/utils';
-import hljs from 'highlight.js';
 import {HighlightLangMap} from './typings';
 
 export = function makeHighlight(langs: HighlightLangMap = {}) {
     try {
+        // Important require.
+        // Because we want to have a posibility to run in projects without hljs dependency
+        const hljs = require('highlight.js');
+
         Object.keys(langs).forEach((lang) => {
             hljs.registerLanguage(lang, langs[lang]);
         });
