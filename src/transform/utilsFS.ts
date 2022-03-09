@@ -31,6 +31,7 @@ export type GetFileTokensOpts = {
     disableLint?: boolean;
     lintMarkdown?: (opts: {input: string; path: string; sourceMap?: Dictionary<string>}) => void;
     disableTitleRefSubstitution?: boolean;
+    disableCircularError?: boolean;
 };
 
 export function getFileTokens(path: string, state: StateCore, options: GetFileTokensOpts) {
@@ -41,6 +42,7 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
         disableLint,
         lintMarkdown,
         disableTitleRefSubstitution,
+        disableCircularError,
     } = options;
     let content;
 
@@ -71,7 +73,12 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
     }
 
     const meta = state.md.meta;
-    const tokens = state.md.parse(content, {...state.env, path, disableTitleRefSubstitution});
+    const tokens = state.md.parse(content, {
+        ...state.env,
+        path,
+        disableTitleRefSubstitution,
+        disableCircularError,
+    });
     state.md.meta = meta;
 
     return tokens;

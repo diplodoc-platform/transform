@@ -1,5 +1,5 @@
-import {dirname} from 'path';
-
+import {dirname, resolve} from 'path';
+import {readFileSync} from 'fs';
 import transform from '../src/transform';
 import links from '../src/transform/plugins/links';
 import includes from '../src/transform/plugins/includes';
@@ -10,13 +10,13 @@ import {log} from '../src/transform/log';
 
 const mocksPath = require.resolve('./utils.ts');
 
-const transformYfm = (text: string) => {
+const transformYfm = (text: string, path?: string) => {
     const {
         result: {html},
     } = transform(text, {
         plugins: [includes, links],
-        path: mocksPath,
-        root: dirname(mocksPath),
+        path: path || mocksPath,
+        root: dirname(path || mocksPath),
     });
     return html;
 };
@@ -60,5 +60,21 @@ describe('Links', () => {
         const result = transformYfm(input);
 
         expect(result).toEqual('<p><a href="./mocks/include-link.html">Title</a></p>\n');
+    });
+
+    test('Should create link with title from target with circular include', () => {
+        const inputPath = resolve(__dirname, './mocks/circular-include/first.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(result).toEqual('<h1>First</h1>\n<p><a href="./second.html">Second</a></p>\n');
+    });
+
+    test('Should create link with title from target with circular link', () => {
+        const inputPath = resolve(__dirname, './mocks/circular-link/first.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(result).toEqual('<h1>First</h1>\n<p><a href="./second.html">Second</a></p>\n');
     });
 });
