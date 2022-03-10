@@ -94,7 +94,13 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
 
         env.includes = env.includes || [];
 
-        if (env.includes.includes(path)) {
+        const isCircularInclude = env.includes.includes(path);
+
+        if (isCircularInclude && state.env.disableCircularError) {
+            return;
+        }
+
+        if (isCircularInclude) {
             log.error(`Circular includes: ${bold(env.includes.concat(path).join(' ▶ '))}`);
             process.exit(1);
         }

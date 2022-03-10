@@ -60,6 +60,7 @@ const addTitle = (options: Options) => {
         ...opts,
         disableLint: true,
         disableTitleRefSubstitution: true,
+        disableCircularError: true,
     });
     const sourceTokens = id ? findBlockTokens(fileTokens, id) : fileTokens;
     const title = getTitleFromTokens(sourceTokens);
