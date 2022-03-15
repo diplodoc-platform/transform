@@ -1,6 +1,7 @@
 import {Rule, sync} from 'markdownlint';
 import merge from 'lodash/merge';
 import union from 'lodash/union';
+import attrs from 'markdown-it-attrs';
 import baseDefaultLintConfig from './yfmlint';
 
 import {yfm001, yfm002, yfm003, yfm004, yfm005} from './markdownlint-custom-rule';
@@ -15,7 +16,7 @@ const defaultLintRules = [yfm001, yfm002, yfm003, yfm004, yfm005];
 const lintCache = new Set();
 
 function yfmlint(opts: Options) {
-    const {input, plugins, pluginOptions, customLintRules, sourceMap} = opts;
+    const {input, plugins: customPlugins, pluginOptions, customLintRules, sourceMap} = opts;
     const {path = 'input', log} = pluginOptions;
     const {
         LogLevels: {ERROR, WARN, DISABLED},
@@ -39,15 +40,7 @@ function yfmlint(opts: Options) {
         lintRules = union(lintRules, customLintRules);
     }
 
-    Object.assign(pluginOptions, {
-        /* When yfmlint processes input data with inclusions, we have the origin lines and tokens with replaced
-           inclusions in the lint rule.
-           Problem 1: The included tokens have a map for the lines of the included file.
-           Problem 2: First the included file is linted, then the origin file is linted. There are double messages in
-           stdout if the includes plugin makes a replacement.
-        */
-        noReplaceInclude: true,
-    });
+    const plugins = customPlugins && [attrs, ...customPlugins];
     const preparedPlugins = plugins && plugins.map((plugin) => [plugin, pluginOptions]);
 
     let result;
