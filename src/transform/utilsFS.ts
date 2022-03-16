@@ -32,6 +32,7 @@ export type GetFileTokensOpts = {
     lintMarkdown?: (opts: {input: string; path: string; sourceMap?: Dictionary<string>}) => void;
     disableTitleRefSubstitution?: boolean;
     disableCircularError?: boolean;
+    inheritVars?: boolean;
 };
 
 export function getFileTokens(path: string, state: StateCore, options: GetFileTokensOpts) {
@@ -43,6 +44,7 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
         lintMarkdown,
         disableTitleRefSubstitution,
         disableCircularError,
+        inheritVars = true,
     } = options;
     let content;
 
@@ -51,7 +53,7 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
     } else {
         content = readFileSync(path, 'utf8');
 
-        const builtVars = (getVarsPerFile ? getVarsPerFile(path) : vars) || {};
+        const builtVars = (getVarsPerFile && !inheritVars ? getVarsPerFile(path) : vars) || {};
         let sourceMap;
 
         if (!disableLiquid) {
