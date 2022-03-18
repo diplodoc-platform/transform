@@ -1,4 +1,4 @@
-function getTokens(title: string) {
+const getTokens = (title: string) => {
     return [
         {
             type: 'paragraph_open',
@@ -308,7 +308,7 @@ function getTokens(title: string) {
             hidden: false,
         },
     ];
-}
+};
 
 export const base = getTokens('Примечание');
 export const customTitle = getTokens('Custom title');

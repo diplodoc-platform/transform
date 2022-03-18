@@ -187,7 +187,13 @@ export = function cycles(
                     break;
                 }
 
-                const [variableName, collectionName] = args.match(FOR_SYNTAX)!.slice(1);
+                const matches = args.match(FOR_SYNTAX);
+                if (!matches) {
+                    log.error(`Incorrect syntax in if condition${path ? ` in ${bold(path)}` : ''}`);
+                    break;
+                }
+
+                const [variableName, collectionName] = matches.slice(1);
                 tagStack.push({
                     item: args,
                     variableName,
@@ -204,8 +210,15 @@ export = function cycles(
                 }
                 const forTag = tagStack.pop();
 
+                if (!forTag) {
+                    log.error(
+                        `For block must be opened before close${path ? ` in ${bold(path)}` : ''}`,
+                    );
+                    break;
+                }
+
                 const {idx, result} = inlineConditions({
-                    forTag: forTag!,
+                    forTag,
                     vars,
                     content: input,
                     match,

@@ -24,7 +24,7 @@
     "build:js:dist": "rollup -c && npm run build:js:dist:minify",
     "build:js:dist:minify": "uglifyjs dist/js/yfm.js --output dist/js/yfm.min.js",
     "test": "jest --coverage",
-    "lint": "npx eslint \"{src,test}/**/*.{js,jsx,ts,tsx}\"",
+    "lint": "npx eslint --max-warnings=0 \"{src,test}/**/*.{js,jsx,ts,tsx}\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "precommit": "npm run lint && npm run test",
     "prepublishOnly": "npm run lint && npm run test && npm run build"

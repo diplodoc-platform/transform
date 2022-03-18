@@ -88,6 +88,7 @@ interface ProcOpts extends MarkdownItPluginOpts {
     needSkipLinkFn: (v: string) => boolean;
 }
 
+// eslint-disable-next-line complexity
 function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcOpts) {
     const {path: startPath, root, transformLink, notFoundCb, needSkipLinkFn, log} = opts;
     const currentPath = state.env.path || startPath;

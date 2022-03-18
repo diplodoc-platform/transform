@@ -5,7 +5,9 @@
         "files": ["*"],
         "rules": {
             "@typescript-eslint/no-explicit-any": 2,
-            "@typescript-eslint/no-namespace": 1
+            "@typescript-eslint/no-namespace": 1,
+            "no-shadow": "off",
+            "@typescript-eslint/no-shadow": "off"
         }
     }]
 }

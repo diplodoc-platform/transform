@@ -94,6 +94,7 @@ const collect = (input: string, options: MarkdownItPluginOpts & {singlePage: boo
         i++;
     }
 
+    // eslint-disable-next-line consistent-return
     return lines.join(сarriage);
 };
 
