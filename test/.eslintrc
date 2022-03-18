@@ -4,7 +4,9 @@
         "files": ["*"],
         "rules": {
             "@typescript-eslint/no-explicit-any": 2,
-            "no-useless-concat": 0
+            "no-useless-concat": 0,
+            "no-shadow": "off",
+            "@typescript-eslint/no-shadow": "off"
         }
     }]
 }

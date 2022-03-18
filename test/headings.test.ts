@@ -8,7 +8,7 @@ type Head = {
     items?: Head[];
 };
 
-function item(title: string, level: number, items?: Head[]) {
+const item = (title: string, level: number, items?: Head[]) => {
     const result: Head = {
         title,
         level,
@@ -20,7 +20,7 @@ function item(title: string, level: number, items?: Head[]) {
     }
 
     return result;
-}
+};
 
 describe('Headings', () => {
     test('should have correct level nesting', () => {

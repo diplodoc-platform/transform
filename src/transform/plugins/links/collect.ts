@@ -85,6 +85,7 @@ const collect = (input: string, options: Options) => {
         i++;
     }
 
+    // eslint-disable-next-line consistent-return
     return result;
 };
 

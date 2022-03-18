@@ -222,8 +222,15 @@ export = function conditions(
             case 'endif': {
                 const ifTag = tagStack.pop();
 
+                if (!ifTag) {
+                    log.error(
+                        `If block must be opened before close${path ? ` in ${bold(path)}` : ''}`,
+                    );
+                    break;
+                }
+
                 const {idx, result} = inlineConditions({
-                    ifTag: ifTag!,
+                    ifTag,
                     vars,
                     content: input,
                     match,

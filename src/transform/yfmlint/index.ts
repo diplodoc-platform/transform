@@ -85,6 +85,7 @@ function yfmlint(opts: Options) {
 
 export = yfmlint;
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 namespace yfmlint {
     export interface LintMarkdownFunctionOptions {
         input: string;
