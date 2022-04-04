@@ -88,7 +88,7 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
 
 export const getFullIncludePath = (includePath: string, root: string, path: string) => {
     let fullIncludePath;
-    if (includePath.startsWith('/')) {
+    if (includePath.startsWith(sep)) {
         fullIncludePath = join(root, includePath);
     } else {
         fullIncludePath = resolveRelativePath(path, includePath);
