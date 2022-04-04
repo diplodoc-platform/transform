@@ -1,5 +1,5 @@
 import {readFileSync} from 'fs';
-import {join} from 'path';
+import {join, sep} from 'path';
 import {bold} from 'chalk';
 
 import {resolveRelativePath, isFileExists} from '../../utilsFS';
@@ -15,7 +15,7 @@ interface ImageOpts extends MarkdownItPluginOpts {
 function replaceImageSrc(
     token: Token,
     state: StateCore,
-    {assetsPublicPath = '/', root = '', path: optsPath, log}: ImageOpts,
+    {assetsPublicPath = sep, root = '', path: optsPath, log}: ImageOpts,
 ) {
     const src = token.attrGet('src') || '';
     const currentPath = state.env.path || optsPath;
@@ -32,7 +32,7 @@ function replaceImageSrc(
         log.error(`Asset not found: ${bold(src)} in ${bold(currentPath)}`);
     }
 
-    const relativeToRoot = path.replace(root + '/', '');
+    const relativeToRoot = path.replace(root + sep, '');
     const publicSrc = join(assetsPublicPath, relativeToRoot);
 
     token.attrSet('src', publicSrc);

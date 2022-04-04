@@ -1,12 +1,13 @@
 import {LogLevels} from '../log';
 import {LintError} from 'markdownlint';
 import {Dictionary} from 'lodash';
+import {sep} from 'path';
 
 export function errorToString(path: string, error: LintError, sourceMap?: Dictionary<string>) {
     const ruleMoniker = error.ruleNames
-        ? error.ruleNames.join('/')
+        ? error.ruleNames.join(sep)
         : // @ts-expect-error bad markdownlint typings
-          error.ruleName + '/' + error.ruleAlias;
+          error.ruleName + sep + error.ruleAlias;
     const lineNumber = sourceMap ? sourceMap[error.lineNumber] : error.lineNumber;
 
     return (
