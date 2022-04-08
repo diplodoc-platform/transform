@@ -12,7 +12,7 @@ export const yfm004: Rule = {
 
         params.tokens
             .filter((token) => {
-                return token.type === 'yfm_table_open';
+                return token.type === '__yfm_lint';
             })
             .forEach((table) => {
                 // @ts-expect-error bad markdownlint typings

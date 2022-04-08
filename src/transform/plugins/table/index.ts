@@ -209,7 +209,8 @@ const yfmTable: MarkdownItPluginCb = (md) => {
             const {rows, endOfTable} = getTableRows(state, startPosition, endPosition, startLine);
 
             if (!endOfTable) {
-                token = state.push('yfm_table_open', 'table', 1);
+                token = state.push('__yfm_lint', '', 0);
+                token.hidden = true;
                 token.map = [startLine, endLine];
                 token.attrSet('YFM004', 'true');
                 return false;
