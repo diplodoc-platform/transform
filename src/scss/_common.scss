@@ -96,6 +96,10 @@
         height: auto;
     }
 
+    .katex svg {
+        height: initial;
+    }
+
     img + small {
         display: block;
     }
@@ -263,11 +267,11 @@
         ol {
             list-style-type: none;
             counter-reset: list;
-    
+
             & > li {
                 position: relative;
                 counter-increment: list;
-    
+
                 &::before {
                     position: absolute;
                     right: 100%;
