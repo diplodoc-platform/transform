@@ -3,9 +3,8 @@ import {relative} from 'path';
 
 import {isLocalUrl} from '../../utils';
 import {resolveRelativePath} from '../../utilsFS';
+import imsize from '../imsize';
 import {MarkdownItPluginOpts} from '../typings';
-
-const imsize = require('markdown-it-imsize');
 
 type Options = MarkdownItPluginOpts & {
     destPath: string;
