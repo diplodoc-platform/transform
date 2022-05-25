@@ -86,7 +86,7 @@ export function evalExp(
     const operatorREs = lexical.operators;
     let match;
 
-    if (filters[exp.trim() as keyof typeof filters]) {
+    if (Object.getOwnPropertyNames(filters).includes(exp.trim())) {
         return filters[exp.trim() as keyof typeof filters];
     }
 
