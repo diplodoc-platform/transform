@@ -1,5 +1,6 @@
 import _, {Dictionary} from 'lodash';
 import {readFileSync, statSync} from 'fs';
+import {createHash} from 'crypto';
 
 import {parse, resolve, join, sep} from 'path';
 
@@ -35,6 +36,16 @@ export type GetFileTokensOpts = {
     inheritVars?: boolean;
 };
 
+function getFileHash(path: string, vars: object) {
+    let varsHash = '';
+    try {
+        const varsStr = JSON.stringify(vars);
+        varsHash = createHash('sha256').update(varsStr).digest('hex');
+    } catch {}
+
+    return `${path}|${varsHash}`;
+}
+
 export function getFileTokens(path: string, state: StateCore, options: GetFileTokensOpts) {
     const {
         getVarsPerFile,
@@ -48,12 +59,14 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
     } = options;
     let content;
 
-    if (filesCache[path]) {
-        content = filesCache[path];
+    const builtVars = (getVarsPerFile && !inheritVars ? getVarsPerFile(path) : vars) || {};
+    const fileHash = getFileHash(path, builtVars);
+
+    if (filesCache[fileHash]) {
+        content = filesCache[fileHash];
     } else {
         content = readFileSync(path, 'utf8');
 
-        const builtVars = (getVarsPerFile && !inheritVars ? getVarsPerFile(path) : vars) || {};
         let sourceMap;
 
         if (!disableLiquid) {
@@ -71,7 +84,7 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
             });
         }
 
-        filesCache[path] = content;
+        filesCache[fileHash] = content;
     }
 
     const meta = state.md.meta;
