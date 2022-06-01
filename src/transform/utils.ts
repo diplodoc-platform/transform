@@ -75,12 +75,6 @@ export function isExternalHref(href: string) {
     return href.startsWith('http') || href.startsWith('//');
 }
 
-export function transformLinkToOriginalArticle(opts: {root: string; currentPath: string}) {
-    const {root, currentPath} = opts;
-
-    return currentPath.replace(root, '').replace(/\.(md|ya?ml|html)$/i, '');
-}
-
 export function getHrefTokenAttr(token: Token) {
     let href = token.attrGet('href') || '';
     try {

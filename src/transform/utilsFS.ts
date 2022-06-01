@@ -109,28 +109,3 @@ export const getFullIncludePath = (includePath: string, root: string, path: stri
 
     return fullIncludePath;
 };
-
-export function getSinglePageAnchorId(args: {
-    root: string;
-    currentPath: string;
-    pathname?: string;
-    hash?: string | null;
-}) {
-    const {root, currentPath, pathname, hash} = args;
-    let resultAnchor = currentPath;
-
-    if (pathname) {
-        resultAnchor = resolveRelativePath(currentPath, pathname);
-    }
-
-    resultAnchor = resultAnchor
-        .replace(root, '')
-        .replace(/\.(md|ya?ml|html)$/i, '')
-        .replace(new RegExp(_.escapeRegExp(sep), 'gi'), '_');
-
-    if (hash) {
-        resultAnchor = resultAnchor + '_' + hash.slice(1);
-    }
-
-    return `#${resultAnchor}`;
-}
