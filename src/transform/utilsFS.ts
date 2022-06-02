@@ -1,6 +1,5 @@
 import _, {Dictionary} from 'lodash';
 import {readFileSync, statSync} from 'fs';
-import {createHash} from 'crypto';
 
 import {parse, resolve, join, sep} from 'path';
 
@@ -36,16 +35,6 @@ export type GetFileTokensOpts = {
     inheritVars?: boolean;
 };
 
-function getFileHash(path: string, vars: object) {
-    let varsHash = '';
-    try {
-        const varsStr = JSON.stringify(vars);
-        varsHash = createHash('sha256').update(varsStr).digest('hex');
-    } catch {}
-
-    return `${path}|${varsHash}`;
-}
-
 export function getFileTokens(path: string, state: StateCore, options: GetFileTokensOpts) {
     const {
         getVarsPerFile,
@@ -60,31 +49,29 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
     let content;
 
     const builtVars = (getVarsPerFile && !inheritVars ? getVarsPerFile(path) : vars) || {};
-    const fileHash = getFileHash(path, builtVars);
 
-    if (filesCache[fileHash]) {
-        content = filesCache[fileHash];
+    if (filesCache[path]) {
+        content = filesCache[path];
     } else {
         content = readFileSync(path, 'utf8');
+        filesCache[path] = content;
+    }
 
-        let sourceMap;
+    let sourceMap;
 
-        if (!disableLiquid) {
-            const liquidResult = liquid(content, builtVars, path, {withSourceMap: true});
+    if (!disableLiquid) {
+        const liquidResult = liquid(content, builtVars, path, {withSourceMap: true});
 
-            content = liquidResult.output;
-            sourceMap = liquidResult.sourceMap;
-        }
+        content = liquidResult.output;
+        sourceMap = liquidResult.sourceMap;
+    }
 
-        if (!disableLint && lintMarkdown) {
-            lintMarkdown({
-                input: content,
-                path,
-                sourceMap,
-            });
-        }
-
-        filesCache[fileHash] = content;
+    if (!disableLint && lintMarkdown) {
+        lintMarkdown({
+            input: content,
+            path,
+            sourceMap,
+        });
     }
 
     const meta = state.md.meta;
