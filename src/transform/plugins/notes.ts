@@ -89,6 +89,7 @@ const notes: MarkdownItPluginCb = (md, {lang, path: optPath, log}) => {
                 const strongClose = new state.Token('strong_close', 'strong', -1);
                 const titleClose = new state.Token('yfm_note_title_close', 'p', -1);
 
+                if (match[2]) titleOpen.attrSet('yfm2xliff-explicit', 'true');
                 titleOpen.block = true;
                 titleClose.block = true;
                 inlineText.content = match[2] === undefined ? getTitle(type, lang) : match[2];
