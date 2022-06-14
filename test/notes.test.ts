@@ -96,7 +96,7 @@ describe('Alerts', () => {
                 '{% note info "Note title" %}\n' + '\n' + 'Note content\n' + '\n' + '{% endnote %}',
             ),
         ).toBe(
-            '<div class="yfm-note yfm-accent-info" note-type="info"><p><strong>Note title</strong></p>\n' +
+            '<div class="yfm-note yfm-accent-info" note-type="info"><p yfm2xliff-explicit="true"><strong>Note title</strong></p>\n' +
                 '<p>Note content</p>\n' +
                 '</div>',
         );
@@ -118,9 +118,9 @@ describe('Alerts', () => {
                     '{% endnote %}',
             ),
         ).toBe(
-            '<div class="yfm-note yfm-accent-info" note-type="info"><p><strong>Note title 1</strong></p>\n' +
+            '<div class="yfm-note yfm-accent-info" note-type="info"><p yfm2xliff-explicit="true"><strong>Note title 1</strong></p>\n' +
                 '<p>Note content 1</p>\n' +
-                '</div><div class="yfm-note yfm-accent-info" note-type="info"><p><strong>Note title 2</strong></p>\n' +
+                '</div><div class="yfm-note yfm-accent-info" note-type="info"><p yfm2xliff-explicit="true"><strong>Note title 2</strong></p>\n' +
                 '<p>Note content 2</p>\n' +
                 '</div>',
         );
@@ -142,9 +142,9 @@ describe('Alerts', () => {
                     '{% endnote %}',
             ),
         ).toBe(
-            '<div class="yfm-note yfm-accent-info" note-type="info"><p><strong>Outer title</strong></p>\n' +
+            '<div class="yfm-note yfm-accent-info" note-type="info"><p yfm2xliff-explicit="true"><strong>Outer title</strong></p>\n' +
                 '<p>Outer content</p>\n' +
-                '<div class="yfm-note yfm-accent-info" note-type="info"><p><strong>Inner title</strong></p>\n' +
+                '<div class="yfm-note yfm-accent-info" note-type="info"><p yfm2xliff-explicit="true"><strong>Inner title</strong></p>\n' +
                 '<p>Inner content</p>\n' +
                 '</div></div>',
         );
