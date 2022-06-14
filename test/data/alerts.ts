@@ -82,7 +82,7 @@ const getTokens = (title: string) => {
         {
             type: 'yfm_note_title_open',
             tag: 'p',
-            attrs: null,
+            attrs: title === 'Custom title' ? [['yfm2xliff-explicit', 'true']] : null,
             map: null,
             nesting: 1,
             level: 0,
