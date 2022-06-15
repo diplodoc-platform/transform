@@ -1,0 +1,35 @@
+@import 'variables';
+
+$defaultIcon: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBmaWxsPSJjdXJyZW50Q29sb3IiIGQ9Ik0zNjkuOSA5Ny45TDI4NiAxNEMyNzcgNSAyNjQuOC0uMSAyNTIuMS0uMUg0OEMyMS41IDAgMCAyMS41IDAgNDh2NDE2YzAgMjYuNSAyMS41IDQ4IDQ4IDQ4aDI4OGMyNi41IDAgNDgtMjEuNSA0OC00OFYxMzEuOWMwLTEyLjctNS4xLTI1LTE0LjEtMzR6bS0yMi42IDIyLjdjMi4xIDIuMSAzLjUgNC42IDQuMiA3LjRIMjU2VjMyLjVjMi44LjcgNS4zIDIuMSA3LjQgNC4ybDgzLjkgODMuOXpNMzM2IDQ4MEg0OGMtOC44IDAtMTYtNy4yLTE2LTE2VjQ4YzAtOC44IDcuMi0xNiAxNi0xNmgxNzZ2MTA0YzAgMTMuMyAxMC43IDI0IDI0IDI0aDEwNHYzMDRjMCA4LjgtNy4yIDE2LTE2IDE2em0tNDgtMjQ0djhjMCA2LjYtNS40IDEyLTEyIDEySDEwOGMtNi42IDAtMTItNS40LTEyLTEydi04YzAtNi42IDUuNC0xMiAxMi0xMmgxNjhjNi42IDAgMTIgNS40IDEyIDEyem0wIDY0djhjMCA2LjYtNS40IDEyLTEyIDEySDEwOGMtNi42IDAtMTItNS40LTEyLTEydi04YzAtNi42IDUuNC0xMiAxMi0xMmgxNjhjNi42IDAgMTIgNS40IDEyIDEyem0wIDY0djhjMCA2LjYtNS40IDEyLTEyIDEySDEwOGMtNi42IDAtMTItNS40LTEyLTEydi04YzAtNi42IDUuNC0xMiAxMi0xMmgxNjhjNi42IDAgMTIgNS40IDEyIDEyeiIvPjwvc3ZnPg==");
+
+/**
+    Public CSS variables:
+    --yfm-file-icon             sets file icon image
+    --yfm-file-icon-color       sets file icon color
+*/
+
+.yfm-file {
+    &__icon {
+        ---yfm-file-icon-img: var(--yfm-file-icon, #{$defaultIcon});
+
+        display: inline-block;
+        user-select: none;
+
+        width: 16px;
+        margin: 0 2px;
+
+        color: var(--yfm-file-icon-color, #{$textColor});
+        background-color: currentColor;
+        background-repeat: no-repeat;
+        background-position: 50%;
+        background-size: 100%;
+
+        mask-image: var(---yfm-file-icon-img);
+        mask-position: center;
+        mask-repeat: no-repeat;
+
+        &::before {
+            content: '\a0';
+        }
+    }
+}

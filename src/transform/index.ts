@@ -12,6 +12,7 @@ import anchors from './plugins/anchors';
 import code from './plugins/code';
 import cut from './plugins/cut';
 import deflist from './plugins/deflist';
+import file from './plugins/file';
 import meta from './plugins/meta';
 import sup from './plugins/sup';
 import tabs from './plugins/tabs';
@@ -66,7 +67,20 @@ function transform(originInput: string, opts: OptionsType = {}): OutputType {
         leftDelimiter = '{',
         rightDelimiter = '}',
         isLiquided = false,
-        plugins = [meta, deflist, cut, notes, anchors, tabs, code, sup, video, monospace, yfmTable],
+        plugins = [
+            meta,
+            deflist,
+            cut,
+            notes,
+            anchors,
+            tabs,
+            code,
+            sup,
+            video,
+            monospace,
+            yfmTable,
+            file,
+        ],
         highlightLangs = {},
         ...customOptions
     } = opts;
