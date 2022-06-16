@@ -137,7 +137,7 @@ Postfix
         test('Test 1', () => {
             expect(
                 liquid(
-                    'Prefix {% for user in users2 %} {% if needCapitalize %} {{user | capitalize}}+{{user2}} {% else %} {{user}} {% endif %} {% endfor %} Postfix',
+                    'Prefix {% for user in users2 %}{% if needCapitalize %} {{user | capitalize}}+{{user2}} {% else %} {{user}} {% endif %}{% endfor %} Postfix',
                     vars,
                     '',
                 ),

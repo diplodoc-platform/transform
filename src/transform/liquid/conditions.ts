@@ -3,7 +3,7 @@ import {bold} from 'chalk';
 import evalExp from './evaluation';
 import {tagLine} from './lexical';
 import {log} from '../log';
-import {getPreparedLeftContent} from './utils';
+import {getPreparedLeftContent, removeIndentBlock} from './utils';
 import {createSourceMapApi, getLineNumber} from './sourceMap';
 
 type Options = {
@@ -142,11 +142,15 @@ function inlineConditions({ifTag, vars, content, match, lastIndex, sourceMap, li
     }
 
     if (res !== '') {
-        if (res[0] === ' ' || res[0] === '\n') {
+        if (res[0] === '\n') {
             res = res.substring(1);
         }
 
-        res = res.trimRight();
+        res = removeIndentBlock(res);
+
+        if (res[res.length - 1] === '\n') {
+            res = res.slice(0, -1);
+        }
     }
 
     const leftPart = preparedLeftContent + res;
