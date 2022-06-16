@@ -13,6 +13,14 @@ describe('Conditions', () => {
             ).toEqual('Prefix Inline if Postfix');
         });
 
+        test('should not render text if condition is false', () => {
+            expect(
+                conditions('Prefix{% if foo %} Inline if{% endif %} Postfix', {foo: false}, '', {
+                    sourceMap: {},
+                }),
+            ).toEqual('Prefix Postfix');
+        });
+
         test('Should works for if-else: positive', () => {
             expect(
                 conditions(
@@ -50,38 +58,38 @@ describe('Conditions', () => {
                 conditions(
                     'Prefix\n' +
                         '{% if test %}\n' +
-                        '    How are you?\n' +
+                        `${' '.repeat(4)}How are you?\n` +
                         '{% endif %}\n' +
                         'Postfix',
                     {test: true},
                     '',
                     {sourceMap: {}},
                 ),
-            ).toEqual('Prefix\n' + '    How are you?\n' + 'Postfix');
+            ).toEqual('Prefix\n' + `${' '.repeat(4)}How are you?\n` + 'Postfix');
         });
 
         test('Multiple if block with indent', () => {
             expect(
                 conditions(
                     'Prefix\n' +
-                        '    {% if test %}\n' +
-                        '    How are you?\n' +
-                        '    {% endif %}\n' +
+                        `${' '.repeat(4)}{% if test %}\n` +
+                        `${' '.repeat(4)}How are you?\n` +
+                        `${' '.repeat(4)}{% endif %}\n` +
                         'Postfix',
                     {test: true},
                     '',
                     {sourceMap: {}},
                 ),
-            ).toEqual('Prefix\n' + '        How are you?\n' + 'Postfix');
+            ).toEqual('Prefix\n' + `${' '.repeat(8)}How are you?\n` + 'Postfix');
         });
 
         test('Multiple if block with indent and negative condition', () => {
             expect(
                 conditions(
                     'Prefix\n' +
-                        '     {% if test %}\n' +
-                        '         How are you?\n' +
-                        '     {% endif %}\n' +
+                        `${' '.repeat(4)}{% if test %}\n` +
+                        `${' '.repeat(8)}How are you?\n` +
+                        `${' '.repeat(4)}{% endif %}\n` +
                         'Postfix',
                     {test: false},
                     '',
@@ -94,24 +102,29 @@ describe('Conditions', () => {
             expect(
                 conditions(
                     '{% if test %}\n' +
-                        '    How are you?\n' +
+                        `${' '.repeat(4)}How are you?\n` +
                         '{% endif %}\n' +
                         '{% if test %}\n' +
-                        '    How are you?\n' +
+                        `${' '.repeat(4)}How are you?\n` +
                         '{% endif %}',
                     {test: true},
                     '',
                     {sourceMap: {}},
                 ),
-            ).toEqual('    How are you?\n' + '    How are you?');
+            ).toEqual(`${' '.repeat(4)}How are you?\n` + `${' '.repeat(4)}How are you?`);
         });
 
         test('Condition inside the list item content', () => {
             expect(
-                conditions('1. list item 1\n\n' + '    {% if true %}Test{% endif %}\n', {}, '', {
-                    sourceMap: {},
-                }),
-            ).toEqual('1. list item 1\n\n' + '    Test\n');
+                conditions(
+                    '1. list item 1\n\n' + `${' '.repeat(4)}{% if true %}Test{% endif %}\n`,
+                    {},
+                    '',
+                    {
+                        sourceMap: {},
+                    },
+                ),
+            ).toEqual('1. list item 1\n\n' + `${' '.repeat(4)}Test\n`);
         });
     });
 
