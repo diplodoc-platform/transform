@@ -50,6 +50,8 @@ const index: LintConfig = {
         MD046: LogLevels.DISABLED, // Code block style
         MD047: LogLevels.DISABLED, // Files should end with a single newline character
         MD048: LogLevels.DISABLED, // Code fence style
+        MD049: LogLevels.DISABLED, // Emphasis style should be consistent
+        MD050: LogLevels.DISABLED, // Strong style should be consistent
 
         YFM001: LogLevels.WARN, // Inline code length
         YFM002: LogLevels.WARN, // No header found in the file for the link text
