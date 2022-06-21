@@ -37,7 +37,7 @@ export const REQUIRED_ATTRS: readonly string[] = [FileSpecialAttr.Src, FileSpeci
 
 export const FILE_TOKEN = 'yfm_file';
 
-export const PREFIX = '%file';
+export const PREFIX = '{% file ';
 export const PREFIX_LENGTH = PREFIX.length;
 
 export enum FileClassName {

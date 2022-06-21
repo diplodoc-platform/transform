@@ -29,10 +29,10 @@ export const fileParser = (_md: MarkdownIt, opts?: FileOptions): ParserInline.Ru
     return (state, silent) => {
         if (state.src.substring(state.pos, state.pos + PREFIX_LENGTH) !== PREFIX) return false;
 
-        // the rest of line after '%file'
+        // the rest of line after '{% file '
         const searchStr = state.src.slice(state.pos + PREFIX_LENGTH, state.posMax);
-        // loking for pattern '(src="..." name="..." etc="value")'
-        const matchResult = searchStr.match(/^\(((?:\s*\w+=(?:"[^"]+"|'[^']+')\s*)+)\)/);
+        // loking for pattern 'src="..." name="..." etc="value" %}'
+        const matchResult = searchStr.match(/^((?:\s*\w+=(?:"[^"]+"|'[^']+')\s)+)\s*%}/);
         if (!matchResult) return false;
 
         const paramsGroupLength = matchResult[0].length; // '(src="..." name="...")'.length

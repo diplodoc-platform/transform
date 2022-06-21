@@ -1,7 +1,7 @@
 # YFM File plugin
 
 ```md
-%file(src="path/to/file" name='readme.md')
+{% file src="path/to/file" name='readme.md' %}
 
 ==>
 

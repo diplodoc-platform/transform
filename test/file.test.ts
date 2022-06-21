@@ -1,67 +1,62 @@
-import transform from '../src/transform';
+import MarkdownIt from 'markdown-it';
 import file from '../src/transform/plugins/file';
 import type {FileOptions} from '../src/transform/plugins/file/file';
 
-const transformYfm = (text: string, opts?: FileOptions) => {
-    const {
-        result: {html},
-    } = transform(text, {
-        plugins: [file],
-        ...opts,
-    });
-    return html;
+const transform = (text: string, opts?: FileOptions): string => {
+    const md = new MarkdownIt().use(file, opts);
+    return md.render(text);
 };
 
 const iconHtml = '<span class="yfm-file__icon"></span>';
 
 describe('File plugin', () => {
     it('should render file', () => {
-        expect(transformYfm('%file(src="../file" name="file.txt")')).toBe(
+        expect(transform('{% file src="../file" name="file.txt" %}')).toBe(
             `<p><a href="../file" download="file.txt" class="yfm-file">${iconHtml}file.txt</a></p>\n`,
         );
     });
 
     it('should ignore file markup without params', () => {
-        expect(transformYfm('%file()')).toBe('<p>%file()</p>\n');
+        expect(transform('{% file %}')).toBe('<p>{% file %}</p>\n');
     });
 
     it('should not render file without all required attrs', () => {
-        expect(transformYfm('%file(src="../file")')).toBe(
-            '<p>%file(src=&quot;../file&quot;)</p>\n',
+        expect(transform('{% file src="../file" %}')).toBe(
+            '<p>{% file src=&quot;../file&quot; %}</p>\n',
         );
-        expect(transformYfm('%file(name="file.txt")')).toBe(
-            '<p>%file(name=&quot;file.txt&quot;)</p>\n',
+        expect(transform('{% file name="file.txt" %}')).toBe(
+            '<p>{% file name=&quot;file.txt&quot; %}</p>\n',
         );
     });
 
     it('should render file with text before', () => {
-        expect(transformYfm('download it %file(src="../file" name="file.txt")')).toBe(
+        expect(transform('download it {% file src="../file" name="file.txt" %}')).toBe(
             `<p>download it <a href="../file" download="file.txt" class="yfm-file">${iconHtml}file.txt</a></p>\n`,
         );
     });
 
     it('should render file with text after', () => {
-        expect(transformYfm('%file(src="../file" name="file.txt") don\'t download it')).toBe(
+        expect(transform('{% file src="../file" name="file.txt" %} don\'t download it')).toBe(
             `<p><a href="../file" download="file.txt" class="yfm-file">${iconHtml}file.txt</a> don't download it</p>\n`,
         );
     });
 
     it('should render file between text', () => {
-        expect(transformYfm('text %file(src="../file" name="file.txt") text')).toBe(
+        expect(transform('text {% file src="../file" name="file.txt" %} text')).toBe(
             `<p>text <a href="../file" download="file.txt" class="yfm-file">${iconHtml}file.txt</a> text</p>\n`,
         );
     });
 
     it('should map all specific file attrs to link html attrs', () => {
-        expect(transformYfm('%file(src="../file2" name="file2.txt" lang="en")')).toBe(
+        expect(transform('{% file src="../file2" name="file2.txt" lang="en" %}')).toBe(
             `<p><a href="../file2" download="file2.txt" hreflang="en" class="yfm-file">${iconHtml}file2.txt</a></p>\n`,
         );
     });
 
     it('should pass allowed link html attrs', () => {
         expect(
-            transformYfm(
-                '%file(src="../file1" name="file1.txt" referrerpolicy="origin" rel="help" target="_top" type="text/css")',
+            transform(
+                '{% file src="../file1" name="file1.txt" referrerpolicy="origin" rel="help" target="_top" type="text/css" %}',
             ),
         ).toBe(
             `<p><a href="../file1" download="file1.txt" referrerpolicy="origin" rel="help" target="_top" type="text/css" class="yfm-file">${iconHtml}file1.txt</a></p>\n`,
@@ -69,14 +64,14 @@ describe('File plugin', () => {
     });
 
     it('should ignore unknown attrs', () => {
-        expect(transformYfm('%file(src="../file" name="file.txt" foo="1" bar="2" baz="3")')).toBe(
+        expect(transform('{% file src="../file" name="file.txt" foo="1" bar="2" baz="3" %}')).toBe(
             `<p><a href="../file" download="file.txt" class="yfm-file">${iconHtml}file.txt</a></p>\n`,
         );
     });
 
     it('should add extra attrs', () => {
         expect(
-            transformYfm('%file(src="../file" name="file.txt")', {
+            transform('{% file src="../file" name="file.txt" %}', {
                 fileExtraAttrs: [['data-yfm-file', 'yes']],
             }),
         ).toBe(
@@ -85,52 +80,66 @@ describe('File plugin', () => {
     });
 
     it('should parse attrs with single quotes', () => {
-        expect(transformYfm("%file(src='index.txt' name='index.html')")).toBe(
+        expect(transform("{% file src='index.txt' name='index.html' %}")).toBe(
             `<p><a href="index.txt" download="index.html" class="yfm-file">${iconHtml}index.html</a></p>\n`,
         );
     });
 
-    it('should include parentheses in double quotes', () => {
-        expect(transformYfm('%file(src="in(de)x.txt" name=")))index(((.html")')).toBe(
-            `<p><a href="in(de)x.txt" download=")))index(((.html" class="yfm-file">${iconHtml})))index(((.html</a></p>\n`,
+    it('should render with file markup in attributes', () => {
+        expect(
+            transform('{% file src="in%}dex.txt" name="{% file src=\'a\' name=\'b\' %}" %}'),
+        ).toBe(
+            `<p><a href="in%}dex.txt" download="{% file src='a' name='b' %}" class="yfm-file">${iconHtml}{% file src='a' name='b' %}</a></p>\n`,
         );
     });
 
-    it('should ignore parentheses after file markup', () => {
-        expect(transformYfm('%file(src="index.txt" name="index.html")))')).toBe(
-            `<p><a href="index.txt" download="index.html" class="yfm-file">${iconHtml}index.html</a>))</p>\n`,
+    it('should render file with different order of attrs', () => {
+        expect(transform('{% file type="text/html" name="page.html" src="../index.html" %}')).toBe(
+            `<p><a type="text/html" download="page.html" href="../index.html" class="yfm-file">${iconHtml}page.html</a></p>\n`,
         );
     });
 
-    it('should ignore parentheses after file markup [2]', () => {
-        expect(transformYfm('%file(src="index.txt" name="index.html") some text (:)')).toBe(
-            `<p><a href="index.txt" download="index.html" class="yfm-file">${iconHtml}index.html</a> some text (:)</p>\n`,
+    it('should ignore additional special characters', () => {
+        expect(transform('{% {% file src="index.txt" name="index.html" %} %}')).toBe(
+            `<p>{% <a href="index.txt" download="index.html" class="yfm-file">${iconHtml}index.html</a> %}</p>\n`,
+        );
+    });
+
+    it('should ignore additional file markup', () => {
+        expect(transform('{% file {% file src="index.txt" name="index.html" %} %}')).toBe(
+            `<p>{% file <a href="index.txt" download="index.html" class="yfm-file">${iconHtml}index.html</a> %}</p>\n`,
         );
     });
 
     it('should escape attrs', () => {
-        expect(transformYfm('%file(src="ind<ex.txt" name=\'ind"ex.ht&ml\')')).toBe(
+        expect(transform('{% file src="ind<ex.txt" name=\'ind"ex.ht&ml\' %}')).toBe(
             `<p><a href="ind&lt;ex.txt" download="ind&quot;ex.ht&amp;ml" class="yfm-file">${iconHtml}ind&quot;ex.ht&amp;ml</a></p>\n`,
         );
     });
 
     it('should allow quoutes in attribute value', () => {
-        expect(transformYfm('%file(src="ind\'ex.txt" name=\'ind"ex.html\')')).toBe(
+        expect(transform('{% file src="ind\'ex.txt" name=\'ind"ex.html\' %}')).toBe(
             `<p><a href="ind'ex.txt" download="ind&quot;ex.html" class="yfm-file">${iconHtml}ind&quot;ex.html</a></p>\n`,
         );
     });
 
     it('should render file with extra spaces around attrs', () => {
         expect(
-            transformYfm('%file(  src="index.txt"   name="index.html"   type="text/html"  )'),
+            transform('{% file  src="index.txt"   name="index.html"   type="text/html"  %}'),
         ).toBe(
             `<p><a href="index.txt" download="index.html" type="text/html" class="yfm-file">${iconHtml}index.html</a></p>\n`,
         );
     });
 
-    it('should render file without spaces around attrs', () => {
-        expect(transformYfm('%file(src="index.txt"name="index.html"type="text/html")')).toBe(
-            `<p><a href="index.txt" download="index.html" type="text/html" class="yfm-file">${iconHtml}index.html</a></p>\n`,
+    it('should not render file without spaces around attrs', () => {
+        expect(transform('{% file src="index.txt"name="index.html"type="text/html" %}')).toBe(
+            `<p>{% file src=&quot;index.txt&quot;name=&quot;index.html&quot;type=&quot;text/html&quot; %}</p>\n`,
+        );
+    });
+
+    it('should not render file with no spaces near borders', () => {
+        expect(transform("{%file src='index.txt' name='index.html'%}")).toBe(
+            `<p>{%file src='index.txt' name='index.html'%}</p>\n`,
         );
     });
 });
