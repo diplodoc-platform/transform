@@ -1,10 +1,17 @@
-import MarkdownIt from 'markdown-it';
-import file from '../src/transform/plugins/file';
+import yfmTransform from '../src/transform';
 import type {FileOptions} from '../src/transform/plugins/file/file';
 
 const transform = (text: string, opts?: FileOptions): string => {
-    const md = new MarkdownIt().use(file, opts);
-    return md.render(text);
+    const {
+        result: {html},
+    } = yfmTransform(text, {
+        // override the default markdown-it-attrs delimiters,
+        // to make it easier to check html for non-valid file markup
+        leftDelimiter: '[',
+        rightDelimiter: ']',
+        ...opts,
+    });
+    return html;
 };
 
 const iconHtml = '<span class="yfm-file__icon"></span>';
