@@ -1,5 +1,5 @@
+/* eslint-env node */
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
-// eslint-disable-next-line no-undef
 module.exports = {
     roots: ['<rootDir>/test'],
     preset: 'ts-jest',
