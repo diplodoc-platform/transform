@@ -11,6 +11,7 @@ module.exports = {
         file: 'dist/js/yfm.js',
         format: 'umd',
         name: 'yfm',
+        sourcemap: true,
     },
     plugins: [
         babel({
