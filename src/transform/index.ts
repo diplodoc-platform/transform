@@ -21,13 +21,13 @@ import monospace from './plugins/monospace';
 import yfmTable from './plugins/table';
 import {initMd} from './md';
 import {MarkdownItPluginCb} from './plugins/typings';
-import {HighlightLangMap} from './typings';
+import {HighlightLangMap, Heading} from './typings';
 
 interface OutputType {
     result: {
         html: string;
         title?: string;
-        headings: unknown[];
+        headings: Heading[];
         assets?: unknown[];
         meta?: object;
     };
@@ -46,6 +46,7 @@ interface OptionsType {
     leftDelimiter?: string;
     rightDelimiter?: string;
     isLiquided?: boolean;
+    needFlatListHeadings?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     plugins?: MarkdownItPluginCb<any>[];
     highlightLangs?: HighlightLangMap;
@@ -63,6 +64,7 @@ function transform(originInput: string, opts: OptionsType = {}): OutputType {
         linkify = false,
         breaks = true,
         conditionsInCode = false,
+        needFlatListHeadings = false,
         disableLiquid = false,
         leftDelimiter = '{',
         rightDelimiter = '}',
@@ -125,7 +127,7 @@ function transform(originInput: string, opts: OptionsType = {}): OutputType {
             ({title} = extractTitle(tokens));
         }
 
-        const headings = getHeadings(tokens);
+        const headings = getHeadings(tokens, needFlatListHeadings);
         const html = md.renderer.render(tokens, md.options, env);
 
         const assets = md.assets;

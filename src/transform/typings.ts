@@ -11,3 +11,10 @@ export interface StateCore extends DefaultStateCore {
 }
 
 export type HighlightLangMap = Record<string, LanguageFn>;
+
+export type Heading = {
+    title: string;
+    href: string;
+    level: number;
+    items?: Heading[];
+};
