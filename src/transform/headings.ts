@@ -1,4 +1,5 @@
 import Token from 'markdown-it/lib/token';
+import {Heading} from './typings';
 
 function getTitle(token: Token) {
     return (
@@ -16,14 +17,11 @@ function getHref(token: Token) {
     return '#' + (token.attrGet('id') || '');
 }
 
-type Heading = {
-    title: string;
-    href: string;
-    level: number;
-    items?: Heading[];
+export = function getHeadings(tokens: Token[], needFlatListHeadings?: boolean) {
+    return needFlatListHeadings ? getFlatListHeadings(tokens) : getFilteredHeadings(tokens);
 };
 
-export = function getHeadings(tokens: Token[]) {
+function getFilteredHeadings(tokens: Token[]) {
     const headings: Heading[] = [];
     let parents = [headings];
     let prevLevel;
@@ -67,4 +65,24 @@ export = function getHeadings(tokens: Token[]) {
     }
 
     return headings;
-};
+}
+function getFlatListHeadings(tokens: Token[]) {
+    const headings: Heading[] = [];
+
+    for (let i = 0; i < tokens.length; i++) {
+        const isHeading = tokens[i].type === 'heading_open';
+        const level = Number.parseInt(tokens[i].tag.slice(1), 10);
+
+        if (!isHeading) {
+            continue;
+        }
+
+        headings.push({
+            title: getTitle(tokens[i + 1]),
+            href: getHref(tokens[i]),
+            level,
+        });
+    }
+
+    return headings;
+}
