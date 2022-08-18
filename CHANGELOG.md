@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.5](https://github.com/yandex-cloud/yfm-transform/compare/v2.10.4...v2.10.5) (2022-08-17)
+
+
+### Bug Fixes
+
+* Update major dependencies ([1687c59](https://github.com/yandex-cloud/yfm-transform/commit/1687c595a2f5fe41d8c1d718c6b128a621c5f614))
+
 ## [2.10.4](https://github.com/yandex-cloud/yfm-transform/compare/v2.10.3...v2.10.4) (2022-08-17)
 
 
