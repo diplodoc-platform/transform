@@ -47,7 +47,7 @@ describe('Alerts', () => {
                 );
 
                 expect(result[0].attrs?.[0][1]).toEqual(`yfm-note yfm-accent-${type}`);
-                expect(result[2].children?.[1].content).toEqual(title);
+                expect(result[2].children?.[0].content).toEqual(title);
             });
         });
     });
@@ -96,7 +96,7 @@ describe('Alerts', () => {
                 '{% note info "Note title" %}\n' + '\n' + 'Note content\n' + '\n' + '{% endnote %}',
             ),
         ).toBe(
-            '<div class="yfm-note yfm-accent-info" note-type="info"><p yfm2xliff-explicit="true"><strong>Note title</strong></p>\n' +
+            '<div class="yfm-note yfm-accent-info" note-type="info"><p class="yfm-note-title" yfm2xliff-explicit="true">Note title</p>\n' +
                 '<p>Note content</p>\n' +
                 '</div>',
         );
@@ -118,9 +118,9 @@ describe('Alerts', () => {
                     '{% endnote %}',
             ),
         ).toBe(
-            '<div class="yfm-note yfm-accent-info" note-type="info"><p yfm2xliff-explicit="true"><strong>Note title 1</strong></p>\n' +
+            '<div class="yfm-note yfm-accent-info" note-type="info"><p class="yfm-note-title" yfm2xliff-explicit="true">Note title 1</p>\n' +
                 '<p>Note content 1</p>\n' +
-                '</div><div class="yfm-note yfm-accent-info" note-type="info"><p yfm2xliff-explicit="true"><strong>Note title 2</strong></p>\n' +
+                '</div><div class="yfm-note yfm-accent-info" note-type="info"><p class="yfm-note-title" yfm2xliff-explicit="true">Note title 2</p>\n' +
                 '<p>Note content 2</p>\n' +
                 '</div>',
         );
@@ -142,11 +142,28 @@ describe('Alerts', () => {
                     '{% endnote %}',
             ),
         ).toBe(
-            '<div class="yfm-note yfm-accent-info" note-type="info"><p yfm2xliff-explicit="true"><strong>Outer title</strong></p>\n' +
+            '<div class="yfm-note yfm-accent-info" note-type="info"><p class="yfm-note-title" yfm2xliff-explicit="true">Outer title</p>\n' +
                 '<p>Outer content</p>\n' +
-                '<div class="yfm-note yfm-accent-info" note-type="info"><p yfm2xliff-explicit="true"><strong>Inner title</strong></p>\n' +
+                '<div class="yfm-note yfm-accent-info" note-type="info"><p class="yfm-note-title" yfm2xliff-explicit="true">Inner title</p>\n' +
                 '<p>Inner content</p>\n' +
                 '</div></div>',
+        );
+    });
+
+    test('should render title with format', () => {
+        expect(
+            transformYfm(
+                '{% note info "_Italic note title_" %}\n' +
+                    '\n' +
+                    'Content\n' +
+                    '\n' +
+                    '{% endnote %}',
+            ),
+        ).toBe(
+            '<div class="yfm-note yfm-accent-info" note-type="info">' +
+                '<p class="yfm-note-title" yfm2xliff-explicit="true"><em>Italic note title</em></p>\n' +
+                '<p>Content</p>\n' +
+                '</div>',
         );
     });
 });
