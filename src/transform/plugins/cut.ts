@@ -1,5 +1,5 @@
-import StateCore from 'markdown-it/lib/rules_core/state_core';
-import Token from 'markdown-it/lib/token';
+import type Core from 'markdown-it/lib/parser_core';
+import type Token from 'markdown-it/lib/token';
 import {MarkdownItPluginCb} from './typings';
 import {MatchTokenFunction, nestedCloseTokenIdxFactory as closeTokenFactory} from './utils';
 
@@ -24,7 +24,7 @@ const matchOpenToken = (tokens: Token[], i: number) => {
 const findCloseTokenIdx = closeTokenFactory('Cut', matchOpenToken, matchCloseToken);
 
 const cut: MarkdownItPluginCb = (md, {path, log}) => {
-    const plugin = (state: StateCore) => {
+    const plugin: Core.RuleCore = (state) => {
         const tokens = state.tokens;
         let i = 0;
 
@@ -45,8 +45,15 @@ const cut: MarkdownItPluginCb = (md, {path, log}) => {
                 const titleOpen = new state.Token('yfm_cut_title_open', 'div', 1);
                 titleOpen.attrSet('class', 'yfm-cut-title');
 
-                const textTitle = new state.Token('text', '', 0);
-                textTitle.content = match[1] === undefined ? 'ad' : match[1];
+                const titleInline = new state.Token('inline', '', 0);
+                titleInline.content = match[1] === undefined ? 'ad' : match[1];
+                titleInline.children = [];
+                state.md.inline.parse(
+                    titleInline.content,
+                    state.md,
+                    state.env,
+                    titleInline.children,
+                );
 
                 const titleClose = new state.Token('yfm_cut_title_close', 'div', -1);
 
@@ -60,7 +67,7 @@ const cut: MarkdownItPluginCb = (md, {path, log}) => {
                 const insideTokens = [
                     newOpenToken,
                     titleOpen,
-                    textTitle,
+                    titleInline,
                     titleClose,
                     contentOpen,
                     ...tokens.slice(i + 3, closeTokenIdx),
