@@ -69,4 +69,21 @@ describe('Cut plugin', () => {
                 '</div></div></div>',
         );
     });
+
+    it('should render title with format', () => {
+        expect(
+            transformYfm(
+                '{% cut "**Strong cut title**" %}\n' +
+                    '\n' +
+                    'Content we want to hide\n' +
+                    '\n' +
+                    '{% endcut %}',
+            ),
+        ).toBe(
+            '<div class="yfm-cut">' +
+                '<div class="yfm-cut-title"><strong>Strong cut title</strong></div>' +
+                '<div class="yfm-cut-content"><p>Content we want to hide</p>\n</div>' +
+                '</div>',
+        );
+    });
 });
