@@ -83,22 +83,27 @@ const notes: MarkdownItPluginCb = (md, {lang, path: optPath, log}) => {
 
                 // Add extra paragraph
                 const titleOpen = new state.Token('yfm_note_title_open', 'p', 1);
-                const inline = new state.Token('inline', '', 0);
-                const strongOpen = new state.Token('strong_open', 'strong', 1);
-                const inlineText = new state.Token('text', '', 0);
-                const strongClose = new state.Token('strong_close', 'strong', -1);
+                titleOpen.attrSet('class', 'yfm-note-title');
+                const titleInline = new state.Token('inline', '', 0);
                 const titleClose = new state.Token('yfm_note_title_close', 'p', -1);
 
                 if (match[2]) titleOpen.attrSet('yfm2xliff-explicit', 'true');
                 titleOpen.block = true;
                 titleClose.block = true;
-                inlineText.content = match[2] === undefined ? getTitle(type, lang) : match[2];
-                inline.children = [strongOpen, inlineText, strongClose];
+
+                titleInline.content = match[2] === undefined ? getTitle(type, lang) : match[2];
+                titleInline.children = [];
+                state.md.inline.parse(
+                    titleInline.content,
+                    state.md,
+                    state.env,
+                    titleInline.children,
+                );
 
                 const insideTokens = [
                     newOpenToken,
                     titleOpen,
-                    inline,
+                    titleInline,
                     titleClose,
                     ...tokens.slice(i + 3, closeTokenIdx),
                     newCloseToken,

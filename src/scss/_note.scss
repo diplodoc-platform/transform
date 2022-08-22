@@ -16,6 +16,10 @@ $importantBackgroundColor: rgba(235, 50, 38, 0.08);
     padding: 20px 20px 20px 64px;
     border-radius: 10px;
 
+    .yfm-note-title {
+        font-weight: 700;
+    }
+
     & > p {
         margin: 0 0 10px 0;
 
