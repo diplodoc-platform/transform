@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.11.0](https://github.com/yandex-cloud/yfm-transform/compare/v2.10.5...v2.11.0) (2022-08-22)
+
+
+### Features
+
+* **note:** allow inline formatting in note title ([2a8bc0f](https://github.com/yandex-cloud/yfm-transform/commit/2a8bc0fe796509440d0b6672ac7c14179992cafc))
+
 ## [2.10.5](https://github.com/yandex-cloud/yfm-transform/compare/v2.10.4...v2.10.5) (2022-08-17)
 
 
