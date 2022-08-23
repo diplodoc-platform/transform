@@ -90,6 +90,32 @@ function findTabs(tokens: Token[], idx: number) {
     };
 }
 
+function insertTabsInPrintMode(tabs: Tab[], state: StateCore, start: number, end: number) {
+    const tabsTokens = [];
+
+    for (let i = 0; i < tabs.length; i++) {
+        const titleOpen = new state.Token('heading_open', 'h4', 1);
+        const titleInline = new state.Token('inline', '', 0);
+        const titleText = new state.Token('text', '', 0);
+        const titleClose = new state.Token('heading_close', 'h4', -1);
+
+        titleText.content = tabs[i].name;
+        titleInline.children = [titleText];
+        titleOpen.block = true;
+        titleClose.block = true;
+
+        tabsTokens.push(titleOpen);
+        tabsTokens.push(titleInline);
+        tabsTokens.push(titleClose);
+
+        tabsTokens.push(...tabs[i].tokens);
+    }
+
+    state.tokens.splice(start, end - start + 1, ...tabsTokens);
+
+    return tabsTokens.length;
+}
+
 function insertTabs(tabs: Tab[], state: StateCore, start: number, end: number) {
     const tabsTokens = [];
     const tabListTokens = [];
@@ -194,7 +220,7 @@ function matchOpenToken(tokens: Token[], i: number) {
     );
 }
 
-const tabs: MarkdownItPluginCb = (md) => {
+const tabs: MarkdownItPluginCb = (md, {printMode = false}) => {
     const plugin = (state: StateCore) => {
         const tokens = state.tokens;
         let i = 0;
@@ -220,7 +246,9 @@ const tabs: MarkdownItPluginCb = (md) => {
             const {tabs, index} = findTabs(state.tokens, i + 3);
 
             if (tabs.length > 0) {
-                i += insertTabs(tabs, state, i, index + 3);
+                i += printMode
+                    ? insertTabsInPrintMode(tabs, state, i, index + 3)
+                    : insertTabs(tabs, state, i, index + 3);
             } else {
                 state.tokens.splice(i, index - i);
             }

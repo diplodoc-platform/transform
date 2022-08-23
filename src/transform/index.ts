@@ -46,6 +46,7 @@ interface OptionsType {
     leftDelimiter?: string;
     rightDelimiter?: string;
     isLiquided?: boolean;
+    printMode?: boolean;
     needFlatListHeadings?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     plugins?: MarkdownItPluginCb<any>[];
@@ -69,6 +70,7 @@ function transform(originInput: string, opts: OptionsType = {}): OutputType {
         leftDelimiter = '{',
         rightDelimiter = '}',
         isLiquided = false,
+        printMode = false,
         plugins = [
             meta,
             deflist,
@@ -93,6 +95,7 @@ function transform(originInput: string, opts: OptionsType = {}): OutputType {
         path,
         extractTitle: extractTitleOption,
         disableLiquid,
+        printMode,
         log,
     };
 

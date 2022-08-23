@@ -1,7 +1,18 @@
+import transform from '../src/transform';
 import tabsPlugin from '../src/transform/plugins/tabs';
 import {callPlugin, tokenize} from './utils';
 import {base, escaped} from './data/tabs';
 import Token from 'markdown-it/lib/token';
+import {MarkdownItPluginOpts} from 'src/transform/plugins/typings';
+
+const transformYfm = (text: string, opts?: MarkdownItPluginOpts) => {
+    const {
+        result: {html},
+    } = transform(text, {
+        ...opts,
+    });
+    return html;
+};
 
 const convertAttrsToObject = ({attrs}: Token) =>
     attrs?.reduce((acc: Record<string, string>, [name, value]) => {
@@ -77,5 +88,35 @@ describe('Tabs', () => {
         const escapedTabTokens = callPlugin(tabsPlugin, tokenize(['`{% list tabs %}`']));
 
         expect(escapedTabTokens).toEqual(escaped);
+    });
+
+    test('Tabs are transformed into headings and paragraphs in print mode', () => {
+        const expectedInput = [
+            '#### Tab 1',
+            '',
+            'Tab 1 content',
+            '',
+            '#### Tab 2',
+            '',
+            'Tab 2 content',
+        ].join('\n');
+        const tabsInput = [
+            '{% list tabs %}',
+            '',
+            '- Tab 1',
+            '',
+            '  Tab 1 content',
+            '',
+            '- Tab 2',
+            '',
+            '  Tab 2 content',
+            '',
+            '{% endlist %}',
+        ].join('\n');
+
+        const expectedResult = transformYfm(expectedInput);
+        const tabsResult = transformYfm(tabsInput, {printMode: true} as MarkdownItPluginOpts);
+
+        expect(expectedResult).toBe(tabsResult);
     });
 });
