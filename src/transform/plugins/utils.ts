@@ -32,3 +32,7 @@ export const nestedCloseTokenIdxFactory =
     };
 
 export const сarriage = platform === 'win32' ? '\r\n' : '\n';
+
+export function generateID() {
+    return Math.random().toString(36).substr(2, 8);
+}

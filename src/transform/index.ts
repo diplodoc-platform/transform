@@ -1,5 +1,6 @@
 import {bold} from 'chalk';
 import attrs from 'markdown-it-attrs';
+import Token from 'markdown-it/lib/token';
 
 import {log, LogLevels} from './log';
 import makeHighlight from './highlight';
@@ -12,6 +13,7 @@ import anchors from './plugins/anchors';
 import code from './plugins/code';
 import cut from './plugins/cut';
 import deflist from './plugins/deflist';
+import term from './plugins/term';
 import file from './plugins/file';
 import imsize from './plugins/imsize';
 import meta from './plugins/meta';
@@ -84,6 +86,7 @@ function transform(originInput: string, opts: OptionsType = {}): OutputType {
             yfmTable,
             file,
             imsize,
+            term,
         ],
         highlightLangs = {},
         ...customOptions
@@ -113,7 +116,7 @@ function transform(originInput: string, opts: OptionsType = {}): OutputType {
         let title;
         let tokens;
         let titleTokens;
-        const env = {};
+        const env = {} as {[key: string]: Token[] | unknown};
 
         tokens = md.parse(input, env);
 
@@ -130,8 +133,10 @@ function transform(originInput: string, opts: OptionsType = {}): OutputType {
         }
 
         const headings = getHeadings(tokens, needFlatListHeadings);
-        const html = md.renderer.render(tokens, md.options, env);
 
+        // add all term template tokens to the end of the html
+        const termTokens = (env.termTokens as Token[]) || [];
+        const html = md.renderer.render([...tokens, ...termTokens], md.options, env);
         const assets = md.assets;
         const meta = md.meta;
 
