@@ -34,8 +34,8 @@ describe('Terms', () => {
 
         expect(clearRandomId(result)).toEqual(
             '<h1>Web</h1>\n' +
-                '<p>The <i class="yfm yfm-term_title" term-key=":html" id="">HTML</i> specification</p>\n' +
-                '<template id=":html_template"><dfn class="yfm yfm-term_dfn"><p>The HyperText Markup Language or <strong>HTML</strong> is the standard markup language for documents designed to be displayed in a web browser.</p>\n' +
+                '<p>The <i class="yfm yfm-term_title" term-key=":html" aria-describedby=":html_element" id="">HTML</i> specification</p>\n' +
+                '<template id=":html_template"><dfn class="yfm yfm-term_dfn" id=":html_element" role="tooltip"><p>The HyperText Markup Language or <strong>HTML</strong> is the standard markup language for documents designed to be displayed in a web browser.</p>\n' +
                 '</dfn></template>',
         );
     });
@@ -56,12 +56,12 @@ describe('Terms', () => {
                 '</thead>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
-                '<td><i class="yfm yfm-term_title" term-key=":html" id="">HTML</i></td>\n' +
+                '<td><i class="yfm yfm-term_title" term-key=":html" aria-describedby=":html_element" id="">HTML</i></td>\n' +
                 '<td style="text-align:center">1993</td>\n' +
                 '</tr>\n' +
                 '</tbody>\n' +
                 '</table>\n' +
-                '<template id=":html_template"><dfn class="yfm yfm-term_dfn"><p>The HyperText Markup Language or <strong>HTML</strong> is the standard markup language for documents designed to be displayed in a web browser.</p>\n' +
+                '<template id=":html_template"><dfn class="yfm yfm-term_dfn" id=":html_element" role="tooltip"><p>The HyperText Markup Language or <strong>HTML</strong> is the standard markup language for documents designed to be displayed in a web browser.</p>\n' +
                 '</dfn></template>',
         );
     });
@@ -111,7 +111,7 @@ describe('Terms', () => {
                 '        </path>\n' +
                 '    </svg>\n' +
                 '    </div>\n' +
-                '<template id=":html_template"><dfn class="yfm yfm-term_dfn"><p>The HyperText Markup Language or <strong>HTML</strong> is the standard markup language for documents designed to be displayed in a web browser.</p>\n' +
+                '<template id=":html_template"><dfn class="yfm yfm-term_dfn" id=":html_element" role="tooltip"><p>The HyperText Markup Language or <strong>HTML</strong> is the standard markup language for documents designed to be displayed in a web browser.</p>\n' +
                 '</dfn></template>',
         );
     });
@@ -123,8 +123,8 @@ describe('Terms', () => {
 
         expect(clearRandomId(result)).toEqual(
             '<h1>Web</h1>\n' +
-                '<p>The <i class="yfm yfm-term_title" term-key=":html" id="">HTML</i> specification</p>\n' +
-                '<template id=":html_template"><dfn class="yfm yfm-term_dfn"><p>The HyperText Markup Language or <strong>HTML</strong> is the standard markup language for documents designed to be displayed in a web browser.</p>\n' +
+                '<p>The <i class="yfm yfm-term_title" term-key=":html" aria-describedby=":html_element" id="">HTML</i> specification</p>\n' +
+                '<template id=":html_template"><dfn class="yfm yfm-term_dfn" id=":html_element" role="tooltip"><p>The HyperText Markup Language or <strong>HTML</strong> is the standard markup language for documents designed to be displayed in a web browser.</p>\n' +
                 '</dfn></template>',
         );
     });
