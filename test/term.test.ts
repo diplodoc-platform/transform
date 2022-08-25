@@ -19,12 +19,12 @@ const transformYfm = (text: string, path?: string) => {
     return html;
 };
 
-function clearRandomId(str: string) {
+const clearRandomId = (str: string) => {
     const clearRandomId = new RegExp(/<([i\s]+).*?id="([^"]*?)".*?>(.+?)/, 'g');
     const randomId = clearRandomId.exec(str);
 
     return randomId ? str.replace(randomId[2], '') : str;
-}
+};
 
 describe('Terms', () => {
     test('Should create term in text with definition template', () => {

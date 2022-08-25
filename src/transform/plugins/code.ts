@@ -62,14 +62,15 @@ function termReplace(str: string, env: EnvTerm): string {
             `<i class="yfm yfm-term_title" term-key=":${p3}" id="${generateID()}">${p1}</i>`,
     );
 
-    return termCode;
+    return termCode || str;
 }
 
 const code: MarkdownItPluginCb = (md) => {
     const superCodeRenderer = md.renderer.rules.fence;
     md.renderer.rules.fence = function (tokens, idx, options, env, self) {
         const superCode = superCodeRenderer?.(tokens, idx, options, env, self);
-        const superCodeWithTerms = superCode && termReplace(superCode, env);
+        const superCodeWithTerms =
+            superCode && env?.terms ? termReplace(superCode, env) : superCode;
 
         return wrapInClipboard(superCodeWithTerms, idx);
     };

@@ -14,23 +14,27 @@
 
     &_dfn {
         position: absolute;
-        top: 25px;
-        left: 0;
         z-index: 1000;
 
         max-width: 450px;
         width: max-content;
 
-        padding: 10px;
-
-        border-radius: 4px;
-        background-color: rgb(255, 255, 255);
         visibility: hidden;
         opacity: 0;
+
+        padding: 10px;
+
+        background-color: rgb(255, 255, 255);
+
+        color: rgba(0, 0, 0, 0.85);
+        font-size: 14px;
+        line-height: 20px;
+        font-style: normal;
+
+        border-radius: 4px;
+
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         outline: none;
-
-        font-style: normal;
 
         &::before {
             content: '';

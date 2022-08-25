@@ -1,7 +1,6 @@
 import {getEventTarget, isCustom} from './utils';
 
 const Selector = {
-    CUT: '.yfm .yfm-term',
     TITLE: '.yfm .yfm-term_title',
     CONTENT: '.yfm .yfm-term_dfn',
 };
