@@ -23,11 +23,6 @@ function createDefinitionElement(element: HTMLElement) {
 }
 
 function setDefinitionId(definitionElement: HTMLElement, termElement: HTMLElement): void {
-    if (!definitionElement.getAttribute('id')) {
-        const termKey = termElement.getAttribute('term-key');
-        definitionElement?.setAttribute('id', termKey + '_element');
-    }
-
     const termId = termElement.getAttribute('id') || Math.random().toString(36).substr(2, 8);
     definitionElement?.setAttribute('term-id', termId);
 }

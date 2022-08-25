@@ -75,6 +75,8 @@ const term: MarkdownItPluginCb = (md) => {
 
         token = new state.Token('term_open', 'dfn', 1);
         token.attrSet('class', 'yfm yfm-term_dfn');
+        token.attrSet('id', ':' + label + '_element');
+        token.attrSet('role', 'tooltip');
         termNodes.push(token);
 
         termNodes.push(...md.parse(title, {}));
@@ -156,6 +158,7 @@ const term: MarkdownItPluginCb = (md) => {
                     token = new state.Token('term_open', 'i', 1);
                     token.attrSet('class', 'yfm yfm-term_title');
                     token.attrSet('term-key', ':' + termKey);
+                    token.attrSet('aria-describedby', ':' + termKey + '_element');
                     token.attrSet('id', generateID());
                     nodes.push(token);
 
