@@ -33,6 +33,7 @@ export function setDefinitionPosition(
         y: termY,
         right: termRight,
         left: termLeft,
+        width: termWidth,
     } = termElement.getBoundingClientRect();
 
     const termParent = termParentElement(termElement);
@@ -70,12 +71,22 @@ export function setDefinitionPosition(
         return;
     }
 
+    const {width: definitionWidth} = definitionElement.getBoundingClientRect();
     const {left: definitionParentLeft} = definitionParent.getBoundingClientRect();
+
+    // If definition not fit document change base alignment
+    const definitionRightCoordinate = definitionWidth + Number(getCoords(termElement).left);
+    const fitDefinitionDocument =
+        document.body.clientWidth > definitionRightCoordinate ? 0 : definitionWidth - termWidth;
 
     definitionElement.style.top = Number(getCoords(termElement).top + offsetTop) + 'px';
     definitionElement.style.left =
-        Number(getCoords(termElement).left - definitionParentLeft + definitionParent.offsetLeft) +
-        'px';
+        Number(
+            getCoords(termElement).left -
+                definitionParentLeft +
+                definitionParent.offsetLeft -
+                fitDefinitionDocument,
+        ) + 'px';
 }
 
 function termOnResize() {
