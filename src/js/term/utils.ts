@@ -35,20 +35,21 @@ export function setDefinitionPosition(
         left: termLeft,
     } = termElement.getBoundingClientRect();
 
-    if (!termElement.parentElement) {
+    const termParent = termParentElement(termElement);
+
+    if (!termParent) {
         return;
     }
 
-    const {right: termParentRight, left: termParentLeft} =
-        termElement.parentElement.getBoundingClientRect();
+    const {right: termParentRight, left: termParentLeft} = termParent.getBoundingClientRect();
 
     if ((termParentRight < termLeft || termParentLeft > termRight) && !isListenerNeeded) {
         closeDefinition(definitionElement);
         return;
     }
 
-    if (isListenerNeeded) {
-        termElement.parentElement.addEventListener('scroll', termOnResize);
+    if (isListenerNeeded && termParent) {
+        termParent.addEventListener('scroll', termOnResize);
         isListenerNeeded = false;
     }
 
@@ -93,10 +94,20 @@ function termOnResize() {
     setDefinitionPosition(openDefinition, termElement);
 }
 
+function termParentElement(term: HTMLElement | null) {
+    if (!term) {
+        return null;
+    }
+
+    const closestScrollableParent = term.closest('table') || term.closest('code');
+
+    return closestScrollableParent || term.parentElement;
+}
+
 export function closeDefinition(definition: HTMLElement) {
     definition.classList.remove(openClass);
     const termId = definition.getAttribute('term-id') || '';
-    const termParent = document.getElementById(termId)?.parentElement;
+    const termParent = termParentElement(document.getElementById(termId));
 
     if (!termParent) {
         return;
