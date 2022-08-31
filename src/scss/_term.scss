@@ -5,6 +5,8 @@
 
         border-bottom: 1px dotted;
 
+        font-size: inherit;
+        line-height: inherit;
         font-style: normal;
 
         &:hover {
@@ -26,9 +28,8 @@
 
         background-color: rgb(255, 255, 255);
 
-        color: rgba(0, 0, 0, 0.85);
-        font-size: 14px;
-        line-height: 20px;
+        font-size: inherit;
+        line-height: inherit;
         font-style: normal;
 
         border-radius: 4px;
