@@ -58,6 +58,7 @@ const index: LintConfig = {
         YFM003: LogLevels.ERROR, // Link is unreachable
         YFM004: LogLevels.ERROR, // Table not closed
         YFM005: LogLevels.ERROR, // Tab list not closed
+        YFM006: LogLevels.WARN, // Term definition duplicated
     },
 
     // Inline code length

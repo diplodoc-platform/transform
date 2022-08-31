@@ -9,7 +9,7 @@ const term: MarkdownItPluginCb = (md) => {
     const escapeRE = md.utils.escapeRE,
         arrayReplaceAt = md.utils.arrayReplaceAt;
 
-    function termDef(state: StateBlock, startLine: number, _endLine: number, silent: boolean) {
+    function termDef(state: StateBlock, startLine: number, endLine: number, silent: boolean) {
         let ch,
             labelEnd,
             pos = state.bMarks[startLine] + state.tShift[startLine];
@@ -62,12 +62,24 @@ const term: MarkdownItPluginCb = (md) => {
             state.env.terms = {};
         }
 
+        let token;
+
+        // If term definition duplicated
+        if (state.env.terms[':' + label]) {
+            token = new state.Token('__yfm_lint', '', 0);
+            token.hidden = true;
+            token.map = [startLine, endLine];
+            token.attrSet('YFM006', 'true');
+            state.tokens.push(token);
+            state.line = startLine + 1;
+            return true;
+        }
+
         if (typeof state.env.terms[':' + label] === 'undefined') {
             state.env.terms[':' + label] = title;
         }
 
         const termNodes = [];
-        let token;
 
         token = new state.Token('template_open', 'template', 1);
         token.attrSet('id', ':' + label + '_template');
