@@ -14,7 +14,7 @@ const term: MarkdownItPluginCb = (md) => {
             labelEnd,
             pos = state.bMarks[startLine] + state.tShift[startLine];
 
-        const max = state.eMarks[startLine];
+        let max = state.eMarks[startLine];
 
         if (pos + 2 >= max) {
             return false;
@@ -40,6 +40,28 @@ const term: MarkdownItPluginCb = (md) => {
                 pos++;
             }
         }
+
+        const newLineReg = new RegExp(/^(\r\n|\r|\n)/);
+        const termReg = new RegExp(/^\*\[(\w+)\]:/);
+
+        // Allow multiline term definition
+        for (; startLine < endLine; startLine++) {
+            const nextLineStart = state.bMarks[startLine + 1];
+            const nextLineEnd = state.eMarks[startLine + 1];
+
+            const nextLine =
+                nextLineStart === nextLineEnd
+                    ? state.src[nextLineStart]
+                    : state.src.slice(nextLineStart, nextLineEnd);
+
+            if (newLineReg.test(nextLine) || termReg.test(nextLine)) {
+                break;
+            }
+
+            state.line = startLine + 1;
+        }
+
+        max = state.eMarks[startLine];
 
         if (!labelEnd || labelEnd < 0 || state.src.charCodeAt(labelEnd + 1) !== 0x3a /* : */) {
             return false;
