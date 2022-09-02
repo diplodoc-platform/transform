@@ -12,10 +12,10 @@ export function termDefinitions(md: MarkdownIt) {
             return false;
         }
 
-        if (state.src.charCodeAt(pos++) !== 0x2a /* * */) {
+        if (state.src.charCodeAt(pos++) !== 0x5b /* [ */) {
             return false;
         }
-        if (state.src.charCodeAt(pos++) !== 0x5b /* [ */) {
+        if (state.src.charCodeAt(pos++) !== 0x2a /* * */) {
             return false;
         }
 
@@ -34,7 +34,7 @@ export function termDefinitions(md: MarkdownIt) {
         }
 
         const newLineReg = new RegExp(/^(\r\n|\r|\n)/);
-        const termReg = new RegExp(/^\*\[(\w+)\]:/);
+        const termReg = new RegExp(/^\[\*(\w+)\]:/);
 
         let currentLine = startLine;
 

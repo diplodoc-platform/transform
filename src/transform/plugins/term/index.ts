@@ -100,7 +100,7 @@ const term: MarkdownItPluginCb = (md) => {
         }
     }
 
-    md.block.ruler.before('reference', 'termDef', termDefinitions(md), {
+    md.block.ruler.before('reference', 'termDefinitions', termDefinitions(md), {
         alt: ['paragraph', 'reference'],
     });
 
