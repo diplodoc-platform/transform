@@ -3,7 +3,7 @@ import Token from 'markdown-it/lib/token';
 
 import {MarkdownItPluginCb} from '../typings';
 import {generateID} from '../utils';
-import {termDefinitions} from './collect';
+import {termDefinitions} from './termDefinitions';
 
 const term: MarkdownItPluginCb = (md) => {
     const escapeRE = md.utils.escapeRE;
