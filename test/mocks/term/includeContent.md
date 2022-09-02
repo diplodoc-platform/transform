@@ -1,4 +1,4 @@
-*[html]: {% include [html](_includes/html.md) %}
+[*html]: {% include [html](_includes/html.md) %}
 
 # Web
 
