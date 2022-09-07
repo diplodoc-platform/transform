@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.11.1](https://github.com/yandex-cloud/yfm-transform/compare/v2.11.0...v2.11.1) (2022-09-07)
+
+
+### Bug Fixes
+
+* **cut:** add title search inside path ([8966384](https://github.com/yandex-cloud/yfm-transform/commit/8966384375962bf61f08c083f9b0752aac49d8b2))
+
 ## [2.11.0](https://github.com/yandex-cloud/yfm-transform/compare/v2.10.5...v2.11.0) (2022-08-22)
 
 
