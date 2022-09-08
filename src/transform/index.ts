@@ -13,6 +13,7 @@ import code from './plugins/code';
 import cut from './plugins/cut';
 import deflist from './plugins/deflist';
 import file from './plugins/file';
+import imsize from './plugins/imsize';
 import meta from './plugins/meta';
 import sup from './plugins/sup';
 import tabs from './plugins/tabs';
@@ -82,6 +83,7 @@ function transform(originInput: string, opts: OptionsType = {}): OutputType {
             monospace,
             yfmTable,
             file,
+            imsize,
         ],
         highlightLangs = {},
         ...customOptions
