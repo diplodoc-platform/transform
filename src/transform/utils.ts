@@ -1,4 +1,6 @@
 import Token from 'markdown-it/lib/token';
+import {parse} from 'node-html-parser';
+import HTMLElement from 'node-html-parser/dist/nodes/html';
 
 export function isLocalUrl(url: string) {
     return !/^(?:[a-z]+:)?\/\//i.test(url);
@@ -88,4 +90,22 @@ export function getHrefTokenAttr(token: Token) {
     } catch (e) {}
 
     return href;
+}
+
+function wrapTables(rootEl: HTMLElement) {
+    rootEl.querySelectorAll('table').forEach((node) => {
+        const container = parse(
+            `<div class="yfm-table-container" data-mode="print">${node.toString()}</div>`,
+        );
+
+        node.parentNode.exchangeChild(node, container);
+    });
+}
+
+export function prepareHtmlForPrintMode(html: string) {
+    const root = parse(html);
+
+    wrapTables(root);
+
+    return root.toString();
 }
