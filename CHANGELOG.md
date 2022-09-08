@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.12.0](https://github.com/yandex-cloud/yfm-transform/compare/v2.11.1...v2.12.0) (2022-09-08)
+
+
+### Features
+
+* Enable imsize by default ([a77710f](https://github.com/yandex-cloud/yfm-transform/commit/a77710f6116a31462966ea466568bd48ab9dd80f))
+
 ## [2.11.1](https://github.com/yandex-cloud/yfm-transform/compare/v2.11.0...v2.11.1) (2022-09-07)
 
 
