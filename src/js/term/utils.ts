@@ -9,7 +9,7 @@ let isListenerNeeded = true;
 export function createDefinitionElement(termElement: HTMLElement) {
     const termKey = termElement.getAttribute('term-key');
     const definitionTemplate = document.getElementById(
-        termKey + '_template',
+        `${termKey}_template`,
     ) as HTMLTemplateElement;
     const definitionElement = definitionTemplate?.content.cloneNode(true).firstChild as HTMLElement;
 

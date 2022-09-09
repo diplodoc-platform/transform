@@ -8,8 +8,16 @@ import {termDefinitions} from './termDefinitions';
 const term: MarkdownItPluginCb = (md) => {
     const escapeRE = md.utils.escapeRE;
     const arrayReplaceAt = md.utils.arrayReplaceAt;
-    // Need for term plugin - don't parse urls that starts with *
-    md.validateLink = (url) => !url.startsWith('*');
+
+    // Don't parse urls that starts with *
+    const defaultLinkValidation = md.validateLink;
+    md.validateLink = function (url) {
+        if (url.startsWith('*')) {
+            return false;
+        }
+
+        return defaultLinkValidation(url);
+    };
 
     function termReplace(state: StateCore) {
         let i, j, l, tokens, token, text, nodes, pos, term, currentToken;
