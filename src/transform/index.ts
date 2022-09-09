@@ -110,6 +110,7 @@ function transform(originInput: string, opts: OptionsType = {}): OutputType {
     const md = initMd({html: allowHTML, linkify, highlight, breaks});
     // Need for ids of headers
     md.use(attrs, {leftDelimiter, rightDelimiter});
+
     plugins.forEach((plugin) => md.use(plugin, pluginOptions));
 
     try {

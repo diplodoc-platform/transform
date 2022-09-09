@@ -8,6 +8,8 @@ import {termDefinitions} from './termDefinitions';
 const term: MarkdownItPluginCb = (md) => {
     const escapeRE = md.utils.escapeRE;
     const arrayReplaceAt = md.utils.arrayReplaceAt;
+    // Need for term plugin - don't parse urls that starts with *
+    md.validateLink = (url) => !url.startsWith('*');
 
     function termReplace(state: StateCore) {
         let i, j, l, tokens, token, text, nodes, pos, term, currentToken;
@@ -56,6 +58,23 @@ const term: MarkdownItPluginCb = (md) => {
                 text = currentToken.content;
                 reg.lastIndex = 0;
                 nodes = [];
+
+                // Find terms without definitions
+                const regexAllTerms = new RegExp('\\[([^\\[]+)\\](\\(\\*(\\w+)\\))', 'gm');
+                const uniqueTerms = [
+                    ...new Set([...text.matchAll(regexAllTerms)].map((el) => `:${el[3]}`)),
+                ];
+                const notDefinedTerms = uniqueTerms.filter(
+                    (el) => !Object.keys(state.env.terms).includes(el),
+                );
+
+                if (notDefinedTerms.length) {
+                    token = new state.Token('__yfm_lint', '', 0);
+                    token.hidden = true;
+                    token.map = blockTokens[j].map;
+                    token.attrSet('YFM007', 'true');
+                    nodes.push(token);
+                }
 
                 while ((term = reg.exec(text))) {
                     const termTitle = term[1];
