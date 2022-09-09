@@ -60,6 +60,7 @@ const index: LintConfig = {
         YFM005: LogLevels.ERROR, // Tab list not closed
         YFM006: LogLevels.WARN, // Term definition duplicated
         YFM007: LogLevels.WARN, // Term used without definition
+        YFM008: LogLevels.WARN, // Term inside definition not allowed
     },
 
     // Inline code length

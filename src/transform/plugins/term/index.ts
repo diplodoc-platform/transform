@@ -4,6 +4,7 @@ import Token from 'markdown-it/lib/token';
 import {MarkdownItPluginCb} from '../typings';
 import {generateID} from '../utils';
 import {termDefinitions} from './termDefinitions';
+import {BASIC_TERM_REGEXP} from './constants';
 
 const term: MarkdownItPluginCb = (md) => {
     const escapeRE = md.utils.escapeRE;
@@ -68,7 +69,7 @@ const term: MarkdownItPluginCb = (md) => {
                 nodes = [];
 
                 // Find terms without definitions
-                const regexAllTerms = new RegExp('\\[([^\\[]+)\\](\\(\\*(\\w+)\\))', 'gm');
+                const regexAllTerms = new RegExp(BASIC_TERM_REGEXP, 'gm');
                 const uniqueTerms = [
                     ...new Set([...text.matchAll(regexAllTerms)].map((el) => `:${el[3]}`)),
                 ];

@@ -1,5 +1,6 @@
 import StateBlock from 'markdown-it/lib/rules_block/state_block';
 import {MarkdownIt} from '../../typings';
+import {BASIC_TERM_REGEXP} from './constants';
 
 export function termDefinitions(md: MarkdownIt) {
     return (state: StateBlock, startLine: number, endLine: number, silent: boolean) => {
@@ -88,6 +89,16 @@ function processTermDefinition(
 
     if (!state.env.terms) {
         state.env.terms = {};
+    }
+
+    const basicTermDefinitionRegexp = new RegExp(BASIC_TERM_REGEXP, 'gm');
+    // If term inside definition
+    if (basicTermDefinitionRegexp.test(title)) {
+        token = new state.Token('__yfm_lint', '', 0);
+        token.hidden = true;
+        token.map = [currentLine, endLine];
+        token.attrSet('YFM008', 'true');
+        state.tokens.push(token);
     }
 
     // If term definition duplicated

@@ -4,14 +4,23 @@ import union from 'lodash/union';
 import attrs from 'markdown-it-attrs';
 import baseDefaultLintConfig from './yfmlint';
 
-import {yfm001, yfm002, yfm003, yfm004, yfm005, yfm006, yfm007} from './markdownlint-custom-rule';
+import {
+    yfm001,
+    yfm002,
+    yfm003,
+    yfm004,
+    yfm005,
+    yfm006,
+    yfm007,
+    yfm008,
+} from './markdownlint-custom-rule';
 
 import {errorToString, getLogLevel} from './utils';
 import {Options} from './typings';
 import {Dictionary} from 'lodash';
 import {Logger, LogLevels} from '../log';
 
-const defaultLintRules = [yfm001, yfm002, yfm003, yfm004, yfm005, yfm006, yfm007];
+const defaultLintRules = [yfm001, yfm002, yfm003, yfm004, yfm005, yfm006, yfm007, yfm008];
 
 const lintCache = new Set();
 
