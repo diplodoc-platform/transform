@@ -1,0 +1,79 @@
+.yfm-term {
+    &_title {
+        color: #027bf3;
+        cursor: pointer;
+
+        border-bottom: 1px dotted;
+
+        font-size: inherit;
+        line-height: inherit;
+        font-style: normal;
+
+        &:hover {
+            color: #004080;
+        }
+    }
+
+    &_dfn {
+        position: absolute;
+        z-index: 1000;
+
+        width: fit-content;
+        max-width: 450px;
+
+        @media screen and (max-width: 600px) {
+            & {
+                max-width: 80%;
+            }
+        }
+
+        visibility: hidden;
+        opacity: 0;
+
+        padding: 10px;
+
+        background-color: rgb(255, 255, 255);
+
+        font-size: inherit;
+        line-height: inherit;
+        font-style: normal;
+
+        border-radius: 4px;
+
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        outline: none;
+
+        &::before {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+
+            border-radius: inherit;
+            box-shadow: 0 0 0 1px rgb(229, 229, 229);
+        }
+
+        &.open {
+            visibility: visible;
+
+            animation-name: popup;
+            animation-duration: 0.1s;
+            animation-timing-function: ease-out;
+            animation-fill-mode: forwards;
+
+            @keyframes popup {
+                0% {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        }
+    }
+}

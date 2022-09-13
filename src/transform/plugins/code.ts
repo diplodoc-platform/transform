@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 
 import {MarkdownItPluginCb} from './typings';
+import {generateID} from './utils';
 
 const wrapInClipboard = (element: string | undefined, id: number) => {
     return `
@@ -42,12 +43,36 @@ const wrapInClipboard = (element: string | undefined, id: number) => {
 `;
 };
 
+interface EnvTerm {
+    terms: {
+        [keys: string]: string;
+    };
+}
+
+function termReplace(str: string, env: EnvTerm): string {
+    const regTerms = Object.keys(env.terms)
+        .map((el) => el.substr(1))
+        .join('|');
+    const regText = '\\[([^\\[]+)\\](\\(\\*(' + regTerms + ')\\))';
+    const reg = new RegExp(regText, 'g');
+
+    const termCode = str.replace(
+        reg,
+        (_match: string, p1: string, _p2: string, p3: string) =>
+            `<i class="yfm yfm-term_title" term-key=":${p3}" id="${generateID()}">${p1}</i>`,
+    );
+
+    return termCode || str;
+}
+
 const code: MarkdownItPluginCb = (md) => {
     const superCodeRenderer = md.renderer.rules.fence;
     md.renderer.rules.fence = function (tokens, idx, options, env, self) {
         const superCode = superCodeRenderer?.(tokens, idx, options, env, self);
+        const superCodeWithTerms =
+            superCode && env?.terms ? termReplace(superCode, env) : superCode;
 
-        return wrapInClipboard(superCode, idx);
+        return wrapInClipboard(superCodeWithTerms, idx);
     };
 };
 

@@ -1,12 +1,9 @@
 import StateCore from 'markdown-it/lib/rules_core/state_core';
 import Token from 'markdown-it/lib/token';
 import {MarkdownItPluginCb} from './typings';
+import {generateID} from './utils';
 
 const TAB_RE = /`?{% list (tabs) %}`?/;
-
-function generateID() {
-    return Math.random().toString(36).substr(2, 8);
-}
 
 type Tab = {
     name: string;
