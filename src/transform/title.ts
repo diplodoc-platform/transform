@@ -9,8 +9,9 @@ export = function extractTitle(tokens: Token[]) {
         if (tokens[0].type === 'heading_open' && tokens[0].tag === 'h1') {
             titleTokens = tokens[1].children || [];
             title = tokens[1].content;
+            // cut out "heading_open", "inline" and "heading_close" tokens
+            contentTokens = tokens.slice(3);
         }
-        contentTokens = tokens.slice(3);
     }
 
     return {
