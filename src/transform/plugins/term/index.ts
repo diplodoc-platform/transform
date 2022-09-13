@@ -6,10 +6,11 @@ import {generateID} from '../utils';
 import {termDefinitions} from './termDefinitions';
 import {BASIC_TERM_REGEXP} from './constants';
 
-const term: MarkdownItPluginCb = (md) => {
+const term: MarkdownItPluginCb = (md, options) => {
     const escapeRE = md.utils.escapeRE;
     const arrayReplaceAt = md.utils.arrayReplaceAt;
 
+    const {isLintRun} = options;
     // Don't parse urls that starts with *
     const defaultLinkValidation = md.validateLink;
     md.validateLink = function (url) {
@@ -77,7 +78,7 @@ const term: MarkdownItPluginCb = (md) => {
                     (el) => !Object.keys(state.env.terms).includes(el),
                 );
 
-                if (notDefinedTerms.length) {
+                if (notDefinedTerms.length && isLintRun) {
                     token = new state.Token('__yfm_lint', '', 0);
                     token.hidden = true;
                     token.map = blockTokens[j].map;
@@ -128,7 +129,7 @@ const term: MarkdownItPluginCb = (md) => {
         }
     }
 
-    md.block.ruler.before('reference', 'termDefinitions', termDefinitions(md), {
+    md.block.ruler.before('reference', 'termDefinitions', termDefinitions(md, options), {
         alt: ['paragraph', 'reference'],
     });
 

@@ -27,6 +27,9 @@ const lintCache = new Set();
 function yfmlint(opts: Options) {
     const {input, plugins: customPlugins, pluginOptions, customLintRules, sourceMap} = opts;
     const {path = 'input', log} = pluginOptions;
+
+    pluginOptions.isLintRun = true;
+
     const {
         LogLevels: {ERROR, WARN, DISABLED},
     } = log;

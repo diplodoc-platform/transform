@@ -1,8 +1,9 @@
 import StateBlock from 'markdown-it/lib/rules_block/state_block';
 import {MarkdownIt} from '../../typings';
+import {MarkdownItPluginOpts} from '../typings';
 import {BASIC_TERM_REGEXP} from './constants';
 
-export function termDefinitions(md: MarkdownIt) {
+export function termDefinitions(md: MarkdownIt, options: MarkdownItPluginOpts) {
     return (state: StateBlock, startLine: number, endLine: number, silent: boolean) => {
         let ch;
         let labelEnd;
@@ -73,12 +74,13 @@ export function termDefinitions(md: MarkdownIt) {
             return false;
         }
 
-        return processTermDefinition(md, state, currentLine, endLine, label, title);
+        return processTermDefinition(md, options, state, currentLine, endLine, label, title);
     };
 }
 
 function processTermDefinition(
     md: MarkdownIt,
+    options: MarkdownItPluginOpts,
     state: StateBlock,
     currentLine: number,
     endLine: number,
@@ -93,7 +95,10 @@ function processTermDefinition(
 
     const basicTermDefinitionRegexp = new RegExp(BASIC_TERM_REGEXP, 'gm');
     // If term inside definition
-    if (basicTermDefinitionRegexp.test(title)) {
+
+    const {isLintRun} = options;
+
+    if (basicTermDefinitionRegexp.test(title) && isLintRun) {
         token = new state.Token('__yfm_lint', '', 0);
         token.hidden = true;
         token.map = [currentLine, endLine];
@@ -102,7 +107,7 @@ function processTermDefinition(
     }
 
     // If term definition duplicated
-    if (state.env.terms[':' + label]) {
+    if (state.env.terms[':' + label] && isLintRun) {
         token = new state.Token('__yfm_lint', '', 0);
         token.hidden = true;
         token.map = [currentLine, endLine];
