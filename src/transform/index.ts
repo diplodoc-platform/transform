@@ -7,7 +7,7 @@ import makeHighlight from './highlight';
 import extractTitle from './title';
 import getHeadings from './headings';
 import liquid from './liquid';
-import sanitizeHtml from './sanitize';
+import sanitizeHtml, {SanitizeOptions} from './sanitize';
 
 import notes from './plugins/notes';
 import anchors from './plugins/anchors';
@@ -51,6 +51,7 @@ interface OptionsType {
     rightDelimiter?: string;
     isLiquided?: boolean;
     needToSanitizeHtml?: boolean;
+    sanitizeOptions?: SanitizeOptions;
     needFlatListHeadings?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     plugins?: MarkdownItPluginCb<any>[];
@@ -70,6 +71,7 @@ function transform(originInput: string, opts: OptionsType = {}): OutputType {
         breaks = true,
         conditionsInCode = false,
         needToSanitizeHtml = false,
+        sanitizeOptions,
         needFlatListHeadings = false,
         disableLiquid = false,
         leftDelimiter = '{',
@@ -142,7 +144,7 @@ function transform(originInput: string, opts: OptionsType = {}): OutputType {
         const termTokens = (env.termTokens as Token[]) || [];
         let html = md.renderer.render([...tokens, ...termTokens], md.options, env);
         if (needToSanitizeHtml) {
-            html = sanitizeHtml(html);
+            html = sanitizeHtml(html, sanitizeOptions);
         }
 
         const assets = md.assets;

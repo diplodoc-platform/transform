@@ -474,13 +474,19 @@ const allowedTags = Array.from(
 const allowedAttributes = Array.from(new Set([...htmlAttrs, ...svgAttrs]));
 const allowedSchemes = ['conisio', 'jamfselfservice', 'softwarecenter'];
 
-export default function sanitize(html: string) {
-    return sanitizeHtml(html, {
-        allowedTags,
-        allowedAttributes: {
-            ...sanitizeHtml.defaults.allowedAttributes,
-            '*': allowedAttributes,
-        },
-        allowedSchemes: [...sanitizeHtml.defaults.allowedSchemes, ...allowedSchemes],
-    });
+type DefaultOptions = sanitizeHtml.IDefaults;
+export type SanitizeOptions = sanitizeHtml.IOptions;
+
+export const defaultOptions: DefaultOptions = {
+    ...sanitizeHtml.defaults,
+    allowedTags,
+    allowedAttributes: {
+        ...sanitizeHtml.defaults.allowedAttributes,
+        '*': allowedAttributes,
+    },
+    allowedSchemes: [...sanitizeHtml.defaults.allowedSchemes, ...allowedSchemes],
+};
+
+export default function sanitize(html: string, options?: SanitizeOptions) {
+    return sanitizeHtml(html, options || defaultOptions);
 }
