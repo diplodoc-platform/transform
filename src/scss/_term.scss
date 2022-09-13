@@ -18,8 +18,14 @@
         position: absolute;
         z-index: 1000;
 
+        width: fit-content;
         max-width: 450px;
-        width: max-content;
+
+        @media screen and (max-width: 600px) {
+            & {
+                max-width: 80%;
+            }
+        }
 
         visibility: hidden;
         opacity: 0;
