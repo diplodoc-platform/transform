@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.13.0](https://github.com/yandex-cloud/yfm-transform/compare/v2.12.0...v2.13.0) (2022-09-13)
+
+
+### Features
+
+* Add term syntax DOCSTOOLS-1268 ([#172](https://github.com/yandex-cloud/yfm-transform/issues/172)) ([ddfb30b](https://github.com/yandex-cloud/yfm-transform/commit/ddfb30b08c823cececb385416e1d7b649298c5f2))
+
 ## [2.12.0](https://github.com/yandex-cloud/yfm-transform/compare/v2.11.1...v2.12.0) (2022-09-08)
 
 
