@@ -30,6 +30,7 @@
     "prepublishOnly": "npm run lint && npm run test && npm run build"
   },
   "dependencies": {
+    "@types/sanitize-html": "^2.6.2",
     "chalk": "4.1.2",
     "get-root-node-polyfill": "1.0.0",
     "github-slugger": "1.4.0",
@@ -42,6 +43,7 @@
     "markdownlint": "^0.25.1",
     "markdownlint-rule-helpers": "0.17.2",
     "postcss": "8.4.16",
+    "sanitize-html": "^2.7.1",
     "slugify": "1.6.5"
   },
   "devDependencies": {

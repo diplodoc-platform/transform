@@ -7,6 +7,7 @@ import makeHighlight from './highlight';
 import extractTitle from './title';
 import getHeadings from './headings';
 import liquid from './liquid';
+import sanitizeHtml, {SanitizeOptions} from './sanitize';
 
 import notes from './plugins/notes';
 import anchors from './plugins/anchors';
@@ -24,7 +25,7 @@ import monospace from './plugins/monospace';
 import yfmTable from './plugins/table';
 import {initMd} from './md';
 import {MarkdownItPluginCb} from './plugins/typings';
-import {HighlightLangMap, Heading} from './typings';
+import type {HighlightLangMap, Heading} from './typings';
 
 interface OutputType {
     result: {
@@ -49,6 +50,8 @@ interface OptionsType {
     leftDelimiter?: string;
     rightDelimiter?: string;
     isLiquided?: boolean;
+    needToSanitizeHtml?: boolean;
+    sanitizeOptions?: SanitizeOptions;
     needFlatListHeadings?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     plugins?: MarkdownItPluginCb<any>[];
@@ -67,6 +70,8 @@ function transform(originInput: string, opts: OptionsType = {}): OutputType {
         linkify = false,
         breaks = true,
         conditionsInCode = false,
+        needToSanitizeHtml = false,
+        sanitizeOptions,
         needFlatListHeadings = false,
         disableLiquid = false,
         leftDelimiter = '{',
@@ -137,7 +142,11 @@ function transform(originInput: string, opts: OptionsType = {}): OutputType {
 
         // add all term template tokens to the end of the html
         const termTokens = (env.termTokens as Token[]) || [];
-        const html = md.renderer.render([...tokens, ...termTokens], md.options, env);
+        let html = md.renderer.render([...tokens, ...termTokens], md.options, env);
+        if (needToSanitizeHtml) {
+            html = sanitizeHtml(html, sanitizeOptions);
+        }
+
         const assets = md.assets;
         const meta = md.meta;
 
