@@ -34,6 +34,7 @@ export function setDefinitionPosition(
         right: termRight,
         left: termLeft,
         width: termWidth,
+        height: termHeight,
     } = termElement.getBoundingClientRect();
 
     const termParent = termParentElement(termElement);
@@ -64,7 +65,7 @@ export function setDefinitionPosition(
     definitionElement.setAttribute('relativeX', String(termX));
     definitionElement.setAttribute('relativeY', String(termY));
 
-    const offsetTop = 25;
+    const offsetTop = termHeight + 5;
     const definitionParent = definitionElement.parentElement;
 
     if (!definitionParent) {
@@ -79,7 +80,10 @@ export function setDefinitionPosition(
     const fitDefinitionDocument =
         document.body.clientWidth > definitionRightCoordinate ? 0 : definitionWidth - termWidth;
 
-    definitionElement.style.top = Number(getCoords(termElement).top + offsetTop) + 'px';
+    const customHeaderTop = getCoords(definitionParent).top - definitionParent.offsetTop;
+
+    definitionElement.style.top =
+        Number(getCoords(termElement).top + offsetTop - customHeaderTop) + 'px';
     definitionElement.style.left =
         Number(
             getCoords(termElement).left -
