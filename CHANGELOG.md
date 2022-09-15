@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.14.0](https://github.com/yandex-cloud/yfm-transform/compare/v2.13.0...v2.14.0) (2022-09-15)
+
+
+### Features
+
+* add html sanitizing [DOCSTOOLS-1350] ([#177](https://github.com/yandex-cloud/yfm-transform/issues/177)) ([634f7f8](https://github.com/yandex-cloud/yfm-transform/commit/634f7f80ceaac8c996aed33d6c2005ecb1c935a4))
+
 ## [2.13.0](https://github.com/yandex-cloud/yfm-transform/compare/v2.12.0...v2.13.0) (2022-09-13)
 
 
