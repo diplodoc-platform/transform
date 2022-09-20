@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.14.1](https://github.com/yandex-cloud/yfm-transform/compare/v2.14.0...v2.14.1) (2022-09-20)
+
+
+### Bug Fixes
+
+* **term:** custom header top coordinate ([#182](https://github.com/yandex-cloud/yfm-transform/issues/182)) ([8ebd61f](https://github.com/yandex-cloud/yfm-transform/commit/8ebd61f8c1388f42071427ac3c334a37e7ee88d6))
+
 ## [2.14.0](https://github.com/yandex-cloud/yfm-transform/compare/v2.13.0...v2.14.0) (2022-09-15)
 
 
