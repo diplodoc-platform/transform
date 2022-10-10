@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.14.2](https://github.com/yandex-cloud/yfm-transform/compare/v2.14.1...v2.14.2) (2022-10-10)
+
+
+### Bug Fixes
+
+* **checkbox:** fix input and label alignment ([#186](https://github.com/yandex-cloud/yfm-transform/issues/186)) ([dbe772d](https://github.com/yandex-cloud/yfm-transform/commit/dbe772d74a5b2a605e6b4b08a66885fcd250374d))
+* **checkbox:** make checkboxes non-editable ([#184](https://github.com/yandex-cloud/yfm-transform/issues/184)) ([097529f](https://github.com/yandex-cloud/yfm-transform/commit/097529f5aaa3a7f97ba88c2a8b8d4c78a7af9a1f))
+
 ## [2.14.1](https://github.com/yandex-cloud/yfm-transform/compare/v2.14.0...v2.14.1) (2022-09-20)
 
 
