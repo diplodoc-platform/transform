@@ -137,6 +137,9 @@
         line-height: inherit;
 
         &[type='checkbox'] {
+            position: relative;
+            top: 1px;
+
             box-sizing: border-box;
             padding: 0;
         }
