@@ -29,7 +29,7 @@ describe('markdown-it-checkbox', function () {
             assert.equal(
                 res,
                 '<div class="checkbox">\n' +
-                    '<input type="checkbox" id="checkbox0" checked="true">\n' +
+                    '<input type="checkbox" id="checkbox0" disabled="" checked="true">\n' +
                     '<label for="checkbox0">test written</label>\n' +
                     '</div>\n',
             );
@@ -44,7 +44,7 @@ describe('markdown-it-checkbox', function () {
             assert.equal(
                 res,
                 '<div class="cb">\n' +
-                    '<input type="checkbox" id="checkbox0" checked="true">\n' +
+                    '<input type="checkbox" id="checkbox0" disabled="" checked="true">\n' +
                     '<label for="checkbox0">test written</label>\n' +
                     '</div>\n',
             );
@@ -59,7 +59,7 @@ describe('markdown-it-checkbox', function () {
             assert.equal(
                 res,
                 '<div class="checkbox">\n' +
-                    '<input type="checkbox" id="cb0" checked="true">\n' +
+                    '<input type="checkbox" id="cb0" disabled="" checked="true">\n' +
                     '<label for="cb0">test written</label>\n' +
                     '</div>\n',
             );

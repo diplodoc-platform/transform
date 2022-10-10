@@ -48,6 +48,7 @@ export const checkboxReplace = function (_md: MarkdownIt, opts: CheckboxOptions)
         token.attrs = [
             ['type', 'checkbox'],
             ['id', id],
+            ['disabled', ''],
         ];
         if (checked === true) {
             token.attrs.push(['checked', 'true']);

@@ -2,7 +2,7 @@
 [ ] unchecked
 .
 <div class="checkbox">
-<input type="checkbox" id="checkbox0">
+<input type="checkbox" id="checkbox0" disabled="">
 <label for="checkbox0">unchecked</label>
 </div>
 .
@@ -11,7 +11,7 @@
 [_] unchecked
 .
 <div class="checkbox">
-<input type="checkbox" id="checkbox1">
+<input type="checkbox" id="checkbox1" disabled="">
 <label for="checkbox1">unchecked</label>
 </div>
 .
@@ -20,7 +20,7 @@
 [x] checked
 .
 <div class="checkbox">
-<input type="checkbox" id="checkbox2" checked="true">
+<input type="checkbox" id="checkbox2" disabled="" checked="true">
 <label for="checkbox2">checked</label>
 </div>
 .
@@ -29,7 +29,7 @@
 [X] checked
 .
 <div class="checkbox">
-<input type="checkbox" id="checkbox3" checked="true">
+<input type="checkbox" id="checkbox3" disabled="" checked="true">
 <label for="checkbox3">checked</label>
 </div>
 .
@@ -41,13 +41,13 @@
 <ul>
 <li>
 <div class="checkbox">
-<input type="checkbox" id="checkbox4">
+<input type="checkbox" id="checkbox4" disabled="">
 <label for="checkbox4">unchecked</label>
 </div>
 </li>
 <li>
 <div class="checkbox">
-<input type="checkbox" id="checkbox5" checked="true">
+<input type="checkbox" id="checkbox5" disabled="" checked="true">
 <label for="checkbox5">checked</label>
 </div>
 </li>
