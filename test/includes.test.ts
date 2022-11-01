@@ -47,7 +47,8 @@ describe('Includes', () => {
             {
                 path: mocksPath,
                 root: dirname(mocksPath),
-                vars: {conditionsInCode: true, condition: true},
+                vars: {condition: true},
+                conditionsInCode: true, 
             },
         );
 
