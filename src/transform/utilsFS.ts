@@ -60,7 +60,10 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
     let sourceMap;
 
     if (!disableLiquid) {
-        const liquidResult = liquid(content, builtVars, path, {withSourceMap: true});
+        const liquidResult = liquid(content, builtVars, path, {
+            withSourceMap: true,
+            conditionsInCode: vars?.conditionsInCode as boolean | undefined
+        });
 
         content = liquidResult.output;
         sourceMap = liquidResult.sourceMap;
