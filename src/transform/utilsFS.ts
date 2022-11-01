@@ -33,6 +33,7 @@ export type GetFileTokensOpts = {
     disableTitleRefSubstitution?: boolean;
     disableCircularError?: boolean;
     inheritVars?: boolean;
+    conditionsInCode?: boolean;
 };
 
 export function getFileTokens(path: string, state: StateCore, options: GetFileTokensOpts) {
@@ -45,6 +46,7 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
         disableTitleRefSubstitution,
         disableCircularError,
         inheritVars = true,
+        conditionsInCode,
     } = options;
     let content;
 
@@ -62,7 +64,7 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
     if (!disableLiquid) {
         const liquidResult = liquid(content, builtVars, path, {
             withSourceMap: true,
-            conditionsInCode: vars?.conditionsInCode as boolean | undefined,
+            conditionsInCode,
         });
 
         content = liquidResult.output;
