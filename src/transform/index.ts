@@ -44,6 +44,7 @@ interface OptionsType {
     needTitle?: boolean;
     allowHTML?: boolean;
     linkify?: boolean;
+    linkifyTlds?: string | string[];
     breaks?: boolean;
     conditionsInCode?: boolean;
     disableLiquid?: boolean;
@@ -68,6 +69,7 @@ function transform(originInput: string, opts: OptionsType = {}): OutputType {
         needTitle,
         allowHTML = false,
         linkify = false,
+        linkifyTlds,
         breaks = true,
         conditionsInCode = false,
         needToSanitizeHtml = false,
@@ -117,6 +119,10 @@ function transform(originInput: string, opts: OptionsType = {}): OutputType {
     md.use(attrs, {leftDelimiter, rightDelimiter});
 
     plugins.forEach((plugin) => md.use(plugin, pluginOptions));
+
+    if (linkify && linkifyTlds) {
+        md.linkify.tlds(linkifyTlds, true);
+    }
 
     try {
         let title;
