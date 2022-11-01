@@ -3,7 +3,7 @@ import {dirname} from 'path';
 import includes from '../src/transform/plugins/includes';
 import yfmlint from '../src/transform/yfmlint';
 import {callPlugin, tokenize} from './utils';
-import {title, notitle} from './data/includes';
+import {title, notitle, codeInBackQuote} from './data/includes';
 import {log} from '../src/transform/log';
 
 describe('Includes', () => {
@@ -30,6 +30,29 @@ describe('Includes', () => {
         );
 
         expect(result).toEqual(title);
+    });
+
+    test('Should include with code in back quote', () => {
+        const mocksPath = require.resolve('./utils.ts');
+
+        const result = callPlugin(
+            includes,
+            tokenize([
+                'Text before include',
+                '',
+                '{% include [create-folder](./mocks/include-code-in-back-quote.md) %}',
+                '',
+                'After include',
+            ]),
+            {
+                path: mocksPath,
+                root: dirname(mocksPath),
+                vars: {conditionsInCode: true, condition: true}
+
+            },
+        );
+
+        expect(result).toEqual(codeInBackQuote);
     });
 
     test('Should include without title', () => {
