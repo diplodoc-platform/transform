@@ -337,6 +337,10 @@
         white-space: pre;
     }
 
+    sup, sub {
+        line-height: 0;
+    }
+
     // highlight.js colors
     --yfm-color-hljs-background: #{$codeBackgroundColor};
     --yfm-color-hljs-subst: #444;
