@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.15.0](https://github.com/yandex-cloud/yfm-transform/compare/v2.14.2...v2.15.0) (2022-11-02)
+
+
+### Features
+
+* add linkifyTlds option ([951fd7f](https://github.com/yandex-cloud/yfm-transform/commit/951fd7fbb8f6926dd3cd8256da927f00b1786b36))
+
+
+### Bug Fixes
+
+* add conditionsInCode and test ([00b5111](https://github.com/yandex-cloud/yfm-transform/commit/00b51112340522584cd62f43ae1baa445588dd83))
+* sup,sub line-height ([291fac7](https://github.com/yandex-cloud/yfm-transform/commit/291fac711eb94847a712da79b5631952ed8af977))
+* update test ([473d04a](https://github.com/yandex-cloud/yfm-transform/commit/473d04aa3140231fb7bcd9c3d6eac2a85b0839a2))
+
 ## [2.14.2](https://github.com/yandex-cloud/yfm-transform/compare/v2.14.1...v2.14.2) (2022-10-10)
 
 
