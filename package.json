@@ -11,7 +11,8 @@
   "main": "lib/index.js",
   "files": [
     "dist",
-    "lib"
+    "lib",
+    "src"
   ],
   "scripts": {
     "build": "npm run build:css && npm run build:js",
