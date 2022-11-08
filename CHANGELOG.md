@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.16.0](https://github.com/yandex-cloud/yfm-transform/compare/v2.15.0...v2.16.0) (2022-11-08)
+
+
+### Features
+
+* **checkbox:** add support for inline markup in checkbox label ([#194](https://github.com/yandex-cloud/yfm-transform/issues/194)) ([7582017](https://github.com/yandex-cloud/yfm-transform/commit/7582017ffb9d4f5befb0872af811d4453d629ee0))
+
+
+### Bug Fixes
+
+* include src folder for sourcemaps ([e0c831d](https://github.com/yandex-cloud/yfm-transform/commit/e0c831d80b5232c4c301c10d54014927c3576627))
+
 ## [2.15.0](https://github.com/yandex-cloud/yfm-transform/compare/v2.14.2...v2.15.0) (2022-11-02)
 
 
