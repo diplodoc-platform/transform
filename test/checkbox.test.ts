@@ -1,11 +1,21 @@
 'use strict';
 
 import path from 'path';
+import transform from '../src/transform';
 import plugin from '../src/transform/plugins/checkbox';
 import MarkdownIt from 'markdown-it';
 
 const generate = require('markdown-it-testgen');
 const assert = require('assert');
+
+const transformYfm = (text: string) => {
+    const {
+        result: {html},
+    } = transform(text, {
+        plugins: [plugin],
+    });
+    return html;
+};
 
 describe('markdown-it-checkbox', function () {
     describe('markdown-it-checkbox()', function () {
@@ -20,8 +30,9 @@ describe('markdown-it-checkbox', function () {
             assert.equal(res, '<h1>test</h1>\n');
         });
     });
-    return describe('markdown-it-checkbox(options)', function () {
-        it('should should optionally wrap arround a div layer', function () {
+
+    describe('markdown-it-checkbox(options)', function () {
+        it('should optionally wrap arround a div layer', function () {
             const md = new MarkdownIt({});
 
             md.use(plugin);
@@ -34,7 +45,8 @@ describe('markdown-it-checkbox', function () {
                     '</div>\n',
             );
         });
-        it('should should optionally change class of div layer', function () {
+
+        it('should optionally change class of div layer', function () {
             const md = new MarkdownIt({});
 
             md.use(plugin, {
@@ -49,7 +61,8 @@ describe('markdown-it-checkbox', function () {
                     '</div>\n',
             );
         });
-        return it('should should optionally change the id', function () {
+
+        it('should optionally change the id', function () {
             const md = new MarkdownIt({});
 
             md.use(plugin, {
@@ -64,5 +77,14 @@ describe('markdown-it-checkbox', function () {
                     '</div>\n',
             );
         });
+    });
+
+    it('should parse inline markup in label', () => {
+        expect(transformYfm('[X] text *italic* **bold** label')).toBe(
+            '<div class="checkbox">\n' +
+                '<input type="checkbox" id="checkbox0" disabled="" checked="true">\n' +
+                '<label for="checkbox0">text <em>italic</em> <strong>bold</strong> label</label>\n' +
+                '</div>\n',
+        );
     });
 });

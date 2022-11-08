@@ -1,6 +1,6 @@
-import MarkdownIt from 'markdown-it';
-import StateCore from 'markdown-it/lib/rules_core/state_core';
-import Token from 'markdown-it/lib/token';
+import type MarkdownIt from 'markdown-it';
+import type StateCore from 'markdown-it/lib/rules_core/state_core';
+import type Token from 'markdown-it/lib/token';
 
 // eslint-disable-next-line no-useless-escape
 const pattern = /^\[(X|\s|\_|\-)\]\s(.*)/i;
@@ -26,14 +26,14 @@ export const checkboxReplace = function (_md: MarkdownIt, opts: CheckboxOptions)
     };
     const options = Object.assign(defaults, opts);
 
-    const createTokens = function (checked: boolean, label: string) {
+    const createTokens = function (state: StateCore, checked: boolean, label: string) {
         let token;
         const nodes = [];
 
         /**
          * <div class="checkbox">
          */
-        token = new Token('checkbox_open', 'div', 1);
+        token = new state.Token('checkbox_open', 'div', 1);
         token.block = true;
         token.attrs = [['class', options.divClass]];
         nodes.push(token);
@@ -43,7 +43,7 @@ export const checkboxReplace = function (_md: MarkdownIt, opts: CheckboxOptions)
          */
         const id = options.idPrefix + lastId;
         lastId += 1;
-        token = new Token('checkbox_input', 'input', 0);
+        token = new state.Token('checkbox_input', 'input', 0);
         token.block = true;
         token.attrs = [
             ['type', 'checkbox'],
@@ -58,36 +58,38 @@ export const checkboxReplace = function (_md: MarkdownIt, opts: CheckboxOptions)
         /**
          * <label for="checkbox{n}">
          */
-        token = new Token('checkbox_label_open', 'label', 1);
+        token = new state.Token('checkbox_label_open', 'label', 1);
         token.attrs = [['for', id]];
         nodes.push(token);
 
         /**
          * content of label tag
          */
-        token = new Token('text', '', 0);
+        token = new state.Token('inline', '', 0);
+        token.children = [];
         token.content = label;
+        state.md.inline.parse(token.content, state.md, state.env, token.children);
         nodes.push(token);
 
         /**
          * closing tags
          */
-        token = new Token('checkbox_label_close', 'label', -1);
+        token = new state.Token('checkbox_label_close', 'label', -1);
         token.block = true;
         nodes.push(token);
-        token = new Token('checkbox_close', 'div', -1);
+        token = new state.Token('checkbox_close', 'div', -1);
         token.block = true;
         nodes.push(token);
         return nodes;
     };
-    const splitTextToken = function (matches: RegExpMatchArray) {
+    const splitTextToken = function (state: StateCore, matches: RegExpMatchArray) {
         let checked = false;
         const value = matches[1];
         const label = matches[2];
         if (value === 'X' || value === 'x') {
             checked = true;
         }
-        return createTokens(checked, label);
+        return createTokens(state, checked, label);
     };
     return function (state: StateCore) {
         const blockTokens = state.tokens;
@@ -97,7 +99,7 @@ export const checkboxReplace = function (_md: MarkdownIt, opts: CheckboxOptions)
                 continue;
             }
 
-            blockTokens.splice(i, 3, ...splitTextToken(match));
+            blockTokens.splice(i, 3, ...splitTextToken(state, match));
         }
     };
 };
