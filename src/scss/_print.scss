@@ -1,57 +1,85 @@
-.yfm {
-    .yfm-tab {
-        &-list {
-            display: none;
-        }
-
-        &-panel:before {
-            content: attr(data-title);
-            margin-bottom: -1px;
-            margin-right: 20px;
-            border-bottom: 2px solid transparent;
-            line-height: 33px;
-            font-weight: 700;
-            outline: 0;
-            cursor: pointer;
-        }
-
-        &-panel {
-            display: block;
-        }
-    }
-
-    .yfm-clipboard {
-        & > pre > code {
-            white-space: pre-wrap;
-        }
-    }
-
-    .yfm-cut {
-        &-title {
-            padding-left: 0;
-
-            &:before {
+@media print {
+    .yfm {
+        .yfm-tab {
+            &-list {
                 display: none;
+            }
+
+            &-panel:before {
+                content: attr(data-title);
+                margin-bottom: -1px;
+                margin-right: 20px;
+                border-bottom: 2px solid transparent;
+                line-height: 33px;
+                font-weight: 700;
+                outline: 0;
+                cursor: pointer;
+            }
+
+            &-panel {
+                display: block;
             }
         }
 
-        &-content {
-            height: auto;
-            padding: 5px 0 15px 30px;
+        .yfm-clipboard {
+            & > pre > code {
+                white-space: pre-wrap;
+            }
         }
-    }
 
-    .yfm-note {
-        page-break-inside: avoid;
-    }
+        .yfm-cut {
+            &-title {
+                padding-left: 0;
 
-    .yfm-page__delimeter {
-        display: none;
-    }
+                &:before {
+                    display: none;
+                }
+            }
 
-    h1, h2 {
-        &[data-original-article] {
-            page-break-before: always;
+            &-content {
+                height: auto;
+                padding: 5px 0 15px 30px;
+            }
+        }
+
+        .yfm-note {
+            page-break-inside: avoid;
+        }
+
+        .yfm-page__delimeter {
+            display: none;
+        }
+
+        h1, h2 {
+            &[data-original-article] {
+                page-break-before: always;
+            }
         }
     }
 }
+
+.yfm {
+    .yfm-table-container[data-mode='print'] {
+        position: relative;
+
+        & > table {
+            overflow: initial;
+            position: absolute;
+            top: 0;
+            left: 0;
+            max-width: initial;
+            transform-origin: top left;
+
+            thead {
+                display: table-row-group;
+            }
+
+            th, td {
+                page-break-inside: avoid;
+                white-space: pre-wrap;
+                text-overflow: initial;
+            }
+        }
+    }
+}
+
