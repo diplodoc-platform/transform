@@ -1,6 +1,6 @@
 import {bold} from 'chalk';
 
-import {getFileTokens, GetFileTokensOpts, getFullIncludePath} from '../../utilsFS';
+import {getFileTokens, GetFileTokensOpts, getFullIncludePath, isFileExists} from '../../utilsFS';
 import {findBlockTokens} from '../../utils';
 import Token from 'markdown-it/lib/token';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
@@ -39,8 +39,15 @@ function unfoldIncludes(state: StateCore, path: string, options: Options) {
         ) {
             try {
                 const [, keyword /* description */, , includePath] = match;
+
                 const fullIncludePath = getFullIncludePath(includePath, root, path);
-                const [pathname, hash] = fullIncludePath.split('#');
+                let pathname = fullIncludePath;
+                let hash = '';
+                const hashIndex = fullIncludePath.lastIndexOf('#');
+                if (hashIndex > -1 && !isFileExists(pathname)) {
+                    pathname = fullIncludePath.slice(0, hashIndex);
+                    hash = fullIncludePath.slice(hashIndex + 1);
+                }
 
                 if (!pathname.startsWith(root)) {
                     i++;

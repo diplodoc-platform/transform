@@ -94,4 +94,21 @@ describe('Anchors', () => {
                 '<p>Content</p>\n',
         );
     });
+
+    it('should include content by anchor in sharped path file', () => {
+        expect(
+            transformYfm(
+                'Content before include\n' +
+                    '\n' +
+                    '{% include [file](./mocks/folder-with-#-sharp/file-with-#-sharp.md#anchor) %}\n' +
+                    '\n' +
+                    'After include',
+            ),
+        ).toBe(
+            '<p>Content before include</p>\n' +
+                '<h2 id="anchor"><a href="#anchor" class="yfm-anchor" aria-hidden="true"></a>Subtitle</h2>\n' +
+                '<p>Subcontent</p>\n' +
+                '<p>After include</p>\n',
+        );
+    });
 });
