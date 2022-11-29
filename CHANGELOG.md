@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.16.1](https://github.com/yandex-cloud/yfm-transform/compare/v2.16.0...v2.16.1) (2022-11-29)
+
+
+### Bug Fixes
+
+* **include:** support paths with sharp symbol ([a19bd3c](https://github.com/yandex-cloud/yfm-transform/commit/a19bd3c971f268d887527912c8bf833d78c09683))
+
 ## [2.16.0](https://github.com/yandex-cloud/yfm-transform/compare/v2.15.0...v2.16.0) (2022-11-08)
 
 
