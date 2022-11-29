@@ -3,7 +3,7 @@ import {dirname} from 'path';
 import includes from '../src/transform/plugins/includes';
 import yfmlint from '../src/transform/yfmlint';
 import {callPlugin, tokenize} from './utils';
-import {title, notitle, codeInBackQuote} from './data/includes';
+import {title, notitle, codeInBackQuote, sharpedFile} from './data/includes';
 import {log} from '../src/transform/log';
 
 describe('Includes', () => {
@@ -129,5 +129,26 @@ describe('Includes', () => {
         );
 
         expect(expectedCondition).toEqual(true);
+    });
+
+    test('Should include file with sharped path', () => {
+        const mocksPath = require.resolve('./utils.ts');
+
+        const result = callPlugin(
+            includes,
+            tokenize([
+                'Text before include',
+                '',
+                '{% include [file](./mocks/folder-with-#-sharp/file-with-#-sharp.md) %}',
+                '',
+                'After include',
+            ]),
+            {
+                path: mocksPath,
+                root: dirname(mocksPath),
+            },
+        );
+
+        expect(result).toEqual(sharpedFile);
     });
 });

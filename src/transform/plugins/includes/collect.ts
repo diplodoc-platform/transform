@@ -1,7 +1,7 @@
 import {relative} from 'path';
 import {bold} from 'chalk';
 
-import {resolveRelativePath} from '../../utilsFS';
+import {isFileExists, resolveRelativePath} from '../../utilsFS';
 import {MarkdownItPluginOpts} from '../typings';
 
 const includesPaths: string[] = [];
@@ -23,9 +23,13 @@ const collect = (input: string, options: Opts) => {
         let [, , , relativePath] = match;
         const [matchedInclude] = match;
 
-        relativePath = relativePath.split('#')[0];
+        let includePath = resolveRelativePath(path, relativePath);
+        const hashIndex = relativePath.lastIndexOf('#');
+        if (hashIndex > -1 && !isFileExists(includePath)) {
+            includePath = includePath.slice(0, includePath.lastIndexOf('#'));
+            relativePath = relativePath.slice(0, hashIndex);
+        }
 
-        const includePath = resolveRelativePath(path, relativePath);
         const targetDestPath = resolveRelativePath(destPath, relativePath);
 
         if (includesPaths.includes(includePath)) {
