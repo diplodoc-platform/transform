@@ -101,6 +101,7 @@ function transform(originInput: string, opts: OptionsType = {}): OutputType {
 
     const pluginOptions = {
         ...customOptions,
+        conditionsInCode,
         vars,
         path,
         extractTitle: extractTitleOption,
