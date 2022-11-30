@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.16.2](https://github.com/yandex-cloud/yfm-transform/compare/v2.16.1...v2.16.2) (2022-11-30)
+
+
+### Bug Fixes
+
+* **include:** passing conditionsInCode through pluginOptions ([dfa986f](https://github.com/yandex-cloud/yfm-transform/commit/dfa986f50ab8bd380a04c81ab1444e5419c4d7ef))
+
 ## [2.16.1](https://github.com/yandex-cloud/yfm-transform/compare/v2.16.0...v2.16.1) (2022-11-29)
 
 
