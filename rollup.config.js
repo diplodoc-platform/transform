@@ -5,7 +5,23 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 const babel = require('rollup-plugin-babel');
 
-module.exports = {
+const plugins = [
+    babel({
+        exclude: 'node_modules/**',
+        externalHelpersWhitelist: [
+            'defineProperties',
+            'createClass',
+            'inheritsLoose',
+            'defineProperty',
+            'objectSpread',
+        ],
+    }),
+    commonjs(),
+    nodeResolve(),
+    typescript({module: 'esnext', include: './src/js/**/*'}),
+]
+
+module.exports = [{
     input: 'src/js/index.ts',
     output: {
         file: 'dist/js/yfm.js',
@@ -13,19 +29,14 @@ module.exports = {
         name: 'yfm',
         sourcemap: true,
     },
-    plugins: [
-        babel({
-            exclude: 'node_modules/**',
-            externalHelpersWhitelist: [
-                'defineProperties',
-                'createClass',
-                'inheritsLoose',
-                'defineProperty',
-                'objectSpread',
-            ],
-        }),
-        commonjs(),
-        nodeResolve(),
-        typescript({module: 'esnext', include: './src/js/**/*'}),
-    ],
-};
+    plugins,
+}, {
+    input: 'src/js/print/index.ts',
+    output: {
+        file: 'dist/js/print.js',
+        format: 'umd',
+        name: 'yfm',
+        sourcemap: true,
+    },
+    plugins,
+}];
