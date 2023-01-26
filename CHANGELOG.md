@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.16.3](https://github.com/yandex-cloud/yfm-transform/compare/v2.16.2...v2.16.3) (2023-01-26)
+
+
+### Bug Fixes
+
+* fix sanitize-html package version ([#203](https://github.com/yandex-cloud/yfm-transform/issues/203)) ([3199c53](https://github.com/yandex-cloud/yfm-transform/commit/3199c533dfa9bae149d65ffee11c15ea7d6e266b))
+
 ## [2.16.2](https://github.com/yandex-cloud/yfm-transform/compare/v2.16.1...v2.16.2) (2022-11-30)
 
 
