@@ -8,7 +8,38 @@ import ArgvService, {ArgvSettings} from './services/argv';
 import {Dictionary} from 'lodash';
 
 const codes: string[] = [];
-const regexp = /`{3}(((?!`{3})[^])+)`{3}/g;
+
+const fence = '```';
+
+const find = (open: string, close: string, string: string, index: number) => {
+    const start = string.indexOf(open, index);
+    const end = start > -1 ? string.indexOf(close, start + open.length) : -1;
+
+    return [start, end];
+};
+
+const replace = (
+    open: string,
+    close: string,
+    value: (string: string) => string,
+    string: string,
+) => {
+    let result = '';
+    let carriage = 0;
+    let [start, end] = find(open, close, string, carriage);
+
+    while (start > -1 && end > -1) {
+        const fragment = string.slice(start + open.length, end);
+
+        result += string.slice(carriage, start) + open + value(fragment) + close;
+        carriage = end + close.length;
+        [start, end] = find(open, close, string, carriage);
+    }
+
+    result += string.slice(carriage);
+
+    return result;
+};
 
 function saveCode(
     str: string,
@@ -16,28 +47,25 @@ function saveCode(
     path?: string,
     substitutions?: boolean,
 ) {
-    let i = 0;
+    return replace(
+        fence,
+        fence,
+        (code) => {
+            const codeWithVars = substitutions ? applySubstitutions(code, vars, path) : code;
+            const index = codes.push(codeWithVars) - 1;
 
-    return str.replace(regexp, (_, code: string) => {
-        i++;
+            /* Keep the same count of lines to avoid transformation of the source map */
+            const codeLines = codeWithVars.split('\n');
+            const emptyLines = codeLines.length > 1 ? '\n'.repeat(codeLines.length) : '';
 
-        const codeWithVars = substitutions ? applySubstitutions(code, vars, path) : code;
-
-        codes.push(codeWithVars);
-
-        /* Keep the same count of lines to avoid transformation of the source map */
-        const codeLines = codeWithVars.split('\n');
-        const emptyLines = codeLines.length > 1 ? codeLines.reduce((acc) => acc + '\n', '') : '';
-
-        return '```' + i + emptyLines + '```';
-    });
+            return `${index}${emptyLines}`;
+        },
+        str,
+    );
 }
 
 function repairCode(str: string) {
-    return str.replace(regexp, (_, code) => {
-        const number = code.trimRight();
-        return '```' + codes[number - 1] + '```';
-    });
+    return replace(fence, fence, (code) => codes[Number(code)], str);
 }
 
 function liquid<

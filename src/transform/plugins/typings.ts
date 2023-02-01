@@ -9,4 +9,7 @@ export interface MarkdownItPluginOpts {
     isLintRun: boolean;
 }
 
-export type MarkdownItPluginCb<T = {}> = (md: MarkdownIt, opts: T & MarkdownItPluginOpts) => void;
+export type MarkdownItPluginCb<T extends {} = {}> = (
+    md: MarkdownIt,
+    opts: T & MarkdownItPluginOpts,
+) => void;
