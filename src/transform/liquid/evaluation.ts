@@ -21,6 +21,7 @@ const operators: Record<string, WithFilter | NoFilter | DotOperator> = {
     '<': ((l, r) => l !== null && r !== null && l < r) as NoFilter,
     '>=': ((l, r) => l !== null && r !== null && l >= r) as NoFilter,
     '<=': ((l, r) => l !== null && r !== null && l <= r) as NoFilter,
+    contains: ((l, r) => l !== null && r !== null && l.includes(r)) as NoFilter,
     and: ((l, r) => isTruthy(l) && isTruthy(r)) as NoFilter,
     or: ((l, r) => isTruthy(l) || isTruthy(r)) as NoFilter,
     '|': ((l, filter, exp) => {
