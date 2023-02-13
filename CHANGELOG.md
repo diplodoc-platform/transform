@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.16.4](https://github.com/yandex-cloud/yfm-transform/compare/v2.16.3...v2.16.4) (2023-02-13)
+
+
+### Bug Fixes
+
+* **liquid:** Add missed `contains` operator ([130c021](https://github.com/yandex-cloud/yfm-transform/commit/130c0210058edb3d49f77d42e05ddbbb0a5770c2))
+* **liquid:** Process large fence blocks ([0e97260](https://github.com/yandex-cloud/yfm-transform/commit/0e97260b32d995682112bf5f6339be1dd621fe59))
+
 ## [2.16.3](https://github.com/yandex-cloud/yfm-transform/compare/v2.16.2...v2.16.3) (2023-01-26)
 
 
