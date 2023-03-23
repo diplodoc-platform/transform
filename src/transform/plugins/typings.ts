@@ -1,5 +1,5 @@
-import {Logger} from '../log';
-import {MarkdownIt} from '../typings';
+import type {Logger} from '../log';
+import type {MarkdownIt} from '../typings';
 
 export interface MarkdownItPluginOpts {
     path: string;
@@ -9,7 +9,6 @@ export interface MarkdownItPluginOpts {
     isLintRun: boolean;
 }
 
-export type MarkdownItPluginCb<T extends {} = {}> = (
-    md: MarkdownIt,
-    opts: T & MarkdownItPluginOpts,
-) => void;
+export type MarkdownItPluginCb<T extends {} = {}> = {
+    (md: MarkdownIt, opts: T & MarkdownItPluginOpts): void;
+};

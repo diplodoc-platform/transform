@@ -1,6 +1,9 @@
 import {LanguageFn} from 'highlight.js';
 import DefaultMarkdownIt from 'markdown-it';
 import DefaultStateCore from 'markdown-it/lib/rules_core/state_core';
+import {SanitizeOptions} from './sanitize';
+import {MarkdownItPluginCb} from './plugins/typings';
+import {LogLevels} from './log';
 
 export interface MarkdownIt extends DefaultMarkdownIt {
     assets?: string[];
@@ -18,3 +21,41 @@ export type Heading = {
     level: number;
     items?: Heading[];
 };
+
+export interface OptionsType {
+    vars?: Record<string, string>;
+    path?: string;
+    extractTitle?: boolean;
+    needTitle?: boolean;
+    allowHTML?: boolean;
+    linkify?: boolean;
+    linkifyTlds?: string | string[];
+    breaks?: boolean;
+    conditionsInCode?: boolean;
+    disableLiquid?: boolean;
+    leftDelimiter?: string;
+    rightDelimiter?: string;
+    isLiquided?: boolean;
+    needToSanitizeHtml?: boolean;
+    sanitizeOptions?: SanitizeOptions;
+    needFlatListHeadings?: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    plugins?: MarkdownItPluginCb<any>[];
+    highlightLangs?: HighlightLangMap;
+    root?: string;
+    [x: string]: unknown;
+}
+
+export interface OutputType {
+    result: {
+        html: string;
+    } & EnvType;
+    logs: Record<LogLevels, string[]>;
+}
+
+export type EnvType<Extras extends {} = {}> = {
+    title?: string;
+    headings: Heading[];
+    assets?: unknown[];
+    meta?: object;
+} & Extras;
