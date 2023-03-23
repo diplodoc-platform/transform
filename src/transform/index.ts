@@ -29,6 +29,17 @@ function emitResult(html: string, env: EnvType): OutputType {
     };
 }
 
+async function transformAsync(originInput: string, options: OptionsType = {}) {
+    const input = applyLiquid(originInput, options);
+    const {parse, process, compile, env} = initMarkdownit(options);
+
+    try {
+        return emitResult(compile(await process(parse(input))), env);
+    } catch (error) {
+        handleError(error, options.path);
+    }
+}
+
 function transform(originInput: string, options: OptionsType = {}) {
     const input = applyLiquid(originInput, options);
     const {parse, compile, env} = initMarkdownit(options);
@@ -39,6 +50,8 @@ function transform(originInput: string, options: OptionsType = {}) {
         handleError(error, options.path);
     }
 }
+
+transform.async = transformAsync;
 
 export = transform;
 

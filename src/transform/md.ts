@@ -1,4 +1,5 @@
 import type {MarkdownIt, OptionsType, EnvType} from './typings';
+import type {MarkdownItPluginProcessor} from './plugins/typings';
 import type Token from 'markdown-it/lib/token';
 
 import DefaultMarkdownIt from 'markdown-it';
@@ -31,9 +32,10 @@ function initMarkdownit(options: OptionsType) {
     initPlugins(md, options);
 
     const parse = initParser(md, options, env);
+    const process = initProcessor(md, options, env);
     const compile = initCompiler(md, options, env);
 
-    return {parse, compile, env};
+    return {parse, process, compile, env};
 }
 
 function initPlugins(md: MarkdownIt, options: OptionsType) {
@@ -95,6 +97,23 @@ function initParser(md: MarkdownIt, options: OptionsType, env: EnvType) {
         }
 
         env.headings = getHeadings(tokens, needFlatListHeadings);
+
+        return tokens;
+    };
+}
+
+function initProcessor(md: MarkdownIt, options: OptionsType, env: EnvType) {
+    const {plugins = DefaultPlugins} = options;
+    const processors = plugins
+        .filter((plugin) => typeof plugin.process === 'function')
+        .map((plugin) => plugin.process);
+
+    return async (tokens: Token[]): Promise<Token[]> => {
+        while (processors.length) {
+            const processor = processors.shift() as MarkdownItPluginProcessor;
+
+            tokens = await processor(tokens, md, env);
+        }
 
         return tokens;
     };
