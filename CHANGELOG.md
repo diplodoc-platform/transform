@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.17.0](https://github.com/yandex-cloud/yfm-transform/compare/v2.16.4...v2.17.0) (2023-04-03)
+
+
+### Features
+
+* **md:** Refactor transform index ([7df96ac](https://github.com/yandex-cloud/yfm-transform/commit/7df96ac626918ff21167dfce6daf9cf834d934d8))
+
+
+### Bug Fixes
+
+* wrap tab list on small screens ([#213](https://github.com/yandex-cloud/yfm-transform/issues/213)) ([cfb847e](https://github.com/yandex-cloud/yfm-transform/commit/cfb847edc752701829d3369d7c4c8889d7e11f93))
+
 ## [2.16.4](https://github.com/yandex-cloud/yfm-transform/compare/v2.16.3...v2.16.4) (2023-02-13)
 
 
