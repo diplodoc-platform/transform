@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.18.0](https://github.com/yandex-cloud/yfm-transform/compare/v2.17.0...v2.18.0) (2023-04-06)
+
+
+### Features
+
+* **sanitize:** allow 'allow' iframe attribute ([#214](https://github.com/yandex-cloud/yfm-transform/issues/214)) ([70d79b6](https://github.com/yandex-cloud/yfm-transform/commit/70d79b6e426d7e42d3bb9a422971e5b7fbb037fd))
+
 ## [2.17.0](https://github.com/yandex-cloud/yfm-transform/compare/v2.16.4...v2.17.0) (2023-04-03)
 
 
