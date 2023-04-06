@@ -277,6 +277,7 @@ const htmlAttrs = [
     'slot',
     'frameborder',
     'scrolling',
+    'allow',
     'target',
     'data-*',
 ];
