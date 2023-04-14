@@ -45,15 +45,10 @@ const cut: MarkdownItPluginCb = (md, {path, log}) => {
                 const titleOpen = new state.Token('yfm_cut_title_open', 'div', 1);
                 titleOpen.attrSet('class', 'yfm-cut-title');
 
-                const titleInline = new state.Token('inline', '', 0);
-                titleInline.content = match[1] === undefined ? 'ad' : match[1];
-                titleInline.children = [];
-                state.md.inline.parse(
-                    titleInline.content,
-                    state.md,
+                const titleInline = state.md.parseInline(
+                    match[1] === undefined ? 'ad' : match[1],
                     state.env,
-                    titleInline.children,
-                );
+                )[0];
 
                 const titleClose = new state.Token('yfm_cut_title_close', 'div', -1);
 
