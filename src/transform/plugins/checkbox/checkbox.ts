@@ -27,7 +27,7 @@ export const checkboxReplace = function (_md: MarkdownIt, opts: CheckboxOptions)
     const options = Object.assign(defaults, opts);
 
     const createTokens = function (state: StateCore, checked: boolean, label: string) {
-        let token;
+        let token: Token;
         const nodes = [];
 
         /**
@@ -65,10 +65,7 @@ export const checkboxReplace = function (_md: MarkdownIt, opts: CheckboxOptions)
         /**
          * content of label tag
          */
-        token = new state.Token('inline', '', 0);
-        token.children = [];
-        token.content = label;
-        state.md.inline.parse(token.content, state.md, state.env, token.children);
+        token = state.md.parseInline(label, state.env)[0];
         nodes.push(token);
 
         /**
