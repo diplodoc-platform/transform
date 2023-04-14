@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.18.1](https://github.com/yandex-cloud/yfm-transform/compare/v2.18.0...v2.18.1) (2023-04-14)
+
+
+### Bug Fixes
+
+* **cut:** fix inline markup parsing in cut title ([d24413f](https://github.com/yandex-cloud/yfm-transform/commit/d24413f0398217a2793990bfffc9f8d205d38033))
+* **сheckbox:** fix inline markup parsing in the checkbox label ([ffa65a5](https://github.com/yandex-cloud/yfm-transform/commit/ffa65a5fae956267b57fea34ad1cc38fb132b118))
+
 ## [2.18.0](https://github.com/yandex-cloud/yfm-transform/compare/v2.17.0...v2.18.0) (2023-04-06)
 
 
