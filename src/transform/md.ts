@@ -20,10 +20,20 @@ function initMarkdownit(options: OptionsType) {
         get meta() {
             return md.meta;
         },
+
+        set meta(value) {
+            md.meta = value;
+        },
+
         // TODO: move md.assets directly to env
         get assets() {
             return md.assets;
         },
+
+        set assets(value) {
+            md.assets = value;
+        },
+
         headings: [],
         title: '',
     } as EnvType;
