@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.18.2](https://github.com/yandex-cloud/yfm-transform/compare/v2.18.1...v2.18.2) (2023-04-19)
+
+
+### Bug Fixes
+
+* Make env.meta writeable ([f6540bd](https://github.com/yandex-cloud/yfm-transform/commit/f6540bd8578cc197c4cb4c5ee5e42ea5da97da13))
+
 ## [2.18.1](https://github.com/yandex-cloud/yfm-transform/compare/v2.18.0...v2.18.1) (2023-04-14)
 
 
