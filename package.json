@@ -85,6 +85,11 @@
   "peerDependencies": {
     "highlight.js": "^10.0.3"
   },
+  "peerDependenciesMeta": {
+    "highlight.js": {
+      "optional": true
+    }
+  },
   "bugs": {
     "url": "https://github.com/yandex-cloud/yfm-transform/issues"
   },
