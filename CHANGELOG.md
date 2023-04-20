@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.18.3](https://github.com/yandex-cloud/yfm-transform/compare/v2.18.2...v2.18.3) (2023-04-20)
+
+
+### Bug Fixes
+
+* Mark highlight.js as optional dependency ([cc24703](https://github.com/yandex-cloud/yfm-transform/commit/cc2470331f69abb7aa906a581ec0fd34ae63e13c))
+
 ## [2.18.2](https://github.com/yandex-cloud/yfm-transform/compare/v2.18.1...v2.18.2) (2023-04-19)
 
 
