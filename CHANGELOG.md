@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/yandex-cloud/yfm-transform/compare/v2.18.3...v3.0.0) (2023-05-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* font from variable
+
+### Bug Fixes
+
+* font from variable ([fed80ee](https://github.com/yandex-cloud/yfm-transform/commit/fed80ee7caed028330f6460cb05845b7d34ba689))
+
 ## [2.18.3](https://github.com/yandex-cloud/yfm-transform/compare/v2.18.2...v2.18.3) (2023-04-20)
 
 
