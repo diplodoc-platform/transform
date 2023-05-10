@@ -1,7 +1,7 @@
 @import 'variables';
 
 .yfm {
-    font-family: 'YS Text', 'Segoe UI', Arial, Helvetica, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    font-family: var(--yc-font-family-sans);
     font-size: 15px;
     line-height: 20px;
     word-wrap: break-word;
@@ -123,7 +123,7 @@
     code,
     kbd,
     pre {
-        font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Ubuntu Mono', 'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', 'Courier', monospace;
+        font-family: var(--yc-font-family-sans);
         font-size: 1em;
         font-feature-settings: normal;
     }
@@ -352,4 +352,6 @@
     --yfm-color-hljs-addition: #397300;
     --yfm-color-hljs-meta: #1f7199;
     --yfm-color-hljs-meta-string: #4d99bf;
+    --yfm-font-family-monospace: "Menlo", "Monaco", "Consolas", "Ubuntu Mono", "Liberation Mono", "DejaVu Sans Mono", "Courier New", "Courier", monospace;
+    --yfm-font-family-sans: 'Segoe UI', Arial, Helvetica, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 }

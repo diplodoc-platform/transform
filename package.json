@@ -31,7 +31,6 @@
     "prepublishOnly": "npm run lint && npm run test && npm run build"
   },
   "dependencies": {
-    "@types/sanitize-html": "2.6.2",
     "chalk": "4.1.2",
     "get-root-node-polyfill": "1.0.0",
     "github-slugger": "1.4.0",
@@ -62,6 +61,7 @@
     "@types/markdown-it-attrs": "4.1.0",
     "@types/markdownlint": "0.18.0",
     "@types/node": "17.0.10",
+    "@types/sanitize-html": "2.6.2",
     "@yandex-cloud/eslint-config": "^1.1.0",
     "@yandex-cloud/prettier-config": "^1.0.0",
     "@yandex-cloud/tsconfig": "^1.0.0",
