@@ -5,7 +5,7 @@ import changelogPlugin from '../src/transform/plugins/changelog';
 import imsize from '../src/transform/plugins/imsize';
 
 describe('Changelog', () => {
-    test('Should cut changelogs and return changelogs', async () => {
+    test('Should cut changelog', async () => {
         expect.assertions(2);
 
         const data = await fs.promises.readFile(path.join(__dirname, 'data/changelog.md'), 'utf8');
@@ -14,6 +14,24 @@ describe('Changelog', () => {
             result: {html, changelog: logs},
         } = transform(data, {
             plugins: [changelogPlugin, imsize],
+            enableChangelogs: false,
+        });
+
+        expect(html).toBe(`<h1>Some changelog</h1>\n<p>After changelog</p>\n`);
+
+        expect(logs).toBe(undefined);
+    });
+
+    test('Should cut changelog and write it in env', async () => {
+        expect.assertions(2);
+
+        const data = await fs.promises.readFile(path.join(__dirname, 'data/changelog.md'), 'utf8');
+
+        const {
+            result: {html, changelog: logs},
+        } = transform(data, {
+            plugins: [changelogPlugin, imsize],
+            enableChangelogs: true,
         });
 
         expect(html).toBe(`<h1>Some changelog</h1>\n<p>After changelog</p>\n`);

@@ -43,6 +43,7 @@ export interface OptionsType {
     plugins?: MarkdownItPluginCb<any>[];
     highlightLangs?: HighlightLangMap;
     root?: string;
+    enableChangelogs?: boolean;
     [x: string]: unknown;
 }
 

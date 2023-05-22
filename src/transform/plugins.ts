@@ -14,6 +14,7 @@ import yfmTable from './plugins/table';
 import file from './plugins/file';
 import imsize from './plugins/imsize';
 import term from './plugins/term';
+import changelog from './plugins/changelog';
 
 const defaultPlugins = [
     meta,
@@ -30,6 +31,7 @@ const defaultPlugins = [
     file,
     imsize,
     term,
+    changelog,
 ] as MarkdownItPluginCb[];
 
 export = defaultPlugins;

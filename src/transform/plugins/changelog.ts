@@ -9,6 +9,10 @@ interface Metadata {
     date: string;
 }
 
+interface Options {
+    enableChangelogs?: boolean;
+}
+
 const CHANGELOG_OPEN_RE = /^\{% changelog %}/;
 const CHANGELOG_CLOSE_RE = /^\{% endChangelog %}/;
 
@@ -98,7 +102,7 @@ function parseBody(tokens: Token[], state: StateCore) {
     };
 }
 
-const changelog: MarkdownItPluginCb = function (md, {log, path}) {
+const changelog: MarkdownItPluginCb<Options> = function (md, {enableChangelogs, log, path}) {
     const plugin: Core.RuleCore = (state) => {
         const {tokens, env} = state;
 
@@ -122,24 +126,27 @@ const changelog: MarkdownItPluginCb = function (md, {log, path}) {
             }
 
             const closeAt = i + 2;
-            const content = tokens.slice(openAt, closeAt + 1);
 
-            // cut open
-            content.splice(0, 3);
-            // cut close
-            content.splice(-3);
+            if (enableChangelogs) {
+                const content = tokens.slice(openAt, closeAt + 1);
 
-            try {
-                const change = parseBody(content, state);
+                // cut open
+                content.splice(0, 3);
+                // cut close
+                content.splice(-3);
 
-                if (!env?.changelog) {
-                    env.changelog = [];
+                try {
+                    const change = parseBody(content, state);
+
+                    if (!env?.changelog) {
+                        env.changelog = [];
+                    }
+
+                    env.changelog.push(change);
+                } catch (err) {
+                    log.error(`Changelog error: ${(err as Error).message} in ${bold(path)}`);
+                    continue;
                 }
-
-                env.changelog.push(change);
-            } catch (err) {
-                log.error(`Changelog error: ${(err as Error).message} in ${bold(path)}`);
-                continue;
             }
 
             tokens.splice(openAt, closeAt + 1 - openAt);
