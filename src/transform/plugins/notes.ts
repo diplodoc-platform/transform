@@ -79,7 +79,10 @@ const notes: MarkdownItPluginCb = (md, {lang, path: optPath, log}) => {
                 const newOpenToken = new state.Token('yfm_note_open', 'div', 1);
                 newOpenToken.attrSet('class', `yfm-note yfm-accent-${type}`);
                 newOpenToken.attrSet('note-type', type);
+                newOpenToken.map = tokens[i].map;
+
                 const newCloseToken = new state.Token('yfm_note_close', 'div', -1);
+                newCloseToken.map = tokens[closeTokenIdx].map;
 
                 // Add extra paragraph
                 const titleOpen = new state.Token('yfm_note_title_open', 'p', 1);
