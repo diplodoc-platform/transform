@@ -11,7 +11,7 @@ describe('Changelogs', () => {
             'utf8',
         );
 
-        const {output, changelogs: logs} = changelogs(data, {});
+        const {output, changes: logs} = changelogs(data, {});
         expect(output).toBe(`# Some changelog
 
 

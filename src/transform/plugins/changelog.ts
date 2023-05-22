@@ -101,7 +101,6 @@ function parseBody(tokens: Token[], state: StateCore) {
 const changelog: MarkdownItPluginCb = function (md, {log, path}) {
     const plugin: Core.RuleCore = (state) => {
         const {tokens, env} = state;
-        const sections = [];
 
         for (let i = 0, len = tokens.length; i < len; i++) {
             const isOpen = isOpenToken(tokens, i);
@@ -131,20 +130,21 @@ const changelog: MarkdownItPluginCb = function (md, {log, path}) {
             content.splice(-3);
 
             try {
-                sections.push(parseBody(content, state));
+                const change = parseBody(content, state);
+
+                if (!env?.changelog) {
+                    env.changelog = [];
+                }
+
+                env.changelog.push(change);
             } catch (err) {
                 log.error(`Changelog error: ${(err as Error).message} in ${bold(path)}`);
+                continue;
             }
 
             tokens.splice(openAt, closeAt + 1 - openAt);
             len = tokens.length;
         }
-
-        if (!env?.changelogs) {
-            env.changelogs = [];
-        }
-
-        env.changelogs.push(...sections);
     };
 
     try {

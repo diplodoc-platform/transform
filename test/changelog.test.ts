@@ -1,8 +1,8 @@
 import transform from '../src/transform';
 import path from 'path';
 import fs from 'fs';
-import changelogPlugin from "../src/transform/plugins/changelog";
-import imsize from "../src/transform/plugins/imsize";
+import changelogPlugin from '../src/transform/plugins/changelog';
+import imsize from '../src/transform/plugins/imsize';
 
 describe('Changelog', () => {
     test('Should cut changelogs and return changelogs', async () => {
@@ -11,14 +11,12 @@ describe('Changelog', () => {
         const data = await fs.promises.readFile(path.join(__dirname, 'data/changelog.md'), 'utf8');
 
         const {
-            result: {html, changelogs: logs},
+            result: {html, changelog: logs},
         } = transform(data, {
             plugins: [changelogPlugin, imsize],
         });
 
-        expect(html).toBe(
-            `<h1>Some changelog</h1>\n<p>After changelog</p>\n`,
-        );
+        expect(html).toBe(`<h1>Some changelog</h1>\n<p>After changelog</p>\n`);
 
         expect(logs).toEqual([
             {
