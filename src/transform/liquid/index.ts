@@ -3,6 +3,7 @@ import {prepareSourceMap} from './sourceMap';
 
 import applyCycles from './cycles';
 import applyConditions from './conditions';
+import applyChangelogs from './changelogs';
 
 import ArgvService, {ArgvSettings} from './services/argv';
 import {Dictionary} from 'lodash';
@@ -81,6 +82,7 @@ function liquid<
         cycles = true,
         conditions = true,
         substitutions = true,
+        changelogs = false,
         conditionsInCode = false,
         keepNotVar = false,
         withSourceMap,
@@ -90,6 +92,7 @@ function liquid<
         cycles,
         conditions,
         substitutions,
+        changelogs,
         conditionsInCode,
         keepNotVar,
         withSourceMap,
@@ -118,6 +121,11 @@ function liquid<
 
     if (substitutions) {
         output = applySubstitutions(output, vars, path);
+    }
+
+    if (changelogs) {
+        const result = applyChangelogs(output, vars, path);
+        output = result.output;
     }
 
     output = conditionsInCode ? output : repairCode(output);
