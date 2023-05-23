@@ -10,7 +10,7 @@ interface Metadata {
 }
 
 interface Options {
-    enableChangelogs?: boolean;
+    extractChangelogs?: boolean;
 }
 
 const CHANGELOG_OPEN_RE = /^\{% changelog %}/;
@@ -102,7 +102,7 @@ function parseBody(tokens: Token[], state: StateCore) {
     };
 }
 
-const changelog: MarkdownItPluginCb<Options> = function (md, {enableChangelogs, log, path}) {
+const changelog: MarkdownItPluginCb<Options> = function (md, {extractChangelogs, log, path}) {
     const plugin: Core.RuleCore = (state) => {
         const {tokens, env} = state;
 
@@ -127,7 +127,7 @@ const changelog: MarkdownItPluginCb<Options> = function (md, {enableChangelogs, 
 
             const closeAt = i + 2;
 
-            if (enableChangelogs) {
+            if (env && extractChangelogs) {
                 const content = tokens.slice(openAt, closeAt + 1);
 
                 // cut open
@@ -138,7 +138,7 @@ const changelog: MarkdownItPluginCb<Options> = function (md, {enableChangelogs, 
                 try {
                     const change = parseBody(content, state);
 
-                    if (!env?.changelog) {
+                    if (!env.changelog) {
                         env.changelog = [];
                     }
 

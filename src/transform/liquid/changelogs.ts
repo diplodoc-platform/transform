@@ -11,7 +11,7 @@ const BLOCK_END = '{% endChangelog %}\n';
 function parseChangelogs(str: string) {
     const {parse, compile, env} = initMarkdownit({
         plugins: [changelogPlugin, imsize],
-        enableChangelogs: true,
+        extractChangelogs: true,
     });
 
     compile(parse(str));
