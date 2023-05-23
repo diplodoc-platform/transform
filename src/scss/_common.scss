@@ -1,7 +1,7 @@
 @import 'variables';
 
 .yfm {
-    font-family: var(--yc-font-family-sans);
+    font-family: var(--yfm-font-family-sans);
     font-size: 15px;
     line-height: 20px;
     word-wrap: break-word;
@@ -123,7 +123,7 @@
     code,
     kbd,
     pre {
-        font-family: var(--yc-font-family-sans);
+        font-family: var(--yfm-font-family-monospace);
         font-size: 1em;
         font-feature-settings: normal;
     }
