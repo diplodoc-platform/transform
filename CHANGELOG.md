@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.2](https://github.com/yandex-cloud/yfm-transform/compare/v3.0.1...v3.0.2) (2023-05-23)
+
+
+### Bug Fixes
+
+* fonts ([2a0adfe](https://github.com/yandex-cloud/yfm-transform/commit/2a0adfef1078bae37d5cc228beff6a4ecb6f32f4))
+
 ## [3.0.1](https://github.com/yandex-cloud/yfm-transform/compare/v3.0.0...v3.0.1) (2023-05-22)
 
 
