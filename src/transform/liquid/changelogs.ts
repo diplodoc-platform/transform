@@ -8,15 +8,16 @@ import {ChangeLogItem} from '../plugins/typings';
 const BLOCK_START = '{% changelog %}';
 const BLOCK_END = '{% endChangelog %}\n';
 
-function parseChangelogs(str: string) {
+function parseChangelogs(str: string, path?: string) {
     const {parse, compile, env} = initMarkdownit({
         plugins: [changelogPlugin, imsize],
         extractChangelogs: true,
+        path,
     });
 
     compile(parse(str));
 
-    return env.changelog || [];
+    return env.changelogs || [];
 }
 
 const changelogs = (origStr: string, _builtVars: Record<string, unknown>, filepath?: string) => {
@@ -46,7 +47,7 @@ const changelogs = (origStr: string, _builtVars: Record<string, unknown>, filepa
 
     let changes: ChangeLogItem[] = [];
     if (rawChanges.length) {
-        changes = parseChangelogs(rawChanges.join('\n\n'));
+        changes = parseChangelogs(rawChanges.join('\n\n'), filepath);
     }
 
     return {output: str, changelogs: changes};

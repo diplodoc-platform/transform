@@ -27,7 +27,7 @@ function isOpenToken(tokens: Token[], i: number) {
 
 function isCloseToken(tokens: Token[], i: number) {
     return (
-        tokens[i].type === 'paragraph_open' &&
+        tokens[i]?.type === 'paragraph_open' &&
         tokens[i + 1].type === 'inline' &&
         tokens[i + 2].type === 'paragraph_close' &&
         CHANGELOG_CLOSE_RE.test(tokens[i + 1].content)
@@ -138,11 +138,11 @@ const changelog: MarkdownItPluginCb<Options> = function (md, {extractChangelogs,
                 try {
                     const change = parseBody(content, state);
 
-                    if (!env.changelog) {
-                        env.changelog = [];
+                    if (!env.changelogs) {
+                        env.changelogs = [];
                     }
 
-                    env.changelog.push(change);
+                    env.changelogs.push(change);
                 } catch (err) {
                     log.error(`Changelog error: ${(err as Error).message} in ${bold(path)}`);
                     continue;
@@ -151,6 +151,7 @@ const changelog: MarkdownItPluginCb<Options> = function (md, {extractChangelogs,
 
             tokens.splice(openAt, closeAt + 1 - openAt);
             len = tokens.length;
+            i = openAt - 1;
         }
     };
 

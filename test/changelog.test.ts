@@ -11,7 +11,7 @@ describe('Changelog', () => {
         const data = await fs.promises.readFile(path.join(__dirname, 'data/changelog.md'), 'utf8');
 
         const {
-            result: {html, changelog: logs},
+            result: {html, changelogs: logs},
         } = transform(data, {
             plugins: [changelogPlugin, imsize],
             enableChangelogs: false,
@@ -28,16 +28,16 @@ describe('Changelog', () => {
         const data = await fs.promises.readFile(path.join(__dirname, 'data/changelog.md'), 'utf8');
 
         const {
-            result: {html, changelog: logs},
+            result: {html, changelogs: logs},
         } = transform(data, {
             plugins: [changelogPlugin, imsize],
-            enableChangelogs: true,
+            extractChangelogs: true,
         });
 
         expect(html).toBe(`<h1>Some changelog</h1>\n<p>After changelog</p>\n`);
 
-        expect(logs).toEqual([
-            {
+        expect(logs).toEqual(
+            new Array(3).fill({
                 date: '2023-05-10T00:00:00.000Z',
                 storyId: 123321,
                 title: 'Change log title',
@@ -47,7 +47,7 @@ describe('Changelog', () => {
                     src: '../src/asd.png',
                 },
                 description: '<p>Change log payload</p>\n',
-            },
-        ]);
+            }),
+        );
     });
 });

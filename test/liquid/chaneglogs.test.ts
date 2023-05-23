@@ -11,12 +11,15 @@ describe('Changelogs', () => {
             'utf8',
         );
 
-        const {output, changes: logs} = changelogs(data, {});
+        const {output, changelogs: logs} = changelogs(data, {});
         expect(output).toBe(`# Some changelog
+
+
+
 
 
 After changelog
 `);
-        expect(logs.length).toBe(1);
+        expect(logs.length).toBe(3);
     });
 });

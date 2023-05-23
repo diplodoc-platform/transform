@@ -59,5 +59,5 @@ export type EnvType<Extras extends {} = {}> = {
     headings: Heading[];
     assets?: unknown[];
     meta?: object;
-    changelog?: ChangeLogItem[];
+    changelogs?: ChangeLogItem[];
 } & Extras;
