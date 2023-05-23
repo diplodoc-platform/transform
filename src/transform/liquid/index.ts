@@ -7,6 +7,7 @@ import applyChangelogs from './changelogs';
 
 import ArgvService, {ArgvSettings} from './services/argv';
 import {Dictionary} from 'lodash';
+import {ChangeLogItem} from '../plugins/typings';
 
 const codes: string[] = [];
 
@@ -70,19 +71,26 @@ function repairCode(str: string) {
 }
 
 function liquid<
+    D extends boolean = false,
     B extends boolean = false,
-    C = B extends false ? string : {output: string; sourceMap: Dictionary<string>},
+    C = B | D extends false
+        ? string
+        : {
+              output: string;
+              sourceMap: B extends false ? undefined : Dictionary<string>;
+              changelogs: D extends false ? undefined : ChangeLogItem[];
+          },
 >(
     originInput: string,
     vars: Record<string, unknown>,
     path?: string,
-    settings?: ArgvSettings & {withSourceMap?: B},
+    settings?: ArgvSettings & {withSourceMap?: B; withChangelogs?: D},
 ): C {
     const {
         cycles = true,
         conditions = true,
         substitutions = true,
-        changelogs = false,
+        withChangelogs = false,
         conditionsInCode = false,
         keepNotVar = false,
         withSourceMap,
@@ -92,7 +100,7 @@ function liquid<
         cycles,
         conditions,
         substitutions,
-        changelogs,
+        withChangelogs,
         conditionsInCode,
         keepNotVar,
         withSourceMap,
@@ -123,18 +131,21 @@ function liquid<
         output = applySubstitutions(output, vars, path);
     }
 
-    if (changelogs) {
-        const result = applyChangelogs(output, vars, path);
-        output = result.output;
-    }
-
     output = conditionsInCode ? output : repairCode(output);
     codes.length = 0;
 
-    if (withSourceMap) {
+    let changelogs;
+    if (withChangelogs) {
+        const result = applyChangelogs(output, vars, path);
+        output = result.output;
+        changelogs = result.changelogs;
+    }
+
+    if (withSourceMap || withChangelogs) {
         return {
             output,
-            sourceMap: prepareSourceMap(sourceMap),
+            sourceMap: withSourceMap ? prepareSourceMap(sourceMap) : undefined,
+            changelogs: withChangelogs ? changelogs : undefined,
         } as unknown as C;
     }
 

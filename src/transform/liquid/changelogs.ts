@@ -3,8 +3,7 @@ import {log} from '../log';
 import changelogPlugin from '../plugins/changelog';
 import imsize from '../plugins/imsize';
 import initMarkdownit from '../md';
-import path from 'path';
-import fs from 'fs';
+import {ChangeLogItem} from '../plugins/typings';
 
 const BLOCK_START = '{% changelog %}';
 const BLOCK_END = '{% endChangelog %}\n';
@@ -45,15 +44,12 @@ const changelogs = (origStr: string, _builtVars: Record<string, unknown>, filepa
         str = str.slice(0, pos) + str.slice(endPos + BLOCK_END.length);
     }
 
-    const changes = parseChangelogs(rawChanges.join('\n\n'));
+    let changes: ChangeLogItem[] = [];
+    if (rawChanges.length) {
+        changes = parseChangelogs(rawChanges.join('\n\n'));
+    }
 
-    changes.forEach((change) => {
-        if (!filepath) return;
-        const target = path.join(path.dirname(filepath), `change-${change.date}.json`);
-        fs.writeFileSync(target, JSON.stringify(change));
-    });
-
-    return {output: str, changes};
+    return {output: str, changelogs: changes};
 };
 
 export = changelogs;
