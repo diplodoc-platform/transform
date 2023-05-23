@@ -10,7 +10,7 @@ storyId: 123321
 
 Change log payload
 
-{% endChangelog %}
+{% endchangelog %}
 
 {% changelog %}
 ```
@@ -22,7 +22,7 @@ storyId: 123321
 
 Change log payload
 
-{% endChangelog %}
+{% endchangelog %}
 
 
 {% changelog %}
@@ -35,6 +35,6 @@ storyId: 123321
 
 Change log payload
 
-{% endChangelog %}
+{% endchangelog %}
 
 After changelog

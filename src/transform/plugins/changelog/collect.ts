@@ -6,7 +6,7 @@ import imsize from '../imsize';
 import {MarkdownItPluginOpts} from '../typings';
 
 const BLOCK_START = '{% changelog %}';
-const BLOCK_END = '{% endChangelog %}\n';
+const BLOCK_END = '{% endchangelog %}\n';
 
 function parseChangelogs(str: string, path?: string) {
     const {parse, compile, env} = initMarkdownit({

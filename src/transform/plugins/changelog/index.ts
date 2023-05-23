@@ -14,7 +14,7 @@ interface Options {
 }
 
 const CHANGELOG_OPEN_RE = /^\{% changelog %}/;
-const CHANGELOG_CLOSE_RE = /^\{% endChangelog %}/;
+const CHANGELOG_CLOSE_RE = /^\{% endchangelog %}/;
 
 function isOpenToken(tokens: Token[], i: number) {
     return (

@@ -17,7 +17,6 @@ describe('Changelog', () => {
             result: {html, changelogs: logs},
         } = transform(data, {
             plugins: [changelogPlugin, imsize],
-            enableChangelogs: false,
         });
 
         expect(html).toBe(`<h1>Some changelog</h1>\n<p>After changelog</p>\n`);
@@ -64,6 +63,7 @@ describe('Changelog', () => {
             path: '',
             changelogs,
             log: console as unknown as Logger,
+            extractChangelogs: true,
         });
 
         expect(html).toBe(`# Some changelog
