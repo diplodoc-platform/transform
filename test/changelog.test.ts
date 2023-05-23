@@ -2,7 +2,10 @@ import transform from '../src/transform';
 import path from 'path';
 import fs from 'fs';
 import changelogPlugin from '../src/transform/plugins/changelog';
+import changelogCollect from '../src/transform/plugins/changelog/collect';
 import imsize from '../src/transform/plugins/imsize';
+import {Logger} from '../src/transform/log';
+import {ChangelogItem} from '../src/transform/plugins/changelog/types';
 
 describe('Changelog', () => {
     test('Should cut changelog', async () => {
@@ -49,5 +52,29 @@ describe('Changelog', () => {
                 description: '<p>Change log payload</p>\n',
             }),
         );
+    });
+
+    test('Should cut changelog and write it in variable', async () => {
+        expect.assertions(2);
+
+        const data = await fs.promises.readFile(path.join(__dirname, 'data/changelog.md'), 'utf8');
+
+        const changelogs: ChangelogItem[] = [];
+        const html = changelogCollect(data, {
+            path: '',
+            changelogs,
+            log: console as unknown as Logger,
+        });
+
+        expect(html).toBe(`# Some changelog
+
+
+
+
+
+After changelog
+`);
+
+        expect(changelogs.length).toBe(3);
     });
 });

@@ -2,8 +2,9 @@ import {LanguageFn} from 'highlight.js';
 import DefaultMarkdownIt from 'markdown-it';
 import DefaultStateCore from 'markdown-it/lib/rules_core/state_core';
 import {SanitizeOptions} from './sanitize';
-import {ChangeLogItem, MarkdownItPluginCb} from './plugins/typings';
+import {MarkdownItPluginCb} from './plugins/typings';
 import {LogLevels} from './log';
+import {ChangelogItem} from './plugins/changelog/types';
 
 export interface MarkdownIt extends DefaultMarkdownIt {
     assets?: string[];
@@ -59,5 +60,5 @@ export type EnvType<Extras extends {} = {}> = {
     headings: Heading[];
     assets?: unknown[];
     meta?: object;
-    changelogs?: ChangeLogItem[];
+    changelogs?: ChangelogItem[];
 } & Extras;

@@ -3,7 +3,6 @@ export type ArgvSettings = {
     conditionsInCode?: boolean;
     cycles?: boolean;
     substitutions?: boolean;
-    withChangelogs?: boolean;
     keepNotVar?: boolean;
     withSourceMap?: boolean;
 };

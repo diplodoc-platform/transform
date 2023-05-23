@@ -1,4 +1,4 @@
-import {MarkdownItPluginCb} from './typings';
+import {MarkdownItPluginCb} from '../typings';
 import Core from 'markdown-it/lib/parser_core';
 import Token from 'markdown-it/lib/token';
 import {bold} from 'chalk';

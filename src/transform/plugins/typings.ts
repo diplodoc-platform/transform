@@ -12,15 +12,3 @@ export interface MarkdownItPluginOpts {
 export type MarkdownItPluginCb<T extends {} = {}> = {
     (md: MarkdownIt, opts: T & MarkdownItPluginOpts): void;
 };
-
-export interface ChangeLogItem {
-    title: string;
-    image: {
-        src: string;
-        alt: string;
-        ratio?: string;
-    };
-    description: string;
-    date: string;
-    [x: string]: unknown;
-}
