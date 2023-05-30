@@ -41,6 +41,7 @@ const cut: MarkdownItPluginCb = (md, {path, log}) => {
 
                 const newOpenToken = new state.Token('yfm_cut_open', 'div', 1);
                 newOpenToken.attrSet('class', 'yfm-cut');
+                newOpenToken.map = tokens[i].map;
 
                 const titleOpen = new state.Token('yfm_cut_title_open', 'div', 1);
                 titleOpen.attrSet('class', 'yfm-cut-title');
@@ -55,9 +56,17 @@ const cut: MarkdownItPluginCb = (md, {path, log}) => {
                 const contentOpen = new state.Token('yfm_cut_content_open', 'div', 1);
                 contentOpen.attrSet('class', 'yfm-cut-content');
 
+                if (newOpenToken.map) {
+                    const contentOpenStart = newOpenToken.map[0] + 1;
+                    const contentOpenEnd = newOpenToken.map[0] + 2;
+
+                    contentOpen.map = [contentOpenStart, contentOpenEnd];
+                }
+
                 const contentClose = new state.Token('yfm_cut_content_close', 'div', -1);
 
                 const newCloseToken = new state.Token('yfm_cut_close', 'div', -1);
+                newCloseToken.map = tokens[closeTokenIdx].map;
 
                 const insideTokens = [
                     newOpenToken,
