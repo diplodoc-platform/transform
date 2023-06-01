@@ -4,6 +4,7 @@ import DefaultStateCore from 'markdown-it/lib/rules_core/state_core';
 import {SanitizeOptions} from './sanitize';
 import {MarkdownItPluginCb} from './plugins/typings';
 import {LogLevels} from './log';
+import {ChangelogItem} from './plugins/changelog/types';
 
 export interface MarkdownIt extends DefaultMarkdownIt {
     assets?: string[];
@@ -43,6 +44,7 @@ export interface OptionsType {
     plugins?: MarkdownItPluginCb<any>[];
     highlightLangs?: HighlightLangMap;
     root?: string;
+    extractChangelogs?: boolean;
     [x: string]: unknown;
 }
 
@@ -58,4 +60,5 @@ export type EnvType<Extras extends {} = {}> = {
     headings: Heading[];
     assets?: unknown[];
     meta?: object;
+    changelogs?: ChangelogItem[];
 } & Extras;
