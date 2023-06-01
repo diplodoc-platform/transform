@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/yandex-cloud/yfm-transform/compare/v3.0.3...v3.1.0) (2023-06-01)
+
+
+### Features
+
+* **changelog:** add support for changelog blocks ([#226](https://github.com/yandex-cloud/yfm-transform/issues/226)) ([8f5670b](https://github.com/yandex-cloud/yfm-transform/commit/8f5670bf4559f26cb9c88153089706d8163cef9b))
+
 ## [3.0.3](https://github.com/yandex-cloud/yfm-transform/compare/v3.0.2...v3.0.3) (2023-05-30)
 
 
