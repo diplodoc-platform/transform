@@ -26,7 +26,7 @@ export const checkboxReplace = function (_md: MarkdownIt, opts: CheckboxOptions)
     };
     const options = Object.assign(defaults, opts);
 
-    const createTokens = function (state: StateCore, checked: boolean, label: string) {
+    const createTokens = function (state: StateCore, checked: boolean, label: string, i: number) {
         let token: Token;
         const nodes = [];
 
@@ -35,6 +35,7 @@ export const checkboxReplace = function (_md: MarkdownIt, opts: CheckboxOptions)
          */
         token = new state.Token('checkbox_open', 'div', 1);
         token.block = true;
+        token.map = state.tokens[i].map;
         token.attrs = [['class', options.divClass]];
         nodes.push(token);
 
@@ -45,6 +46,7 @@ export const checkboxReplace = function (_md: MarkdownIt, opts: CheckboxOptions)
         lastId += 1;
         token = new state.Token('checkbox_input', 'input', 0);
         token.block = true;
+        token.map = state.tokens[i].map;
         token.attrs = [
             ['type', 'checkbox'],
             ['id', id],
@@ -73,20 +75,23 @@ export const checkboxReplace = function (_md: MarkdownIt, opts: CheckboxOptions)
          */
         token = new state.Token('checkbox_label_close', 'label', -1);
         token.block = true;
+        token.map = state.tokens[i].map;
         nodes.push(token);
         token = new state.Token('checkbox_close', 'div', -1);
         token.block = true;
+        token.map = state.tokens[i].map;
         nodes.push(token);
+
         return nodes;
     };
-    const splitTextToken = function (state: StateCore, matches: RegExpMatchArray) {
+    const splitTextToken = function (state: StateCore, matches: RegExpMatchArray, i: number) {
         let checked = false;
         const value = matches[1];
         const label = matches[2];
         if (value === 'X' || value === 'x') {
             checked = true;
         }
-        return createTokens(state, checked, label);
+        return createTokens(state, checked, label, i);
     };
     return function (state: StateCore) {
         const blockTokens = state.tokens;
@@ -96,7 +101,7 @@ export const checkboxReplace = function (_md: MarkdownIt, opts: CheckboxOptions)
                 continue;
             }
 
-            blockTokens.splice(i, 3, ...splitTextToken(state, match));
+            blockTokens.splice(i, 3, ...splitTextToken(state, match, i));
         }
     };
 };
