@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.1](https://github.com/yandex-cloud/yfm-transform/compare/v3.1.0...v3.1.1) (2023-06-14)
+
+
+### Bug Fixes
+
+* **plugins/checkbox:** preserve line mapping ([9ccee18](https://github.com/yandex-cloud/yfm-transform/commit/9ccee1834ccd7203f0528330c7d3498cd61558ea))
+
 ## [3.1.0](https://github.com/yandex-cloud/yfm-transform/compare/v3.0.3...v3.1.0) (2023-06-01)
 
 
