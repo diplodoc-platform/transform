@@ -6,6 +6,5 @@ export interface ChangelogItem {
         ratio?: string;
     };
     description: string;
-    date: string;
     [x: string]: unknown;
 }
