@@ -5,10 +5,6 @@ import {bold} from 'chalk';
 import yaml from 'js-yaml';
 import StateCore from 'markdown-it/lib/rules_core/state_core';
 
-interface Metadata {
-    date: string;
-}
-
 interface Options {
     extractChangelogs?: boolean;
 }
@@ -58,11 +54,14 @@ function parseBody(tokens: Token[], state: StateCore) {
     if (metadataToken?.type !== 'fence') {
         throw new Error('Metadata tag not found');
     }
-    const rawMetadata = yaml.load(metadataToken.content) as Metadata;
-    const metadata = {
-        ...rawMetadata,
-        date: new Date(rawMetadata.date).toISOString(),
-    };
+
+    let metadata: object = {};
+    const rawMetadata = yaml.load(metadataToken.content, {
+        schema: yaml.JSON_SCHEMA,
+    });
+    if (rawMetadata && typeof rawMetadata === 'object') {
+        metadata = rawMetadata;
+    }
 
     if (!isTitle(tokens)) {
         throw new Error('Title tag not found');
