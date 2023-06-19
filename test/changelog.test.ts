@@ -8,7 +8,7 @@ import {Logger} from '../src/transform/log';
 import {ChangelogItem} from '../src/transform/plugins/changelog/types';
 
 describe('Changelog', () => {
-    function getItem(date: Date | undefined, index: number | undefined) {
+    function getItem(date: string | undefined, index: number | undefined) {
         return {
             date,
             index,
@@ -59,9 +59,7 @@ describe('Changelog', () => {
 
         expect(html).toBe(`<h1>Some changelog</h1>\n<p>After changelog</p>\n`);
 
-        expect(logs).toEqual(
-            new Array(3).fill(getItem(new Date('2023-05-10T00:00:00.000Z'), undefined)),
-        );
+        expect(logs).toEqual(new Array(3).fill(getItem('2023-05-10', undefined)));
     });
 
     test('Should cut changelog with index and write it in env', async () => {
