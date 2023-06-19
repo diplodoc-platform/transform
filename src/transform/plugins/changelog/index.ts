@@ -56,7 +56,9 @@ function parseBody(tokens: Token[], state: StateCore) {
     }
 
     let metadata: object = {};
-    const rawMetadata = yaml.load(metadataToken.content);
+    const rawMetadata = yaml.load(metadataToken.content, {
+        schema: yaml.JSON_SCHEMA,
+    });
     if (rawMetadata && typeof rawMetadata === 'object') {
         metadata = rawMetadata;
     }
