@@ -51,7 +51,13 @@ const collect = (input: string, {path: filepath, log, changelogs, extractChangel
     }
 
     if (rawChanges.length && changelogs && extractChangelogs) {
-        changelogs.push(...parseChangelogs(rawChanges.join('\n\n'), filepath));
+        const parsedChangelogs = parseChangelogs(rawChanges.join('\n\n'), filepath);
+        if (parsedChangelogs.length !== rawChanges.length) {
+            log.error(
+                `Parsed cahngelogs less than expected${filepath ? ` in ${bold(filepath)}` : ''}`,
+            );
+        }
+        changelogs.push(...parsedChangelogs);
     }
 
     return result;
