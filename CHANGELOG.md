@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.1.2](https://github.com/yandex-cloud/yfm-transform/compare/v3.1.1...v3.1.2) (2023-06-21)
+
+
+### Bug Fixes
+
+* **changelog:** date is not required ([#235](https://github.com/yandex-cloud/yfm-transform/issues/235)) ([b7b1c4d](https://github.com/yandex-cloud/yfm-transform/commit/b7b1c4dec78a5f0d64496ba182af3990412e2652))
+* **liquid:** move code indexes from global scope ([c877c48](https://github.com/yandex-cloud/yfm-transform/commit/c877c489745738031bba9ad8dbca38a5790815b4))
+
 ## [3.1.1](https://github.com/yandex-cloud/yfm-transform/compare/v3.1.0...v3.1.1) (2023-06-14)
 
 
