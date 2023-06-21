@@ -7,8 +7,6 @@ import applyConditions from './conditions';
 import ArgvService, {ArgvSettings} from './services/argv';
 import {Dictionary} from 'lodash';
 
-const codes: string[] = [];
-
 const fence = '```';
 
 const find = (open: string, close: string, string: string, index: number) => {
@@ -44,6 +42,7 @@ const replace = (
 function saveCode(
     str: string,
     vars: Record<string, unknown>,
+    codes: string[],
     path?: string,
     substitutions?: boolean,
 ) {
@@ -64,7 +63,7 @@ function saveCode(
     );
 }
 
-function repairCode(str: string) {
+function repairCode(str: string, codes: string[]) {
     return replace(fence, fence, (code) => codes[Number(code)], str);
 }
 
@@ -95,7 +94,11 @@ function liquid<
         withSourceMap,
     });
 
-    let output = conditionsInCode ? originInput : saveCode(originInput, vars, path, substitutions);
+    const codes: string[] = [];
+
+    let output = conditionsInCode
+        ? originInput
+        : saveCode(originInput, vars, codes, path, substitutions);
 
     let sourceMap: Record<number, number> = {};
 
@@ -120,7 +123,7 @@ function liquid<
         output = applySubstitutions(output, vars, path);
     }
 
-    output = conditionsInCode ? output : repairCode(output);
+    output = conditionsInCode ? output : repairCode(output, codes);
     codes.length = 0;
 
     if (withSourceMap) {
