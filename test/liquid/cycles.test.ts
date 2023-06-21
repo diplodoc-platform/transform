@@ -58,7 +58,7 @@ describe('Cycles', () => {
 
         test('Multiline for block2', () => {
             const input = `
-Prefix 
+Prefix
 
 {% for project in projects %}
 
@@ -75,8 +75,8 @@ Prefix
 
 Postfix
 `.trim();
-            const result = `           
-Prefix 
+            const result = `
+Prefix
 
 
 ## First project
@@ -142,6 +142,26 @@ Postfix
                     '',
                 ),
             ).toEqual('Prefix Alice+Alex Ivan+Alex Petr+Alex Postfix');
+        });
+    });
+
+    describe('with code blocks', () => {
+        test('code block before cycle block', () => {
+            expect(
+                liquid(
+                    '```\nCode block\n```\n\n {% for user in users %} {{user}} {% endfor %}',
+                    vars,
+                    '',
+                ),
+            ).toEqual('```\nCode block\n```\n\n Alice Ivan Petr');
+        });
+
+        test('cycle block in code block', () => {
+            expect(
+                liquid('```\n{% for user in users %} {{user}} {% endfor %}\n```', vars, '', {
+                    conditionsInCode: true,
+                }),
+            ).toEqual('```\nAlice Ivan Petr\n```');
         });
     });
 });
