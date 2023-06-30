@@ -74,7 +74,7 @@ export const base = [
     {
         type: 'tab-list_open',
         tag: 'div',
-        map: null,
+        map: [4, 16],
         nesting: 1,
         level: 0,
         children: null,
@@ -88,7 +88,7 @@ export const base = [
     {
         type: 'tab_open',
         tag: 'div',
-        map: null,
+        map: [4, 8],
         nesting: 1,
         level: 0,
         children: null,
@@ -146,7 +146,7 @@ export const base = [
     {
         type: 'tab_open',
         tag: 'div',
-        map: null,
+        map: [8, 12],
         nesting: 1,
         level: 0,
         children: null,
@@ -204,7 +204,7 @@ export const base = [
     {
         type: 'tab_open',
         tag: 'div',
-        map: null,
+        map: [12, 16],
         nesting: 1,
         level: 0,
         children: null,
