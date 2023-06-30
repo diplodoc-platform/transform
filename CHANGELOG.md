@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.3](https://github.com/yandex-cloud/yfm-transform/compare/v3.1.2...v3.1.3) (2023-06-30)
+
+
+### Bug Fixes
+
+* **plugins/tabs:** save line mapping for tabs ([3e695db](https://github.com/yandex-cloud/yfm-transform/commit/3e695db020fc6a02f0ca35e8d150e0f085d511b4))
+
 ## [3.1.2](https://github.com/yandex-cloud/yfm-transform/compare/v3.1.1...v3.1.2) (2023-06-21)
 
 
