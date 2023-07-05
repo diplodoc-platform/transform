@@ -20,6 +20,7 @@ function createLinkTokens(state: StateCore, id: string, setId = false) {
     open.attrSet('href', '#' + id);
     open.attrSet('class', 'yfm-anchor');
     open.attrSet('aria-hidden', 'true');
+    open.attrSet('rel', 'nofollow');
     text.content = '';
 
     return [open, text, close];
