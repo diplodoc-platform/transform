@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/yandex-cloud/yfm-transform/compare/v3.1.3...v3.2.0) (2023-07-05)
+
+
+### Features
+
+* **anchors:** Add rel=nofollow for anchor links ([cb0efae](https://github.com/yandex-cloud/yfm-transform/commit/cb0efae167721d81d966137baa7f3f5f85a75ae7))
+
 ## [3.1.3](https://github.com/yandex-cloud/yfm-transform/compare/v3.1.2...v3.1.3) (2023-06-30)
 
 
