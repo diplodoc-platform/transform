@@ -4,7 +4,7 @@ import {Heading} from './typings';
 function getTitle(token: Token) {
     return (
         token.children?.reduce((acc, tok) => {
-            if (tok.type === 'text' || tok.type === 'code_inline') {
+            if ((tok.type === 'text' && !tok.meta?.hidden) || tok.type === 'code_inline') {
                 return acc + tok.content;
             }
 
