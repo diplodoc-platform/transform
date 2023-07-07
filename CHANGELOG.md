@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.1](https://github.com/yandex-cloud/yfm-transform/compare/v3.3.0...v3.3.1) (2023-07-07)
+
+
+### Bug Fixes
+
+* **heading:** Double text in mini-toc ([2d0a700](https://github.com/yandex-cloud/yfm-transform/commit/2d0a7007c49c2de361ac6f9188fe417083cf8ae7))
+
 ## [3.3.0](https://github.com/yandex-cloud/yfm-transform/compare/v3.2.0...v3.3.0) (2023-07-07)
 
 
