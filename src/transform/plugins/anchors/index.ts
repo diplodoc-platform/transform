@@ -26,6 +26,7 @@ function createLinkTokens(state: StateCore, id: string, title: string, setId = f
     const spanClose = new state.Token('span_close', 'span', -1);
     spanOpen.attrSet('class', 'visually-hidden');
     spanText.content = title;
+    spanText.meta = {hidden: true};
 
     return [open, spanOpen, spanText, spanClose, close];
 }
