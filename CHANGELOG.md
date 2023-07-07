@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.3.0](https://github.com/yandex-cloud/yfm-transform/compare/v3.2.0...v3.3.0) (2023-07-07)
+
+
+### Features
+
+* **anchors:** Revert rel=nofollow and add invisible title for anchor links ([8ea800d](https://github.com/yandex-cloud/yfm-transform/commit/8ea800d0a630ecd3a765bed493e13cf766c53912))
+* **cut:** decrease z-index of cut open/close icon ([39b5e38](https://github.com/yandex-cloud/yfm-transform/commit/39b5e380e35c002e548929942404053aaeaaa91e))
+
 ## [3.2.0](https://github.com/yandex-cloud/yfm-transform/compare/v3.1.3...v3.2.0) (2023-07-05)
 
 
