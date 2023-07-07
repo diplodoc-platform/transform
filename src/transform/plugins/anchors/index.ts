@@ -9,9 +9,8 @@ import {MarkdownItPluginCb} from '../typings';
 
 const slugify: (str: string, opts: {}) => string = require('slugify');
 
-function createLinkTokens(state: StateCore, id: string, setId = false) {
+function createLinkTokens(state: StateCore, id: string, title: string, setId = false) {
     const open = new state.Token('link_open', 'a', 1);
-    const text = new state.Token('text', '', 0);
     const close = new state.Token('link_close', 'a', -1);
 
     if (setId) {
@@ -20,10 +19,15 @@ function createLinkTokens(state: StateCore, id: string, setId = false) {
     open.attrSet('href', '#' + id);
     open.attrSet('class', 'yfm-anchor');
     open.attrSet('aria-hidden', 'true');
-    open.attrSet('rel', 'nofollow');
-    text.content = '';
 
-    return [open, text, close];
+    // SEO: render invisible heading title because link must have text content.
+    const spanOpen = new state.Token('span_open', 'span', 1);
+    const spanText = new state.Token('text', '', 0);
+    const spanClose = new state.Token('span_close', 'span', -1);
+    spanOpen.attrSet('class', 'visually-hidden');
+    spanText.content = title;
+
+    return [open, spanOpen, spanText, spanClose, close];
 }
 
 const getCustomIds = (content: string) => {
@@ -123,15 +127,15 @@ const index: MarkdownItPluginCb<Options> = (
                 }
 
                 const allAnchorIds = customIds ? customIds : [id];
-
+                const anchorTitle = removeCustomId(title).replace(/`/g, '');
                 allAnchorIds.forEach((customId) => {
                     const setId = id !== customId;
-                    const linkTokens = createLinkTokens(state, customId, setId);
+                    const linkTokens = createLinkTokens(state, customId, anchorTitle, setId);
 
                     inlineToken.children?.unshift(...linkTokens);
 
                     if (supportGithubAnchors) {
-                        const ghLinkTokens = createLinkTokens(state, ghId, true);
+                        const ghLinkTokens = createLinkTokens(state, ghId, anchorTitle, true);
                         inlineToken.children?.unshift(...ghLinkTokens);
                     }
                 });
