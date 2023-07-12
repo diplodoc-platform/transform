@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.2](https://github.com/yandex-cloud/yfm-transform/compare/v3.3.1...v3.3.2) (2023-07-12)
+
+
+### Bug Fixes
+
+* **plugins/table:** line map for table, table cell close tokens ([9600b7f](https://github.com/yandex-cloud/yfm-transform/commit/9600b7f8e22226be68dcbe570422c4c0b4a3abf5))
+
 ## [3.3.1](https://github.com/yandex-cloud/yfm-transform/compare/v3.3.0...v3.3.1) (2023-07-07)
 
 
