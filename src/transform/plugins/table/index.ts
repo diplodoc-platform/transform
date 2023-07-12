@@ -260,6 +260,7 @@ const yfmTable: MarkdownItPluginCb = (md) => {
                     state.eMarks[end.line] = oldEMark;
 
                     token = state.push('yfm_td_close', 'td', -1);
+                    state.tokens[state.tokens.length - 1].map = [end.line, end.line + 1];
                 }
 
                 if (rowLength < maxRowLength) {
@@ -276,6 +277,7 @@ const yfmTable: MarkdownItPluginCb = (md) => {
             token = state.push('yfm_tbody_close', 'tbody', -1);
 
             token = state.push('yfm_table_close', 'table', -1);
+            state.tokens[state.tokens.length - 1].map = [endOfTable, endOfTable + 1];
 
             state.lineMax = oldParentLineMax;
             state.line = endOfTable;
