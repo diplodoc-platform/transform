@@ -5,6 +5,7 @@ import {headingInfo} from '../../utils';
 import {CUSTOM_ID_REGEXP, CUSTOM_ID_EXCEPTION} from './constants';
 import StateCore from 'markdown-it/lib/rules_core/state_core';
 import Token from 'markdown-it/lib/token';
+import {escapeHtml} from 'markdown-it/lib/common/utils';
 import {MarkdownItPluginCb} from '../typings';
 
 const slugify: (str: string, opts: {}) => string = require('slugify');
@@ -21,14 +22,11 @@ function createLinkTokens(state: StateCore, id: string, title: string, setId = f
     open.attrSet('aria-hidden', 'true');
 
     // SEO: render invisible heading title because link must have text content.
-    const spanOpen = new state.Token('span_open', 'span', 1);
-    const spanText = new state.Token('text', '', 0);
-    const spanClose = new state.Token('span_close', 'span', -1);
-    spanOpen.attrSet('class', 'visually-hidden');
-    spanText.content = title;
-    spanText.meta = {hidden: true};
+    const hiddenDesc = new state.Token('anchor_hidden_desc', '', 0);
 
-    return [open, spanOpen, spanText, spanClose, close];
+    hiddenDesc.content = title;
+
+    return [open, hiddenDesc, close];
 }
 
 const getCustomIds = (content: string) => {
@@ -93,6 +91,7 @@ const index: MarkdownItPluginCb<Options> = (
 
             if (isHeading) {
                 const {title, level} = headingInfo(tokens, i);
+
                 const inlineToken = tokens[i + 1];
                 let id = token.attrGet('id');
                 let ghId: string;
@@ -158,6 +157,10 @@ const index: MarkdownItPluginCb<Options> = (
             md.core.ruler.push('anchors', plugin);
         }
     }
+
+    md.renderer.rules.anchor_hidden_desc = function (tokens, index) {
+        return '<span class="visually-hidden">' + escapeHtml(tokens[index].content) + '</span>';
+    };
 };
 
 export = index;
