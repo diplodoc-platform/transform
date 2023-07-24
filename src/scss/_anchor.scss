@@ -20,4 +20,14 @@
             visibility: visible;
         }
     }
+
+    table {
+        h1, h2, h3, h4, h5, h6 {
+            .yfm-anchor {
+                width: 1em;
+                margin-left: -1em;
+                padding-right: 0;
+            }
+        }
+    };
 }
