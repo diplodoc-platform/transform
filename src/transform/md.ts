@@ -110,15 +110,11 @@ function initParser(md: MarkdownIt, options: OptionsType, env: EnvType) {
     };
 }
 
-function initCompiler(md: MarkdownIt, options: OptionsType, env: EnvType<{termTokens?: Token[]}>) {
+function initCompiler(md: MarkdownIt, options: OptionsType, env: EnvType) {
     const {needToSanitizeHtml = false, sanitizeOptions} = options;
 
     return (tokens: Token[]) => {
-        // TODO: define postprocess step on term plugin
-        const {termTokens = []} = env;
-        delete env.termTokens;
-
-        const html = md.renderer.render([...tokens, ...termTokens], md.options, env);
+        const html = md.renderer.render(tokens, md.options, env);
 
         return needToSanitizeHtml ? sanitizeHtml(html, sanitizeOptions) : html;
     };

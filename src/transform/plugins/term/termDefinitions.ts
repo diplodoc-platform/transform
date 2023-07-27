@@ -37,7 +37,6 @@ export function termDefinitions(md: MarkdownIt, options: MarkdownItPluginOpts) {
 
         const newLineReg = new RegExp(/^(\r\n|\r|\n)/);
         const termReg = new RegExp(/^\[\*(\w+)\]:/);
-
         let currentLine = startLine;
 
         // Allow multiline term definition
@@ -74,7 +73,16 @@ export function termDefinitions(md: MarkdownIt, options: MarkdownItPluginOpts) {
             return false;
         }
 
-        return processTermDefinition(md, options, state, currentLine, endLine, label, title);
+        return processTermDefinition(
+            md,
+            options,
+            state,
+            currentLine,
+            startLine,
+            endLine,
+            label,
+            title,
+        );
     };
 }
 
@@ -83,6 +91,7 @@ function processTermDefinition(
     options: MarkdownItPluginOpts,
     state: StateBlock,
     currentLine: number,
+    startLine: number,
     endLine: number,
     label: string,
     title: string,
@@ -121,32 +130,48 @@ function processTermDefinition(
         state.env.terms[':' + label] = title;
     }
 
-    const termNodes = [];
-
     token = new state.Token('template_open', 'template', 1);
+    token.map = [startLine, currentLine + 1];
     token.attrSet('id', ':' + label + '_template');
-    termNodes.push(token);
+    token.attrSet('label', label);
 
-    token = new state.Token('term_open', 'dfn', 1);
+    state.tokens.push(token);
+
+    token = new state.Token('dfn_open', 'dfn', 1);
     token.attrSet('class', 'yfm yfm-term_dfn');
     token.attrSet('id', ':' + label + '_element');
     token.attrSet('role', 'tooltip');
-    termNodes.push(token);
 
-    termNodes.push(...md.parse(title, {}));
+    state.tokens.push(token);
 
-    token = new state.Token('term_close', 'dfn', -1);
-    termNodes.push(token);
+    const titleTokens = md.parse(title, state.env);
 
-    token = new state.Token('template_close', 'template', -1);
-    termNodes.push(token);
+    for (const titleToken of titleTokens) {
+        if (titleToken.children?.length) {
+            titleToken.content = '';
+        }
 
-    if (!state.env.termTokens) {
-        state.env.termTokens = [];
+        if (!titleToken.map) {
+            state.tokens.push(titleToken);
+            continue;
+        }
+
+        const [start, end] = titleToken.map;
+
+        titleToken.map = [start + startLine, end + startLine];
+        state.tokens.push(titleToken);
     }
 
-    state.env.termTokens.push(...termNodes);
+    token = new state.Token('dfn_close', 'dfn', -1);
 
+    state.tokens.push(token);
+
+    token = new state.Token('template_close', 'template', -1);
+
+    state.tokens.push(token);
+
+    /** current line links to end of term definition */
     state.line = currentLine + 1;
+
     return true;
 }
