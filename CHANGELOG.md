@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.4.0](https://github.com/yandex-cloud/yfm-transform/compare/v3.3.2...v3.4.0) (2023-07-27)
+
+
+### Features
+
+* **anchors:** Add anchors to headings in table ([feef516](https://github.com/yandex-cloud/yfm-transform/commit/feef516683ae309dd96ee25c9ee7d91cb30cf07e))
+* **diplodoc/term:** new terms ([9bf89ef](https://github.com/yandex-cloud/yfm-transform/commit/9bf89ef825d7f79c7bfacd77925a09b7b2e504ab))
+
+
+### Bug Fixes
+
+* link breaks anchored header since version ([6611151](https://github.com/yandex-cloud/yfm-transform/commit/66111515337dd396f9ad7255462173c01e86a9a5)), closes [#253](https://github.com/yandex-cloud/yfm-transform/issues/253)
+
 ## [3.3.2](https://github.com/yandex-cloud/yfm-transform/compare/v3.3.1...v3.3.2) (2023-07-12)
 
 
