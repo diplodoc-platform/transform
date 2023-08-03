@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.6.1](https://github.com/yandex-cloud/yfm-transform/compare/v3.6.0...v3.6.1) (2023-08-03)
+
+
+### Bug Fixes
+
+* include @diplodoc/tabs-extension css ([#261](https://github.com/yandex-cloud/yfm-transform/issues/261)) ([c2a604a](https://github.com/yandex-cloud/yfm-transform/commit/c2a604ae0186cd00c7b4286b15bbbcb246c06a81))
+
 ## [3.6.0](https://github.com/yandex-cloud/yfm-transform/compare/v3.5.0...v3.6.0) (2023-08-03)
 
 
