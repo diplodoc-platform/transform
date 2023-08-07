@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.7.0](https://github.com/yandex-cloud/yfm-transform/compare/v3.6.1...v3.7.0) (2023-08-07)
+
+
+### Features
+
+* raise tabs-extension npm version ([#264](https://github.com/yandex-cloud/yfm-transform/issues/264)) ([a7954bf](https://github.com/yandex-cloud/yfm-transform/commit/a7954bf9280c09e05dc26023951a7e4a120656b7))
+
 ## [3.6.1](https://github.com/yandex-cloud/yfm-transform/compare/v3.6.0...v3.6.1) (2023-08-03)
 
 
