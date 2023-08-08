@@ -111,7 +111,7 @@ function initParser(md: MarkdownIt, options: OptionsType, env: EnvType) {
 }
 
 function initCompiler(md: MarkdownIt, options: OptionsType, env: EnvType) {
-    const {needToSanitizeHtml = false, sanitizeOptions} = options;
+    const {needToSanitizeHtml = true, sanitizeOptions} = options;
 
     return (tokens: Token[]) => {
         const html = md.renderer.render(tokens, md.options, env);
