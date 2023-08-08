@@ -78,35 +78,10 @@ describe('Terms', () => {
 </code></pre>
 
     <svg width="16" height="16" viewBox="0 0 24 24" class="yfm-clipboard-button" data-animation="10">
-        <path
-            fill="currentColor"
-            d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"
-        />
-        <path
-            stroke="currentColor"
-            fill="transparent"
-            strokeWidth="1.5"
-            d="M9.5 13l3 3l5 -5"
-            visibility="hidden"
-        >
-            <animate
-                id="visibileAnimation-10"
-                attributeName="visibility"
-                from="hidden"
-                to="visible"
-                dur="0.2s"
-                fill="freeze"
-                begin=""
-            />
-            <animate
-                id="hideAnimation-10"
-                attributeName="visibility"
-                from="visible"
-                to="hidden"
-                dur="1s"
-                begin="visibileAnimation-10.end+1"
-                fill="freeze"
-            />
+        <path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path>
+        <path stroke="currentColor" fill="transparent" stroke-width="1.5" d="M9.5 13l3 3l5 -5" visibility="hidden">
+            <animate id="visibileAnimation-10" attributeName="visibility" from="hidden" to="visible" dur="0.2s" fill="freeze" begin></animate>
+            <animate id="hideAnimation-10" attributeName="visibility" from="visible" to="hidden" dur="1s" begin="visibileAnimation-10.end+1" fill="freeze"></animate>
         </path>
     </svg>
     </div>

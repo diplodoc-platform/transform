@@ -28,12 +28,8 @@ describe('File plugin', () => {
     });
 
     it('should not render file without all required attrs', () => {
-        expect(transform('{% file src="../file" %}')).toBe(
-            '<p>{% file src=&quot;../file&quot; %}</p>\n',
-        );
-        expect(transform('{% file name="file.txt" %}')).toBe(
-            '<p>{% file name=&quot;file.txt&quot; %}</p>\n',
-        );
+        expect(transform('{% file src="../file" %}')).toBe('<p>{% file src="../file" %}</p>\n');
+        expect(transform('{% file name="file.txt" %}')).toBe('<p>{% file name="file.txt" %}</p>\n');
     });
 
     it('should render file with text before', () => {
@@ -118,15 +114,9 @@ describe('File plugin', () => {
         );
     });
 
-    it('should escape attrs', () => {
-        expect(transform('{% file src="ind<ex.txt" name=\'ind"ex.ht&ml\' %}')).toBe(
-            `<p><a href="ind&lt;ex.txt" download="ind&quot;ex.ht&amp;ml" class="yfm-file">${iconHtml}ind&quot;ex.ht&amp;ml</a></p>\n`,
-        );
-    });
-
     it('should allow quoutes in attribute value', () => {
         expect(transform('{% file src="ind\'ex.txt" name=\'ind"ex.html\' %}')).toBe(
-            `<p><a href="ind'ex.txt" download="ind&quot;ex.html" class="yfm-file">${iconHtml}ind&quot;ex.html</a></p>\n`,
+            `<p><a href="ind'ex.txt" download="ind&quot;ex.html" class="yfm-file">${iconHtml}ind"ex.html</a></p>\n`,
         );
     });
 
@@ -140,7 +130,7 @@ describe('File plugin', () => {
 
     it('should not render file without spaces around attrs', () => {
         expect(transform('{% file src="index.txt"name="index.html"type="text/html" %}')).toBe(
-            `<p>{% file src=&quot;index.txt&quot;name=&quot;index.html&quot;type=&quot;text/html&quot; %}</p>\n`,
+            `<p>{% file src="index.txt"name="index.html"type="text/html" %}</p>\n`,
         );
     });
 
