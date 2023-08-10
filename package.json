@@ -31,7 +31,7 @@
     "prepublishOnly": "npm run lint && npm run test && npm run build"
   },
   "dependencies": {
-    "@diplodoc/tabs-extension": "^2.0.7",
+    "@diplodoc/tabs-extension": "^2.0.8",
     "chalk": "4.1.2",
     "get-root-node-polyfill": "1.0.0",
     "github-slugger": "1.4.0",
