@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.8.1](https://github.com/yandex-cloud/yfm-transform/compare/v3.8.0...v3.8.1) (2023-08-10)
+
+
+### Bug Fixes
+
+* **tabs-extension:** preserve tab items markup ([364ce16](https://github.com/yandex-cloud/yfm-transform/commit/364ce16c854898397c8a1f77d58c162a59ba13f6))
+
 ## [3.8.0](https://github.com/yandex-cloud/yfm-transform/compare/v3.7.0...v3.8.0) (2023-08-09)
 
 
