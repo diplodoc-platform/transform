@@ -1,4 +1,4 @@
-import '@diplodoc-platfrom/tabs-extension/runtime';
+import '@diplodoc/tabs-extension/runtime';
 
 import './polyfill';
 import './code';
