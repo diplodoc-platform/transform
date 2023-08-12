@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.8.3](https://github.com/yandex-cloud/yfm-transform/compare/v3.8.2...v3.8.3) (2023-08-12)
+
+
+### Bug Fixes
+
+* **plugins/tabs:** update tabs extension version ([ddd2dc8](https://github.com/yandex-cloud/yfm-transform/commit/ddd2dc84ba181427811863303fcb75f9d814ff61))
+
 ## [3.8.2](https://github.com/yandex-cloud/yfm-transform/compare/v3.8.1...v3.8.2) (2023-08-10)
 
 
