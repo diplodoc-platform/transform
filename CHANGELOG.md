@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.8.4](https://github.com/yandex-cloud/yfm-transform/compare/v3.8.3...v3.8.4) (2023-08-14)
+
+
+### Bug Fixes
+
+* Fix tabs extension runtime import ([51f0323](https://github.com/yandex-cloud/yfm-transform/commit/51f03235320801382e25629fcd50d5baa541f4fe))
+
 ## [3.8.3](https://github.com/yandex-cloud/yfm-transform/compare/v3.8.2...v3.8.3) (2023-08-12)
 
 
