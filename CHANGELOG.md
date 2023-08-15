@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.8.5](https://github.com/yandex-cloud/yfm-transform/compare/v3.8.4...v3.8.5) (2023-08-15)
+
+
+### Bug Fixes
+
+* Change runtime builder to esbuild ([e3f6cb0](https://github.com/yandex-cloud/yfm-transform/commit/e3f6cb0783a39ec333935b596e05f8ecb45b6af5))
+
 ## [3.8.4](https://github.com/yandex-cloud/yfm-transform/compare/v3.8.3...v3.8.4) (2023-08-14)
 
 
