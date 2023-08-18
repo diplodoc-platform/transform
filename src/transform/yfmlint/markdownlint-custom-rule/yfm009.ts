@@ -10,37 +10,40 @@ export const yfm009: Rule = {
             return;
         }
 
-        const indexed = params.tokens.map((token, i) => [token, i] as const);
-        const templates = indexed.filter(([token]) => {
-            return token.type === 'template_open' || token.type === 'template_close';
-        });
-        const [, lastClose] = templates[templates.length - 1];
+        let lastCloseIndex = -1;
+        const size = params.tokens.length;
 
-        if (lastClose !== params.tokens.length - 1) {
+        for (let i = 0; i < size - 1; i++) {
+            if (params.tokens[i].type === 'template_close') {
+                lastCloseIndex = i;
+            }
+
+            if (params.tokens[i].type !== 'template_open') {
+                continue;
+            }
+
+            if (params.tokens[i + 1].type === 'template_close') {
+                continue;
+            }
+
+            if (i !== size - 1 && params.tokens[i + 2].type === 'template_close') {
+                continue;
+            }
+
             onError({
-                lineNumber: params.tokens[lastClose + 1].lineNumber,
-                detail: 'There should be nothing after term definition.',
+                lineNumber: params.tokens[i + 1].lineNumber,
+                detail: 'There is a content between term definition. All term defitions should be placed at the end of file.',
             });
         }
 
-        for (let i = 1; i < templates.length - 1; i += 2) {
-            const [, closeIndex] = templates[i];
-            const [, openIndex] = templates[i + 1];
+        if (lastCloseIndex === -1) {
+            return;
+        }
 
-            if (openIndex === closeIndex + 1) {
-                continue;
-            }
-
-            if (
-                openIndex === closeIndex + 2 &&
-                params.tokens[closeIndex + 1].type === '__yfm_lint'
-            ) {
-                continue;
-            }
-
+        if (lastCloseIndex < size - 2) {
             onError({
-                lineNumber: params.tokens[closeIndex + 1].lineNumber,
-                detail: 'There is a content between term definition. All term defitions should be placed at the end of file.',
+                lineNumber: params.tokens[lastCloseIndex + 1].lineNumber,
+                detail: 'The file must end with term only.',
             });
         }
     },
