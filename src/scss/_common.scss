@@ -146,7 +146,7 @@
     }
 
     table {
-        color: #333333;
+        color: #00000080;
 
         display: inline-block;
         max-width: 100%;
@@ -155,10 +155,8 @@
         position: relative;
         z-index: 1;
 
-        border: 1px solid $borderColor;
         box-sizing: border-box;
-        border-radius: 8px;
-        border-collapse: collapse;
+        border-collapse: separate;
         border-spacing: 0;
         background: $baseColor;
 
@@ -166,16 +164,40 @@
             background-color: $tableRowBackgroundColor;
         }
 
+        tr:first-child td:first-child {
+            border-top-left-radius: $tableBorderRadius;
+        }
+
+        tr:first-child td:last-child {
+            border-top-right-radius: $tableBorderRadius;
+        }
+
+        tr:last-child td:first-child {
+            border-bottom-left-radius: $tableBorderRadius;
+        }
+
+        tr:last-child td:last-child {
+            border-bottom-right-radius: $tableBorderRadius;
+        }
+
         th, td {
-            padding: 10px 15px;
+            padding: 20px 30px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            border: 1px solid $borderColor;
+            text-align: center;
+            // Idk about font-size, if you can find better font-size please use it.
+            font-size: 1.1rem;
+
+            p {
+                padding: 0;
+                margin: 0;
+            }
         }
 
         th {
             font-weight: 500;
-            text-align: left;
         }
 
         td {
