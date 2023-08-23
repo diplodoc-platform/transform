@@ -118,6 +118,7 @@ const htmlTags = [
     'video',
     'wbr',
     'iframe',
+    'style',
 ];
 
 const svgTags = [
