@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.9.0](https://github.com/yandex-cloud/yfm-transform/compare/v3.8.5...v3.9.0) (2023-08-23)
+
+
+### Features
+
+* WIKI-19593: implementation of new table design ([#283](https://github.com/yandex-cloud/yfm-transform/issues/283)) ([c208540](https://github.com/yandex-cloud/yfm-transform/commit/c208540ce14d18a705e4f31469b4e291436a7550))
+
 ## [3.8.5](https://github.com/yandex-cloud/yfm-transform/compare/v3.8.4...v3.8.5) (2023-08-15)
 
 
