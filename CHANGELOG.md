@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.9.1](https://github.com/yandex-cloud/yfm-transform/compare/v3.9.0...v3.9.1) (2023-08-28)
+
+
+### Bug Fixes
+
+* thead tables' styles ([#292](https://github.com/yandex-cloud/yfm-transform/issues/292)) ([b49eb50](https://github.com/yandex-cloud/yfm-transform/commit/b49eb501a21e9bf8c914472cb68a6efd14ac74f8))
+
 ## [3.9.0](https://github.com/yandex-cloud/yfm-transform/compare/v3.8.5...v3.9.0) (2023-08-23)
 
 
