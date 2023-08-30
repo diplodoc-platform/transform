@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.10.0](https://github.com/yandex-cloud/yfm-transform/compare/v3.9.1...v3.10.0) (2023-08-30)
+
+
+### Features
+
+* add `highlight.js@11` to `peerDependencies` ([#294](https://github.com/yandex-cloud/yfm-transform/issues/294)) ([d3c1869](https://github.com/yandex-cloud/yfm-transform/commit/d3c1869ded30cd0d62a29c86c324f1e0a7a4a4f5))
+
 ## [3.9.1](https://github.com/yandex-cloud/yfm-transform/compare/v3.9.0...v3.9.1) (2023-08-28)
 
 
