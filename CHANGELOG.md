@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.10.1](https://github.com/yandex-cloud/yfm-transform/compare/v3.10.0...v3.10.1) (2023-09-01)
+
+
+### Bug Fixes
+
+* table styles ([#297](https://github.com/yandex-cloud/yfm-transform/issues/297)) ([ea49cf2](https://github.com/yandex-cloud/yfm-transform/commit/ea49cf285616533e4d8be64c6596ee9dc44c84fd))
+
 ## [3.10.0](https://github.com/yandex-cloud/yfm-transform/compare/v3.9.1...v3.10.0) (2023-08-30)
 
 
