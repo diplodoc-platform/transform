@@ -181,7 +181,6 @@
 
         th, td {
             padding: 10px 20px;
-            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             border: 1px solid $borderColor;
@@ -190,6 +189,16 @@
                 padding: 0;
                 margin: 0;
             }
+        }
+
+        td {
+            vertical-align: baseline;
+            white-space: normal;
+        }
+
+        th {
+            font-weight: 500;
+            text-align: left;
         }
 
         tr td:first-child, tr th:first-child {
