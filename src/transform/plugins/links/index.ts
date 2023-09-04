@@ -6,7 +6,7 @@ import {PAGE_LINK_REGEXP} from './constants';
 import Token from 'markdown-it/lib/token';
 import {Logger} from 'src/transform/log';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
-import path, {parse, relative, resolve} from 'path';
+import path, {isAbsolute, parse, relative, resolve} from 'path';
 import {StateCore} from 'src/transform/typings';
 
 function defaultTransformLink(href: string) {
@@ -110,6 +110,10 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
     if (!isLocalUrl(href)) {
         linkToken.attrSet('target', '_blank');
         linkToken.attrSet('rel', 'noreferrer noopener');
+        return;
+    }
+
+    if (isAbsolute(href)) {
         return;
     }
 

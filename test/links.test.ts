@@ -77,4 +77,20 @@ describe('Links', () => {
 
         expect(result).toEqual('<h1>First</h1>\n<p><a href="./second.html">Second</a></p>\n');
     });
+
+    test('Should create link with the absolute path', () => {
+        const inputPath = resolve(__dirname, './mocks/absolute-link.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(result).toEqual('<p><a href="/link/">Absolute link</a></p>\n');
+    });
+
+    test('Should create link with the absolute path from the included file', () => {
+        const result = transformYfm(
+            ['', '{% include [create-folder](./mocks/absolute-link.md) %}', ''].join('\n'),
+        );
+
+        expect(result).toEqual('<p><a href="/link/">Absolute link</a></p>\n');
+    });
 });
