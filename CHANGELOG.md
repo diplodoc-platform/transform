@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.10.2](https://github.com/yandex-cloud/yfm-transform/compare/v3.10.1...v3.10.2) (2023-09-04)
+
+
+### Bug Fixes
+
+* absolute links in included files ([cefe20a](https://github.com/yandex-cloud/yfm-transform/commit/cefe20af8a80827929fe36d2e85d5a9b56b3f701))
+
 ## [3.10.1](https://github.com/yandex-cloud/yfm-transform/compare/v3.10.0...v3.10.1) (2023-09-01)
 
 
