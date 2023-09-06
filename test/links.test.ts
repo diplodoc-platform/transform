@@ -7,16 +7,18 @@ import {callPlugin, tokenize} from './utils';
 import {title, customTitle} from './data/links';
 
 import {log} from '../src/transform/log';
+import type {OptionsType} from '../src/transform/typings';
 
 const mocksPath = require.resolve('./utils.ts');
 
-const transformYfm = (text: string, path?: string) => {
+const transformYfm = (text: string, path?: string, extraOpts?: OptionsType) => {
     const {
         result: {html},
     } = transform(text, {
         plugins: [includes, links],
         path: path || mocksPath,
         root: dirname(path || mocksPath),
+        ...extraOpts,
     });
     return html;
 };
@@ -92,5 +94,52 @@ describe('Links', () => {
         );
 
         expect(result).toEqual('<p><a href="/link/">Absolute link</a></p>\n');
+    });
+
+    describe('transformLink', () => {
+        test('Should call the "transformLink" callback for local link', () => {
+            const inputPath = resolve(__dirname, './mocks/relative-link.md');
+            const input = readFileSync(inputPath, 'utf8');
+
+            let result = '';
+
+            transformYfm(input, inputPath, {
+                transformLink: (href: string) => {
+                    result = href;
+                },
+            });
+
+            expect(result).toEqual('../link/');
+        });
+
+        test('Should call the "transformLink" callback for absolute link', () => {
+            const inputPath = resolve(__dirname, './mocks/absolute-link.md');
+            const input = readFileSync(inputPath, 'utf8');
+
+            let result = '';
+
+            transformYfm(input, inputPath, {
+                transformLink: (href: string) => {
+                    result = href;
+                },
+            });
+
+            expect(result).toEqual('/link/');
+        });
+
+        test('Should not call the "transformLink" callback for external link', () => {
+            const inputPath = resolve(__dirname, './mocks/external-link.md');
+            const input = readFileSync(inputPath, 'utf8');
+
+            let result = '';
+
+            transformYfm(input, inputPath, {
+                transformLink: (href: string) => {
+                    result = href;
+                },
+            });
+
+            expect(result).toEqual('');
+        });
     });
 });

@@ -113,10 +113,6 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
         return;
     }
 
-    if (isAbsolute(href)) {
-        return;
-    }
-
     if (pathname) {
         file = resolve(path.parse(currentPath).dir, pathname);
         fileExists = isFileExists(file);
@@ -168,7 +164,7 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
     }
 
     let newPathname = '';
-    if (currentPath !== startPath) {
+    if (!isAbsolute(href) && currentPath !== startPath) {
         newPathname = relative(parse(startPath).dir, file);
 
         href = url.format({
