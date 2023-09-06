@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.10.3](https://github.com/yandex-cloud/yfm-transform/compare/v3.10.2...v3.10.3) (2023-09-06)
+
+
+### Bug Fixes
+
+* call transformLink callback for absolute links ([#301](https://github.com/yandex-cloud/yfm-transform/issues/301)) ([3222f5f](https://github.com/yandex-cloud/yfm-transform/commit/3222f5fb1ac4a9da053ab1d6e05e5c21d31d9445))
+
 ## [3.10.2](https://github.com/yandex-cloud/yfm-transform/compare/v3.10.1...v3.10.2) (2023-09-04)
 
 
