@@ -16,7 +16,7 @@ import {
 } from './markdownlint-custom-rule';
 
 import {errorToString, getLogLevel} from './utils';
-import {Options} from './typings';
+import {LintResult, Options} from './typings';
 import {Dictionary} from 'lodash';
 import {Logger, LogLevels} from '../log';
 import {yfm009} from './markdownlint-custom-rule/yfm009';
@@ -25,9 +25,10 @@ const defaultLintRules = [yfm001, yfm002, yfm003, yfm004, yfm005, yfm006, yfm007
 
 const lintCache = new Set();
 
-function yfmlint(opts: Options) {
+function yfmlint(opts: Options): LintResult[] | null {
     const {input, plugins: customPlugins, pluginOptions, customLintRules, sourceMap} = opts;
     const {path = 'input', log} = pluginOptions;
+    const results: LintResult[] = [];
 
     pluginOptions.isLintRun = true;
 
@@ -36,7 +37,7 @@ function yfmlint(opts: Options) {
     } = log;
 
     if (lintCache.has(path)) {
-        return;
+        return null;
     }
 
     lintCache.add(path);
@@ -69,7 +70,7 @@ function yfmlint(opts: Options) {
 
     const errors = result && result[path];
     if (!errors) {
-        return;
+        return results;
     }
 
     const logLevelsConfig = lintConfig['log-levels'];
@@ -84,9 +85,11 @@ function yfmlint(opts: Options) {
 
         switch (logLevel) {
             case ERROR:
+                results.push({type: ERROR, message});
                 log.error(message);
                 break;
             case WARN:
+                results.push({type: WARN, message});
                 log.warn(message);
                 break;
             case DISABLED:
@@ -94,6 +97,8 @@ function yfmlint(opts: Options) {
                 break;
         }
     }
+
+    return results;
 }
 
 export = yfmlint;
