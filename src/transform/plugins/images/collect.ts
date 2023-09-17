@@ -5,11 +5,13 @@ import {isLocalUrl} from '../../utils';
 import {resolveRelativePath} from '../../utilsFS';
 import imsize from '../imsize';
 import {MarkdownItPluginOpts} from '../typings';
+import {CacheFile} from '../../yfmlint';
 
 type Options = MarkdownItPluginOpts & {
     destPath: string;
-    copyFile: (path: string, dest: string) => void;
+    copyFile: (path: string, dest: string, options?: Options, options2?: Options) => void;
     singlePage: boolean;
+    cacheFile?: CacheFile;
 };
 
 const collect = (input: string, options: Options) => {
@@ -46,7 +48,7 @@ const collect = (input: string, options: Options) => {
                 result = result.replace(src, newSrc);
             }
 
-            copyFile(targetPath, targetDestPath);
+            copyFile(targetPath, targetDestPath, undefined, options);
         });
     });
 

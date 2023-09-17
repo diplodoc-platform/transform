@@ -111,12 +111,17 @@ namespace yfmlint {
         sourceMap?: Dictionary<string>;
     }
 
+    export interface CacheFile {
+        addRelativeIncludeDep: (filename: string, content: string, inheritVars: boolean) => void;
+    }
+
     export interface PluginOptions {
         log: Logger;
         path?: string;
         disableLint?: boolean;
         lintMarkdown?: (opts: LintMarkdownFunctionOptions) => void;
         [key: string]: unknown;
+        cacheFile?: CacheFile;
     }
 
     export interface LintConfig {

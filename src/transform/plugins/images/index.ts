@@ -7,6 +7,7 @@ import {isLocalUrl, isExternalHref} from '../../utils';
 import Token from 'markdown-it/lib/token';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
 import {StateCore} from '../../typings';
+import {CacheFile} from '../../yfmlint';
 
 interface ImageOpts extends MarkdownItPluginOpts {
     assetsPublicPath: string;
@@ -40,18 +41,22 @@ function replaceImageSrc(
 
 interface SVGOpts extends MarkdownItPluginOpts {
     notFoundCb: (s: string) => void;
+    cacheFile?: CacheFile;
 }
 
 function convertSvg(
     token: Token,
     state: StateCore,
-    {path: optsPath, log, notFoundCb, root}: SVGOpts,
+    {path: optsPath, log, notFoundCb, root, cacheFile}: SVGOpts,
 ) {
     const currentPath = state.env.path || optsPath;
     const path = resolveRelativePath(currentPath, token.attrGet('src') || '');
 
     try {
         const content = readFileSync(path, 'utf8');
+
+        cacheFile?.addRelativeIncludeDep(path, content, true);
+
         const svgToken = new state.Token('image_svg', '', 0);
         svgToken.attrSet('content', content);
 
