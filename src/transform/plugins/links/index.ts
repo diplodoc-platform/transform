@@ -8,6 +8,7 @@ import {Logger} from 'src/transform/log';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
 import path, {isAbsolute, parse, relative, resolve} from 'path';
 import {StateCore} from 'src/transform/typings';
+import {EnvApi} from '../../yfmlint';
 
 function defaultTransformLink(href: string) {
     const parsed = url.parse(href);
@@ -49,6 +50,7 @@ type Options = {
     href: string;
     currentPath: string;
     log: Logger;
+    envApi?: EnvApi;
 };
 
 const addTitle = (options: Options) => {
@@ -86,11 +88,12 @@ interface ProcOpts extends MarkdownItPluginOpts {
     transformLink: (v: string) => string;
     notFoundCb: (v: string) => void;
     needSkipLinkFn: (v: string) => boolean;
+    envApi?: EnvApi;
 }
 
 // eslint-disable-next-line complexity
 function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcOpts) {
-    const {path: startPath, root, transformLink, notFoundCb, needSkipLinkFn, log} = opts;
+    const {path: startPath, root, transformLink, notFoundCb, needSkipLinkFn, log, envApi} = opts;
     const currentPath = state.env.path || startPath;
     const linkToken = tokens[idx];
     const nextToken = tokens[idx + 1];
@@ -115,7 +118,14 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
 
     if (pathname) {
         file = resolve(path.parse(currentPath).dir, pathname);
-        fileExists = isFileExists(file);
+
+        let fileExists: boolean;
+        if (envApi) {
+            fileExists = envApi.fileExistsSync(relative(root, file));
+        } else {
+            fileExists = isFileExists(file);
+        }
+
         isPageFile = PAGE_LINK_REGEXP.test(pathname);
 
         if (isPageFile && !fileExists) {

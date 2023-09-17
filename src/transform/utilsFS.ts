@@ -5,7 +5,7 @@ import {parse, resolve, join, sep} from 'path';
 
 import liquid from './liquid';
 import {StateCore} from './typings';
-import {CacheFile} from './yfmlint';
+import {EnvApi} from './yfmlint';
 
 const filesCache: Record<string, string> = {};
 
@@ -35,7 +35,7 @@ export type GetFileTokensOpts = {
     disableCircularError?: boolean;
     inheritVars?: boolean;
     conditionsInCode?: boolean;
-    cacheFile?: CacheFile;
+    envApi?: EnvApi;
 };
 
 export function getFileTokens(path: string, state: StateCore, options: GetFileTokensOpts) {
@@ -49,7 +49,7 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
         disableCircularError,
         inheritVars = true,
         conditionsInCode,
-        cacheFile,
+        envApi,
     } = options;
     let content;
 
@@ -58,11 +58,13 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
     if (filesCache[path]) {
         content = filesCache[path];
     } else {
-        content = readFileSync(path, 'utf8');
-        filesCache[path] = content;
+        if (envApi) {
+            content = envApi.readFileSync(path, 'utf-8');
+        } else {
+            content = readFileSync(path, 'utf8');
+            filesCache[path] = content;
+        }
     }
-
-    cacheFile?.addRelativeIncludeDep(path, content, inheritVars);
 
     let sourceMap;
 

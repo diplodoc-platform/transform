@@ -111,8 +111,10 @@ namespace yfmlint {
         sourceMap?: Dictionary<string>;
     }
 
-    export interface CacheFile {
-        addRelativeIncludeDep: (filename: string, content: string, inheritVars: boolean) => void;
+    export interface EnvApi {
+        copyFileSync: (from: string, to: string) => void;
+        readFileSync: (path: string, encoding: BufferEncoding) => string;
+        fileExistsSync: (path: string) => boolean;
     }
 
     export interface PluginOptions {
@@ -121,7 +123,7 @@ namespace yfmlint {
         disableLint?: boolean;
         lintMarkdown?: (opts: LintMarkdownFunctionOptions) => void;
         [key: string]: unknown;
-        cacheFile?: CacheFile;
+        envApi?: EnvApi;
     }
 
     export interface LintConfig {

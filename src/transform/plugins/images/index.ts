@@ -1,5 +1,5 @@
 import {readFileSync} from 'fs';
-import {join, sep} from 'path';
+import {join, relative, sep} from 'path';
 import {bold} from 'chalk';
 
 import {resolveRelativePath, isFileExists} from '../../utilsFS';
@@ -7,16 +7,17 @@ import {isLocalUrl, isExternalHref} from '../../utils';
 import Token from 'markdown-it/lib/token';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
 import {StateCore} from '../../typings';
-import {CacheFile} from '../../yfmlint';
+import {EnvApi} from '../../yfmlint';
 
 interface ImageOpts extends MarkdownItPluginOpts {
     assetsPublicPath: string;
+    envApi?: EnvApi;
 }
 
 function replaceImageSrc(
     token: Token,
     state: StateCore,
-    {assetsPublicPath = sep, root = '', path: optsPath, log}: ImageOpts,
+    {assetsPublicPath = sep, root = '', path: optsPath, log, envApi}: ImageOpts,
 ) {
     const src = token.attrGet('src') || '';
     const currentPath = state.env.path || optsPath;
@@ -27,7 +28,14 @@ function replaceImageSrc(
 
     const path = resolveRelativePath(currentPath, src);
 
-    if (isFileExists(path)) {
+    let pathExists: boolean;
+    if (envApi) {
+        pathExists = envApi.fileExistsSync(relative(root, path));
+    } else {
+        pathExists = isFileExists(path);
+    }
+
+    if (pathExists) {
         state.md.assets?.push(path);
     } else {
         log.error(`Asset not found: ${bold(src)} in ${bold(currentPath)}`);
@@ -41,21 +49,24 @@ function replaceImageSrc(
 
 interface SVGOpts extends MarkdownItPluginOpts {
     notFoundCb: (s: string) => void;
-    cacheFile?: CacheFile;
+    envApi?: EnvApi;
 }
 
 function convertSvg(
     token: Token,
     state: StateCore,
-    {path: optsPath, log, notFoundCb, root, cacheFile}: SVGOpts,
+    {path: optsPath, log, notFoundCb, root, envApi}: SVGOpts,
 ) {
     const currentPath = state.env.path || optsPath;
     const path = resolveRelativePath(currentPath, token.attrGet('src') || '');
 
     try {
-        const content = readFileSync(path, 'utf8');
-
-        cacheFile?.addRelativeIncludeDep(path, content, true);
+        let content: string;
+        if (envApi) {
+            content = envApi?.readFileSync(relative(root, path), 'utf8');
+        } else {
+            content = readFileSync(path, 'utf8');
+        }
 
         const svgToken = new state.Token('image_svg', '', 0);
         svgToken.attrSet('content', content);
