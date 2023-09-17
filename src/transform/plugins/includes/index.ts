@@ -48,16 +48,18 @@ function unfoldIncludes(state: StateCore, path: string, options: Options) {
                 let hash = '';
                 const hashIndex = fullIncludePath.lastIndexOf('#');
 
-                let pathnameExists: boolean;
-                if (envApi) {
-                    pathnameExists = envApi.fileExistsSync(relative(root, pathname));
-                } else {
-                    pathnameExists = isFileExists(pathname);
-                }
+                if (hashIndex > -1) {
+                    let pathnameExists: boolean;
+                    if (envApi) {
+                        pathnameExists = envApi.fileExistsSync(relative(envApi.root, pathname));
+                    } else {
+                        pathnameExists = isFileExists(pathname);
+                    }
 
-                if (hashIndex > -1 && !pathnameExists) {
-                    pathname = fullIncludePath.slice(0, hashIndex);
-                    hash = fullIncludePath.slice(hashIndex + 1);
+                    if (!pathnameExists) {
+                        pathname = fullIncludePath.slice(0, hashIndex);
+                        hash = fullIncludePath.slice(hashIndex + 1);
+                    }
                 }
 
                 if (!pathname.startsWith(root)) {

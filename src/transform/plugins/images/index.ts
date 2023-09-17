@@ -30,7 +30,7 @@ function replaceImageSrc(
 
     let pathExists: boolean;
     if (envApi) {
-        pathExists = envApi.fileExistsSync(relative(root, path));
+        pathExists = envApi.fileExistsSync(relative(envApi.root, path));
     } else {
         pathExists = isFileExists(path);
     }

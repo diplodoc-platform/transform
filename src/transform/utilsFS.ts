@@ -1,7 +1,7 @@
 import _, {Dictionary} from 'lodash';
 import {readFileSync, statSync} from 'fs';
 
-import {parse, resolve, join, sep} from 'path';
+import {parse, resolve, join, sep, relative} from 'path';
 
 import liquid from './liquid';
 import {StateCore} from './typings';
@@ -53,17 +53,20 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
     } = options;
     let content;
 
-    const builtVars = (getVarsPerFile && !inheritVars ? getVarsPerFile(path) : vars) || {};
+    let builtVars;
+    if (envApi) {
+        builtVars = (inheritVars ? vars : envApi.getFileVars(relative(envApi.root, path))) || {};
+    } else {
+        builtVars = (getVarsPerFile && !inheritVars ? getVarsPerFile(path) : vars) || {};
+    }
 
-    if (filesCache[path]) {
+    if (envApi) {
+        content = envApi.readFileSync(relative(envApi.root, path), 'utf-8');
+    } else if (filesCache[path]) {
         content = filesCache[path];
     } else {
-        if (envApi) {
-            content = envApi.readFileSync(path, 'utf-8');
-        } else {
-            content = readFileSync(path, 'utf8');
-            filesCache[path] = content;
-        }
+        content = readFileSync(path, 'utf8');
+        filesCache[path] = content;
     }
 
     let sourceMap;

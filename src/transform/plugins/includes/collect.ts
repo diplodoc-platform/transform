@@ -28,16 +28,18 @@ const collect = (input: string, options: Opts) => {
         let includePath = resolveRelativePath(path, relativePath);
         const hashIndex = relativePath.lastIndexOf('#');
 
-        let includePathExists: boolean;
-        if (envApi) {
-            includePathExists = envApi.fileExistsSync(relative(root, includePath));
-        } else {
-            includePathExists = isFileExists(includePath);
-        }
+        if (hashIndex > -1) {
+            let includePathExists: boolean;
+            if (envApi) {
+                includePathExists = envApi.fileExistsSync(relative(envApi.root, includePath));
+            } else {
+                includePathExists = isFileExists(includePath);
+            }
 
-        if (hashIndex > -1 && !includePathExists) {
-            includePath = includePath.slice(0, includePath.lastIndexOf('#'));
-            relativePath = relativePath.slice(0, hashIndex);
+            if (!includePathExists) {
+                includePath = includePath.slice(0, includePath.lastIndexOf('#'));
+                relativePath = relativePath.slice(0, hashIndex);
+            }
         }
 
         const targetDestPath = resolveRelativePath(destPath, relativePath);

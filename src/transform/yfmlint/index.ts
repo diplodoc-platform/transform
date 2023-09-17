@@ -112,9 +112,12 @@ namespace yfmlint {
     }
 
     export interface EnvApi {
+        root: string;
+        distRoot: string;
         copyFileSync: (from: string, to: string) => void;
         readFileSync: (path: string, encoding: BufferEncoding) => string;
         fileExistsSync: (path: string) => boolean;
+        getFileVars: (path: string) => Record<string, string>;
     }
 
     export interface PluginOptions {

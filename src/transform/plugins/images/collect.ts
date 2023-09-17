@@ -8,9 +8,8 @@ import {MarkdownItPluginOpts} from '../typings';
 import {EnvApi} from '../../yfmlint';
 
 type Options = MarkdownItPluginOpts & {
-    destRoot: string;
     destPath: string;
-    copyFile: (path: string, dest: string, options?: Options) => void;
+    copyFile: (path: string, dest: string) => void;
     singlePage: boolean;
     envApi?: EnvApi;
 };
@@ -18,7 +17,7 @@ type Options = MarkdownItPluginOpts & {
 const collect = (input: string, options: Options) => {
     const md = new MarkdownIt().use(imsize);
 
-    const {root, destRoot = '', path, destPath = '', copyFile, singlePage, envApi} = options;
+    const {root, path, destPath = '', copyFile, singlePage, envApi} = options;
     const tokens = md.parse(input, {});
     let result = input;
 
@@ -50,7 +49,10 @@ const collect = (input: string, options: Options) => {
             }
 
             if (envApi) {
-                envApi.copyFileSync(relative(root, targetPath), relative(destRoot, targetDestPath));
+                envApi.copyFileSync(
+                    relative(envApi.root, targetPath),
+                    relative(envApi.distRoot, targetDestPath),
+                );
             } else {
                 copyFile(targetPath, targetDestPath);
             }

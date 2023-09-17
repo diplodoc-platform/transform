@@ -121,7 +121,7 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
 
         let fileExists: boolean;
         if (envApi) {
-            fileExists = envApi.fileExistsSync(relative(root, file));
+            fileExists = envApi.fileExistsSync(relative(envApi.root, file));
         } else {
             fileExists = isFileExists(file);
         }
