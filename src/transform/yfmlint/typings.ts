@@ -1,7 +1,6 @@
 import {Dictionary} from 'lodash';
 import {Plugin, Rule} from 'markdownlint';
 import {LintConfig, PluginOptions} from '.';
-import {LogLevels} from '../log';
 
 export interface Options {
     input: string;
@@ -12,5 +11,3 @@ export interface Options {
     customLintRules?: Rule[];
     sourceMap?: Dictionary<string>;
 }
-
-export type LintResult = {type: LogLevels; message: string};
