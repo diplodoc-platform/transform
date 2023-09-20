@@ -61,7 +61,7 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
     }
 
     if (envApi) {
-        content = envApi.readFile(relative(envApi.root, path), 'utf-8');
+        content = envApi.readFile(relative(envApi.root, path), 'utf-8') as string;
     } else if (filesCache[path]) {
         content = filesCache[path];
     } else {

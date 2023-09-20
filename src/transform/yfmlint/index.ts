@@ -111,9 +111,9 @@ namespace yfmlint {
         distRoot: string;
         copyFile: (from: string, to: string) => void;
         copyFileAsync: (from: string, to: string) => void;
-        writeFile: (to: string, data: string) => void;
-        writeFileAsync: (to: string, data: string) => void;
-        readFile: (path: string, encoding: BufferEncoding) => string;
+        writeFile: (to: string, data: string | Uint8Array) => void;
+        writeFileAsync: (to: string, data: string | Uint8Array) => void;
+        readFile: (path: string, encoding: BufferEncoding) => string | Uint8Array;
         fileExists: (path: string) => boolean;
         getFileVars: (path: string) => Record<string, string>;
     }

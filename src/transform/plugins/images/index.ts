@@ -63,7 +63,7 @@ function convertSvg(
     try {
         let content: string;
         if (envApi) {
-            content = envApi?.readFile(relative(root, path), 'utf8');
+            content = envApi?.readFile(relative(root, path), 'utf8') as string;
         } else {
             content = readFileSync(path, 'utf8');
         }
