@@ -31,7 +31,7 @@ const collect = (input: string, options: Opts) => {
         if (hashIndex > -1) {
             let includePathExists: boolean;
             if (envApi) {
-                includePathExists = envApi.fileExistsSync(relative(envApi.root, includePath));
+                includePathExists = envApi.fileExists(relative(envApi.root, includePath));
             } else {
                 includePathExists = isFileExists(includePath);
             }

@@ -120,7 +120,7 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
         file = resolve(path.parse(currentPath).dir, pathname);
 
         if (envApi) {
-            fileExists = envApi.fileExistsSync(relative(envApi.root, file));
+            fileExists = envApi.fileExists(relative(envApi.root, file));
         } else {
             fileExists = isFileExists(file);
         }

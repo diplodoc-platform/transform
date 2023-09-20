@@ -51,7 +51,7 @@ function unfoldIncludes(state: StateCore, path: string, options: Options) {
                 if (hashIndex > -1) {
                     let pathnameExists: boolean;
                     if (envApi) {
-                        pathnameExists = envApi.fileExistsSync(relative(envApi.root, pathname));
+                        pathnameExists = envApi.fileExists(relative(envApi.root, pathname));
                     } else {
                         pathnameExists = isFileExists(pathname);
                     }

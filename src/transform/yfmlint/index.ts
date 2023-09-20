@@ -109,9 +109,12 @@ namespace yfmlint {
     export interface EnvApi {
         root: string;
         distRoot: string;
-        copyFileSync: (from: string, to: string) => void;
-        readFileSync: (path: string, encoding: BufferEncoding) => string;
-        fileExistsSync: (path: string) => boolean;
+        copyFile: (from: string, to: string) => void;
+        copyFileAsync: (from: string, to: string) => void;
+        writeFile: (to: string, data: string) => void;
+        writeFileAsync: (to: string, data: string) => void;
+        readFile: (path: string, encoding: BufferEncoding) => string;
+        fileExists: (path: string) => boolean;
         getFileVars: (path: string) => Record<string, string>;
     }
 

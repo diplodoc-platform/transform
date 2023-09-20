@@ -49,7 +49,7 @@ const collect = (input: string, options: Options) => {
             }
 
             if (envApi) {
-                envApi.copyFileSync(
+                envApi.copyFileAsync(
                     relative(envApi.root, targetPath),
                     relative(envApi.distRoot, targetDestPath),
                 );
