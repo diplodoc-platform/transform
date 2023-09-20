@@ -13,20 +13,24 @@ export const yfm009: Rule = {
         let lastCloseIndex = -1;
         const size = params.tokens.length;
 
-        for (let i = 0; i < size - 1; i++) {
+        for (let i = 0; i < size; i++) {
             if (params.tokens[i].type === 'template_close') {
                 lastCloseIndex = i;
             }
 
-            if (params.tokens[i].type !== 'template_open') {
+            if (params.tokens[i].type !== 'template_close') {
                 continue;
             }
 
-            if (params.tokens[i + 1].type === 'template_close') {
+            if (i === size - 1) {
                 continue;
             }
 
-            if (i !== size - 1 && params.tokens[i + 2].type === 'template_close') {
+            if (params.tokens[i + 1].type === 'template_open') {
+                continue;
+            }
+
+            if (i < size - 2 && params.tokens[i + 2].type === 'template_open') {
                 continue;
             }
 
@@ -40,7 +44,7 @@ export const yfm009: Rule = {
             return;
         }
 
-        if (lastCloseIndex < size - 2) {
+        if (lastCloseIndex !== size - 1) {
             onError({
                 lineNumber: params.tokens[lastCloseIndex + 1].lineNumber,
                 detail: 'The file must end with term only.',

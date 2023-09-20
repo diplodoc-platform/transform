@@ -22,10 +22,12 @@ const tableWithCloseToken = `
 |#
 `.trim();
 
+const random = () => Math.floor(Math.random() * 1e8);
+
 const lint = (input: string) => {
     yfmlint({
         input,
-        pluginOptions: {log, path: 'test.md'},
+        pluginOptions: {log, path: `${random()}.md`},
         lintConfig: {
             'log-levels': {
                 MD047: LogLevels.DISABLED,
