@@ -1,0 +1,26 @@
+name: OpenAPI preview
+
+on:
+  pull_request:
+
+jobs:
+  preview:
+    permissions: 
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: "v8tenko/diplodoc-playground"
+      - name: Use Node.js 14
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - name: Diplodoc build action
+        uses: v8tenko/diplodoc-playground@v2.1
+        with:
+          token: ${{secrets.GITHUB_TOKEN}}

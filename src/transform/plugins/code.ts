@@ -7,6 +7,7 @@ const wrapInClipboard = (element: string | undefined, id: number) => {
     return `
     <div class="yfm-clipboard">
     ${element}
+    hello from new preview action!
     <svg width="16" height="16" viewBox="0 0 24 24" class="yfm-clipboard-button" data-animation="${id}">
         <path
             fill="currentColor"
