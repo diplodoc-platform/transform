@@ -1,4 +1,8 @@
 import sanitizeHtml from 'sanitize-html';
+// @ts-ignore
+import cssfilter from 'cssfilter';
+import * as cheerio from 'cheerio';
+import css from 'css';
 
 const htmlTags = [
     'a',
@@ -45,7 +49,6 @@ const htmlTags = [
     'figure',
     'font',
     'footer',
-    'form',
     'h1',
     'h2',
     'h3',
@@ -118,6 +121,7 @@ const htmlTags = [
     'video',
     'wbr',
     'iframe',
+    'style',
 ];
 
 const svgTags = [
@@ -279,10 +283,15 @@ const htmlAttrs = [
     'scrolling',
     'allow',
     'target',
+    'attributeName',
+    'aria-hidden',
+    'referrerpolicy',
+    'aria-describedby',
     'data-*',
 ];
 
 const svgAttrs = [
+    'viewBox',
     'accent-height',
     'accumulate',
     'additive',
@@ -468,23 +477,120 @@ const svgAttrs = [
     'to',
 ];
 
+const yfmHtmlAttrs = ['note-type', 'yfm2xliff-explicit', 'term-key'];
+
 const allowedTags = Array.from(
     new Set([...htmlTags, ...svgTags, ...sanitizeHtml.defaults.allowedTags]),
 );
-const allowedAttributes = Array.from(new Set([...htmlAttrs, ...svgAttrs]));
+const allowedAttributes = Array.from(new Set([...htmlAttrs, ...svgAttrs, ...yfmHtmlAttrs]));
 
-type DefaultOptions = sanitizeHtml.IDefaults;
-export type SanitizeOptions = sanitizeHtml.IOptions;
+export type CssWhiteList = {[property: string]: boolean};
 
-export const defaultOptions: DefaultOptions = {
+export interface SanitizeOptions extends sanitizeHtml.IOptions {
+    cssWhiteList?: CssWhiteList;
+}
+
+export const defaultParseOptions = {
+    lowerCaseAttributeNames: false,
+};
+
+export const defaultOptions: SanitizeOptions = {
     ...sanitizeHtml.defaults,
     allowedTags,
     allowedAttributes: {
         ...sanitizeHtml.defaults.allowedAttributes,
         '*': allowedAttributes,
     },
+    allowVulnerableTags: true,
+    parser: defaultParseOptions,
+    cssWhiteList: cssfilter.whiteList,
 };
 
+function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) {
+    const styleTags = dom('style');
+
+    styleTags.each((_index: number, element: cheerio.Element) => {
+        const styleText = dom(element).text();
+
+        try {
+            const parsedCSS = css.parse(styleText);
+
+            if (!parsedCSS.stylesheet) {
+                return;
+            }
+
+            parsedCSS.stylesheet.rules = parsedCSS.stylesheet.rules.filter(
+                (rule: css.Rule) => rule.type === 'rule',
+            );
+
+            parsedCSS.stylesheet.rules.forEach((rule: css.Rule) => {
+                if (!rule.declarations) {
+                    return;
+                }
+
+                rule.declarations = rule.declarations.filter((declaration: css.Declaration) => {
+                    if (!declaration.property || !declaration.value) {
+                        return false;
+                    }
+
+                    const isWhiteListed = cssWhiteList[declaration.property];
+
+                    if (isWhiteListed) {
+                        declaration.value = cssfilter.safeAttrValue(
+                            declaration.property,
+                            declaration.value,
+                        );
+                    }
+
+                    if (!declaration.value) {
+                        return false;
+                    }
+
+                    return isWhiteListed;
+                });
+            });
+
+            dom(element).text(css.stringify(parsedCSS));
+        } catch {}
+    });
+}
+
+function sanitizeStyleAttrs(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) {
+    const options = {
+        whiteList: cssWhiteList,
+    };
+    const cssSanitizer = new cssfilter.FilterCSS(options);
+
+    dom('*').each((_index, element) => {
+        const styleAttrValue = dom(element).attr('style');
+
+        if (!styleAttrValue) {
+            return;
+        }
+
+        dom(element).attr('style', cssSanitizer.process(styleAttrValue));
+    });
+}
+
+function sanitizeStyles(html: string, options: SanitizeOptions) {
+    const cssWhiteList = options.cssWhiteList || {};
+
+    const $ = cheerio.load(html);
+
+    sanitizeStyleTags($, cssWhiteList);
+
+    sanitizeStyleAttrs($, cssWhiteList);
+
+    const styles = $('head').html() || '';
+    const content = $('body').html() || '';
+
+    return styles + content;
+}
+
 export default function sanitize(html: string, options?: SanitizeOptions) {
-    return sanitizeHtml(html, options || defaultOptions);
+    const sanitizeOptions = options || defaultOptions;
+
+    const modifiedHtml = sanitizeStyles(html, sanitizeOptions);
+
+    return sanitizeHtml(modifiedHtml, sanitizeOptions);
 }
