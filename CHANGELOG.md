@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/yandex-cloud/yfm-transform/compare/v3.11.0...v4.0.0) (2023-09-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* 
+
+### Features
+
+* @diplodoc/transform@v4 ([92d3501](https://github.com/yandex-cloud/yfm-transform/commit/92d350168d9c7d6707df0473b1b6e614fe19f702))
+
 ## [3.11.0](https://github.com/yandex-cloud/yfm-transform/compare/v3.10.3...v3.11.0) (2023-09-12)
 
 
