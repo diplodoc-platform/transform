@@ -150,7 +150,7 @@ describe('Table plugin', () => {
                 '</tr>\n' +
                 '<tr>\n' +
                 '<td>\n' +
-                '<p><img src="image.png" alt="alt text"></p>\n' +
+                '<p><img src="image.png" alt="alt text" /></p>\n' +
                 '</td>\n' +
                 '<td>\n' +
                 '<p><a href="README.md">link to README.md</a></p>\n' +
@@ -187,7 +187,7 @@ describe('Table plugin', () => {
                 '<tbody>\n' +
                 '<tr>\n' +
                 '<td>\n' +
-                '<p>Text with<br>\n' +
+                '<p>Text with<br />\n' +
                 'new line</p>\n' +
                 '</td>\n' +
                 '<td>\n' +
@@ -208,7 +208,7 @@ describe('Table plugin', () => {
                 '<li>Element B</li>\n' +
                 '</ul>\n' +
                 '</li>\n' +
-                '<li>Element 2<br>\n' +
+                '<li>Element 2<br />\n' +
                 'test</li>\n' +
                 '</ul>\n' +
                 '</td>\n' +
@@ -349,13 +349,12 @@ describe('Table plugin', () => {
                     '|Cell in column 2, row 3||',
             ),
         ).toBe(
-            '\n' +
-                '<p>#|<br>\n' +
-                '||Cell in column 1, row 1<br>\n' +
-                '|Cell in column 2, row 1||<br>\n' +
-                '||Cell in column 1, row 2<br>\n' +
-                '|Cell in column 2, row 2||<br>\n' +
-                '||Cell in column 1, row 3<br>\n' +
+            '<p>#|<br />\n' +
+                '||Cell in column 1, row 1<br />\n' +
+                '|Cell in column 2, row 1||<br />\n' +
+                '||Cell in column 1, row 2<br />\n' +
+                '|Cell in column 2, row 2||<br />\n' +
+                '||Cell in column 1, row 3<br />\n' +
                 '|Cell in column 2, row 3||</p>\n',
         );
     });
@@ -371,10 +370,10 @@ describe('Table plugin', () => {
                     'Test',
             ),
         ).toBe(
-            '<p>||Cell in column 1, row 1<br>\n' +
-                '|Cell in column 2, row 1<br>\n' +
-                '||Cell in column 1, row 2<br>\n' +
-                '|Cell in column 2, row 2<br>\n' +
+            '<p>||Cell in column 1, row 1<br />\n' +
+                '|Cell in column 2, row 1<br />\n' +
+                '||Cell in column 1, row 2<br />\n' +
+                '|Cell in column 2, row 2<br />\n' +
                 '|#</p>\n' +
                 '<p>Test</p>\n',
         );
@@ -392,12 +391,12 @@ describe('Table plugin', () => {
                     '|#',
             ),
         ).toBe(
-            '<p>Test<br>\n' +
-                '#|<br>\n' +
-                '||Cell in column 1, row 1<br>\n' +
+            '<p>Test<br />\n' +
+                '#|<br />\n' +
+                '||Cell in column 1, row 1<br />\n' +
                 '|Cell in column 2, row 1||</p>\n' +
-                '<p>||Cell in column 1, row 2<br>\n' +
-                '|Cell in column 2, row 2||<br>\n' +
+                '<p>||Cell in column 1, row 2<br />\n' +
+                '|Cell in column 2, row 2||<br />\n' +
                 '|#</p>\n',
         );
     });

@@ -18,7 +18,7 @@ function createLogger(type: LogLevels) {
     const formatter: Record<string, (v: string) => string> = {
         [LogLevels.INFO]: (msg) => `${green('INFO')} ${msg}`,
         [LogLevels.WARN]: (msg) => `${yellow('WARN')} ${msg}`,
-        [LogLevels.ERROR]: (msg) => `${red('ERR ')} ${msg}`,
+        [LogLevels.ERROR]: (msg) => `${red('ERR')} ${msg}`,
     };
 
     return function log(msg: string) {

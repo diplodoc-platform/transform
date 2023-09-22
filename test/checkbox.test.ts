@@ -82,7 +82,7 @@ describe('markdown-it-checkbox', function () {
     it('should parse inline markup in label', () => {
         expect(transformYfm('[X] text *italic* **bold** label')).toBe(
             '<div class="checkbox">\n' +
-                '<input type="checkbox" id="checkbox0" disabled="" checked="true">\n' +
+                '<input type="checkbox" id="checkbox0" disabled checked="true" />\n' +
                 '<label for="checkbox0">text <em>italic</em> <strong>bold</strong> label</label>\n' +
                 '</div>\n',
         );

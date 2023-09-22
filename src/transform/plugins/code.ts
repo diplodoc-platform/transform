@@ -15,7 +15,7 @@ const wrapInClipboard = (element: string | undefined, id: number) => {
         <path
             stroke="currentColor"
             fill="transparent"
-            strokeWidth="1.5"
+            stroke-width="1.5"
             d="M9.5 13l3 3l5 -5"
             visibility="hidden"
         >
