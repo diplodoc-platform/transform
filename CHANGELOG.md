@@ -4,8 +4,10 @@
 
 
 ### ⚠ BREAKING CHANGES
-
-* 
+- New term's linter
+- Enabling `needToSanitizeHtml` by default
+ 
+[Full changelog](https://github.com/yandex-cloud/yfm-transform/blob/92d350168d9c7d6707df0473b1b6e614fe19f702/CHANGELOG.diplodoc.md)
 
 ### Features
 
