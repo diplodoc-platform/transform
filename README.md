@@ -1,38 +1,73 @@
 **english** | [русский](https://github.com/yandex-cloud/yfm-transform/blob/master/README.ru.md)
 - - -
 
-[![NPM version](https://img.shields.io/npm/v/@doc-tools/transform.svg?style=flat)](https://www.npmjs.org/package/@doc-tools/transform)
+[![NPM version](https://img.shields.io/npm/v/@diplodoc/transform.svg?style=flat)](https://www.npmjs.org/package/@diplodoc/transform)
 
+[@diplodoc/transform](https://www.npmjs.com/package/@diplodoc/transform) is a package for converting Yandex Flavored Markdown to HTML.
 
-A simple transformer of text in YFM (Yandex Flavored Markdown) to HTML.
+Use it in your code to work with text during program execution. For example, to display user-generated content.
 
-## Yandex Flavored Markdown
+## Installation {#install}
 
-Yandex Flavored Markdown (YFM) is a Markdown dialect that is now used for
-[Yandex.Cloud documentation](https://cloud.yandex.com/docs), [Yandex.Cloud website content](https://cloud.yandex.com), and in
-a variety of internal Yandex projects.
+1. Install a package:
 
-The syntax is based on the CommonMark Spec, extending it with additional features. It's designed for creating
-a full-fledged complex documentation project, such as the Yandex.Cloud documentation.
+    ```shell
+    npm i @diplodoc/transform
+    ```
 
-To build your documentation project in YFM, use the [@doc-tools/docs](https://www.npmjs.com/package/@doc-tools/docs) package.
+1. Add the package in your code using the `require()` or `import()` function:
 
-[Learn more about YFM](https://ydocs.tech)
+    ```javascript
+    const transform = require('@diplodoc/transform');
+    ```
 
-## Source files
+1. To ensure text is displayed properly, add CSS styles and client scripts to the project:
 
-### Installation
+     ```css
+     @import '~@diplodoc/transform/dist/css/yfm.css';
+     ```
 
-```shell script
-git clone git@github.com:yandex-cloud/yfm-transform.git
-cd yfm-transform
-npm install
-```
+     ```javascript
+     import '@diplodoc/transform/dist/js/yfm';
+     ```
 
-When you add changes to files from the SRC folder, before updating the package version, run
+## Usage {#use}
 
-```shell script
-npm run dist
+The package provides the `transform()` function:
+
+* Input data: [Settings](settings.md) and a string with YFM.
+* Returned value: An object with the `result` and `logs` fields.
+
+### Result field
+
+`result`: Resulting object, contains the fields:
+
+* `html`: A line with HTML.
+* `meta`: [Metadata](../../syntax/meta.md#meta) from the transmitted content.
+* `title`: The document title. Returned if `extractTitle = true` or `needTitle = true`.
+* `headings`: A list of document headers.
+
+### Logs field
+
+`logs`: Information about the transformation process, includes arrays:
+
+* `error`: Errors.
+* `warn`: Warnings.
+* `info`: Additional information.
+
+### Example of a function invocation
+
+```javascript
+const fs = require('fs');
+const transform = require('@diplodoc/transform');
+
+const content = fs.readFileSync(filePath, 'utf');
+const vars = { user: { name: 'Alice' } };
+
+const {
+    result: {html, meta, title, headings},
+    logs,
+    } = transform(content, {vars});
 ```
 
 ## License
