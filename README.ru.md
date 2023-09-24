@@ -1,35 +1,72 @@
 **русский** | [english](https://github.com/yandex-cloud/yfm-transform/blob/master/README.md)
 - - -
 
-[![NPM version](https://img.shields.io/npm/v/@doc-tools/transform.svg?style=flat)](https://www.npmjs.org/package/@doc-tools/transform)
+[![NPM version](https://img.shields.io/npm/v/@diplodoc/transform.svg?style=flat)](https://www.npmjs.org/package/@diplodoc/transform)
 
-Простой трансформер текста на YFM (Yandex Flavored Markdown) в HTML.
+[@diplodoc/transform](https://www.npmjs.com/package/@diplodoc/transform) — пакет для трансформации Yandex Flavored Markdown в HTML.
 
-## Yandex Flavored Markdown
+Используйте его в своем коде для работы с текстом во время выполнения программы. Например, чтобы отображать пользовательский контент.
 
-Yandex Flavored Markdown (YFM) является диалектом Markdown, который используется сейчас для
-[документации Яндекс.Облака](https://cloud.yandex.ru/docs), [контента сайта Я.Облака](https://cloud.yandex.ru) и в
-различных внутренних проектах Яндекса.
+## Установка {#install}
 
-Синтаксис базируется на CommonMark Spec, расширяя его дополнительными возможностями. В том числе, для создания
-полноценного сложного документационного проекта, такого как документация Яндекс.Облака.
+1. Установите пакет:
 
-Для сборки своего документационного проекта на YFM вы можете использовать пакет [@doc-tools/docs](https://www.npmjs.com/package/@doc-tools/docs).
+    ```shell
+    npm i @diplodoc/transform
+    ```
 
-[Более подробное описание YFM](https://ydocs.tech)
+1. Подключите пакет в своем коде, используя функцию `require()` или `import()`:
 
-## Исходники
-### Установка
-```shell script
-git clone git@github.com:yandex-cloud/yfm-transform.git
-cd yfm-transform
-npm install
+    ```javascript
+    const transform = require('@diplodoc/transform');
+    ```
+
+1. Для корректного отображения подключите в проект CSS-стили и клиентские скрипты:
+
+     ```css
+     @import '~@diplodoc/transform/dist/css/yfm.css';
+     ```
+
+     ```javascript
+     import '@diplodoc/transform/dist/js/yfm';
+     ```
+
+## Использование {#use}
+
+Пакет предоставляет функцию `transform()`:
+* входные данные — строка с YFM и [настройки](settings.md);
+* возвращаемое значение — объект с полями `result` и `logs`.
+
+### Поле result
+
+`result` — объект результата, содержит поля:
+* `html` — строка с HTML.
+* `meta` — [метаданные](../../syntax/meta.md#meta) из переданного контента.
+* `title` — заголовок документа. Возвращается, если заданы настройки `extractTitle = true` или `needTitle = true`.
+* `headings` — список заголовков документа.
+
+### Поле logs
+
+`logs` — информация о процессе трансформации, включает массивы:
+* `error` — ошибки.
+* `warn` — предупреждения.
+* `info` — дополнительная информация.
+
+### Пример вызова функции
+
+```javascript
+const fs = require('fs');
+const transform = require('@diplodoc/transform');
+
+const content = fs.readFileSync(filePath, 'utf');
+const vars = { user: { name: 'Alice' } };
+
+const {
+    result: {html, meta, title, headings},
+    logs,
+    } = transform(content, {vars});
 ```
 
-При добавлении изменений в файлы из директории src перед обновлением версии пакета нужно выполнить
-```shell script
-npm run dist
-```
 
 ## License
 
