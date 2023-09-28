@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yandex-cloud/yfm-transform.git"
+    "url": "git@github.com:diplodoc-platform/transform.git"
   },
   "main": "lib/index.js",
   "files": [
