@@ -86,9 +86,9 @@
     }
   },
   "bugs": {
-    "url": "https://github.com/yandex-cloud/yfm-transform/issues"
+    "url": "https://github.com/diplodoc-platform/transform/issues"
   },
-  "homepage": "https://github.com/yandex-cloud/yfm-transform#readme",
+  "homepage": "https://github.com/diplodoc-platform/transform#readme",
   "keywords": [
     "markdown",
     "yandex",
