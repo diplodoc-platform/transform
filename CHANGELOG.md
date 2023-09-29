@@ -1,12 +1,20 @@
 # Changelog
 
+## [4.1.0](https://github.com/diplodoc-platform/transform/compare/v4.0.0...v4.1.0) (2023-09-29)
+
+
+### Features
+
+* update @diplodoc/tabs-extension to 2.0.12 ([48f2fc3](https://github.com/diplodoc-platform/transform/commit/48f2fc319c72066eb99341a454733de4b720b249))
+
+
 ## [4.0.0](https://github.com/yandex-cloud/yfm-transform/compare/v3.11.0...v4.0.0) (2023-09-22)
 
 
 ### ⚠ BREAKING CHANGES
 - New term's linter
 - Enabling `needToSanitizeHtml` by default
- 
+
 [Full changelog](https://github.com/yandex-cloud/yfm-transform/blob/92d350168d9c7d6707df0473b1b6e614fe19f702/CHANGELOG.diplodoc.md)
 
 ### Features
