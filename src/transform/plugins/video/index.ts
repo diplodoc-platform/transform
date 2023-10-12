@@ -5,6 +5,7 @@
 // Process @[osf](guid)
 
 import type MarkdownIt from 'markdown-it';
+// eslint-disable-next-line no-duplicate-imports
 import type {PluginWithOptions} from 'markdown-it';
 import type ParserInline from 'markdown-it/lib/parser_inline';
 import type Renderer from 'markdown-it/lib/renderer';
@@ -81,6 +82,7 @@ function tokenizeVideo(md: MarkdownIt, options: VideoFullOptions): Renderer.Rend
 }
 
 const EMBED_REGEX = /@\[([a-zA-Z].+)]\([\s]*(.*?)[\s]*[)]/im;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function videoEmbed(md: MarkdownIt, _options: VideoFullOptions): ParserInline.RuleInline {
     return (state, silent) => {
         const theState = state;

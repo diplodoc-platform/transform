@@ -1,1 +1,1 @@
-module.exports = require("@yandex-cloud/prettier-config");
+module.exports = require("@diplodoc/prettier-config");

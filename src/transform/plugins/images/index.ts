@@ -87,6 +87,12 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
 
             while (j < childrenTokens.length) {
                 if (childrenTokens[j].type === 'image') {
+                    const didPatch = childrenTokens[j].attrGet('yfm_patched') || false;
+
+                    if (didPatch) {
+                        return;
+                    }
+
                     const imgSrc = childrenTokens[j].attrGet('src') || '';
 
                     if (imgSrc.endsWith('.svg') && !isExternalHref(imgSrc)) {
@@ -94,6 +100,8 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                     } else {
                         replaceImageSrc(childrenTokens[j], state, opts);
                     }
+
+                    childrenTokens[j].attrSet('yfm_patched', '1');
                 }
 
                 j++;

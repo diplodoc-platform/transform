@@ -1,13 +1,11 @@
 {
-  "extends": "@yandex-cloud/tsconfig/tsconfig",
+  "extends": "@diplodoc/tsconfig",
   "compilerOptions": {
     "lib": ["DOM", "ES6"],
     "outDir": "lib",
     "module": "commonjs",
     "baseUrl": ".",
     "declaration": true,
-    "isolatedModules": true,
-    "noImplicitAny": true,
     "target": "ES6",
     "types": ["node", "jest"]
   },

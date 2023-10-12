@@ -43,7 +43,7 @@ function transform(originInput: string, options: OptionsType = {}) {
 
 export = transform;
 
-// eslint-disable-next-line @typescript-eslint/no-namespace -- backward compatibility
+// eslint-disable-next-line @typescript-eslint/no-namespace, no-redeclare -- backward compatibility
 namespace transform {
     export type Options = OptionsType;
     export type Output = OutputType;
