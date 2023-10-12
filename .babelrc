@@ -1,22 +1,21 @@
 {
     "env": {
         "test": {
-            "plugins": [
-                "@babel/plugin-transform-modules-commonjs"
-            ]
+            "plugins": ["@babel/plugin-transform-modules-commonjs"]
         }
     },
     "presets": [
         [
-            "@babel/env",
+            "@diplodoc/babel-preset",
             {
-                "loose": true,
-                "modules": false,
-                "exclude": ["transform-typeof-symbol"]
+                "env": {
+                    "loose": true,
+                    "modules": false,
+                    "exclude": ["transform-typeof-symbol"]
+                },
+                "typescript": true
             }
         ]
     ],
-    "plugins": [
-        "@babel/plugin-proposal-object-rest-spread"
-    ]
+    "plugins": ["@babel/plugin-proposal-object-rest-spread"]
 }

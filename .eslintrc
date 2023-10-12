@@ -19,10 +19,5 @@
                 "project": ["./tsconfig.transform.json", "./tsconfig.json"]
             }
         }
-    ],
-    "settings": {
-        "react": {
-            "version": "detect"
-        }
-    }
+    ]
 }
