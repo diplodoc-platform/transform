@@ -23,8 +23,7 @@
     "lint:fix": "eslint --fix --max-warnings=0 \"{src,test}/**/*.{js,jsx,ts,tsx}\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "precommit": "npm run lint && npm run test",
-    "prepublishOnly": "npm run lint && npm run test && npm run build",
-    "git:head": "git checkout master && git pull"
+    "prepublishOnly": "npm run lint && npm run test && npm run build"
   },
   "dependencies": {
     "@diplodoc/tabs-extension": "2.0.12",
