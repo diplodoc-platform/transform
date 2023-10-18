@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.2.0](https://github.com/diplodoc-platform/transform/compare/v4.1.0...v4.2.0) (2023-10-18)
+
+
+### Features
+
+* add babel ([af5fbdc](https://github.com/diplodoc-platform/transform/commit/af5fbdc901d69ae9b7f0ab4b941f3fc5bd99866c))
+* added print styles and js for plugins ([4bc6ad7](https://github.com/diplodoc-platform/transform/commit/4bc6ad7dd0e9060e748a8c267dc9793fbb95952f))
+* bump node to 18 ([de1934f](https://github.com/diplodoc-platform/transform/commit/de1934f758659f1700a3d85a6b18cbc1ebdcd752))
+
+
+### Bug Fixes
+
+* bump node version in action ([80531b7](https://github.com/diplodoc-platform/transform/commit/80531b7ad9cfec4ee2d86c93ca839b24a8da9b66))
+
 ## [4.1.0](https://github.com/diplodoc-platform/transform/compare/v4.0.0...v4.1.0) (2023-09-29)
 
 
