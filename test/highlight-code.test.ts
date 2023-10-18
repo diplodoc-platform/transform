@@ -1,4 +1,5 @@
-import {dirname} from 'path';
+import {dirname} from 'node:path';
+import typescript from 'highlight.js/lib/languages/typescript';
 import transform from '../src/transform';
 
 const mocksPath = require.resolve('./utils.ts');
@@ -7,6 +8,7 @@ const transformYfm = (text: string) => {
         result: {html},
     } = transform(text, {
         plugins: [],
+        highlightLangs: {ts: typescript},
         path: mocksPath,
         root: dirname(mocksPath),
     });
