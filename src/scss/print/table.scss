@@ -1,0 +1,24 @@
+.yfm {
+    .yfm-table-container {
+        position: relative;
+
+        & > table {
+            overflow: initial;
+            position: absolute;
+            top: 0;
+            left: 0;
+            max-width: initial;
+            transform-origin: top left;
+
+            thead {
+                display: table-row-group;
+            }
+
+            th, td {
+                page-break-inside: avoid;
+                white-space: pre-wrap;
+                text-overflow: initial;
+            }
+        }
+    }
+}

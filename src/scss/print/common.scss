@@ -1,0 +1,13 @@
+@media print {
+    .yfm {
+        .yfm-page__delimeter {
+            display: none;
+        }
+
+        h1, h2 {
+            &[data-original-article] {
+                page-break-before: always;
+            }
+        }
+    }
+}

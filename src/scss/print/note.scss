@@ -1,0 +1,7 @@
+@media print {
+    .yfm {
+        .yfm-note {
+            page-break-inside: avoid;
+        }
+    }
+}

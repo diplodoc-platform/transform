@@ -1,0 +1,18 @@
+@media print {
+    .yfm {
+        .yfm-cut {
+            &-title {
+                padding-left: 0;
+
+                &:before {
+                    display: none;
+                }
+            }
+
+            &-content {
+                height: auto;
+                padding: 5px 0 15px 30px;
+            }
+        }
+    }
+}

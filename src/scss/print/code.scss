@@ -1,0 +1,9 @@
+@media print {
+    .yfm {
+        .yfm-clipboard {
+            & > pre > code {
+                white-space: pre-wrap;
+            }
+        }
+    }
+}
