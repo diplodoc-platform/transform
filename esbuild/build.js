@@ -20,24 +20,35 @@ const common = {
 };
 
 (async function buildCss() {
-    await build({
-        ...common,
-        entryPoints: ['src/scss/yfm.scss'],
-        outfile: 'dist/css/yfm.css',
-        format: 'iife',
-        plugins: [
-            sassPlugin({
-                async transform(source) {
-                    const {css} = await postcss([
-                        autoprefixer({cascade: false}),
-                        postcssPresetEnv({stage: 0}),
-                    ]).process(source, {from: undefined});
+    const plugins = [
+        sassPlugin({
+            async transform(source) {
+                const {css} = await postcss([
+                    autoprefixer({cascade: false}),
+                    postcssPresetEnv({stage: 0}),
+                ]).process(source, {from: undefined});
 
-                    return css;
-                },
-            }),
-        ],
-    });
+                return css;
+            },
+        }),
+    ];
+
+    await Promise.all([
+        build({
+            ...common,
+            entryPoints: ['src/scss/yfm.scss'],
+            outfile: 'dist/css/yfm.css',
+            format: 'iife',
+            plugins,
+        }),
+        build({
+            ...common,
+            entryPoints: ['src/scss/print.scss'],
+            outfile: 'dist/css/print.css',
+            format: 'iife',
+            plugins,
+        })
+    ]);
 
     await build({
         ...common,
@@ -48,11 +59,18 @@ const common = {
 })();
 
 (async function buildJs() {
-    await build({
-        ...common,
-        entryPoints: ['src/js/index.ts'],
-        outfile: 'dist/js/yfm.js',
-    });
+    await Promise.all([
+        build({
+            ...common,
+            entryPoints: ['src/js/index.ts'],
+            outfile: 'dist/js/yfm.js',
+        }),
+        build({
+            ...common,
+            entryPoints: ['src/js/print/index.ts'],
+            outfile: 'dist/js/print.js',
+        })
+    ]);
 
     await build({
         ...common,
