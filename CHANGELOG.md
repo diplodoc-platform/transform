@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.1](https://github.com/diplodoc-platform/transform/compare/v4.2.0...v4.2.1) (2023-10-20)
+
+
+### Bug Fixes
+
+* setting 'display: none' style for closed cut ([#321](https://github.com/diplodoc-platform/transform/issues/321)) ([22831d0](https://github.com/diplodoc-platform/transform/commit/22831d04f9fd092baf42081a5a8b0e7a5962ca6f))
+
 ## [4.2.0](https://github.com/diplodoc-platform/transform/compare/v4.1.0...v4.2.0) (2023-10-18)
 
 
