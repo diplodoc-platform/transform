@@ -22,15 +22,15 @@
     }
 
     &-content {
-        height: 0;
+        display: none;
         overflow: hidden;
         transition: height 0.3s ease-in-out;
     }
 
     &.open {
         > #{$class}-content {
+            display: revert;
             padding: 5px 0 15px 30px;
-            height: auto;
         }
 
         > #{$class}-title:before {
