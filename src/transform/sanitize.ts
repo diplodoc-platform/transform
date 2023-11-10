@@ -477,6 +477,11 @@ const svgAttrs = [
     'to',
 ];
 
+const defaultCssWhitelist = {
+    ...cssfilter.whiteList,
+   '--method': true
+}
+
 const yfmHtmlAttrs = ['note-type', 'yfm2xliff-explicit', 'term-key'];
 
 const allowedTags = Array.from(
@@ -503,7 +508,7 @@ export const defaultOptions: SanitizeOptions = {
     },
     allowVulnerableTags: true,
     parser: defaultParseOptions,
-    cssWhiteList: cssfilter.whiteList,
+    cssWhiteList: defaultCssWhitelist,
 };
 
 function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) {
