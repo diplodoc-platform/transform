@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.3.0](https://github.com/diplodoc-platform/transform/compare/v4.2.1...v4.3.0) (2023-11-10)
+
+
+### Features
+
+* lint ([e3968e9](https://github.com/diplodoc-platform/transform/commit/e3968e91d55c503eed68a2fc7776624cc3d8f331))
+
+
+### Bug Fixes
+
+* add openapi variable ([a1b0045](https://github.com/diplodoc-platform/transform/commit/a1b004584664511b54fe69ec7c4807703b8b4e77))
+
 ## [4.2.1](https://github.com/diplodoc-platform/transform/compare/v4.2.0...v4.2.1) (2023-10-20)
 
 
