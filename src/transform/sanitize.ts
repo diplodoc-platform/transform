@@ -479,8 +479,8 @@ const svgAttrs = [
 
 const defaultCssWhitelist = {
     ...cssfilter.whiteList,
-   '--method': true
-}
+    '--method': true,
+};
 
 const yfmHtmlAttrs = ['note-type', 'yfm2xliff-explicit', 'term-key'];
 
