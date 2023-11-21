@@ -7,6 +7,7 @@ import StateCore from 'markdown-it/lib/rules_core/state_core';
 import Token from 'markdown-it/lib/token';
 import {escapeHtml} from 'markdown-it/lib/common/utils';
 import {MarkdownItPluginCb} from '../typings';
+import {visuallyHiddenInline} from '../utils';
 
 const slugify: (str: string, opts: {}) => string = require('slugify');
 
@@ -159,7 +160,11 @@ const index: MarkdownItPluginCb<Options> = (
     }
 
     md.renderer.rules.anchor_hidden_desc = function (tokens, index) {
-        return '<span class="visually-hidden">' + escapeHtml(tokens[index].content) + '</span>';
+        return (
+            `<span style="${visuallyHiddenInline()}">` +
+            escapeHtml(tokens[index].content) +
+            '</span>'
+        );
     };
 };
 

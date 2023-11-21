@@ -36,3 +36,36 @@ export const сarriage = platform === 'win32' ? '\r\n' : '\n';
 export function generateID() {
     return Math.random().toString(36).substr(2, 8);
 }
+
+export function visuallyHiddenInline() {
+    /*
+        Hides element visually, but leaves it visible for search crawlers and screen readers
+
+        https://www.a11yproject.com/posts/2013-01-11-how-to-hide-content/
+        https://hugogiraudel.com/2016/10/13/css-hide-and-seek/
+    */
+
+    let inline = `
+        position: absolute;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+
+        padding: 0;
+
+        white-space: nowrap;
+
+        border: 0;
+
+        clip-path: inset(100%);
+    `;
+    // replace line breaks with spaces, remove multiple consequent spaces
+    inline = inline.replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s+/g, ' ');
+    // remove first and last characters which are spaces
+    inline = inline.substring(1, inline.length - 1);
+
+    return inline;
+}

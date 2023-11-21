@@ -366,31 +366,6 @@
         line-height: 0;
     }
 
-    /*
-        Hides element visually, but leaves it visible for search crawlers and screen readers
-
-        https://www.a11yproject.com/posts/2013-01-11-how-to-hide-content/
-        https://hugogiraudel.com/2016/10/13/css-hide-and-seek/
-    */
-    .visually-hidden {
-        position: absolute;
-
-        overflow: hidden;
-        clip: rect(0 0 0 0);
-
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-
-        padding: 0;
-
-        white-space: nowrap;
-
-        border: 0;
-
-        clip-path: inset(100%);
-    }
-
     // highlight.js colors
     --yfm-color-hljs-background: #{$codeBackgroundColor};
     --yfm-color-hljs-subst: #444;
