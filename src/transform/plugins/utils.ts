@@ -65,7 +65,7 @@ export function visuallyHiddenInline() {
     // replace line breaks with spaces, remove multiple consequent spaces
     inline = inline.replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s+/g, ' ');
     // remove first and last characters which are spaces
-    inline = inline.substring(1, inline.length - 1);
+    inline = inline.trim();
 
     return inline;
 }
