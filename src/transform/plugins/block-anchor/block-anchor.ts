@@ -1,7 +1,7 @@
 import StateCore from 'markdown-it/lib/rules_core/state_core';
 import Token from 'markdown-it/lib/token';
 
-const pattern = /^{%[^\S\r\n]*anchor[^\S\r\n]+([\w-]+)[^\S\r\n]*%}$/;
+const pattern = /^{%[^\S\r\n]*anchor[^\S\r\n]+([\w-]+)[^\S\r\n]*%}/;
 export const TOKEN_NAME = 'anchor';
 
 function matchOpenToken(tokens: Token[], i: number) {
@@ -9,7 +9,9 @@ function matchOpenToken(tokens: Token[], i: number) {
         tokens[i].type === 'paragraph_open' &&
         tokens[i + 1].type === 'inline' &&
         tokens[i + 2].type === 'paragraph_close' &&
-        pattern.exec(tokens[i + 1].content)
+        tokens[i + 1].children?.length === 1 &&
+        tokens[i + 1].children?.[0].type === 'text' &&
+        pattern.exec(tokens[i + 1].children?.[0].content as string)
     );
 }
 
