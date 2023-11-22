@@ -17,8 +17,18 @@ describe('block-anchor', function () {
             expect(transformYfm('{%anchor my-anchor%}')).toBe('<a id="my-anchor"></a>');
         });
         it('does not consume things it should not', () => {
-            expect(transformYfm('# Heading \n {%anchor my-anchor%} \n # Other heading')).toContain(
-                'Other heading',
+            expect(transformYfm('# Heading \n {%anchor my-anchor%} \n # Other heading')).toEqual(
+                '<h1 id="heading"><a href="#heading" class="yfm-anchor" aria-hidden="true">' +
+                    '<span class="visually-hidden">Heading</span></a>Heading</h1>\n' +
+                    '<a id="my-anchor"></a><h1 id="other-heading">' +
+                    '<a href="#other-heading" class="yfm-anchor" aria-hidden="true">' +
+                    '<span class="visually-hidden">Other heading</span></a>Other heading</h1>\n',
+            );
+        });
+
+        it('does not match an anchor if theres something right in front of it', () => {
+            expect(transformYfm('${%anchor my-anchor} Content')).toEqual(
+                '<p>${%anchor my-anchor} Content</p>\n',
             );
         });
     });
