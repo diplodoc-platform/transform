@@ -45,5 +45,5 @@ export function replaceTokens(state: StateCore) {
 export function renderTokens(tokens: Token[], idx: number) {
     const token = tokens[idx];
     const id = token.content;
-    return `<a id=${id}></a>`;
+    return `<hr id=${id} class="visually-hidden"/>`;
 }
