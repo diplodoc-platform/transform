@@ -13,14 +13,16 @@ let transformYfm = (text: string) => {
 
 describe('block-anchor', function () {
     describe('simple rendering', () => {
-        it('should render an a tag', () => {
-            expect(transformYfm('{%anchor my-anchor%}')).toBe('<a id="my-anchor"></a>');
+        it('should render an hr tag', () => {
+            expect(transformYfm('{%anchor my-anchor%}')).toBe(
+                '<hr id="my-anchor" class="visually-hidden" />',
+            );
         });
         it('does not consume things it should not', () => {
             expect(transformYfm('# Heading \n {%anchor my-anchor%} \n # Other heading')).toEqual(
                 '<h1 id="heading"><a href="#heading" class="yfm-anchor" aria-hidden="true">' +
                     '<span class="visually-hidden">Heading</span></a>Heading</h1>\n' +
-                    '<a id="my-anchor"></a><h1 id="other-heading">' +
+                    '<hr id="my-anchor" class="visually-hidden" /><h1 id="other-heading">' +
                     '<a href="#other-heading" class="yfm-anchor" aria-hidden="true">' +
                     '<span class="visually-hidden">Other heading</span></a>Other heading</h1>\n',
             );
@@ -44,7 +46,7 @@ describe('block-anchor', function () {
                 '<h1 id="heading-anchor">' +
                     '<a href="#heading-anchor" class="yfm-anchor" aria-hidden="true">' +
                     '<span class="visually-hidden">Heading</span></a>Heading</h1>\n' +
-                    '<a id="my-anchor"></a>',
+                    '<hr id="my-anchor" class="visually-hidden" />',
             );
         });
     });
