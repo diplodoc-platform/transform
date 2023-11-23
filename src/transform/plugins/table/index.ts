@@ -6,6 +6,8 @@ const pipeChar = 0x7c; // |
 const apostropheChar = 0x60; // `
 const hashChar = 0x23; // #
 const backSlashChar = 0x5c; // \
+const curlyBraceOpen = 123;
+const curlyBraceClose = 125;
 
 const checkCharsOrder = (order: number[], src: string, pos: number) => {
     const currentOrder = [...order];
@@ -21,6 +23,14 @@ const checkCharsOrder = (order: number[], src: string, pos: number) => {
 };
 
 type CheckFn = (src: string, pos: number) => boolean;
+
+const liquidVariableStartOrder = [curlyBraceOpen, curlyBraceOpen];
+const isLiquidVariableStart: CheckFn = (src, pos) =>
+    checkCharsOrder(liquidVariableStartOrder, src, pos);
+
+const liquidVariableEndOrder = [curlyBraceClose, curlyBraceClose];
+const isLiquidVariableEnd: CheckFn = (src, pos) =>
+    checkCharsOrder(liquidVariableEndOrder, src, pos);
 
 const codeBlockOrder = [apostropheChar, apostropheChar, apostropheChar];
 const isCodeBlockOrder: CheckFn = (src, pos) => checkCharsOrder(codeBlockOrder, src, pos);
@@ -99,6 +109,7 @@ function getTableRows(
 
     let isInsideCode = false;
     let isInsideTable = false;
+    let isInsideLiquidVariable = false;
     const rowMap = new Map();
 
     const addRow = () => {
@@ -124,6 +135,21 @@ function getTableRows(
         }
 
         if (isInsideCode) {
+            iter.next();
+            continue;
+        }
+
+        if (!isInsideLiquidVariable && isLiquidVariableStart(state.src, iter.pos)) {
+            isInsideLiquidVariable = true;
+            iter.next(liquidVariableStartOrder.length);
+        }
+
+        if (isInsideLiquidVariable && isLiquidVariableEnd(state.src, iter.pos)) {
+            isInsideLiquidVariable = false;
+            iter.next(liquidVariableEndOrder.length);
+        }
+
+        if (isInsideLiquidVariable) {
             iter.next();
             continue;
         }
