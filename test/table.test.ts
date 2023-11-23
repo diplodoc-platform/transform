@@ -647,4 +647,16 @@ describe('Table plugin', () => {
                 '</table>\n',
         );
     });
+
+    it('parses table with liquid variables inside', () => {
+        const actual = transformYfm(
+            '#|\n' +
+                '|| {{variable | length}} column 1, row 1\n' +
+                '|Cell in column 2, row 1||\n' +
+                '||Cell in column 1, row 2\n' +
+                '|Cell in column 2, row 2||\n' +
+                '|#',
+        );
+        expect(actual).toMatchSnapshot();
+    });
 });
