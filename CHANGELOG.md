@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.1](https://github.com/diplodoc-platform/transform/compare/v4.3.0...v4.3.1) (2023-11-23)
+
+
+### Bug Fixes
+
+* **plugins/table:** allow liquid variables with filters ([a24228e](https://github.com/diplodoc-platform/transform/commit/a24228ee3410fcbce9f8a25b6f3b102e8304f6b8))
+
 ## [4.3.0](https://github.com/diplodoc-platform/transform/compare/v4.2.1...v4.3.0) (2023-11-10)
 
 
