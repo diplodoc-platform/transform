@@ -294,7 +294,7 @@
     &:not(.yfm_no-list-reset) {
         ol {
             list-style-type: none;
-            counter-reset: list;
+            counter-reset: list-item;
 
             & > li {
                 position: relative;
