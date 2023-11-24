@@ -45,7 +45,7 @@ export function visuallyHiddenInline() {
         https://hugogiraudel.com/2016/10/13/css-hide-and-seek/
     */
 
-    let inline = `
+    const inline = `
         position: absolute;
         overflow: hidden;
         clip: rect(0 0 0 0);
@@ -62,10 +62,6 @@ export function visuallyHiddenInline() {
 
         clip-path: inset(100%);
     `;
-    // replace line breaks with spaces, remove multiple consequent spaces
-    inline = inline.replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s+/g, ' ');
-    // remove first and last characters which are spaces
-    inline = inline.trim();
 
-    return inline;
+    return inline.match(/[^\s]+/gm)?.join(' ');
 }
