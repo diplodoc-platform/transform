@@ -5,6 +5,8 @@ import {findBlockTokens} from '../../utils';
 import Token from 'markdown-it/lib/token';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
 import {StateCore} from 'src/transform/typings';
+import {EnvApi} from '../../yfmlint';
+import {relative} from 'path';
 
 const INCLUDE_REGEXP = /^{%\s*include\s*(notitle)?\s*\[(.+?)]\((.+?)\)\s*%}$/;
 
@@ -18,10 +20,11 @@ type Options = MarkdownItPluginOpts &
     GetFileTokensOpts & {
         notFoundCb: (v: string) => void;
         noReplaceInclude: boolean;
+        envApi?: EnvApi;
     };
 
 function unfoldIncludes(state: StateCore, path: string, options: Options) {
-    const {root, notFoundCb, log, noReplaceInclude = false} = options;
+    const {root, notFoundCb, log, noReplaceInclude = false, envApi} = options;
     const {tokens} = state;
     let i = 0;
 
@@ -44,9 +47,19 @@ function unfoldIncludes(state: StateCore, path: string, options: Options) {
                 let pathname = fullIncludePath;
                 let hash = '';
                 const hashIndex = fullIncludePath.lastIndexOf('#');
-                if (hashIndex > -1 && !isFileExists(pathname)) {
-                    pathname = fullIncludePath.slice(0, hashIndex);
-                    hash = fullIncludePath.slice(hashIndex + 1);
+
+                if (hashIndex > -1) {
+                    let pathnameExists: boolean;
+                    if (envApi) {
+                        pathnameExists = envApi.fileExists(relative(envApi.root, pathname));
+                    } else {
+                        pathnameExists = isFileExists(pathname);
+                    }
+
+                    if (!pathnameExists) {
+                        pathname = fullIncludePath.slice(0, hashIndex);
+                        hash = fullIncludePath.slice(hashIndex + 1);
+                    }
                 }
 
                 if (!pathname.startsWith(root)) {

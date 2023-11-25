@@ -106,12 +106,25 @@ namespace yfmlint {
         sourceMap?: Dictionary<string>;
     }
 
+    export interface EnvApi {
+        root: string;
+        distRoot: string;
+        copyFile: (from: string, to: string) => void;
+        copyFileAsync: (from: string, to: string) => void;
+        writeFile: (to: string, data: string | Uint8Array) => void;
+        writeFileAsync: (to: string, data: string | Uint8Array) => void;
+        readFile: (path: string, encoding: BufferEncoding) => string | Uint8Array;
+        fileExists: (path: string) => boolean;
+        getFileVars: (path: string) => Record<string, string>;
+    }
+
     export interface PluginOptions {
         log: Logger;
         path?: string;
         disableLint?: boolean;
         lintMarkdown?: (opts: LintMarkdownFunctionOptions) => void;
         [key: string]: unknown;
+        envApi?: EnvApi;
     }
 
     export interface LintConfig {

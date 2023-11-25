@@ -3,6 +3,7 @@ import {bold} from 'chalk';
 
 import {isFileExists, resolveRelativePath} from '../../utilsFS';
 import {MarkdownItPluginOpts} from '../typings';
+import {EnvApi} from '../../yfmlint';
 
 const includesPaths: string[] = [];
 
@@ -10,10 +11,11 @@ type Opts = MarkdownItPluginOpts & {
     destPath: string;
     copyFile(path: string, dest: string, opts: Opts): void;
     singlePage: Boolean;
+    envApi?: EnvApi;
 };
 
 const collect = (input: string, options: Opts) => {
-    const {root, path, destPath = '', log, copyFile, singlePage} = options;
+    const {root, path, destPath = '', log, copyFile, singlePage, envApi} = options;
     const INCLUDE_REGEXP = /{%\s*include\s*(notitle)?\s*\[(.+?)]\((.+?)\)\s*%}/g;
 
     let match,
@@ -25,9 +27,19 @@ const collect = (input: string, options: Opts) => {
 
         let includePath = resolveRelativePath(path, relativePath);
         const hashIndex = relativePath.lastIndexOf('#');
-        if (hashIndex > -1 && !isFileExists(includePath)) {
-            includePath = includePath.slice(0, includePath.lastIndexOf('#'));
-            relativePath = relativePath.slice(0, hashIndex);
+
+        if (hashIndex > -1) {
+            let includePathExists: boolean;
+            if (envApi) {
+                includePathExists = envApi.fileExists(relative(envApi.root, includePath));
+            } else {
+                includePathExists = isFileExists(includePath);
+            }
+
+            if (!includePathExists) {
+                includePath = includePath.slice(0, includePath.lastIndexOf('#'));
+                relativePath = relativePath.slice(0, hashIndex);
+            }
         }
 
         const targetDestPath = resolveRelativePath(destPath, relativePath);

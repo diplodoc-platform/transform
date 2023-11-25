@@ -5,17 +5,19 @@ import {isLocalUrl} from '../../utils';
 import {resolveRelativePath} from '../../utilsFS';
 import imsize from '../imsize';
 import {MarkdownItPluginOpts} from '../typings';
+import {EnvApi} from '../../yfmlint';
 
 type Options = MarkdownItPluginOpts & {
     destPath: string;
     copyFile: (path: string, dest: string) => void;
     singlePage: boolean;
+    envApi?: EnvApi;
 };
 
 const collect = (input: string, options: Options) => {
     const md = new MarkdownIt().use(imsize);
 
-    const {root, path, destPath = '', copyFile, singlePage} = options;
+    const {root, path, destPath = '', copyFile, singlePage, envApi} = options;
     const tokens = md.parse(input, {});
     let result = input;
 
@@ -46,7 +48,14 @@ const collect = (input: string, options: Options) => {
                 result = result.replace(src, newSrc);
             }
 
-            copyFile(targetPath, targetDestPath);
+            if (envApi) {
+                envApi.copyFileAsync(
+                    relative(envApi.root, targetPath),
+                    relative(envApi.distRoot, targetDestPath),
+                );
+            } else {
+                copyFile(targetPath, targetDestPath);
+            }
         });
     });
 

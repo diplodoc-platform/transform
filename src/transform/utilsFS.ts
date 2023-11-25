@@ -1,10 +1,11 @@
 import _, {Dictionary} from 'lodash';
 import {readFileSync, statSync} from 'fs';
 
-import {parse, resolve, join, sep} from 'path';
+import {parse, resolve, join, sep, relative} from 'path';
 
 import liquid from './liquid';
 import {StateCore} from './typings';
+import {EnvApi} from './yfmlint';
 
 const filesCache: Record<string, string> = {};
 
@@ -34,6 +35,7 @@ export type GetFileTokensOpts = {
     disableCircularError?: boolean;
     inheritVars?: boolean;
     conditionsInCode?: boolean;
+    envApi?: EnvApi;
 };
 
 export function getFileTokens(path: string, state: StateCore, options: GetFileTokensOpts) {
@@ -47,12 +49,20 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
         disableCircularError,
         inheritVars = true,
         conditionsInCode,
+        envApi,
     } = options;
     let content;
 
-    const builtVars = (getVarsPerFile && !inheritVars ? getVarsPerFile(path) : vars) || {};
+    let builtVars;
+    if (envApi) {
+        builtVars = (inheritVars ? vars : envApi.getFileVars(relative(envApi.root, path))) || {};
+    } else {
+        builtVars = (getVarsPerFile && !inheritVars ? getVarsPerFile(path) : vars) || {};
+    }
 
-    if (filesCache[path]) {
+    if (envApi) {
+        content = envApi.readFile(relative(envApi.root, path), 'utf-8') as string;
+    } else if (filesCache[path]) {
         content = filesCache[path];
     } else {
         content = readFileSync(path, 'utf8');
