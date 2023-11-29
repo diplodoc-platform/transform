@@ -67,7 +67,6 @@ describe('Alerts', () => {
                 'Text after',
             ]),
         );
-
         expect(result).toEqual(customTitle);
     });
 
@@ -97,8 +96,8 @@ describe('Alerts', () => {
             ),
         ).toBe(
             '<div class="yfm-note yfm-accent-info" note-type="info"><p class="yfm-note-title" yfm2xliff-explicit="true">Note title</p>\n' +
-                '<p>Note content</p>\n' +
-                '</div>',
+                '<div class="yfm-note-content"><p>Note content</p>\n' +
+                '</div></div>',
         );
     });
 
@@ -119,10 +118,10 @@ describe('Alerts', () => {
             ),
         ).toBe(
             '<div class="yfm-note yfm-accent-info" note-type="info"><p class="yfm-note-title" yfm2xliff-explicit="true">Note title 1</p>\n' +
-                '<p>Note content 1</p>\n' +
-                '</div><div class="yfm-note yfm-accent-info" note-type="info"><p class="yfm-note-title" yfm2xliff-explicit="true">Note title 2</p>\n' +
-                '<p>Note content 2</p>\n' +
-                '</div>',
+                '<div class="yfm-note-content"><p>Note content 1</p>\n' +
+                '</div></div><div class="yfm-note yfm-accent-info" note-type="info"><p class="yfm-note-title" yfm2xliff-explicit="true">Note title 2</p>\n' +
+                '<div class="yfm-note-content"><p>Note content 2</p>\n' +
+                '</div></div>',
         );
     });
 
@@ -143,10 +142,10 @@ describe('Alerts', () => {
             ),
         ).toBe(
             '<div class="yfm-note yfm-accent-info" note-type="info"><p class="yfm-note-title" yfm2xliff-explicit="true">Outer title</p>\n' +
-                '<p>Outer content</p>\n' +
+                '<div class="yfm-note-content"><p>Outer content</p>\n' +
                 '<div class="yfm-note yfm-accent-info" note-type="info"><p class="yfm-note-title" yfm2xliff-explicit="true">Inner title</p>\n' +
-                '<p>Inner content</p>\n' +
-                '</div></div>',
+                '<div class="yfm-note-content"><p>Inner content</p>\n' +
+                '</div></div></div></div>',
         );
     });
 
@@ -162,8 +161,8 @@ describe('Alerts', () => {
         ).toBe(
             '<div class="yfm-note yfm-accent-info" note-type="info">' +
                 '<p class="yfm-note-title" yfm2xliff-explicit="true"><em>Italic note title</em></p>\n' +
-                '<p>Content</p>\n' +
-                '</div>',
+                '<div class="yfm-note-content"><p>Content</p>\n' +
+                '</div></div>',
         );
     });
 });

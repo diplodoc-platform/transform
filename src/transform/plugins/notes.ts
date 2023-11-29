@@ -80,9 +80,13 @@ const notes: MarkdownItPluginCb = (md, {lang, path: optPath, log}) => {
                 newOpenToken.attrSet('class', `yfm-note yfm-accent-${type}`);
                 newOpenToken.attrSet('note-type', type);
                 newOpenToken.map = tokens[i].map;
+                const closeTokenMap = tokens[closeTokenIdx].map;
+
+                if (closeTokenMap && newOpenToken.map) {
+                    newOpenToken.map[1] = closeTokenMap[1];
+                }
 
                 const newCloseToken = new state.Token('yfm_note_close', 'div', -1);
-                newCloseToken.map = tokens[closeTokenIdx].map;
 
                 // Add extra paragraph
                 const titleOpen = new state.Token('yfm_note_title_open', 'p', 1);
@@ -96,6 +100,15 @@ const notes: MarkdownItPluginCb = (md, {lang, path: optPath, log}) => {
 
                 titleInline.content = match[2] === undefined ? getTitle(type, lang) : match[2];
                 titleInline.children = [];
+
+                const contentOpen = new state.Token('yfm_note_content_open', 'div', 1);
+                contentOpen.attrSet('class', 'yfm-note-content');
+                const contentClose = new state.Token('yfm_note_content_close', 'div', -1);
+
+                if (newOpenToken.map) {
+                    contentOpen.map = [newOpenToken.map[0] + 2, newOpenToken.map[1] - 2];
+                }
+
                 state.md.inline.parse(
                     titleInline.content,
                     state.md,
@@ -108,7 +121,9 @@ const notes: MarkdownItPluginCb = (md, {lang, path: optPath, log}) => {
                     titleOpen,
                     titleInline,
                     titleClose,
+                    contentOpen,
                     ...tokens.slice(i + 3, closeTokenIdx),
+                    contentClose,
                     newCloseToken,
                 ];
                 tokens.splice(i, closeTokenIdx - i + 3, ...insideTokens);
