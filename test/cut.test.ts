@@ -15,10 +15,10 @@ describe('Cut plugin', () => {
         expect(
             transformYfm(
                 '{% cut "Cut title" %}\n' + '\n' + 'Cut content\n' + '\n' + '{% endcut %}',
-            ),
+            ).replace(/(\r\n|\n|\r)/gm, ''),
         ).toBe(
             '<div class="yfm-cut"><div class="yfm-cut-title">Cut title</div>' +
-                '<div class="yfm-cut-content"><p>Cut content</p>\n' +
+                '<div class="yfm-cut-content"><p>Cut content</p>' +
                 '</div></div>',
         );
     });
@@ -36,13 +36,13 @@ describe('Cut plugin', () => {
                     'Cut content 2\n' +
                     '\n' +
                     '{% endcut %}',
-            ),
+            ).replace(/(\r\n|\n|\r)/gm, ''),
         ).toBe(
             '<div class="yfm-cut"><div class="yfm-cut-title">Cut title 1</div>' +
-                '<div class="yfm-cut-content"><p>Cut content 1</p>\n</div>' +
+                '<div class="yfm-cut-content"><p>Cut content 1</p></div>' +
                 '</div>' +
                 '<div class="yfm-cut"><div class="yfm-cut-title">Cut title 2</div>' +
-                '<div class="yfm-cut-content"><p>Cut content 2</p>\n</div>' +
+                '<div class="yfm-cut-content"><p>Cut content 2</p></div>' +
                 '</div>',
         );
     });
@@ -60,16 +60,15 @@ describe('Cut plugin', () => {
                     '{% endcut %}\n' +
                     '\n' +
                     '{% endcut %}',
-            ),
+            ).replace(/(\r\n|\n|\r)/gm, ''),
         ).toBe(
             '<div class="yfm-cut"><div class="yfm-cut-title">Outer title</div>' +
-                '<div class="yfm-cut-content"><p>Outer content</p>\n' +
+                '<div class="yfm-cut-content"><p>Outer content</p>' +
                 '<div class="yfm-cut"><div class="yfm-cut-title">Inner title</div>' +
-                '<div class="yfm-cut-content"><p>Inner content</p>\n</div>' +
+                '<div class="yfm-cut-content"><p>Inner content</p></div>' +
                 '</div></div></div>',
         );
     });
-
     it('should render title with format', () => {
         expect(
             transformYfm(
@@ -78,12 +77,58 @@ describe('Cut plugin', () => {
                     'Content we want to hide\n' +
                     '\n' +
                     '{% endcut %}',
-            ),
+            ).replace(/(\r\n|\n|\r)/gm, ''),
         ).toBe(
             '<div class="yfm-cut">' +
                 '<div class="yfm-cut-title"><strong>Strong cut title</strong></div>' +
-                '<div class="yfm-cut-content"><p>Content we want to hide</p>\n</div>' +
+                '<div class="yfm-cut-content"><p>Content we want to hide</p></div>' +
                 '</div>',
+        );
+    });
+    it('should close all tags correctly and insert two p tags', () => {
+        expect(
+            transformYfm(
+                '* {% cut "Cut 1" %}\n' +
+                    '\n' +
+                    '  Some text\n' +
+                    '\n' +
+                    '  Some text\n' +
+                    '\n' +
+                    '{% endcut %}',
+            ).replace(/(\r\n|\n|\r)/gm, ''),
+        ).toBe(
+            '<ul><li><div class="yfm-cut"><div class="yfm-cut-title">Cut 1</div>' +
+                '<div class="yfm-cut-content"><p>Some text</p><p>Some text</p></div></div></li></ul>',
+        );
+    });
+    it('should close all tags correctly when given a bullet-list with several items', () => {
+        expect(
+            transformYfm(
+                '* {% cut "Cut 1" %}\n' +
+                    '\n' +
+                    '  Some text\n' +
+                    '\n' +
+                    '  {% endcut %}' +
+                    '\n' +
+                    '* {% cut "Cut 2" %}\n' +
+                    '\n' +
+                    '  Some text\n' +
+                    '\n' +
+                    '  {% endcut %}' +
+                    '\n' +
+                    '* {% cut "Cut 3" %}\n' +
+                    '\n' +
+                    '  Some text\n' +
+                    '\n' +
+                    '{% endcut %}',
+            ).replace(/(\r\n|\n|\r)/gm, ''),
+        ).toBe(
+            '<ul><li><div class="yfm-cut"><div class="yfm-cut-title">Cut 1</div>' +
+                '<div class="yfm-cut-content"><p>Some text</p></div></div></li>' +
+                '<li><div class="yfm-cut"><div class="yfm-cut-title">Cut 2</div>' +
+                '<div class="yfm-cut-content"><p>Some text</p></div></div></li>' +
+                '<li><div class="yfm-cut"><div class="yfm-cut-title">Cut 3</div>' +
+                '<div class="yfm-cut-content"><p>Some text</p></div></div></li></ul>',
         );
     });
 });
