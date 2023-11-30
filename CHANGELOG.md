@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.4.0](https://github.com/diplodoc-platform/transform/compare/v4.3.1...v4.4.0) (2023-11-29)
+
+
+### Features
+
+* add content node to note ([#329](https://github.com/diplodoc-platform/transform/issues/329)) ([1cabde1](https://github.com/diplodoc-platform/transform/commit/1cabde18fca2b0bda68e10c57a5e4a3cd72fe02f))
+
+
+### Bug Fixes
+
+* correct nested ol indexing in firefox ([ff29282](https://github.com/diplodoc-platform/transform/commit/ff29282dbc2857bf55c4b8deebffb1a77ab9401b))
+
 ## [4.3.1](https://github.com/diplodoc-platform/transform/compare/v4.3.0...v4.3.1) (2023-11-23)
 
 
