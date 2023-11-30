@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.5.0](https://github.com/diplodoc-platform/transform/compare/v4.4.0...v4.5.0) (2023-11-30)
+
+
+### Features
+
+* add plugin for detached anchors ([de87eca](https://github.com/diplodoc-platform/transform/commit/de87eca8d364c09160ed0fd64476aaf5c378fd33))
+* match anchors within paragraphs ([19551c2](https://github.com/diplodoc-platform/transform/commit/19551c2ae69048d82b28c703f0cea93f20e9e7fb))
+
+
+### Bug Fixes
+
+* simplify match token check ([cb42b3f](https://github.com/diplodoc-platform/transform/commit/cb42b3f9c4cbd14da462b8e6b429b436f073841e))
+* use hr instead of a tag ([0a70e2e](https://github.com/diplodoc-platform/transform/commit/0a70e2ee284c1fbca2efb169be77de8634451506))
+
 ## [4.4.0](https://github.com/diplodoc-platform/transform/compare/v4.3.1...v4.4.0) (2023-11-29)
 
 
