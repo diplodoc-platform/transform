@@ -10,6 +10,7 @@ import {StateCore} from '../../typings';
 
 interface ImageOpts extends MarkdownItPluginOpts {
     assetsPublicPath: string;
+    inlineSvg?: boolean;
 }
 
 function replaceImageSrc(
@@ -94,8 +95,9 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                     }
 
                     const imgSrc = childrenTokens[j].attrGet('src') || '';
+                    const shouldInlineSvg = opts.inlineSvg !== false && !isExternalHref(imgSrc);
 
-                    if (imgSrc.endsWith('.svg') && !isExternalHref(imgSrc)) {
+                    if (imgSrc.endsWith('.svg') && shouldInlineSvg) {
                         childrenTokens[j] = convertSvg(childrenTokens[j], state, opts);
                     } else {
                         replaceImageSrc(childrenTokens[j], state, opts);
