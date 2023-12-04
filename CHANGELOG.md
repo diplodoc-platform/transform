@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.6.0](https://github.com/diplodoc-platform/transform/compare/v4.5.0...v4.6.0) (2023-12-04)
+
+
+### Features
+
+* **ImagesPlugin:** add `inlineSvg` option ([1c802ec](https://github.com/diplodoc-platform/transform/commit/1c802ec43f90783db73b5bf22235d4a8d1ee3de1))
+
 ## [4.5.0](https://github.com/diplodoc-platform/transform/compare/v4.4.0...v4.5.0) (2023-11-30)
 
 
