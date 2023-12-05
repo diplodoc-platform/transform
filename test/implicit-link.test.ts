@@ -3,7 +3,6 @@ import plugin from '../src/transform/plugins/block-anchor';
 import implicitLink from '../src/transform/plugins/implicit-link';
 import links from '../src/transform/plugins/links';
 
-
 const {parse, compile} = initMarkdown({plugins: [plugin, links, implicitLink]});
 
 describe('implicit-link', function () {
@@ -13,4 +12,3 @@ describe('implicit-link', function () {
         expect(actual).toMatchSnapshot();
     });
 });
-u
