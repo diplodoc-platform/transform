@@ -22,6 +22,7 @@ describe('Cut plugin', () => {
                 '</div></div>',
         );
     });
+
     it('should render siblings cuts', () => {
         expect(
             transformYfm(
@@ -46,6 +47,7 @@ describe('Cut plugin', () => {
                 '</div>',
         );
     });
+
     it('should render nested cuts', () => {
         expect(
             transformYfm(
@@ -69,6 +71,7 @@ describe('Cut plugin', () => {
                 '</div></div></div>',
         );
     });
+
     it('should render title with format', () => {
         expect(
             transformYfm(
@@ -85,6 +88,7 @@ describe('Cut plugin', () => {
                 '</div>',
         );
     });
+
     it('should close all tags correctly and insert two p tags', () => {
         expect(
             transformYfm(
@@ -101,6 +105,7 @@ describe('Cut plugin', () => {
                 '<div class="yfm-cut-content"><p>Some text</p><p>Some text</p></div></div></li></ul>',
         );
     });
+
     it('should close all tags correctly when given a bullet-list with several items', () => {
         expect(
             transformYfm(
