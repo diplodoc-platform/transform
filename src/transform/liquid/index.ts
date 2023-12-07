@@ -5,7 +5,7 @@ import applyCycles from './cycles';
 import applyConditions from './conditions';
 
 import ArgvService, {ArgvSettings} from './services/argv';
-import {Dictionary} from 'lodash';
+import type {Dictionary} from 'lodash';
 
 const fence = '```';
 

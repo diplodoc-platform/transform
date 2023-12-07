@@ -1,5 +1,6 @@
-import _, {Dictionary} from 'lodash';
 import {readFileSync, statSync} from 'fs';
+import type {Dictionary} from 'lodash';
+import escapeRegExp from 'lodash/escapeRegExp';
 
 import {parse, resolve, join, sep} from 'path';
 
@@ -118,7 +119,7 @@ export function getSinglePageAnchorId(args: {
     resultAnchor = resultAnchor
         .replace(root, '')
         .replace(/\.(md|ya?ml|html)$/i, '')
-        .replace(new RegExp(_.escapeRegExp(sep), 'gi'), '_');
+        .replace(new RegExp(escapeRegExp(sep), 'gi'), '_');
 
     if (hash) {
         resultAnchor = resultAnchor + '_' + hash.slice(1);

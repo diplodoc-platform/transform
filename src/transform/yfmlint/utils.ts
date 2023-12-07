@@ -1,6 +1,6 @@
 import {LogLevels} from '../log';
 import {LintError} from 'markdownlint';
-import {Dictionary} from 'lodash';
+import type {Dictionary} from 'lodash';
 import {sep} from 'path';
 
 export function errorToString(path: string, error: LintError, sourceMap?: Dictionary<string>) {
