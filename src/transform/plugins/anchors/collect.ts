@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import chain from 'lodash/chain';
 import {sep} from 'path';
 
 import {getSinglePageAnchorId, resolveRelativePath} from '../../utilsFS';
@@ -71,7 +71,7 @@ const collect = (input: string, options: MarkdownItPluginOpts & {singlePage: boo
             needToSetPageId = false;
         }
 
-        const newCustomHeadersStr = _.chain(newCustomHeaders)
+        const newCustomHeadersStr = chain(newCustomHeaders)
             .uniq()
             .map((id) => {
                 return `{${id}}`;

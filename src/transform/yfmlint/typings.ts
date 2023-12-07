@@ -1,4 +1,4 @@
-import {Dictionary} from 'lodash';
+import type {Dictionary} from 'lodash';
 import {Plugin, Rule} from 'markdownlint';
 import {LintConfig, PluginOptions} from '.';
 

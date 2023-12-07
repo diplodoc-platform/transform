@@ -17,7 +17,7 @@ import {
 
 import {errorToString, getLogLevel} from './utils';
 import {Options} from './typings';
-import {Dictionary} from 'lodash';
+import type {Dictionary} from 'lodash';
 import {Logger, LogLevels} from '../log';
 import {yfm009} from './markdownlint-custom-rule/yfm009';
 
