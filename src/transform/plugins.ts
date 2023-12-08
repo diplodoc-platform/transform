@@ -14,6 +14,7 @@ import yfmTable from './plugins/table';
 import file from './plugins/file';
 import imsize from './plugins/imsize';
 import term from './plugins/term';
+import blockAnchor from './plugins/block-anchor';
 
 const defaultPlugins = [
     meta,
@@ -30,6 +31,7 @@ const defaultPlugins = [
     file,
     imsize,
     term,
+    blockAnchor,
 ] as MarkdownItPluginCb[];
 
 export = defaultPlugins;
