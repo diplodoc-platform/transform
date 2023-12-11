@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.7.0](https://github.com/diplodoc-platform/transform/compare/v4.6.0...v4.7.0) (2023-12-11)
+
+
+### Features
+
+* add block anchor to default plugins ([f2a526c](https://github.com/diplodoc-platform/transform/commit/f2a526c7950972c7850953145bbcbaa5b11fd665))
+
+
+### Bug Fixes
+
+* don't import lodash global object ([#345](https://github.com/diplodoc-platform/transform/issues/345)) ([df59dd6](https://github.com/diplodoc-platform/transform/commit/df59dd62180fd05a4623e5007e2a3fd8c2a51250))
+
 ## [4.6.0](https://github.com/diplodoc-platform/transform/compare/v4.5.0...v4.6.0) (2023-12-04)
 
 
