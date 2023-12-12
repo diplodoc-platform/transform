@@ -243,7 +243,7 @@ const getTokens = (title: string, custom = false) => {
             hidden: false,
             info: '',
             level: 0,
-            map: null,
+            map: [6, 7],
             markup: '',
             meta: null,
             nesting: -1,
