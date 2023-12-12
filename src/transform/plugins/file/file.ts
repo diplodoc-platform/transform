@@ -3,10 +3,10 @@ import type ParserInline from 'markdown-it/lib/parser_inline';
 import type Renderer from 'markdown-it/lib/renderer';
 
 import {
-    FileClassName,
-    FileSpecialAttr,
     FILE_TOKEN,
     FILE_TO_LINK_ATTRS_MAP,
+    FileClassName,
+    FileSpecialAttr,
     KNOWN_ATTRS,
     PREFIX,
     PREFIX_LENGTH,

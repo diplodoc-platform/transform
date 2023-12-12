@@ -1,7 +1,7 @@
 import url from 'url';
 import {bold} from 'chalk';
-import {isLocalUrl, findBlockTokens, headingInfo, getHrefTokenAttr} from '../../utils';
-import {isFileExists, getFileTokens} from '../../utilsFS';
+import {findBlockTokens, getHrefTokenAttr, headingInfo, isLocalUrl} from '../../utils';
+import {getFileTokens, isFileExists} from '../../utilsFS';
 import {PAGE_LINK_REGEXP} from './constants';
 import Token from 'markdown-it/lib/token';
 import {Logger} from 'src/transform/log';

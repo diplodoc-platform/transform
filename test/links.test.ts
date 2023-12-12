@@ -4,7 +4,7 @@ import transform from '../src/transform';
 import links from '../src/transform/plugins/links';
 import includes from '../src/transform/plugins/includes';
 import {callPlugin, tokenize} from './utils';
-import {title, customTitle} from './data/links';
+import {customTitle, title} from './data/links';
 
 import {log} from '../src/transform/log';
 import type {OptionsType} from '../src/transform/typings';

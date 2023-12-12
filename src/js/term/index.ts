@@ -1,11 +1,11 @@
 import {
     Selector,
+    closeDefinition,
+    createDefinitionElement,
     openClass,
     openDefinitionClass,
-    createDefinitionElement,
     setDefinitionId,
     setDefinitionPosition,
-    closeDefinition,
 } from './utils';
 import {getEventTarget, isCustom} from '../utils';
 

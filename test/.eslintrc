@@ -1,5 +1,5 @@
 {
-    "extends": ["@yandex-cloud/eslint-config", "@yandex-cloud/eslint-config/prettier"],
+    "extends": ['@diplodoc/eslint-config'],
     "overrides": [{
         "files": ["*"],
         "rules": {

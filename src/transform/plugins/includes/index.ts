@@ -1,6 +1,6 @@
 import {bold} from 'chalk';
 
-import {getFileTokens, GetFileTokensOpts, getFullIncludePath, isFileExists} from '../../utilsFS';
+import {GetFileTokensOpts, getFileTokens, getFullIncludePath, isFileExists} from '../../utilsFS';
 import {findBlockTokens} from '../../utils';
 import Token from 'markdown-it/lib/token';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';

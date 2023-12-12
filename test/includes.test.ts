@@ -3,7 +3,7 @@ import {dirname} from 'path';
 import includes from '../src/transform/plugins/includes';
 import yfmlint from '../src/transform/yfmlint';
 import {callPlugin, tokenize} from './utils';
-import {title, notitle, codeInBackQuote, sharpedFile} from './data/includes';
+import {codeInBackQuote, notitle, sharpedFile, title} from './data/includes';
 import {log} from '../src/transform/log';
 
 describe('Includes', () => {

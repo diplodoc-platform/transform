@@ -1,4 +1,4 @@
-import type {OptionsType, OutputType, EnvType} from './typings';
+import type {EnvType, OptionsType, OutputType} from './typings';
 import {bold} from 'chalk';
 import {log} from './log';
 import liquid from './liquid';

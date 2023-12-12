@@ -4,7 +4,7 @@ import ArgvService from './services/argv';
 import getObject from '../getObject';
 import {evalExp} from './evaluation';
 import {log} from '../log';
-import {vars as varsRe, isVariable} from './lexical';
+import {isVariable, vars as varsRe} from './lexical';
 
 const substitutions = (str: string, builtVars: Record<string, unknown>, path?: string) => {
     const {keepNotVar} = ArgvService.getConfig();
