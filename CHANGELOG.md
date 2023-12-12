@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.7.1](https://github.com/diplodoc-platform/transform/compare/v4.7.0...v4.7.1) (2023-12-12)
+
+
+### Bug Fixes
+
+* cut plugin && add tests ([#338](https://github.com/diplodoc-platform/transform/issues/338)) ([ac31450](https://github.com/diplodoc-platform/transform/commit/ac3145030e12a7d6bd442015f6b23ab61c3d148e))
+* **plugins/notes:** add map to yfm_note_close token ([ab04389](https://github.com/diplodoc-platform/transform/commit/ab04389e8c1d02bdbecf194c59abd8e516489f6d))
+
 ## [4.7.0](https://github.com/diplodoc-platform/transform/compare/v4.6.0...v4.7.0) (2023-12-11)
 
 
