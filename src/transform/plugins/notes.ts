@@ -87,6 +87,7 @@ const notes: MarkdownItPluginCb = (md, {lang, path: optPath, log}) => {
                 }
 
                 const newCloseToken = new state.Token('yfm_note_close', 'div', -1);
+                newCloseToken.map = tokens[closeTokenIdx].map;
 
                 // Add extra paragraph
                 const titleOpen = new state.Token('yfm_note_title_open', 'p', 1);
