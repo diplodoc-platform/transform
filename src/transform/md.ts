@@ -1,4 +1,4 @@
-import type {MarkdownIt, OptionsType, EnvType} from './typings';
+import type {EnvType, MarkdownIt, OptionsType} from './typings';
 import type Token from 'markdown-it/lib/token';
 
 import DefaultMarkdownIt from 'markdown-it';

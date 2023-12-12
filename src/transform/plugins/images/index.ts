@@ -2,8 +2,8 @@ import {readFileSync} from 'fs';
 import {join, sep} from 'path';
 import {bold} from 'chalk';
 
-import {resolveRelativePath, isFileExists} from '../../utilsFS';
-import {isLocalUrl, isExternalHref} from '../../utils';
+import {isFileExists, resolveRelativePath} from '../../utilsFS';
+import {isExternalHref, isLocalUrl} from '../../utils';
 import Token from 'markdown-it/lib/token';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
 import {StateCore} from '../../typings';

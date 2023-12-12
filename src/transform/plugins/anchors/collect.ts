@@ -3,7 +3,7 @@ import {sep} from 'path';
 
 import {getSinglePageAnchorId, resolveRelativePath} from '../../utilsFS';
 import {transformLinkToOriginalArticle} from '../../utils';
-import {CUSTOM_ID_REGEXP, CUSTOM_ID_EXCEPTION} from './constants';
+import {CUSTOM_ID_EXCEPTION, CUSTOM_ID_REGEXP} from './constants';
 import {сarriage} from '../utils';
 import {MarkdownItPluginOpts} from '../typings';
 
@@ -84,9 +84,8 @@ const collect = (input: string, options: MarkdownItPluginOpts & {singlePage: boo
 
         if (needToSetOriginalPathAttr) {
             const originalArticleHref = transformLinkToOriginalArticle({root, currentPath});
-            lines[
-                i
-            ] = `${baseHeaderSyntax} {data-original-article=${originalArticleHref}} ${newCustomHeadersStr}`;
+            lines[i] =
+                `${baseHeaderSyntax} {data-original-article=${originalArticleHref}} ${newCustomHeadersStr}`;
 
             needToSetOriginalPathAttr = false;
         }

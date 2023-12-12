@@ -1,4 +1,4 @@
-import {log, LogLevels} from '../../src/transform/log';
+import {LogLevels, log} from '../../src/transform/log';
 import term from '../../src/transform/plugins/term';
 import yfmlint from '../../src/transform/yfmlint';
 import {yfm009} from '../../src/transform/yfmlint/markdownlint-custom-rule';

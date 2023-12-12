@@ -12,7 +12,7 @@ import type Renderer from 'markdown-it/lib/renderer';
 
 import type {VideoFullOptions, VideoPluginOptions, VideoToken} from './types';
 import {parseVideoUrl} from './parsers';
-import {defaults, VideoService} from './const';
+import {VideoService, defaults} from './const';
 
 // eslint-disable-next-line valid-jsdoc
 /**

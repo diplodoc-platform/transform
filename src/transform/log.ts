@@ -1,4 +1,4 @@
-import {green, yellow, red} from 'chalk';
+import {green, red, yellow} from 'chalk';
 
 export enum LogLevels {
     INFO = 'info',

@@ -18,7 +18,7 @@ import {
 import {errorToString, getLogLevel} from './utils';
 import {Options} from './typings';
 import type {Dictionary} from 'lodash';
-import {Logger, LogLevels} from '../log';
+import {LogLevels, Logger} from '../log';
 import {yfm009} from './markdownlint-custom-rule/yfm009';
 
 const defaultLintRules = [yfm001, yfm002, yfm003, yfm004, yfm005, yfm006, yfm007, yfm008, yfm009];

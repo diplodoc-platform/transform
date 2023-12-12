@@ -2,7 +2,7 @@ import {readFileSync, statSync} from 'fs';
 import type {Dictionary} from 'lodash';
 import escapeRegExp from 'lodash/escapeRegExp';
 
-import {parse, resolve, join, sep} from 'path';
+import {join, parse, resolve, sep} from 'path';
 
 import liquid from './liquid';
 import {StateCore} from './typings';

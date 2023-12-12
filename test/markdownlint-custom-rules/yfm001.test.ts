@@ -1,6 +1,6 @@
 import yfmlint from '../../src/transform/yfmlint';
 import merge from 'lodash/merge';
-import {log, LogLevels} from '../../src/transform/log';
+import {LogLevels, log} from '../../src/transform/log';
 
 const testInput = `
 \`single-line inline code\` \`another single-line inline code\`

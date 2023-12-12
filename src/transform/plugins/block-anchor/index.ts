@@ -1,5 +1,5 @@
 import MarkdownIt from 'markdown-it';
-import {renderTokens, replaceTokens, TOKEN_NAME} from './block-anchor';
+import {TOKEN_NAME, renderTokens, replaceTokens} from './block-anchor';
 
 const blockAnchor = (md: MarkdownIt) => {
     md.core.ruler.before('curly_attributes', TOKEN_NAME, replaceTokens);
