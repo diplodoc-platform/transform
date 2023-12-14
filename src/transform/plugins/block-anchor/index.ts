@@ -8,4 +8,4 @@ const blockAnchor = (md: MarkdownIt) => {
     return md;
 };
 
-export default blockAnchor;
+export = blockAnchor;
