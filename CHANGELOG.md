@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.7.2](https://github.com/diplodoc-platform/transform/compare/v4.7.1...v4.7.2) (2023-12-14)
+
+
+### Bug Fixes
+
+* block anchors export ([c331ea5](https://github.com/diplodoc-platform/transform/commit/c331ea5911c8453a98dc9c6b423b4e2f1bb96411))
+* Update tabs extension ([c038799](https://github.com/diplodoc-platform/transform/commit/c0387998ca4bf4b1ee86bc140b6d4bfd5c360125))
+
 ## [4.7.1](https://github.com/diplodoc-platform/transform/compare/v4.7.0...v4.7.1) (2023-12-12)
 
 
