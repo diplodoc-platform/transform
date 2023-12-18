@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.7.3](https://github.com/diplodoc-platform/transform/compare/v4.7.2...v4.7.3) (2023-12-18)
+
+
+### Bug Fixes
+
+* Update markdown-it ([24e817d](https://github.com/diplodoc-platform/transform/commit/24e817d7130df6992cd5770dacf86ad612bc35d5))
+* Update markdownit ([d314ef5](https://github.com/diplodoc-platform/transform/commit/d314ef5ccdbe62ecb3725030dd2fed30cd525109))
+
 ## [4.7.2](https://github.com/diplodoc-platform/transform/compare/v4.7.1...v4.7.2) (2023-12-14)
 
 
