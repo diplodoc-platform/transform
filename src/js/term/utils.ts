@@ -76,10 +76,15 @@ export function setDefinitionPosition(
     const {left: definitionParentLeft} = definitionParent.getBoundingClientRect();
 
     // If definition not fit document change base alignment
-    const definitionRightCoordinate = definitionWidth + Number(getCoords(termElement).left);
-    const fitDefinitionDocument =
-        document.body.clientWidth > definitionRightCoordinate ? 0 : definitionWidth - termWidth;
+    const definitionLeftCoordinate = Number(getCoords(termElement).left);
+    const definitionRightCoordinate = definitionWidth + definitionLeftCoordinate;
 
+    const definitionOutOfScreenOnLeft = definitionLeftCoordinate - definitionWidth < 0;
+    const definitionOutOfScreenOnRight = definitionRightCoordinate > document.body.clientWidth;
+
+    const isAlignSwapped = definitionOutOfScreenOnRight || document.dir === 'rtl';
+    const fitDefinitionDocument =
+        isAlignSwapped && !definitionOutOfScreenOnLeft ? definitionWidth - termWidth : 0;
     const customHeaderTop = getCoords(definitionParent).top - definitionParent.offsetTop;
 
     definitionElement.style.top =
