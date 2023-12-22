@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.8.0](https://github.com/diplodoc-platform/transform/compare/v4.7.3...v4.8.0) (2023-12-22)
+
+
+### Features
+
+* **plugins/terms:** rtl support ([#354](https://github.com/diplodoc-platform/transform/issues/354)) ([d2964aa](https://github.com/diplodoc-platform/transform/commit/d2964aa008d3675250fd4602008133650b54614a))
+
 ## [4.7.3](https://github.com/diplodoc-platform/transform/compare/v4.7.2...v4.7.3) (2023-12-18)
 
 
