@@ -23,6 +23,24 @@ describe('Cut plugin', () => {
         );
     });
 
+    it('should render simple cut with code in it', () => {
+        expect(
+            transformYfm(
+                '{% cut "Cut title" %}\n' +
+                    '\n' +
+                    '```\n' +
+                    'Code\n' +
+                    '```\n' +
+                    '\n' +
+                    '{% endcut %}',
+            ).replace(/(\r\n|\n|\r)/gm, ''),
+        ).toBe(
+            '<div class="yfm-cut"><div class="yfm-cut-title">Cut title</div>' +
+                '<div class="yfm-cut-content"><pre><code class="hljs">Code</code></pre>' +
+                '</div></div>',
+        );
+    });
+
     it('should render siblings cuts', () => {
         expect(
             transformYfm(
