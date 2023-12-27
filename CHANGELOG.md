@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.8.1](https://github.com/diplodoc-platform/transform/compare/v4.8.0...v4.8.1) (2023-12-27)
+
+
+### Bug Fixes
+
+* revert pr338 && add cut w/ code test ([#358](https://github.com/diplodoc-platform/transform/issues/358)) ([b5449c2](https://github.com/diplodoc-platform/transform/commit/b5449c2f6e8c402cee98b7690a090bf2ade3985a))
+
 ## [4.8.0](https://github.com/diplodoc-platform/transform/compare/v4.7.3...v4.8.0) (2023-12-22)
 
 
