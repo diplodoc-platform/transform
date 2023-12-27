@@ -68,19 +68,15 @@ const cut: MarkdownItPluginCb = (md, {path, log}) => {
                 const newCloseToken = new state.Token('yfm_cut_close', 'div', -1);
                 newCloseToken.map = tokens[closeTokenIdx].map;
 
-                const insertTokens = tokens.slice(i + 3, closeTokenIdx);
-                const rest = insertTokens.length % 3;
-
                 const insideTokens = [
                     newOpenToken,
                     titleOpen,
                     titleInline,
                     titleClose,
                     contentOpen,
-                    ...insertTokens.slice(0, insertTokens.length - rest),
+                    ...tokens.slice(i + 3, closeTokenIdx),
                     contentClose,
                     newCloseToken,
-                    ...insertTokens.slice(insertTokens.length - rest),
                 ];
 
                 tokens.splice(i, closeTokenIdx - i + 3, ...insideTokens);
