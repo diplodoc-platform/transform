@@ -55,10 +55,10 @@ function parseBody(tokens: Token[], state: StateCore) {
         throw new Error('Metadata tag not found');
     }
 
-    let metadata: object = {};
+    let metadata: Record<string, unknown> = {};
     const rawMetadata = yaml.load(metadataToken.content, {
         schema: yaml.JSON_SCHEMA,
-    });
+    }) as Record<string, unknown>;
     if (rawMetadata && typeof rawMetadata === 'object') {
         metadata = rawMetadata;
     }
@@ -92,6 +92,10 @@ function parseBody(tokens: Token[], state: StateCore) {
     }
 
     const description = md.renderer.render(tokens, md.options, env);
+
+    if (typeof metadata.storyId === 'number') {
+        metadata.storyId = String(metadata.storyId);
+    }
 
     return {
         ...metadata,
@@ -135,13 +139,13 @@ const changelog: MarkdownItPluginCb<Options> = function (md, {extractChangelogs,
                 content.splice(-3);
 
                 try {
-                    const change = parseBody(content, state);
+                    const changelogLocal = parseBody(content, state);
 
                     if (!env.changelogs) {
                         env.changelogs = [];
                     }
 
-                    env.changelogs.push(change);
+                    env.changelogs.push(changelogLocal);
                 } catch (err) {
                     log.error(`Changelog error: ${(err as Error).message} in ${bold(path)}`);
                     continue;

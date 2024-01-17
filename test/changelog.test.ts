@@ -12,7 +12,7 @@ describe('Changelog', () => {
         return {
             date,
             index,
-            storyId: 123321,
+            storyId: '123321',
             title: 'Change log title',
             image: {
                 alt: 'My image',

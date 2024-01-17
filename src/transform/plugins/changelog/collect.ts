@@ -6,7 +6,7 @@ import imsize from '../imsize';
 import {MarkdownItPluginOpts} from '../typings';
 
 const BLOCK_START = '{% changelog %}';
-const BLOCK_END = '{% endchangelog %}\n';
+const BLOCK_END = '{% endchangelog %}';
 
 function parseChangelogs(str: string, path?: string) {
     const {parse, compile, env} = initMarkdownit({
@@ -28,33 +28,38 @@ type Options = Pick<MarkdownItPluginOpts, 'path' | 'log'> & {
 const collect = (input: string, {path: filepath, log, changelogs, extractChangelogs}: Options) => {
     let result = input;
     let lastPos = 0;
-    const rawChanges = [];
+    const rawChangelogs = [];
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
-        const pos = result.indexOf(BLOCK_START, lastPos);
-        lastPos = pos;
-        if (pos === -1) {
+        const startPos = result.indexOf(BLOCK_START, lastPos);
+        lastPos = startPos;
+        if (startPos === -1) {
             break;
         }
-        const endPos = result.indexOf(BLOCK_END, pos + BLOCK_START.length);
-        if (endPos === -1) {
+
+        const endBlockPos = result.indexOf(BLOCK_END, startPos + BLOCK_START.length);
+        if (endBlockPos === -1) {
             log.error(`Changelog block must be closed${filepath ? ` in ${bold(filepath)}` : ''}`);
             break;
         }
+        let endPos = endBlockPos + BLOCK_END.length;
+        if (result[endPos + 1] === '\n') {
+            endPos += 1;
+        }
 
-        const change = result.slice(pos, endPos + BLOCK_END.length);
+        const changelog = result.slice(startPos, endPos);
 
-        rawChanges.push(change);
+        rawChangelogs.push(changelog);
 
-        result = result.slice(0, pos) + result.slice(endPos + BLOCK_END.length);
+        result = result.slice(0, startPos) + result.slice(endPos);
     }
 
-    if (rawChanges.length && changelogs && extractChangelogs) {
-        const parsedChangelogs = parseChangelogs(rawChanges.join('\n\n'), filepath);
-        if (parsedChangelogs.length !== rawChanges.length) {
+    if (rawChangelogs.length && changelogs && extractChangelogs) {
+        const parsedChangelogs = parseChangelogs(rawChangelogs.join('\n\n'), filepath);
+        if (parsedChangelogs.length !== rawChangelogs.length) {
             log.error(
-                `Parsed cahngelogs less than expected${filepath ? ` in ${bold(filepath)}` : ''}`,
+                `Parsed changelogs less than expected${filepath ? ` in ${bold(filepath)}` : ''}`,
             );
         }
         changelogs.push(...parsedChangelogs);
