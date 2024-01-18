@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.8.2](https://github.com/diplodoc-platform/transform/compare/v4.8.1...v4.8.2) (2024-01-18)
+
+
+### Bug Fixes
+
+* **Changelogs:** storyId as string, fix parse last line ([#361](https://github.com/diplodoc-platform/transform/issues/361)) ([e4aa941](https://github.com/diplodoc-platform/transform/commit/e4aa941357e41232a7a0c8beb96632a50b258823))
+
 ## [4.8.1](https://github.com/diplodoc-platform/transform/compare/v4.8.0...v4.8.1) (2023-12-27)
 
 
