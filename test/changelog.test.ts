@@ -12,7 +12,7 @@ describe('Changelog', () => {
         return {
             date,
             index,
-            storyId: 123321,
+            storyId: '123321',
             title: 'Change log title',
             image: {
                 alt: 'My image',
@@ -132,5 +132,28 @@ After changelog
 `);
 
         expect(changelogs.length).toBe(3);
+    });
+
+    test('Should cut changelog on the edge and write it in variable', async () => {
+        expect.assertions(2);
+
+        const data = (
+            await fs.promises.readFile(
+                path.join(__dirname, 'data/changelog/changelog_edge.md'),
+                'utf8',
+            )
+        ).trim();
+
+        const changelogs: ChangelogItem[] = [];
+        const html = changelogCollect(data, {
+            path: '',
+            changelogs,
+            log: console as unknown as Logger,
+            extractChangelogs: true,
+        });
+
+        expect(html).toBe('');
+
+        expect(changelogs.length).toBe(1);
     });
 });
