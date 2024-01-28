@@ -37,6 +37,18 @@
             transform: translateY(-50%);
         }
     }
+
+    .yfm:not(.yfm_no-list-reset) & ol {
+        counter-reset: cut-list;
+
+        & > li {
+            counter-increment: cut-list;
+
+            &::before {
+                content: counters(cut-list, '.') '. ';
+            }
+        }
+    }
 }
 
 
