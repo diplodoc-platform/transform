@@ -1,27 +1,13 @@
 import {bold} from 'chalk';
 import StateCore from 'markdown-it/lib/rules_core/state_core';
 import Token from 'markdown-it/lib/token';
-import {MarkdownItPluginCb} from './typings';
+import {MarkdownItPluginCb} from '../typings';
 
-import {MatchTokenFunction, nestedCloseTokenIdxFactory as closeTokenFactory} from './utils';
+import {MatchTokenFunction, nestedCloseTokenIdxFactory as closeTokenFactory} from '../utils';
+import {titles} from './constants';
 
 const ALERT_RE = /^{% note (alert|info|tip|warning)\s*(?:"(.*?)")? %}$/;
 const WRONG_NOTES = /^{% note (.*)%}/;
-
-const titles: Record<string, Record<string, string>> = {
-    ru: {
-        info: 'Примечание',
-        tip: 'Совет',
-        alert: 'Внимание',
-        warning: 'Важно',
-    },
-    en: {
-        info: 'Note',
-        tip: 'Tip',
-        alert: 'Alert',
-        warning: 'Warning',
-    },
-};
 
 function getTitle(type: string, originLang: keyof typeof titles) {
     let lang = originLang;
