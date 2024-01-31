@@ -58,7 +58,10 @@ function matchWrongNotes(tokens: Token[], i: number) {
 
 const findCloseTokenIdx = closeTokenFactory('Note', matchOpenToken, matchCloseToken);
 
-const notes: MarkdownItPluginCb = (md, {lang, path: optPath, log}) => {
+// @ts-ignore
+const notes: MarkdownItPluginCb = (md, {lang, notesAutotitle, path: optPath, log}) => {
+    notesAutotitle = typeof notesAutotitle === 'boolean' ? notesAutotitle : true;
+
     const plugin = (state: StateCore) => {
         const {tokens, env} = state;
         const path = env.path || optPath;
@@ -99,7 +102,9 @@ const notes: MarkdownItPluginCb = (md, {lang, path: optPath, log}) => {
                 titleOpen.block = true;
                 titleClose.block = true;
 
-                titleInline.content = match[2] === undefined ? getTitle(type, lang) : match[2];
+                const autotitle = notesAutotitle ? getTitle(type, lang) : '';
+
+                titleInline.content = match[2] === undefined ? autotitle : match[2];
                 titleInline.children = [];
 
                 const contentOpen = new state.Token('yfm_note_content_open', 'div', 1);
