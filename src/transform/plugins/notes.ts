@@ -1,13 +1,57 @@
 import {bold} from 'chalk';
 import StateCore from 'markdown-it/lib/rules_core/state_core';
 import Token from 'markdown-it/lib/token';
-import {MarkdownItPluginCb} from '../typings';
+import {MarkdownItPluginCb} from './typings';
 
-import {MatchTokenFunction, nestedCloseTokenIdxFactory as closeTokenFactory} from '../utils';
-import {titles} from './constants';
+import {MatchTokenFunction, nestedCloseTokenIdxFactory as closeTokenFactory} from './utils';
 
 const ALERT_RE = /^{% note (alert|info|tip|warning)\s*(?:"(.*?)")? %}$/;
 const WRONG_NOTES = /^{% note (.*)%}/;
+
+const titles: Record<string, Record<string, string>> = {
+    ru: {
+        info: 'Примечание',
+        tip: 'Совет',
+        alert: 'Внимание',
+        warning: 'Важно',
+    },
+    en: {
+        info: 'Note',
+        tip: 'Tip',
+        alert: 'Alert',
+        warning: 'Warning',
+    },
+    ar: {
+        info: 'ملاحظة',
+        tip: 'نصيحة',
+        alert: 'انتباه',
+        warning: 'هام',
+    },
+    cs: {
+        info: 'Poznámka',
+        tip: 'Tip',
+        alert: 'Upozornění',
+        warning: 'Varování',
+    },
+    fr: {
+        info: 'Remarque',
+        tip: 'Astuce',
+        alert: 'Alerte',
+        warning: 'Avertissement',
+    },
+    es: {
+        info: 'Nota',
+        tip: 'Consejo',
+        alert: 'Alerta',
+        warning: 'Aviso',
+    },
+    he: {
+        info: 'מידע',
+        tip: 'טיפ',
+        alert: 'התראה',
+        warning: 'אזהרה',
+    },
+};
 
 function getTitle(type: string, originLang: keyof typeof titles) {
     let lang = originLang;
