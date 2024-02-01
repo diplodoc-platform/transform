@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.10.0](https://github.com/diplodoc-platform/transform/compare/v4.9.0...v4.10.0) (2024-02-01)
+
+
+### Features
+
+* **note:** support he-IL, es-ES, fr-FR, cs-CZ, ar-SA langs ([#365](https://github.com/diplodoc-platform/transform/issues/365)) ([a925e1b](https://github.com/diplodoc-platform/transform/commit/a925e1b1931b2625475f2af12e10af54143b15d4))
+
 ## [4.9.0](https://github.com/diplodoc-platform/transform/compare/v4.8.2...v4.9.0) (2024-02-01)
 
 
