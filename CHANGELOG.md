@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.9.0](https://github.com/diplodoc-platform/transform/compare/v4.8.2...v4.9.0) (2024-02-01)
+
+
+### Features
+
+* Add notesAutotitle prop ([9a89834](https://github.com/diplodoc-platform/transform/commit/9a898346a9aba8a04ca37a41de56f37db7809322))
+
+
+### Bug Fixes
+
+* add `object-fit: contain` for images ([9ee96c7](https://github.com/diplodoc-platform/transform/commit/9ee96c71c851de8ea6e2ec4b857f86ec92a61a89))
+
 ## [4.8.2](https://github.com/diplodoc-platform/transform/compare/v4.8.1...v4.8.2) (2024-01-18)
 
 
