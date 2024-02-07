@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.10.1](https://github.com/diplodoc-platform/transform/compare/v4.10.0...v4.10.1) (2024-02-07)
+
+
+### Bug Fixes
+
+* ol in cut after ol ([3d691da](https://github.com/diplodoc-platform/transform/commit/3d691dac00b09eecddcbd149fc4c90af228f62ab))
+
 ## [4.10.0](https://github.com/diplodoc-platform/transform/compare/v4.9.0...v4.10.0) (2024-02-01)
 
 
