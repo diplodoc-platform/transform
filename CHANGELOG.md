@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.10.4](https://github.com/diplodoc-platform/transform/compare/v4.10.3...v4.10.4) (2024-02-14)
+
+
+### Bug Fixes
+
+* absolute anchors ([30f943b](https://github.com/diplodoc-platform/transform/commit/30f943be1730d995c5782b2ab6f7c35bccff0cbf))
+
 ## [4.10.3](https://github.com/diplodoc-platform/transform/compare/v4.10.2...v4.10.3) (2024-02-08)
 
 
