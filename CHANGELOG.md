@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.10.5](https://github.com/diplodoc-platform/transform/compare/v4.10.4...v4.10.5) (2024-02-28)
+
+
+### Bug Fixes
+
+* **styles:** remove margin only on first or last element in table cell ([#377](https://github.com/diplodoc-platform/transform/issues/377)) ([f4bd5fe](https://github.com/diplodoc-platform/transform/commit/f4bd5fe468de57038a78fe6ed8942096967b4c8e))
+* **styles:** set vertical-align:top for table cells ([#379](https://github.com/diplodoc-platform/transform/issues/379)) ([0db5b84](https://github.com/diplodoc-platform/transform/commit/0db5b84f4ecc01b2ad7d9d1e953d943b53ef360c))
+
 ## [4.10.4](https://github.com/diplodoc-platform/transform/compare/v4.10.3...v4.10.4) (2024-02-14)
 
 
