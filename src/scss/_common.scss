@@ -1,5 +1,15 @@
 @import 'variables';
 
+@mixin removeMarginForEdgeChildren {
+    & > *:first-child {
+        margin-top: 0;
+    }
+
+    & > *:last-child {
+        margin-bottom: 0;
+    }
+}
+
 .yfm {
     font-family: var(--yfm-font-family-sans);
     font-size: 15px;
@@ -186,10 +196,7 @@
             text-overflow: ellipsis;
             border: 1px solid $borderColor;
 
-            p {
-                padding: 0;
-                margin: 0;
-            }
+            @include removeMarginForEdgeChildren();
         }
 
         td {
@@ -237,25 +244,13 @@
         padding-left: 12px;
         border-left: 3px solid $accentColor;
 
-        & > *:first-child {
-            margin-top: 0;
-        }
-
-        & > *:last-child {
-            margin-bottom: 0;
-        }
+        @include removeMarginForEdgeChildren();
     }
 
     dl {
         padding: 0;
 
-        & > *:first-child {
-            margin-top: 0;
-        }
-
-        & > *:last-child {
-            margin-bottom: 0;
-        }
+        @include removeMarginForEdgeChildren();
 
         dt {
             margin-bottom: 5px;
