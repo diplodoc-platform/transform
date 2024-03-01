@@ -14,9 +14,6 @@
         .yfm-anchor::before {
             content: '#';
             visibility: hidden;
-            position: absolute;
-            
-            padding-right: 2px;
         }
 
         &:hover .yfm-anchor::before {
@@ -33,4 +30,11 @@
             }
         }
     };
+
+    .yfm-tabs {
+        .yfm-anchor::before {
+            position: absolute;
+            padding-right: 2px;
+        }
+    }
 }
