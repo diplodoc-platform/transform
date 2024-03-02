@@ -493,6 +493,7 @@ export type CssWhiteList = {[property: string]: boolean};
 
 export interface SanitizeOptions extends sanitizeHtml.IOptions {
     cssWhiteList?: CssWhiteList;
+    disableStyleSanitizer?: boolean;
 }
 
 export const defaultParseOptions = {
@@ -595,7 +596,9 @@ function sanitizeStyles(html: string, options: SanitizeOptions) {
 export default function sanitize(html: string, options?: SanitizeOptions) {
     const sanitizeOptions = options || defaultOptions;
 
-    const modifiedHtml = sanitizeStyles(html, sanitizeOptions);
+    const needToSanitizeStyles = !(sanitizeOptions.disableStyleSanitizer ?? false);
+
+    const modifiedHtml = needToSanitizeStyles ? sanitizeStyles(html, sanitizeOptions) : html;
 
     return sanitizeHtml(modifiedHtml, sanitizeOptions);
 }

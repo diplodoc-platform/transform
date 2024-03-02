@@ -66,6 +66,41 @@ describe('Sanitize HTML utility', () => {
         });
     });
 
+    describe("transform should't sanitize css with disableStyleSanitizer=true option", () => {
+        const sanitizeOptions = {...defaultOptions, disableStyleSanitizer: true};
+
+        describe('html in markdown', () => {
+            it('should sanitize danger style attributes', () => {
+                expect(
+                    transformYfm('<div style="position:fixed;font-size:14px"></div>', {
+                        sanitizeOptions,
+                    }),
+                ).toBe('<div style="position:fixed;font-size:14px"></div>');
+            });
+
+            it('should sanitize danger properties in style tag', () => {
+                expect(
+                    transformYfm('<style>h2 {color: red; position:fixed;}</style>', {
+                        sanitizeOptions,
+                    }),
+                ).toBe('<style>h2 {color: red; position:fixed;}</style>');
+            });
+        });
+
+        describe('plugin markdown-it-attrs', () => {
+            it('should sanitize danger style attributes', () => {
+                expect(
+                    transformYfm(
+                        '[example.com](https://example.com){style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: red; opacity: 0.5"}',
+                        {sanitizeOptions},
+                    ),
+                ).toBe(
+                    '<p><a href="https://example.com" style="position:fixed;top:0;left:0;width:100%;height:100%;background-color:red;opacity:0.5">example.com</a></p>\n',
+                );
+            });
+        });
+    });
+
     describe('rewrite default sanitize options', () => {
         it('should not sanitize form tag if form is allowed', () => {
             const sanitizeOptions = Object.assign({}, defaultOptions);
