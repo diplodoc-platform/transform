@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.10.7](https://github.com/diplodoc-platform/transform/compare/v4.10.6...v4.10.7) (2024-03-04)
+
+
+### Bug Fixes
+
+* anchors in tabs ([ab7d5b1](https://github.com/diplodoc-platform/transform/commit/ab7d5b1647ca80b528e0a0569389d401ba9d7bab))
+
 ## [4.10.6](https://github.com/diplodoc-platform/transform/compare/v4.10.5...v4.10.6) (2024-02-29)
 
 
