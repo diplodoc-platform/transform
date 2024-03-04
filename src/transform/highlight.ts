@@ -1,18 +1,19 @@
+import type {HLJSApi} from 'highlight.js';
 import {escapeHtml} from 'markdown-it/lib/common/utils';
-import {HighlightLangMap} from './typings';
+import type {HighlightLangMap} from './typings';
 
 export = function makeHighlight(langs: HighlightLangMap = {}) {
     try {
         // Important require.
         // Because we want to have a posibility to run in projects without hljs dependency
-        const hljs = require('highlight.js');
+        const hljs: HLJSApi = require('highlight.js/lib/core');
 
         Object.keys(langs).forEach((lang) => {
             hljs.registerLanguage(lang, langs[lang]);
         });
 
         return function highlight(str: string, lang: string) {
-            let highlightedStr;
+            let highlightedStr: string | undefined;
             const classNames = ['hljs'];
 
             if (lang && hljs.getLanguage(lang)) {

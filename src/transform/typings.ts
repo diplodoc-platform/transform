@@ -1,10 +1,10 @@
-import {LanguageFn} from 'highlight.js';
-import DefaultMarkdownIt from 'markdown-it';
-import DefaultStateCore from 'markdown-it/lib/rules_core/state_core';
-import {SanitizeOptions} from './sanitize';
-import {MarkdownItPluginCb} from './plugins/typings';
-import {LogLevels} from './log';
-import {ChangelogItem} from './plugins/changelog/types';
+import type {LanguageFn} from 'highlight.js';
+import type DefaultMarkdownIt from 'markdown-it';
+import type DefaultStateCore from 'markdown-it/lib/rules_core/state_core';
+import type {SanitizeOptions} from './sanitize';
+import type {MarkdownItPluginCb} from './plugins/typings';
+import type {LogLevels} from './log';
+import type {ChangelogItem} from './plugins/changelog/types';
 
 export interface MarkdownIt extends DefaultMarkdownIt {
     assets?: string[];
