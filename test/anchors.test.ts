@@ -118,4 +118,14 @@ describe('Anchors', () => {
                 '<p>After include</p>\n',
         );
     });
+
+    it('should add anchor with auto naming, using entire heading text', () => {
+        expect(transformYfm('## _Lorem ~~ipsum **dolor** sit~~ amet_\n\nParagraph\n')).toBe(
+            '<h2 id="lorem-ipsum-dolor-sit-amet">' +
+                '<a href="#lorem-ipsum-dolor-sit-amet" class="yfm-anchor" aria-hidden="true">' +
+                '<span class="visually-hidden">Lorem ipsum dolor sit amet</span></a>' +
+                '<em>Lorem <s>ipsum <strong>dolor</strong> sit</s> amet</em></h2>\n' +
+                '<p>Paragraph</p>\n',
+        );
+    });
 });

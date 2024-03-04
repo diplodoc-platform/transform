@@ -50,20 +50,20 @@ export function headingInfo(tokens: Token[], idx: number) {
     const openToken = tokens[idx];
     const inlineToken = tokens[idx + 1];
 
-    let lastTextToken,
+    let title = '',
         i = 0;
     while (inlineToken.children && i < inlineToken.children.length) {
         const token = inlineToken.children[i];
 
         if (token.type === 'text') {
-            lastTextToken = token;
+            title += token.content;
         }
 
         i++;
     }
 
     const level = Number.parseInt(openToken.tag.slice(1), 10);
-    const title = (lastTextToken && lastTextToken.content) || inlineToken.content;
+    title ||= inlineToken.content;
 
     return {
         level,
