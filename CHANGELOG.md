@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.10.8](https://github.com/diplodoc-platform/transform/compare/v4.10.7...v4.10.8) (2024-03-05)
+
+
+### Bug Fixes
+
+* **anchors:** use entire heading text for auto named anchors ([#384](https://github.com/diplodoc-platform/transform/issues/384)) ([e3c725b](https://github.com/diplodoc-platform/transform/commit/e3c725b93fe2c6517cf5ac210a1cb6c7e65281a3))
+
 ## [4.10.7](https://github.com/diplodoc-platform/transform/compare/v4.10.6...v4.10.7) (2024-03-04)
 
 
