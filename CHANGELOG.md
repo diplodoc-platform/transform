@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.11.0](https://github.com/diplodoc-platform/transform/compare/v4.10.8...v4.11.0) (2024-03-11)
+
+
+### Features
+
+* update tabs extension to 2.1.0 ([#390](https://github.com/diplodoc-platform/transform/issues/390)) ([cd07183](https://github.com/diplodoc-platform/transform/commit/cd07183797b3c587e56f00372e648ca6a597d920))
+
 ## [4.10.8](https://github.com/diplodoc-platform/transform/compare/v4.10.7...v4.10.8) (2024-03-05)
 
 
