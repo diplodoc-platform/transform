@@ -30,7 +30,7 @@ function emitResult(html: string, env: EnvType): OutputType {
 }
 
 // eslint-disable-next-line consistent-return
-function transform(originInput: string, options: OptionsType = {}) {
+export function transform(originInput: string, options: OptionsType = {}) {
     const input = applyLiquid(originInput, options);
     const {parse, compile, env} = initMarkdownit(options);
 
@@ -39,6 +39,10 @@ function transform(originInput: string, options: OptionsType = {}) {
     } catch (error) {
         handleError(error, options.path);
     }
+}
+
+export function transformInline(originInput: string, options: OptionsType = {}) {
+    return transform(originInput, {...options, renderInline: true});
 }
 
 export = transform;
