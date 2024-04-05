@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.12.0](https://github.com/diplodoc-platform/transform/compare/v4.11.0...v4.12.0) (2024-04-05)
+
+
+### Features
+
+* add tr-TR, kk-KZ, uz-UZ, bg-BG, zh-TW, zh-CN, pt-PT, et-EE, el-GR  langs ([#396](https://github.com/diplodoc-platform/transform/issues/396)) ([c3c5a42](https://github.com/diplodoc-platform/transform/commit/c3c5a42f0ddece2ca29ab54ef9b4eab62257ab57))
+
 ## [4.11.0](https://github.com/diplodoc-platform/transform/compare/v4.10.8...v4.11.0) (2024-03-11)
 
 
