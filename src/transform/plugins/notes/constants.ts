@@ -42,57 +42,57 @@ export const TITLES: Record<string, Record<string, string>> = {
         warning: 'אזהרה',
     },
     bg: {
-        "info": "Забележка",
-        "tip": "Съвет",
-        "alert": "Внимание",
-        "warning": "Важно"
+        info: 'Забележка',
+        tip: 'Съвет',
+        alert: 'Внимание',
+        warning: 'Важно',
     },
     et: {
-        "info": "Märkus",
-        "tip": "Nõuanne",
-        "alert": "Tähelepanu",
-        "warning": "Tähtis"
+        info: 'Märkus',
+        tip: 'Nõuanne',
+        alert: 'Tähelepanu',
+        warning: 'Tähtis',
     },
     el: {
-        "info": "Σημείωση",
-        "tip": "Συμβουλή",
-        "alert": "Προσοχή",
-        "warning": "Σημαντικό"
+        info: 'Σημείωση',
+        tip: 'Συμβουλή',
+        alert: 'Προσοχή',
+        warning: 'Σημαντικό',
     },
     pt: {
-        "info": "Observação",
-        "tip": "Sugestão",
-        "alert": "Atenção",
-        "warning": "Importante"
+        info: 'Observação',
+        tip: 'Sugestão',
+        alert: 'Atenção',
+        warning: 'Importante',
     },
     zh: {
-        "info": "备注",
-        "tip": "提示",
-        "alert": "注意",
-        "warning": "重要"
+        info: '备注',
+        tip: '提示',
+        alert: '注意',
+        warning: '重要',
     },
-    "zh-tw": {
-        "info": "備注",
-        "tip": "提示",
-        "alert": "注意",
-        "warning": "重要"
+    'zh-tw': {
+        info: '備注',
+        tip: '提示',
+        alert: '注意',
+        warning: '重要',
     },
     kk: {
-        "info": "Ескерту",
-        "tip": "Кеңес",
-        "alert": "Назар аударыңыз",
-        "warning": "Маңызды"
+        info: 'Ескерту',
+        tip: 'Кеңес',
+        alert: 'Назар аударыңыз',
+        warning: 'Маңызды',
     },
     tr: {
-        "info": "Not",
-        "tip": "Öneri",
-        "alert": "Dikkat",
-        "warning": "Önemli"
+        info: 'Not',
+        tip: 'Öneri',
+        alert: 'Dikkat',
+        warning: 'Önemli',
     },
     uz: {
-        "info": "Sharh",
-        "tip": "Maslahat",
-        "alert": "Diqqat",
-        "warning": "Bu muhim"
-    }
+        info: 'Sharh',
+        tip: 'Maslahat',
+        alert: 'Diqqat',
+        warning: 'Bu muhim',
+    },
 };

@@ -4,12 +4,10 @@ import Token from 'markdown-it/lib/token';
 import {MarkdownItPluginCb} from './typings';
 
 import {MatchTokenFunction, nestedCloseTokenIdxFactory as closeTokenFactory} from './utils';
-import {TITLES} from "./constants";
+import {TITLES} from './constants';
 
 const ALERT_RE = /^{% note (alert|info|tip|warning)\s*(?:"(.*?)")? %}$/;
 const WRONG_NOTES = /^{% note (.*)%}/;
-
-
 
 function getTitle(type: string, originLang: keyof typeof TITLES) {
     let lang = originLang;
