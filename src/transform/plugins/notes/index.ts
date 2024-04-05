@@ -1,9 +1,9 @@
 import {bold} from 'chalk';
 import StateCore from 'markdown-it/lib/rules_core/state_core';
 import Token from 'markdown-it/lib/token';
-import {MarkdownItPluginCb} from './typings';
+import {MarkdownItPluginCb} from '../typings';
 
-import {MatchTokenFunction, nestedCloseTokenIdxFactory as closeTokenFactory} from './utils';
+import {MatchTokenFunction, nestedCloseTokenIdxFactory as closeTokenFactory} from '../utils';
 import {TITLES} from './constants';
 
 const ALERT_RE = /^{% note (alert|info|tip|warning)\s*(?:"(.*?)")? %}$/;
