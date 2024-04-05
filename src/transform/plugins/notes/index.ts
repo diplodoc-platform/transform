@@ -1,66 +1,22 @@
 import {bold} from 'chalk';
 import StateCore from 'markdown-it/lib/rules_core/state_core';
 import Token from 'markdown-it/lib/token';
-import {MarkdownItPluginCb} from './typings';
+import {MarkdownItPluginCb} from '../typings';
 
-import {MatchTokenFunction, nestedCloseTokenIdxFactory as closeTokenFactory} from './utils';
+import {MatchTokenFunction, nestedCloseTokenIdxFactory as closeTokenFactory} from '../utils';
+import {TITLES} from './constants';
 
 const ALERT_RE = /^{% note (alert|info|tip|warning)\s*(?:"(.*?)")? %}$/;
 const WRONG_NOTES = /^{% note (.*)%}/;
 
-const titles: Record<string, Record<string, string>> = {
-    ru: {
-        info: 'Примечание',
-        tip: 'Совет',
-        alert: 'Внимание',
-        warning: 'Важно',
-    },
-    en: {
-        info: 'Note',
-        tip: 'Tip',
-        alert: 'Alert',
-        warning: 'Warning',
-    },
-    ar: {
-        info: 'ملاحظة',
-        tip: 'نصيحة',
-        alert: 'انتباه',
-        warning: 'هام',
-    },
-    cs: {
-        info: 'Poznámka',
-        tip: 'Tip',
-        alert: 'Upozornění',
-        warning: 'Varování',
-    },
-    fr: {
-        info: 'Remarque',
-        tip: 'Astuce',
-        alert: 'Alerte',
-        warning: 'Avertissement',
-    },
-    es: {
-        info: 'Nota',
-        tip: 'Consejo',
-        alert: 'Alerta',
-        warning: 'Aviso',
-    },
-    he: {
-        info: 'מידע',
-        tip: 'טיפ',
-        alert: 'התראה',
-        warning: 'אזהרה',
-    },
-};
-
-function getTitle(type: string, originLang: keyof typeof titles) {
+function getTitle(type: string, originLang: keyof typeof TITLES) {
     let lang = originLang;
 
-    if (!lang || !Object.keys(titles).includes(lang)) {
+    if (!lang || !Object.keys(TITLES).includes(lang)) {
         lang = 'ru';
     }
 
-    return titles[lang][type];
+    return TITLES[lang][type];
 }
 const matchCloseToken: MatchTokenFunction = (tokens, i) => {
     return (
@@ -89,7 +45,7 @@ function matchWrongNotes(tokens: Token[], i: number) {
 const findCloseTokenIdx = closeTokenFactory('Note', matchOpenToken, matchCloseToken);
 
 // @ts-ignore
-const notes: MarkdownItPluginCb = (md, {lang, notesAutotitle, path: optPath, log}) => {
+const index: MarkdownItPluginCb = (md, {lang, notesAutotitle, path: optPath, log}) => {
     notesAutotitle = typeof notesAutotitle === 'boolean' ? notesAutotitle : true;
 
     const plugin = (state: StateCore) => {
@@ -182,4 +138,4 @@ const notes: MarkdownItPluginCb = (md, {lang, notesAutotitle, path: optPath, log
     }
 };
 
-export = notes;
+export = index;
