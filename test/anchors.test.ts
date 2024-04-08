@@ -128,4 +128,26 @@ describe('Anchors', () => {
                 '<p>Paragraph</p>\n',
         );
     });
+
+    describe('with extract title', () => {
+        let transformWithTitle = (text: string) => {
+            const {
+                result: {html, title},
+            } = transform(text, {
+                plugins: [includes, anchors],
+                path: mocksPath,
+                root: dirname(mocksPath),
+                extractTitle: true
+            });
+            return [html, title]
+        } 
+        
+        it('should not add an anchor for level 1 heading', () => {
+            const result = transformWithTitle('# Test {#test1}\n' + '\n' + 'Content\n')
+            expect(result[0]).toBe(
+                    '<p>Content</p>\n',
+            );
+            expect(result[1]).toBe('Test')
+        })    
+    })
 });
