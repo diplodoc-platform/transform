@@ -1,12 +1,13 @@
-import {readFileSync} from 'fs';
 import {join, sep} from 'path';
 import {bold} from 'chalk';
+import {optimize} from 'svgo';
 
 import {isFileExists, resolveRelativePath} from '../../utilsFS';
 import {isExternalHref, isLocalUrl} from '../../utils';
 import Token from 'markdown-it/lib/token';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
 import {StateCore} from '../../typings';
+import {readFileSync} from 'fs';
 
 interface ImageOpts extends MarkdownItPluginOpts {
     assetsPublicPath: string;
@@ -43,6 +44,12 @@ interface SVGOpts extends MarkdownItPluginOpts {
     notFoundCb: (s: string) => void;
 }
 
+function prefix() {
+    const value = Math.floor(Math.random() * 1e9);
+
+    return value.toString(16);
+}
+
 function convertSvg(
     token: Token,
     state: StateCore,
@@ -52,12 +59,24 @@ function convertSvg(
     const path = resolveRelativePath(currentPath, token.attrGet('src') || '');
 
     try {
-        const content = readFileSync(path, 'utf8');
+        const raw = readFileSync(path).toString();
+        const result = optimize(raw, {
+            plugins: [
+                {
+                    name: 'prefixIds',
+                    params: {
+                        prefix: prefix(),
+                    },
+                },
+            ],
+        });
+
+        const content = result.data;
         const svgToken = new state.Token('image_svg', '', 0);
         svgToken.attrSet('content', content);
 
         return svgToken;
-    } catch (e) {
+    } catch (e: unknown) {
         log.error(`SVG ${path} from ${currentPath} not found`);
 
         if (notFoundCb) {
