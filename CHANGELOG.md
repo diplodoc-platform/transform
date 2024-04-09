@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.13.1](https://github.com/diplodoc-platform/transform/compare/v4.13.0...v4.13.1) (2024-04-09)
+
+
+### Bug Fixes
+
+* add dirname to config ([3d838be](https://github.com/diplodoc-platform/transform/commit/3d838be8a6d7adb04c512eae12a59aac1052b61b))
+
 ## [4.13.0](https://github.com/diplodoc-platform/transform/compare/v4.12.0...v4.13.0) (2024-04-09)
 
 
