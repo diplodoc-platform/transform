@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.13.0](https://github.com/diplodoc-platform/transform/compare/v4.12.0...v4.13.0) (2024-04-09)
+
+
+### Features
+
+* add svgo ([963782b](https://github.com/diplodoc-platform/transform/commit/963782b6f01ef8fbe75f30b6911ea2de4f4f15a0))
+
 ## [4.12.0](https://github.com/diplodoc-platform/transform/compare/v4.11.0...v4.12.0) (2024-04-05)
 
 
