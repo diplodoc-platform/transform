@@ -475,6 +475,8 @@ const svgAttrs = [
     'zoomandpan',
     'from',
     'to',
+    'xlink:href',
+    'use',
 ];
 
 const defaultCssWhitelist = {
