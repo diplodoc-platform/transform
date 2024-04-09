@@ -101,6 +101,8 @@ const index: MarkdownItPluginCb<Options> = (
                 }
 
                 if (level < 2 && extractTitle) {
+                    // if there are any custom ids in the level 1 heading we should clear them
+                    removeCustomIds(tokens[i + 1]);
                     i += 3;
                     continue;
                 }
