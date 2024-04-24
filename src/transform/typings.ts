@@ -45,6 +45,7 @@ export interface OptionsType {
     highlightLangs?: HighlightLangMap;
     root?: string;
     extractChangelogs?: boolean;
+    renderInline?: boolean;
     [x: string]: unknown;
 }
 
