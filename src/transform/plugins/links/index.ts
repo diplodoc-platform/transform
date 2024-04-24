@@ -81,9 +81,10 @@ const addTitle = (options: Options) => {
 };
 
 interface ProcOpts extends MarkdownItPluginOpts {
-    transformLink: (v: string) => string;
+    transformLink: (v: string, toLinkExtention?: string) => string;
     notFoundCb: (v: string) => void;
     needSkipLinkFn: (v: string) => boolean;
+    toLinkExtention?: string;
 }
 
 // eslint-disable-next-line complexity
@@ -173,7 +174,7 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
 
     if (pathname || newPathname) {
         const transformer = transformLink || defaultTransformLink;
-        linkToken.attrSet('href', transformer(href));
+        linkToken.attrSet('href', transformer(href, opts.toLinkExtention));
     }
 }
 

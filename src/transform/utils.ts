@@ -94,11 +94,11 @@ export function getHrefTokenAttr(token: Token) {
 
 export const PAGE_LINK_REGEXP = /\.(md|ya?ml)$/i;
 
-export function defaultTransformLink(href: string) {
+export function defaultTransformLink(href: string, toLinkExtention?: string | undefined) {
     const parsed = url.parse(href);
     href = url.format({
         ...parsed,
-        pathname: parsed.pathname?.replace(PAGE_LINK_REGEXP, '.html'),
+        pathname: parsed.pathname?.replace(PAGE_LINK_REGEXP, toLinkExtention ?? '.html'),
     });
 
     return href;
