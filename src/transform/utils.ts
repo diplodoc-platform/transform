@@ -109,11 +109,13 @@ export function getPublicPath(
         path,
         root,
         rootPublicPath,
+        toLinkExtention,
         transformLink,
     }: {
         path?: string;
         root?: string;
         rootPublicPath?: string;
+        toLinkExtention?: string;
         transformLink?: (href: string) => string;
     },
     input?: string | null,
@@ -121,6 +123,6 @@ export function getPublicPath(
     const currentPath = input || path || '';
     const filePath = relative(resolve(root || '', rootPublicPath || ''), currentPath);
     const transformer = transformLink || defaultTransformLink;
-    const href = transformer(filePath);
+    const href = transformer(filePath, toLinkExtention);
     return href;
 }
