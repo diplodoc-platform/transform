@@ -1,3 +1,5 @@
+import url from 'url';
+import {relative, resolve} from 'path';
 import Token from 'markdown-it/lib/token';
 
 export function isLocalUrl(url: string) {
@@ -87,5 +89,38 @@ export function getHrefTokenAttr(token: Token) {
         href = decodeURI(href);
     } catch (e) {}
 
+    return href;
+}
+
+export const PAGE_LINK_REGEXP = /\.(md|ya?ml)$/i;
+
+export function defaultTransformLink(href: string) {
+    const parsed = url.parse(href);
+    href = url.format({
+        ...parsed,
+        pathname: parsed.pathname?.replace(PAGE_LINK_REGEXP, '.html'),
+    });
+
+    return href;
+}
+
+export function getPublicPath(
+    {
+        path,
+        root,
+        rootPublicPath,
+        transformLink,
+    }: {
+        path?: string;
+        root?: string;
+        rootPublicPath?: string;
+        transformLink?: (href: string) => string;
+    },
+    input?: string | null,
+) {
+    const currentPath = input || path || '';
+    const filePath = relative(resolve(root || '', rootPublicPath || ''), currentPath);
+    const transformer = transformLink || defaultTransformLink;
+    const href = transformer(filePath);
     return href;
 }

@@ -43,8 +43,10 @@ export interface OptionsType {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     plugins?: MarkdownItPluginCb<any>[];
     highlightLangs?: HighlightLangMap;
-    root?: string;
     extractChangelogs?: boolean;
+    root?: string;
+    rootPublicPath?: string;
+    transformLink?: (href: string) => string;
     [x: string]: unknown;
 }
 

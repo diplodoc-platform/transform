@@ -1,10 +1,9 @@
 import MarkdownIt from 'markdown-it';
 import {sep} from 'path';
 import url from 'url';
-import {getHrefTokenAttr, isLocalUrl} from '../../utils';
+import {PAGE_LINK_REGEXP, getHrefTokenAttr, isLocalUrl} from '../../utils';
 import {getSinglePageAnchorId, resolveRelativePath} from '../../utilsFS';
 import index from './index';
-import {PAGE_LINK_REGEXP} from './constants';
 
 const replaceLinkHref = (input: string, href: string, newHref: string) => {
     /* Try not replace include syntax */

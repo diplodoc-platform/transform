@@ -86,7 +86,7 @@ export const title = [
             {
                 type: 'link_open',
                 tag: 'a',
-                attrs: [['href', './mocks/link.html']],
+                attrs: [['href', 'mocks/link.html']],
                 map: null,
                 nesting: 1,
                 level: 0,
@@ -301,7 +301,7 @@ export const customTitle = [
             {
                 type: 'link_open',
                 tag: 'a',
-                attrs: [['href', './mocks/link.html']],
+                attrs: [['href', 'mocks/link.html']],
                 map: null,
                 nesting: 1,
                 level: 0,

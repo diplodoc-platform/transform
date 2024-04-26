@@ -23,6 +23,10 @@ const transformYfm = (text: string, path?: string, extraOpts?: OptionsType) => {
     return html;
 };
 
+const expectObject = (a: unknown, b: unknown) => {
+    expect(JSON.parse(JSON.stringify(a))).toEqual(JSON.parse(JSON.stringify(b)));
+};
+
 describe('Links', () => {
     test('Should create link with custom title', () => {
         const result = callPlugin(
@@ -41,7 +45,7 @@ describe('Links', () => {
             },
         );
 
-        expect(result).toEqual(customTitle);
+        expectObject(result, customTitle);
     });
 
     test('Should create link with title from target', () => {
@@ -61,7 +65,7 @@ describe('Links', () => {
         const input = '[{#T}](./mocks/include-link.md)';
         const result = transformYfm(input);
 
-        expect(result).toEqual('<p><a href="./mocks/include-link.html">Title</a></p>\n');
+        expect(result).toEqual('<p><a href="mocks/include-link.html">Title</a></p>\n');
     });
 
     test('Should create link with title from target with circular include', () => {
@@ -69,7 +73,7 @@ describe('Links', () => {
         const input = readFileSync(inputPath, 'utf8');
         const result = transformYfm(input, inputPath);
 
-        expect(result).toEqual('<h1>First</h1>\n<p><a href="./second.html">Second</a></p>\n');
+        expect(result).toEqual('<h1>First</h1>\n<p><a href="second.html">Second</a></p>\n');
     });
 
     test('Should create link with title from target with circular link', () => {
@@ -77,7 +81,7 @@ describe('Links', () => {
         const input = readFileSync(inputPath, 'utf8');
         const result = transformYfm(input, inputPath);
 
-        expect(result).toEqual('<h1>First</h1>\n<p><a href="./second.html">Second</a></p>\n');
+        expect(result).toEqual('<h1>First</h1>\n<p><a href="second.html">Second</a></p>\n');
     });
 
     test('Should create link with the absolute path', () => {
@@ -105,11 +109,13 @@ describe('Links', () => {
 
             transformYfm(input, inputPath, {
                 transformLink: (href: string) => {
+                    href = href.replace('.md', '');
                     result = href;
+                    return href;
                 },
             });
 
-            expect(result).toEqual('../link/');
+            expect(result).toEqual('../link');
         });
 
         test('Should call the "transformLink" callback for absolute link', () => {
@@ -120,7 +126,9 @@ describe('Links', () => {
 
             transformYfm(input, inputPath, {
                 transformLink: (href: string) => {
+                    href = href.replace('.md', '');
                     result = href;
+                    return href;
                 },
             });
 
@@ -135,11 +143,13 @@ describe('Links', () => {
 
             transformYfm(input, inputPath, {
                 transformLink: (href: string) => {
+                    href = href.replace('.md', '');
                     result = href;
+                    return href;
                 },
             });
 
-            expect(result).toEqual('');
+            expect(result).toEqual('external-link');
         });
     });
 });

@@ -13,7 +13,7 @@ type DeepPartial<T> = T extends object
 
 const md = new MarkdownIt();
 
-export function callPlugin<T>(
+export function callPlugin<T extends {} = {}>(
     plugin: MarkdownItPluginCb<T>,
     tokens: Token[],
     opts?: Partial<MarkdownItPluginOpts & T>,

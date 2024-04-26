@@ -6,6 +6,7 @@ export interface MarkdownItPluginOpts {
     log: Logger;
     lang: 'ru' | 'en' | 'es' | 'fr' | 'cs' | 'ar' | 'he';
     root: string;
+    rootPublicPath: string;
     isLintRun: boolean;
 }
 
