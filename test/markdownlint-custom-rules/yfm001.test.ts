@@ -65,7 +65,7 @@ describe('YFM001', () => {
             lintConfig: {...lintConfig, YFM001: {maximum: 5}},
         });
 
-        expect(log.get().warn.length).toEqual(3);
+        expect(log.get().warn.length).toEqual(4);
     });
 
     it('Change log level', () => {
@@ -80,6 +80,6 @@ describe('YFM001', () => {
             }),
         });
 
-        expect(log.get().error.length).toEqual(3);
+        expect(log.get().error.length).toEqual(4);
     });
 });
