@@ -1,7 +1,7 @@
 import {bold} from 'chalk';
 import GithubSlugger from 'github-slugger';
 
-import {headingInfo} from '../../utils';
+import {getPublicPath, headingInfo} from '../../utils';
 import {CUSTOM_ID_EXCEPTION, CUSTOM_ID_REGEXP} from './constants';
 import StateCore from 'markdown-it/lib/rules_core/state_core';
 import Token from 'markdown-it/lib/token';
@@ -10,14 +10,20 @@ import {MarkdownItPluginCb} from '../typings';
 
 const slugify: (str: string, opts: {}) => string = require('slugify');
 
-function createLinkTokens(state: StateCore, id: string, title: string, setId = false) {
+function createLinkTokens(
+    state: StateCore,
+    id: string,
+    title: string,
+    setId = false,
+    href: string,
+) {
     const open = new state.Token('link_open', 'a', 1);
     const close = new state.Token('link_close', 'a', -1);
 
     if (setId) {
         open.attrSet('id', id);
     }
-    open.attrSet('href', '#' + id);
+    open.attrSet('href', href + '#' + id);
     open.attrSet('class', 'yfm-anchor');
     open.attrSet('aria-hidden', 'true');
 
@@ -58,6 +64,7 @@ const removeCustomId = (content: string) => {
 
     return content;
 };
+
 const removeCustomIds = (token: Token) => {
     token.content = removeCustomId(token.content);
     token.children?.forEach((child) => {
@@ -68,17 +75,19 @@ const removeCustomIds = (token: Token) => {
 interface Options {
     extractTitle?: boolean;
     supportGithubAnchors?: boolean;
+    transformLink: (v: string) => string;
 }
 
-const index: MarkdownItPluginCb<Options> = (
-    md,
-    {extractTitle, path, log, supportGithubAnchors},
-) => {
+const index: MarkdownItPluginCb<Options> = (md, options) => {
+    const {extractTitle, path, log, supportGithubAnchors} = options;
+
     const plugin = (state: StateCore) => {
         /* Do not use the plugin if it is included in the file */
         if (state.env.includes && state.env.includes.length) {
             return;
         }
+
+        const href = getPublicPath(options, state.env.path);
 
         const ids: Record<string, number> = {};
         const tokens = state.tokens;
@@ -132,12 +141,12 @@ const index: MarkdownItPluginCb<Options> = (
                 const anchorTitle = removeCustomId(title).replace(/`/g, '');
                 allAnchorIds.forEach((customId) => {
                     const setId = id !== customId;
-                    const linkTokens = createLinkTokens(state, customId, anchorTitle, setId);
+                    const linkTokens = createLinkTokens(state, customId, anchorTitle, setId, href);
 
                     inlineToken.children?.unshift(...linkTokens);
 
                     if (supportGithubAnchors) {
-                        const ghLinkTokens = createLinkTokens(state, ghId, anchorTitle, true);
+                        const ghLinkTokens = createLinkTokens(state, ghId, anchorTitle, true, href);
                         inlineToken.children?.unshift(...ghLinkTokens);
                     }
                 });

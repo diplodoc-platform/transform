@@ -1,22 +1,20 @@
 import url from 'url';
 import {bold} from 'chalk';
-import {findBlockTokens, getHrefTokenAttr, headingInfo, isLocalUrl} from '../../utils';
+import {
+    PAGE_LINK_REGEXP,
+    defaultTransformLink,
+    findBlockTokens,
+    getHrefTokenAttr,
+    getPublicPath,
+    headingInfo,
+    isLocalUrl,
+} from '../../utils';
 import {getFileTokens, isFileExists} from '../../utilsFS';
-import {PAGE_LINK_REGEXP} from './constants';
 import Token from 'markdown-it/lib/token';
 import {Logger} from 'src/transform/log';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
-import path, {isAbsolute, parse, relative, resolve} from 'path';
+import path, {isAbsolute, resolve} from 'path';
 import {StateCore} from 'src/transform/typings';
-
-function defaultTransformLink(href: string) {
-    const parsed = url.parse(href);
-
-    return url.format({
-        ...parsed,
-        pathname: parsed.pathname?.replace(PAGE_LINK_REGEXP, '.html'),
-    });
-}
 
 function getTitleFromTokens(tokens: Token[]) {
     let title = '';
@@ -164,8 +162,8 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
     }
 
     let newPathname = '';
-    if (!isAbsolute(href) && currentPath !== startPath) {
-        newPathname = relative(parse(startPath).dir, file);
+    if (!isAbsolute(href)) {
+        newPathname = getPublicPath(opts, file);
 
         href = url.format({
             ...url.parse(href),

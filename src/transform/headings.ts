@@ -17,11 +17,13 @@ function getHref(token: Token) {
     return '#' + (token.attrGet('id') || '');
 }
 
-export = function getHeadings(tokens: Token[], needFlatListHeadings?: boolean) {
-    return needFlatListHeadings ? getFlatListHeadings(tokens) : getFilteredHeadings(tokens);
+export = function getHeadings(tokens: Token[], needFlatListHeadings?: boolean, href = '') {
+    return needFlatListHeadings
+        ? getFlatListHeadings(tokens, href)
+        : getFilteredHeadings(tokens, href);
 };
 
-function getFilteredHeadings(tokens: Token[]) {
+function getFilteredHeadings(tokens: Token[], href: string) {
     const headings: Heading[] = [];
     let parents = [headings];
     let prevLevel;
@@ -33,7 +35,7 @@ function getFilteredHeadings(tokens: Token[]) {
         if (isHeading && level >= 2) {
             const entry = {
                 title: getTitle(tokens[i + 1]),
-                href: getHref(tokens[i]),
+                href: href + getHref(tokens[i]),
                 level,
             };
             let closestParent = parents[parents.length - 1];
@@ -66,7 +68,8 @@ function getFilteredHeadings(tokens: Token[]) {
 
     return headings;
 }
-function getFlatListHeadings(tokens: Token[]) {
+
+function getFlatListHeadings(tokens: Token[], href: string) {
     const headings: Heading[] = [];
 
     for (let i = 0; i < tokens.length; i++) {
@@ -79,7 +82,7 @@ function getFlatListHeadings(tokens: Token[]) {
 
         headings.push({
             title: getTitle(tokens[i + 1]),
-            href: getHref(tokens[i]),
+            href: href + getHref(tokens[i]),
             level,
         });
     }
