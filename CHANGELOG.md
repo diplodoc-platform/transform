@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.14.0](https://github.com/diplodoc-platform/transform/compare/v4.13.1...v4.14.0) (2024-05-02)
+
+
+### Features
+
+* add relative path resolution for links ([#407](https://github.com/diplodoc-platform/transform/issues/407)) ([ee159f4](https://github.com/diplodoc-platform/transform/commit/ee159f4e91e468d70a144c0c08b580e00eb48505))
+
 ## [4.13.1](https://github.com/diplodoc-platform/transform/compare/v4.13.0...v4.13.1) (2024-04-09)
 
 
