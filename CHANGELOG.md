@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.14.1](https://github.com/diplodoc-platform/transform/compare/v4.14.0...v4.14.1) (2024-05-03)
+
+
+### Bug Fixes
+
+* handling of multiple block anchors in transform ([ff507ba](https://github.com/diplodoc-platform/transform/commit/ff507ba3a6e642b1097c376a58414db44195acf6))
+
 ## [4.14.0](https://github.com/diplodoc-platform/transform/compare/v4.13.1...v4.14.0) (2024-05-02)
 
 
