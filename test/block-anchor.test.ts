@@ -38,4 +38,12 @@ describe('block-anchor', function () {
 
         expect(actual).toMatchSnapshot();
     });
+
+    it('handles multiple anchors in the input', () => {
+        const input =
+            '{%anchor first-anchor%}\n\nSome content\n\n{%anchor second-anchor%}\n\nSome more content\n\n{%anchor third-anchor%}';
+        const actual = compile(parse(input));
+
+        expect(actual).toMatchSnapshot();
+    });
 });
