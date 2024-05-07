@@ -52,6 +52,12 @@ const index: LintConfig = {
         MD048: LogLevels.DISABLED, // Code fence style
         MD049: LogLevels.DISABLED, // Emphasis style should be consistent
         MD050: LogLevels.DISABLED, // Strong style should be consistent
+        MD051: LogLevels.DISABLED, // Link fragments should be valid
+        MD052: LogLevels.DISABLED, // Reference links and images should use a label that is defined
+        MD053: LogLevels.DISABLED, // Link and image reference definitions should be needed
+        MD054: LogLevels.DISABLED, // Link and image style
+        MD055: LogLevels.DISABLED, // Table pipe style
+        MD056: LogLevels.DISABLED, // Table column count
 
         YFM001: LogLevels.WARN, // Inline code length
         YFM002: LogLevels.WARN, // No header found in the file for the link text
