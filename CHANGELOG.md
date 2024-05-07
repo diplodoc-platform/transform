@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.14.2](https://github.com/diplodoc-platform/transform/compare/v4.14.1...v4.14.2) (2024-05-07)
+
+
+### Bug Fixes
+
+* disable by default new markdownlint rules ([ebb5291](https://github.com/diplodoc-platform/transform/commit/ebb5291acadbb0098438602b80e0f6d97a923309))
+
 ## [4.14.1](https://github.com/diplodoc-platform/transform/compare/v4.14.0...v4.14.1) (2024-05-03)
 
 
