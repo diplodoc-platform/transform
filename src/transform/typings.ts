@@ -47,6 +47,7 @@ export interface OptionsType {
     root?: string;
     rootPublicPath?: string;
     transformLink?: (href: string) => string;
+    getPublicPath?: (options: OptionsType, href?: string) => string;
     [x: string]: unknown;
 }
 

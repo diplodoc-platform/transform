@@ -4,6 +4,7 @@ import includes from '../src/transform/plugins/includes';
 import anchors from '../src/transform/plugins/anchors';
 import {log} from '../src/transform/log';
 import transform from '../src/transform';
+import {getPublicPath} from '../src/transform/utilsFS';
 
 const mocksPath = require.resolve('./mocks/link.md');
 const transformYfm = (text: string) => {
@@ -13,6 +14,7 @@ const transformYfm = (text: string) => {
         plugins: [includes, anchors],
         path: mocksPath,
         root: dirname(mocksPath),
+        getPublicPath,
     });
     return html;
 };

@@ -1,11 +1,11 @@
 import {readFileSync, statSync} from 'fs';
 import type {Dictionary} from 'lodash';
 import escapeRegExp from 'lodash/escapeRegExp';
-
-import {join, parse, resolve, sep} from 'path';
+import {join, parse, relative, resolve, sep} from 'path';
 
 import liquid from './liquid';
 import {StateCore} from './typings';
+import {defaultTransformLink} from './utils';
 
 const filesCache: Record<string, string> = {};
 
@@ -126,4 +126,25 @@ export function getSinglePageAnchorId(args: {
     }
 
     return `#${resultAnchor}`;
+}
+
+export function getPublicPath(
+    {
+        path,
+        root,
+        rootPublicPath,
+        transformLink,
+    }: {
+        path?: string;
+        root?: string;
+        rootPublicPath?: string;
+        transformLink?: (href: string) => string;
+    },
+    input?: string | null,
+) {
+    const currentPath = input || path || '';
+    const filePath = relative(resolve(root || '', rootPublicPath || ''), currentPath);
+    const transformer = transformLink || defaultTransformLink;
+    const href = transformer(filePath);
+    return href;
 }
