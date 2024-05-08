@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.15.0](https://github.com/diplodoc-platform/transform/compare/v4.14.2...v4.15.0) (2024-05-08)
+
+
+### Features
+
+* add default public path ([#414](https://github.com/diplodoc-platform/transform/issues/414)) ([622c7c8](https://github.com/diplodoc-platform/transform/commit/622c7c85030881518b601beabec7b088291eab1b))
+
 ## [4.14.2](https://github.com/diplodoc-platform/transform/compare/v4.14.1...v4.14.2) (2024-05-07)
 
 
