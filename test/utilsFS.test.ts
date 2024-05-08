@@ -1,4 +1,5 @@
-import {PAGE_LINK_REGEXP, defaultTransformLink, getPublicPath} from '../src/transform/utils';
+import {getPublicPath} from '../src/transform/utilsFS';
+import {PAGE_LINK_REGEXP, defaultTransformLink} from '../src/transform/utils';
 
 const assert = require('assert');
 

@@ -5,19 +5,26 @@ import links from '../src/transform/plugins/links';
 import includes from '../src/transform/plugins/includes';
 import {callPlugin, tokenize} from './utils';
 import {customTitle, title} from './data/links';
+import {getPublicPath} from '../src/transform/utilsFS';
 
 import {log} from '../src/transform/log';
 import type {OptionsType} from '../src/transform/typings';
 
 const mocksPath = require.resolve('./utils.ts');
 
-const transformYfm = (text: string, path?: string, extraOpts?: OptionsType) => {
+const transformYfm = (
+    text: string,
+    path?: string,
+    extraOpts?: OptionsType,
+    hasDefaultPath = false,
+) => {
     const {
         result: {html},
     } = transform(text, {
         plugins: [includes, links],
         path: path || mocksPath,
         root: dirname(path || mocksPath),
+        ...(hasDefaultPath ? {} : {getPublicPath}),
         ...extraOpts,
     });
     return html;
@@ -42,6 +49,7 @@ describe('Links', () => {
                 path: mocksPath,
                 root: dirname(mocksPath),
                 log: log,
+                getPublicPath,
             },
         );
 
@@ -55,6 +63,7 @@ describe('Links', () => {
             {
                 path: mocksPath,
                 root: dirname(mocksPath),
+                getPublicPath,
             },
         );
 
@@ -117,6 +126,27 @@ describe('Links', () => {
 
             expect(result).toEqual('../link');
         });
+        test('Should call the "transformLink" callback for local link with default path', () => {
+            const inputPath = resolve(__dirname, './mocks/relative-link.md');
+            const input = readFileSync(inputPath, 'utf8');
+
+            let result = '';
+
+            transformYfm(
+                input,
+                'mocks/relative-link.md',
+                {
+                    transformLink: (href: string) => {
+                        href = href.replace('.md', '');
+                        result = href;
+                        return href;
+                    },
+                },
+                true,
+            );
+
+            expect(result).toEqual('../link');
+        });
 
         test('Should call the "transformLink" callback for absolute link', () => {
             const inputPath = resolve(__dirname, './mocks/absolute-link.md');
@@ -135,21 +165,69 @@ describe('Links', () => {
             expect(result).toEqual('/link/');
         });
 
-        test('Should not call the "transformLink" callback for external link', () => {
-            const inputPath = resolve(__dirname, './mocks/external-link.md');
+        test('Should call the "transformLink" callback for absolute link with default path', () => {
+            const inputPath = resolve(__dirname, './mocks/absolute-link.md');
             const input = readFileSync(inputPath, 'utf8');
 
             let result = '';
 
-            transformYfm(input, inputPath, {
+            transformYfm(
+                input,
+                'mocks/absolute-link.md',
+                {
+                    transformLink: (href: string) => {
+                        href = href.replace('.md', '');
+                        result = href;
+                        return href;
+                    },
+                },
+                true,
+            );
+
+            expect(result).toEqual('/link/');
+        });
+
+        test('Should not call the "transformLink" callback for external link', () => {
+            const inputPath = resolve(__dirname, './mocks/external-link.md');
+            const input = readFileSync(inputPath, 'utf8');
+
+            let link = '';
+
+            const html = transformYfm(input, inputPath, {
                 transformLink: (href: string) => {
-                    href = href.replace('.md', '');
-                    result = href;
+                    link = href;
                     return href;
                 },
             });
 
-            expect(result).toEqual('external-link');
+            expect(link).not.toEqual('https://test.com/');
+            expect(html).toEqual(
+                '<p><a href="https://test.com/" target="_blank" rel="noreferrer noopener">Absolute link</a></p>\n',
+            );
+        });
+
+        test('Should not call the "transformLink" callback for external link with default path', () => {
+            const inputPath = resolve(__dirname, './mocks/external-link.md');
+            const input = readFileSync(inputPath, 'utf8');
+
+            let link = '';
+
+            const html = transformYfm(
+                input,
+                'mocks/external-link.md',
+                {
+                    transformLink: (href: string) => {
+                        link = href;
+                        return href;
+                    },
+                },
+                true,
+            );
+
+            expect(link).not.toEqual('https://test.com/');
+            expect(html).toEqual(
+                '<p><a href="https://test.com/" target="_blank" rel="noreferrer noopener">Absolute link</a></p>\n',
+            );
         });
     });
 });

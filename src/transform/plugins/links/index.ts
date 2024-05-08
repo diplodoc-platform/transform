@@ -5,7 +5,6 @@ import {
     defaultTransformLink,
     findBlockTokens,
     getHrefTokenAttr,
-    getPublicPath,
     headingInfo,
     isLocalUrl,
 } from '../../utils';
@@ -13,7 +12,7 @@ import {getFileTokens, isFileExists} from '../../utilsFS';
 import Token from 'markdown-it/lib/token';
 import {Logger} from 'src/transform/log';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
-import path, {isAbsolute, resolve} from 'path';
+import path, {isAbsolute, parse, relative, resolve} from 'path';
 import {StateCore} from 'src/transform/typings';
 
 function getTitleFromTokens(tokens: Token[]) {
@@ -84,11 +83,34 @@ interface ProcOpts extends MarkdownItPluginOpts {
     transformLink: (v: string) => string;
     notFoundCb: (v: string) => void;
     needSkipLinkFn: (v: string) => boolean;
+    getPublicPath: (options: ProcOpts, v?: string) => string;
+}
+
+function getDefaultPublicPath(
+    {
+        file,
+        path,
+    }: {
+        file?: string;
+        path?: string;
+    },
+    input?: string | null,
+) {
+    return relative(parse(path || '').dir, input || file || '');
 }
 
 // eslint-disable-next-line complexity
 function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcOpts) {
-    const {path: startPath, root, transformLink, notFoundCb, needSkipLinkFn, log} = opts;
+    const {
+        path: startPath,
+        root,
+        transformLink,
+        notFoundCb,
+        needSkipLinkFn,
+        log,
+        getPublicPath = getDefaultPublicPath,
+    } = opts;
+
     const currentPath = state.env.path || startPath;
     const linkToken = tokens[idx];
     const nextToken = tokens[idx + 1];

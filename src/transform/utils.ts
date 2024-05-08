@@ -1,5 +1,4 @@
 import url from 'url';
-import {relative, resolve} from 'path';
 import Token from 'markdown-it/lib/token';
 
 export function isLocalUrl(url: string) {
@@ -104,23 +103,18 @@ export function defaultTransformLink(href: string) {
     return href;
 }
 
-export function getPublicPath(
+export function getDefaultPublicPath(
     {
         path,
-        root,
-        rootPublicPath,
         transformLink,
     }: {
         path?: string;
-        root?: string;
-        rootPublicPath?: string;
         transformLink?: (href: string) => string;
     },
     input?: string | null,
 ) {
     const currentPath = input || path || '';
-    const filePath = relative(resolve(root || '', rootPublicPath || ''), currentPath);
     const transformer = transformLink || defaultTransformLink;
-    const href = transformer(filePath);
+    const href = transformer?.(currentPath) ?? currentPath;
     return href;
 }

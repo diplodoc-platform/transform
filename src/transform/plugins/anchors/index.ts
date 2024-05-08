@@ -1,7 +1,7 @@
 import {bold} from 'chalk';
 import GithubSlugger from 'github-slugger';
 
-import {getPublicPath, headingInfo} from '../../utils';
+import {getDefaultPublicPath, headingInfo} from '../../utils';
 import {CUSTOM_ID_EXCEPTION, CUSTOM_ID_REGEXP} from './constants';
 import StateCore from 'markdown-it/lib/rules_core/state_core';
 import Token from 'markdown-it/lib/token';
@@ -76,10 +76,17 @@ interface Options {
     extractTitle?: boolean;
     supportGithubAnchors?: boolean;
     transformLink: (v: string) => string;
+    getPublicPath: (options: Options, v?: string) => string;
 }
 
 const index: MarkdownItPluginCb<Options> = (md, options) => {
-    const {extractTitle, path, log, supportGithubAnchors} = options;
+    const {
+        extractTitle,
+        path,
+        log,
+        supportGithubAnchors,
+        getPublicPath = getDefaultPublicPath,
+    } = options;
 
     const plugin = (state: StateCore) => {
         /* Do not use the plugin if it is included in the file */
