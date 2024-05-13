@@ -30,11 +30,8 @@ function changeSourceMap({
         return;
     }
 
-    const {isInlineTag, moveLines, removeLine} = createSourceMapApi({
-        firstLineNumber,
-        lastLineNumber,
-        sourceMap,
-    });
+    const isInlineTag = firstLineNumber === lastLineNumber;
+    const {moveLines, removeLine} = createSourceMapApi(sourceMap);
 
     if (isInlineTag || !resFirstLineNumber) {
         return;
