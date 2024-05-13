@@ -116,7 +116,8 @@ function liquid<
     }
 
     if (conditions) {
-        output = applyConditions(output, vars, path, {sourceMap});
+        const strict = conditions === 'strict';
+        output = applyConditions(output, vars, path, {sourceMap, strict});
     }
 
     if (substitutions) {

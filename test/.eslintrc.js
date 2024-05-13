@@ -5,12 +5,13 @@ module.exports = {
     extends: ['@diplodoc/eslint-config'],
     overrides: [
         {
-            files: ['*'],
-            rules: {
+            "files": ["*"],
+            "rules": {
+                "@typescript-eslint/no-explicit-any": 2,
+                "no-useless-concat": 0,
                 "no-shadow": "off",
-                'new-cap': [2, {capIsNew: false}],
-                '@typescript-eslint/no-namespace': [1, {allowDeclarations: true}],
-            },
+                "@typescript-eslint/no-shadow": "off"
+            }
         },
         {
             files: ['*.ts', '*.tsx'],

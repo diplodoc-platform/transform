@@ -56,46 +56,63 @@ describe('Conditions', () => {
         test('Should works for multiple if block', () => {
             expect(
                 conditions(
-                    'Prefix\n' +
-                        '{% if test %}\n' +
-                        `${' '.repeat(4)}How are you?\n` +
-                        '{% endif %}\n' +
-                        'Postfix',
+                    `
+                    Prefix
+                    {% if test %}
+                        How are you?
+                    {% endif %}
+                    Postfix
+                `,
                     {test: true},
                     '',
                     {sourceMap: {}},
                 ),
-            ).toEqual('Prefix\n' + `${' '.repeat(4)}How are you?\n` + 'Postfix');
+            ).toEqual(`
+                    Prefix
+                        How are you?
+                    Postfix
+                `);
         });
 
         test('Multiple if block with indent', () => {
             expect(
                 conditions(
-                    'Prefix\n' +
-                        `${' '.repeat(4)}{% if test %}\n` +
-                        `${' '.repeat(4)}How are you?\n` +
-                        `${' '.repeat(4)}{% endif %}\n` +
-                        'Postfix',
+                    `
+                    Prefix
+                        {% if test %}
+                        How are you?
+                        {% endif %}
+                    Postfix
+                `,
                     {test: true},
                     '',
                     {sourceMap: {}},
                 ),
-            ).toEqual('Prefix\n' + `${' '.repeat(8)}How are you?\n` + 'Postfix');
+            ).toEqual(`
+                    Prefix
+                        How are you?
+                    Postfix
+                `);
         });
 
         test('Multiple if block with indent and negative condition', () => {
             expect(
                 conditions(
-                    'Prefix\n' +
-                        `${' '.repeat(4)}{% if test %}\n` +
-                        `${' '.repeat(8)}How are you?\n` +
-                        `${' '.repeat(4)}{% endif %}\n` +
-                        'Postfix',
+                    `
+                    Prefix
+                    {% if test %}
+                        How are you?
+                    {% endif %}
+                    Postfix
+                `,
                     {test: false},
                     '',
                     {sourceMap: {}},
                 ),
-            ).toEqual('Prefix\n' + 'Postfix');
+            ).toEqual(`
+                    Prefix
+                    Postfix
+                `);
         });
 
         test('Two multiple if blocks in a row', () => {
@@ -331,6 +348,46 @@ describe('Conditions', () => {
                 ).toEqual('Prefix else Postfix');
             });
         });
+
+        describe('Strict', () => {
+            test('Should handle strict if check', () => {
+                expect(
+                    conditions(
+                        'Prefix{% if name != "test" %} Inline if {% endif %}Postfix',
+                        {user: {name: 'Alice'}},
+                        '',
+                        {sourceMap: {}, strict: true},
+                    ),
+                ).toEqual('Prefix{% if name != "test" %} Inline if {% endif %}Postfix');
+            });
+
+            test('Should handle strict elseif', () => {
+                expect(
+                    conditions(
+                        `
+                            Prefix
+                            {% if user.name == "Test" %}
+                            Test
+                            {% elsif user.lastname == "Markovna" %}
+                            Markovna
+                            {% endif %}
+                            Postfix
+                        `,
+                        {user: {name: 'Alice'}},
+                        '',
+                        {sourceMap: {}, strict: true},
+                    ),
+                ).toEqual(`
+                            Prefix
+                            {% if user.name == "Test" %}
+                            Test
+                            {% elsif user.lastname == "Markovna" %}
+                            Markovna
+                            {% endif %}
+                            Postfix
+                        `);
+            });
+        });
     });
 
     describe('Nested conditions', () => {
@@ -357,6 +414,39 @@ describe('Conditions', () => {
                         {sourceMap: {}},
                     ),
                 ).toEqual('Prefix Before nested if  After nested if Postfix');
+            });
+
+            test('Should handle nested strict if', () => {
+                expect(
+                    conditions(
+                        `
+                            Prefix
+                            {% if user.name == "Alice" %}
+                            Alice
+                                {% if user.lastname == "Markovna" %}
+                            Ok
+                                {% endif %}
+                            {% elsif user.name == "Bob" %}
+                                {% if user.lastname == "Markovich" %}
+                            Ok
+                                {% endif %}
+                            {% else %}
+                            Bad
+                            {% endif %}
+                            Postfix
+                        `,
+                        {user: {name: 'Alice'}},
+                        '',
+                        {sourceMap: {}, strict: true},
+                    ),
+                ).toEqual(`
+                            Prefix
+                            Alice
+                                {% if user.lastname == "Markovna" %}
+                            Ok
+                                {% endif %}
+                            Postfix
+                        `);
             });
         });
     });
