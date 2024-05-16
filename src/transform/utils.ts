@@ -102,19 +102,3 @@ export function defaultTransformLink(href: string) {
 
     return href;
 }
-
-export function getDefaultPublicPath(
-    {
-        path,
-        transformLink,
-    }: {
-        path?: string;
-        transformLink?: (href: string) => string;
-    },
-    input?: string | null,
-) {
-    const currentPath = input || path || '';
-    const transformer = transformLink || defaultTransformLink;
-    const href = transformer?.(currentPath) ?? currentPath;
-    return href;
-}

@@ -9,7 +9,6 @@ import attrs from 'markdown-it-attrs';
 import extractTitle from './title';
 import getHeadings from './headings';
 import sanitizeHtml from './sanitize';
-import {getDefaultPublicPath} from './utils';
 
 function initMarkdownit(options: OptionsType) {
     const {allowHTML = false, linkify = false, breaks = true, highlightLangs = {}} = options;
@@ -88,10 +87,10 @@ function initParser(md: MarkdownIt, options: OptionsType, env: EnvType) {
             extractTitle: extractTitleOption,
             needTitle,
             needFlatListHeadings = false,
-            getPublicPath = getDefaultPublicPath,
+            getPublicPath,
         } = options;
 
-        const href = getPublicPath(options);
+        const href = getPublicPath ? getPublicPath(options) : '';
 
         let tokens = md.parse(input, env);
 
