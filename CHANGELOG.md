@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.16.0](https://github.com/diplodoc-platform/transform/compare/v4.15.0...v4.16.0) (2024-05-16)
+
+
+### Features
+
+* Support options conditions `strict` value ([d11e6c0](https://github.com/diplodoc-platform/transform/commit/d11e6c00166119afe9da273dd1b60a550c355a4e))
+
+
+### Bug Fixes
+
+* change isAbsolute to includes double slashes ([#418](https://github.com/diplodoc-platform/transform/issues/418)) ([da4c652](https://github.com/diplodoc-platform/transform/commit/da4c652803d4ca5106076124c58755167152c312))
+
 ## [4.15.0](https://github.com/diplodoc-platform/transform/compare/v4.14.2...v4.15.0) (2024-05-08)
 
 
