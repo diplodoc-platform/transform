@@ -184,7 +184,8 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
     }
 
     let newPathname = '';
-    if (!isAbsolute(href)) {
+
+    if (!isAbsolute(href) && !href.includes('//')) {
         newPathname = getPublicPath(opts, file);
 
         href = url.format({
