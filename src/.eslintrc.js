@@ -12,14 +12,5 @@ module.exports = {
                 '@typescript-eslint/no-namespace': [1, {allowDeclarations: true}],
             },
         },
-        {
-            files: ['*.ts', '*.tsx'],
-            parser: '@typescript-eslint/parser',
-            parserOptions: {
-                sourceType: 'module',
-                project: ['./tsconfig.transform.json', './tsconfig.json'],
-                tsconfigRootDir: __dirname + '/../',
-            },
-        }
     ],
 };

@@ -39,9 +39,7 @@ const operators: Record<string, WithFilter | NoFilter | DotOperator> = {
         const parsed = lexical.getParsedMethod(r);
 
         try {
-            if (!parsed) {
-                throw new Error();
-            }
+            if (!parsed) throw new Error();
             const {name, args} = parsed;
 
             return l[name](...args);
@@ -58,9 +56,7 @@ const operators: Record<string, WithFilter | NoFilter | DotOperator> = {
     }) as DotOperator,
 };
 
-export const NoValue = Symbol('NoValue');
-
-function evalValue(originStr: string, scope: Scope, strict: boolean) {
+function evalValue(originStr: string, scope: Scope) {
     const str = originStr && originStr.trim();
     if (!str) {
         return undefined;
@@ -70,7 +66,7 @@ function evalValue(originStr: string, scope: Scope, strict: boolean) {
         return lexical.parseLiteral(str);
     }
     if (lexical.isVariable(str)) {
-        return getObject(str, scope, strict ? NoValue : undefined);
+        return getObject(str, scope);
     }
 
     throw new TypeError(`cannot eval '${str}' as value`);
@@ -84,25 +80,13 @@ function isFalsy(val: unknown) {
     return val === false || undefined === val || val === null;
 }
 
-const operatorREs = lexical.operators.map(
-    (op) =>
-        new RegExp(
-            `^(${lexical.quoteBalanced.source})(${op.source})(${lexical.quoteBalanced.source})$`,
-        ),
-);
-
 export function evalExp(
     exp: string,
     scope: Record<string, unknown>,
-    strict = false,
-):
-    | string[]
-    | number[]
-    | boolean
-    | string
-    | symbol
-    | undefined
-    | ((input: string) => number | string) {
+): string[] | boolean | string | undefined | ((input: string) => number | string) {
+    const operatorREs = lexical.operators;
+    let match;
+
     if (Object.getOwnPropertyNames(filters).includes(exp.trim())) {
         return filters[exp.trim() as keyof typeof filters];
     }
@@ -114,30 +98,28 @@ export function evalExp(
     try {
         for (let i = 0; i < operatorREs.length; i++) {
             const operatorRE = operatorREs[i];
-            const match = exp.match(operatorRE);
-            if (match) {
+            const expRE = new RegExp(
+                `^(${lexical.quoteBalanced.source})(${operatorRE.source})(${lexical.quoteBalanced.source})$`,
+            );
+            if ((match = exp.match(expRE))) {
+                const l = evalExp(match[1], scope);
                 const operator = match[2].trim();
-                if (operator === '.' && !lexical.isSupportedMethod(match[3].trim())) {
-                    break;
-                }
-
                 const op = operators[operator];
-                const l = evalExp(match[1], scope, strict);
-                const r = evalExp(match[3], scope, strict);
+                const r = evalExp(match[3], scope);
 
-                if (l === NoValue || r === NoValue) {
-                    return NoValue;
+                if (
+                    operator !== '.' ||
+                    (operator === '.' && lexical.isSupportedMethod(r as string))
+                ) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    return op(l as any, r as any, exp);
                 }
-
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                return op(l as any, r as any, exp);
             }
         }
 
-        const match = exp.match(lexical.rangeLine);
-        if (match) {
-            const low = Number(evalValue(match[1], scope, strict));
-            const high = Number(evalValue(match[2], scope, strict));
+        if ((match = exp.match(lexical.rangeLine))) {
+            const low = evalValue(match[1], scope);
+            const high = evalValue(match[2], scope);
             const range = [];
 
             for (let j = low; j <= high; j++) {
@@ -147,7 +129,7 @@ export function evalExp(
             return range;
         }
 
-        return evalValue(exp, scope, strict);
+        return evalValue(exp, scope);
     } catch (e) {
         if (e instanceof SkippedEvalError) {
             log.warn(`Skip error: ${e}`);
@@ -160,5 +142,4 @@ export function evalExp(
     return undefined;
 }
 
-export default (exp: string, scope: Record<string, unknown>, strict = false) =>
-    Boolean(evalExp(exp, scope, strict));
+export default (exp: string, scope: Record<string, unknown>) => Boolean(evalExp(exp, scope));

@@ -1,231 +1,193 @@
 import {bold} from 'chalk';
-import {NoValue, evalExp} from './evaluation';
+
+import evalExp from './evaluation';
 import {tagLine} from './lexical';
 import {log} from '../log';
-import {SourceMapApi, createSourceMapApi, getLineNumber} from './sourceMap';
+import {getPreparedLeftContent, removeIndentBlock} from './utils';
+import {createSourceMapApi, getLineNumber} from './sourceMap';
 
-interface SourceMap {
-    start: number;
-    end: number;
-    rawStart: string;
-    rawEnd: string;
-}
+type Options = {
+    firstLineNumber: number;
+    lastLineNumber: number;
+    resFirstLineNumber: number;
+    resLastLineNumber: number;
+    linesTotal: number;
+    sourceMap: Record<number, number>;
+};
 
-function resourcemap(source: string, ifTag: SourceMap, ifCon: SourceMap | null, api: SourceMapApi) {
-    const [sourseStartLine, sourceEndLine] = [
-        getLineNumber(source, ifTag.start + 1),
-        getLineNumber(source, ifTag.end - 1),
-    ];
-
-    if (sourseStartLine === sourceEndLine || ifTag === ifCon) {
+function changeSourceMap({
+    firstLineNumber,
+    lastLineNumber,
+    resFirstLineNumber,
+    resLastLineNumber,
+    linesTotal,
+    sourceMap,
+}: Options) {
+    if (!sourceMap) {
         return;
     }
 
-    const linesTotal = source.split('\n').length;
-    const {getSourceMapValue, moveLines, removeLines} = api;
+    const {isInlineTag, getSourceMapValue, moveLines, removeLines} = createSourceMapApi({
+        firstLineNumber,
+        lastLineNumber,
+        sourceMap,
+    });
+
+    if (isInlineTag) {
+        return;
+    }
 
     let offsetRestLines;
-    if (ifCon) {
-        const [resultStartLine, resultEndLine] = [
-            getLineNumber(source, ifCon.start),
-            getLineNumber(source, ifCon.end),
-        ];
-
+    if (resFirstLineNumber) {
         // Move condition's content to the top
-        const offsetContentLines = sourseStartLine - resultStartLine;
+        const offsetContentLines = firstLineNumber - resFirstLineNumber;
         moveLines({
-            start: resultStartLine,
-            end: resultEndLine,
+            start: resFirstLineNumber,
+            end: resLastLineNumber - 1,
             offset: offsetContentLines,
             withReplace: true,
         });
 
         // Remove the rest lines of the condition block
-        removeLines({start: sourseStartLine, end: resultStartLine - 1});
-        removeLines({start: resultEndLine + 1, end: sourceEndLine});
+        removeLines({start: firstLineNumber, end: resFirstLineNumber - 1});
+        removeLines({start: resLastLineNumber, end: lastLineNumber});
 
         // Calculate an offset of the rest lines
-        offsetRestLines = getSourceMapValue(resultEndLine) - sourceEndLine;
+        offsetRestLines = getSourceMapValue(resLastLineNumber - 1) - lastLineNumber;
     } else {
         // Remove the whole condition block
-        removeLines({start: sourseStartLine, end: sourceEndLine});
+        removeLines({start: firstLineNumber, end: lastLineNumber});
 
         // Calculate offset of the rest lines
-        offsetRestLines = sourseStartLine - sourceEndLine - 1;
+        offsetRestLines = firstLineNumber - lastLineNumber - 1;
     }
 
     // Offset the rest lines
-    moveLines({start: sourceEndLine + 1, end: linesTotal, offset: offsetRestLines});
+    moveLines({start: lastLineNumber + 1, end: linesTotal, offset: offsetRestLines});
 }
 
-type IfCondition = SourceMap & {
-    expr: string;
+function getElseProp<B extends keyof Elses>({elses}: {elses: Elses[]}, propName: B, index = 0) {
+    if (!elses.length || index >= elses.length) {
+        return undefined;
+    }
+
+    return elses[index][propName];
+}
+
+type Opts = {
+    ifTag: Tag;
+    vars: Record<string, unknown>;
+    content: string;
+    match: RegExpExecArray;
+    lastIndex: number;
+    sourceMap: Record<number, number>;
+    linesTotal: number;
 };
 
-function headLinebreak(raw: string) {
-    const match = raw.match(/^([^{]+){.*/);
+function inlineConditions({ifTag, vars, content, match, lastIndex, sourceMap, linesTotal}: Opts) {
+    let res = '';
+    const firstLineNumber = getLineNumber(content, ifTag.startPos);
+    const lastLineNumber = getLineNumber(content, lastIndex);
+    let resFirstLineNumber = 0;
+    let resLastLineNumber = 0;
 
-    return match ? match[1] : '';
-}
+    if (evalExp(ifTag.condition, vars)) {
+        const ifRawLastIndex = ifTag.startPos + ifTag.ifRaw.length;
+        const contentLastIndex = getElseProp(ifTag, 'startPos') || match.index;
 
-function tailLinebreak(raw: string) {
-    const match = raw.match(/.*}(\s*\n)$/);
+        res = content.substring(ifRawLastIndex, contentLastIndex);
+        resFirstLineNumber = getLineNumber(content, ifRawLastIndex + 1);
+        resLastLineNumber = getLineNumber(content, contentLastIndex + 1);
+    } else {
+        ifTag.elses.some(({condition, startPos, raw}, index) => {
+            const isTruthy = !condition || evalExp(condition, vars);
 
-    return match ? match[1] : '';
-}
+            if (isTruthy) {
+                const elseRawLastIndex = startPos + raw.length;
+                const contentLastIndex = getElseProp(ifTag, 'startPos', index + 1) || match.index;
 
-function trimResult(content: string, ifTag: IfTag, ifCon: IfCondition | null) {
-    if (!ifCon) {
-        return ifTag.isBlock ? '\n' : '';
+                res = content.substring(elseRawLastIndex, contentLastIndex);
+                resFirstLineNumber = getLineNumber(content, elseRawLastIndex + 1);
+                resLastLineNumber = getLineNumber(content, contentLastIndex + 1);
+
+                return true;
+            }
+
+            return false;
+        });
     }
 
-    content = content.substring(ifCon.start, ifCon.end);
+    changeSourceMap({
+        firstLineNumber,
+        lastLineNumber,
+        resFirstLineNumber,
+        resLastLineNumber,
+        linesTotal,
+        sourceMap,
+    });
 
-    const head = headLinebreak(ifCon.rawStart);
-    if (head) {
-        content = (ifTag.isBlock ? '\n' : head) + content;
+    const preparedLeftContent = getPreparedLeftContent({
+        content,
+        tagStartPos: ifTag.startPos,
+        tagContent: res,
+    });
+
+    let shift = 0;
+    if (
+        res === '' &&
+        preparedLeftContent[preparedLeftContent.length - 1] === '\n' &&
+        content[lastIndex] === '\n'
+    ) {
+        shift = 1;
     }
 
-    const tail = tailLinebreak(ifCon.rawEnd);
-    if (tail) {
-        content = content + (ifTag.isBlock ? '\n' : tail);
-    }
-
-    return content;
-}
-
-class IfTag implements SourceMap {
-    private conditions: IfCondition[] = [];
-
-    get start() {
-        if (!this.conditions.length) {
-            return -1;
+    if (res !== '') {
+        if (res[0] === '\n') {
+            res = res.substring(1);
         }
 
-        const first = this.conditions[0];
+        res = removeIndentBlock(res);
 
-        return first.start - first.rawStart.length;
-    }
-
-    get end() {
-        if (!this.conditions.length) {
-            return -1;
-        }
-
-        const last = this.conditions[this.conditions.length - 1];
-
-        return last.end + last.rawEnd.length;
-    }
-
-    get rawStart() {
-        if (!this.conditions.length) {
-            return '';
-        }
-
-        const first = this.conditions[0];
-
-        return first.rawStart;
-    }
-
-    get rawEnd() {
-        if (!this.conditions.length) {
-            return '';
-        }
-
-        const last = this.conditions[this.conditions.length - 1];
-
-        return last.rawEnd;
-    }
-
-    get isBlock() {
-        const first = this.conditions[0];
-        const last = this.conditions[this.conditions.length - 1];
-
-        return tailLinebreak(first.rawStart) && headLinebreak(last.rawEnd);
-    }
-
-    *[Symbol.iterator](): Generator<IfCondition> {
-        for (const condition of this.conditions) {
-            yield condition;
+        if (res[res.length - 1] === '\n') {
+            res = res.slice(0, -1);
         }
     }
 
-    openCondition(raw: string, expr: string, start: number) {
-        this.closeCondition(raw, start);
-        this.conditions.push({
-            rawStart: raw,
-            start: start + raw.length,
-            expr,
-        } as IfCondition);
-
-        return start + raw.length - tailLinebreak(raw).length;
-    }
-
-    closeCondition(raw: string, end: number) {
-        const condition = this.conditions[this.conditions.length - 1];
-        if (condition) {
-            condition.rawEnd = raw;
-            condition.end = end;
-        }
-    }
-}
-
-function inlineConditions(
-    content: string,
-    ifTag: IfTag,
-    vars: Record<string, unknown>,
-    strict: boolean,
-) {
-    let ifCon = null;
-
-    for (const condition of ifTag) {
-        const value = evalExp(condition.expr, vars, strict);
-
-        if (condition.expr && value === NoValue) {
-            return {
-                result: content,
-                // Fix offset for next matches.
-                // There can be some significant linebreak and spaces.
-                lastIndex: ifTag.end - tailLinebreak(ifTag.rawEnd).length,
-                ifCon: ifTag,
-            };
-        }
-
-        if (!condition.expr || value) {
-            ifCon = condition;
-            break;
-        }
-    }
-
-    const start = content.slice(0, ifTag.start);
-    const end = content.slice(ifTag.end);
-    const result = trimResult(content, ifTag, ifCon);
+    const leftPart = preparedLeftContent + res;
 
     return {
-        result: start + result + end,
-        lastIndex: start.length + result.length,
-        ifCon,
+        result: leftPart + content.substring(lastIndex + shift),
+        idx: leftPart.length,
     };
 }
 
+type Elses = {startPos: number; raw: string; condition?: string};
+
+type Tag = {
+    isOpen: Boolean;
+    condition: string;
+    startPos: number;
+    ifRaw: string;
+    elses: Elses[];
+};
+
 export = function conditions(
-    input: string,
+    originInput: string,
     vars: Record<string, unknown>,
     path?: string,
     settings?: {
         sourceMap: Record<number, number>;
-        strict?: boolean;
     },
 ) {
     const sourceMap = settings?.sourceMap || {};
-    const strict = settings?.strict || false;
-    const tagStack: IfTag[] = [];
 
-    // Consumes all between curly braces
-    // and all closest upon to first linebreak before and after braces.
-    const R_LIQUID = /((?:\n[^\n{]*)?{%-?([\s\S]*?)-?%}(?:\s*\n)?)/g;
+    const R_LIQUID = /({%-?([\s\S]*?)-?%})/g;
 
     let match;
+    const tagStack: Tag[] = [];
+    let input = originInput;
+    let linesTotal = originInput.split('\n').length;
+
     while ((match = R_LIQUID.exec(input)) !== null) {
         if (!match[1]) {
             continue;
@@ -239,41 +201,50 @@ export = function conditions(
         const [type, args] = tagMatch.slice(1);
 
         switch (type) {
-            case 'if': {
-                const tag = new IfTag();
-
-                R_LIQUID.lastIndex = tag.openCondition(match[1], args, match.index);
-
-                tagStack.push(tag);
+            case 'if':
+                tagStack.push({
+                    isOpen: true,
+                    condition: args,
+                    startPos: match.index,
+                    ifRaw: match[1],
+                    elses: [],
+                });
                 break;
-            }
+            case 'else':
+                tagStack[tagStack.length - 1].elses.push({
+                    startPos: match.index,
+                    raw: match[1],
+                });
+                break;
             case 'elsif':
-            case 'else': {
-                const tag = tagStack[tagStack.length - 1] as IfTag;
-
-                R_LIQUID.lastIndex = tag.openCondition(match[1], args, match.index);
-
+                tagStack[tagStack.length - 1].elses.push({
+                    condition: args,
+                    startPos: match.index,
+                    raw: match[1],
+                });
                 break;
-            }
             case 'endif': {
                 const ifTag = tagStack.pop();
 
                 if (!ifTag) {
-                    // TODO(3y3): make lint rule
                     log.error(
                         `If block must be opened before close${path ? ` in ${bold(path)}` : ''}`,
                     );
                     break;
                 }
 
-                ifTag.closeCondition(match[1], match.index);
-
-                const {result, lastIndex, ifCon} = inlineConditions(input, ifTag, vars, strict);
-
-                resourcemap(input, ifTag, ifCon, createSourceMapApi(sourceMap));
-
-                R_LIQUID.lastIndex = lastIndex;
+                const {idx, result} = inlineConditions({
+                    ifTag,
+                    vars,
+                    content: input,
+                    match,
+                    lastIndex: R_LIQUID.lastIndex,
+                    sourceMap,
+                    linesTotal,
+                });
+                R_LIQUID.lastIndex = idx;
                 input = result;
+                linesTotal = result.split('\n').length;
 
                 break;
             }

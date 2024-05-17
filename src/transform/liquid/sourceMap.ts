@@ -13,6 +13,12 @@ export function prepareSourceMap(sourceMap: object) {
     return newToOldMap;
 }
 
+type Options = {
+    firstLineNumber: number;
+    lastLineNumber: number;
+    sourceMap: Record<number, number>;
+};
+
 type MoveLinesOptions = {
     start: number;
     end: number;
@@ -20,9 +26,8 @@ type MoveLinesOptions = {
     withReplace?: boolean;
 };
 
-export type SourceMapApi = ReturnType<typeof createSourceMapApi>;
-
-export function createSourceMapApi(sourceMap: Record<number, number>) {
+export function createSourceMapApi({firstLineNumber, lastLineNumber, sourceMap}: Options) {
+    const isInlineTag = firstLineNumber === lastLineNumber;
     const newToOldIndexes = invert(sourceMap);
 
     const getOriginIndex = (i: number) => Number(newToOldIndexes[i]);
@@ -33,6 +38,10 @@ export function createSourceMapApi(sourceMap: Record<number, number>) {
     const getSourceMapValue = (i: number) => sourceMap[getOriginIndex(i)];
 
     const moveLines = ({start, end, offset, withReplace = false}: MoveLinesOptions) => {
+        if (isInlineTag) {
+            return;
+        }
+
         for (let i = start; i <= end; i++) {
             const newLineNumber = i + offset;
             setSourceMapValue(i, newLineNumber);
@@ -54,6 +63,7 @@ export function createSourceMapApi(sourceMap: Record<number, number>) {
     };
 
     return {
+        isInlineTag,
         getSourceMapValue,
         moveLines,
         removeLines,

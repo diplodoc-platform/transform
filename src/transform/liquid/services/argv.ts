@@ -1,5 +1,5 @@
 export type ArgvSettings = {
-    conditions?: boolean | 'strict';
+    conditions?: boolean;
     conditionsInCode?: boolean;
     cycles?: boolean;
     substitutions?: boolean;
