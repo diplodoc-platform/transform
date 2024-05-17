@@ -76,7 +76,9 @@ function tailLinebreak(raw: string) {
 
 function trimResult(content: string, ifTag: IfTag, ifCon: IfCondition | null) {
     if (!ifCon) {
-        return ifTag.isBlock ? '\n' : '';
+        const head = headLinebreak(ifTag.rawStart);
+        const tail = tailLinebreak(ifTag.rawEnd);
+        return ifTag.isBlock ? '\n' : head + tail;
     }
 
     content = content.substring(ifCon.start, ifCon.end);
