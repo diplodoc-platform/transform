@@ -1,5 +1,29 @@
 import conditions from '../../src/transform/liquid/conditions';
 
+const getPadX = (string: string) => {
+    const match = /^(\s+)/.exec(string);
+    const pad = (match && match[1]) || '';
+
+    return pad.length || 0;
+};
+
+export function trim(string: string | TemplateStringsArray): string {
+    const strings = ([] as string[]).concat(string as string) as string[];
+    let lines: string[] = ([] as string[]).concat(...strings.map((string) => string.split('\n')));
+
+    let pad: number;
+    if (lines[0].trim() === '') {
+        pad = getPadX(lines[1]);
+        lines = lines.slice(1);
+    } else {
+        pad = getPadX(lines[0]);
+    }
+
+    lines = lines.map((line) => line.slice(pad));
+
+    return lines.join('\n').trim();
+}
+
 describe('Conditions', () => {
     describe('location', () => {
         test('Should works for if only', () => {
@@ -142,6 +166,56 @@ describe('Conditions', () => {
                     },
                 ),
             ).toEqual('1. list item 1\n\n' + `${' '.repeat(4)}Test\n`);
+        });
+
+        test('Condition inside the note block (at start)', () => {
+            expect(
+                conditions(
+                    trim`
+                    {% note alert %}
+
+                    {% if locale == 'ru' %}You can't use the public geofence names.{% endif %}Test
+
+                    {% endnote %}
+                `,
+                    {},
+                    '',
+                    {
+                        sourceMap: {},
+                    },
+                ),
+            ).toEqual(trim`
+                {% note alert %}
+
+                Test
+
+                {% endnote %}
+            `);
+        });
+
+        test('Condition inside the note block (at end)', () => {
+            expect(
+                conditions(
+                    trim`
+                    {% note alert %}
+
+                    Test{% if locale == 'ru' %}You can't use the public geofence names.{% endif %}
+
+                    {% endnote %}
+                `,
+                    {},
+                    '',
+                    {
+                        sourceMap: {},
+                    },
+                ),
+            ).toEqual(trim`
+                {% note alert %}
+
+                Test
+
+                {% endnote %}
+            `);
         });
     });
 
