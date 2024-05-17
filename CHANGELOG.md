@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.17.0](https://github.com/diplodoc-platform/transform/compare/v4.16.1...v4.17.0) (2024-05-17)
+
+
+### Features
+
+* **cut:** add-margin-bottom-cut ([6d42230](https://github.com/diplodoc-platform/transform/commit/6d422307d6fb2e7eb5104d933aec3dd70e1f366b))
+
+
+### Bug Fixes
+
+* Fix liquid conditions inside notes ([668c1d4](https://github.com/diplodoc-platform/transform/commit/668c1d43f8d196776cf0baca1b49872f557d6a72))
+
 ## [4.16.1](https://github.com/diplodoc-platform/transform/compare/v4.16.0...v4.16.1) (2024-05-17)
 
 
