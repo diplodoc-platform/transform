@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.16.1](https://github.com/diplodoc-platform/transform/compare/v4.16.0...v4.16.1) (2024-05-17)
+
+
+### Bug Fixes
+
+* set href to anchor to empty for non getPublicPath builds ([#419](https://github.com/diplodoc-platform/transform/issues/419)) ([60469e2](https://github.com/diplodoc-platform/transform/commit/60469e237b3e7ed01ad7d52f93e42616fdd67a3b))
+
 ## [4.16.0](https://github.com/diplodoc-platform/transform/compare/v4.15.0...v4.16.0) (2024-05-16)
 
 
