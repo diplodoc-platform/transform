@@ -1,9 +1,19 @@
 import type MarkdownIt from 'markdown-it';
+import type Core from 'markdown-it/lib/parser_core';
 import type StateCore from 'markdown-it/lib/rules_core/state_core';
 import type Token from 'markdown-it/lib/token';
 
 // eslint-disable-next-line no-useless-escape
-const pattern = /^\[(X|\s|\_|\-)\]\s(.*)/i;
+export const pattern = /^\[(X|\s|\_|\-)\]\s(.*)/i;
+export const CheckboxTokenType = {
+    Checkbox: 'checkbox',
+    CheckboxOpen: 'checkbox_open',
+    CheckboxClose: 'checkbox_close',
+    CheckboxInput: 'checkbox_input',
+    CheckboxLabel: 'checkbox_label',
+    CheckboxLabelOpen: 'checkbox_label_open',
+    CheckboxLabelClose: 'checkbox_label_close',
+} as const;
 
 function matchOpenToken(tokens: Token[], i: number) {
     return (
@@ -16,13 +26,16 @@ function matchOpenToken(tokens: Token[], i: number) {
 export type CheckboxOptions = {
     idPrefix?: string;
     divClass?: string;
+    /** @default true */
+    disabled?: boolean;
 };
 
-export const checkboxReplace = function (_md: MarkdownIt, opts: CheckboxOptions) {
+export const checkboxReplace = function (_md: MarkdownIt, opts?: CheckboxOptions): Core.RuleCore {
     let lastId = 0;
-    const defaults = {
+    const defaults: Required<CheckboxOptions> = {
         divClass: 'checkbox',
         idPrefix: 'checkbox',
+        disabled: true,
     };
     const options = Object.assign(defaults, opts);
 
@@ -33,7 +46,7 @@ export const checkboxReplace = function (_md: MarkdownIt, opts: CheckboxOptions)
         /**
          * <div class="checkbox">
          */
-        token = new state.Token('checkbox_open', 'div', 1);
+        token = new state.Token(CheckboxTokenType.CheckboxOpen, 'div', 1);
         token.block = true;
         token.map = state.tokens[i].map;
         token.attrs = [['class', options.divClass]];
@@ -44,23 +57,25 @@ export const checkboxReplace = function (_md: MarkdownIt, opts: CheckboxOptions)
          */
         const id = options.idPrefix + lastId;
         lastId += 1;
-        token = new state.Token('checkbox_input', 'input', 0);
+        token = new state.Token(CheckboxTokenType.CheckboxInput, 'input', 0);
         token.block = true;
         token.map = state.tokens[i].map;
         token.attrs = [
             ['type', 'checkbox'],
             ['id', id],
-            ['disabled', ''],
         ];
+        if (options.disabled) {
+            token.attrSet('disabled', '');
+        }
         if (checked === true) {
-            token.attrs.push(['checked', 'true']);
+            token.attrSet('checked', 'true');
         }
         nodes.push(token);
 
         /**
          * <label for="checkbox{n}">
          */
-        token = new state.Token('checkbox_label_open', 'label', 1);
+        token = new state.Token(CheckboxTokenType.CheckboxLabelOpen, 'label', 1);
         token.attrs = [['for', id]];
         nodes.push(token);
 
@@ -73,11 +88,11 @@ export const checkboxReplace = function (_md: MarkdownIt, opts: CheckboxOptions)
         /**
          * closing tags
          */
-        token = new state.Token('checkbox_label_close', 'label', -1);
+        token = new state.Token(CheckboxTokenType.CheckboxLabelClose, 'label', -1);
         token.block = true;
         token.map = state.tokens[i].map;
         nodes.push(token);
-        token = new state.Token('checkbox_close', 'div', -1);
+        token = new state.Token(CheckboxTokenType.CheckboxClose, 'div', -1);
         token.block = true;
         token.map = state.tokens[i].map;
         nodes.push(token);
@@ -93,7 +108,7 @@ export const checkboxReplace = function (_md: MarkdownIt, opts: CheckboxOptions)
         }
         return createTokens(state, checked, label, i);
     };
-    return function (state: StateCore) {
+    return function (state) {
         const blockTokens = state.tokens;
         for (let i = 0; i < blockTokens.length; i++) {
             const match = matchOpenToken(blockTokens, i);
