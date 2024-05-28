@@ -1,4 +1,4 @@
-import MarkdownIt from 'markdown-it';
+import type {PluginWithOptions} from 'markdown-it';
 import {CheckboxOptions, checkboxReplace} from './checkbox';
 
 /**
@@ -6,7 +6,7 @@ import {CheckboxOptions, checkboxReplace} from './checkbox';
  * Forked from https://github.com/mcecot/markdown-it-checkbox
  */
 
-const checkbox = (md: MarkdownIt, options: CheckboxOptions) => {
+const checkbox: PluginWithOptions<CheckboxOptions> = (md, options) => {
     md.core.ruler.push('checkbox', checkboxReplace(md, options));
 
     return md;
