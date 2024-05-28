@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.17.1](https://github.com/diplodoc-platform/transform/compare/v4.17.0...v4.17.1) (2024-05-28)
+
+
+### Bug Fixes
+
+* Fix liquid conditions processing ([8a3628c](https://github.com/diplodoc-platform/transform/commit/8a3628c916a687f4a2f17928c786911be734cb42))
+
 ## [4.17.0](https://github.com/diplodoc-platform/transform/compare/v4.16.1...v4.17.0) (2024-05-17)
 
 
