@@ -83,12 +83,12 @@ function trimResult(content: string, ifTag: IfTag, ifCon: IfCondition | null) {
 
     content = content.substring(ifCon.start, ifCon.end);
 
-    const head = headLinebreak(ifCon.rawStart);
+    const head = ifTag.isBlock ? headLinebreak(ifCon.rawStart) : headLinebreak(ifTag.rawStart);
     if (head) {
         content = (ifTag.isBlock ? '\n' : head) + content;
     }
 
-    const tail = tailLinebreak(ifCon.rawEnd);
+    const tail = ifTag.isBlock ? tailLinebreak(ifCon.rawEnd) : tailLinebreak(ifTag.rawEnd);
     if (tail) {
         content = content + (ifTag.isBlock ? '\n' : tail);
     }
@@ -225,7 +225,7 @@ export = function conditions(
 
     // Consumes all between curly braces
     // and all closest upon to first linebreak before and after braces.
-    const R_LIQUID = /((?:\n[^\n{]*)?{%-?([\s\S]*?)-?%}(?:\s*\n)?)/g;
+    const R_LIQUID = /((?:\n\s*)?{%-?([\s\S]*?)-?%}(?:\s*\n)?)/g;
 
     let match;
     while ((match = R_LIQUID.exec(input)) !== null) {
