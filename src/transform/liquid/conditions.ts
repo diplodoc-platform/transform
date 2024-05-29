@@ -225,7 +225,7 @@ export = function conditions(
 
     // Consumes all between curly braces
     // and all closest upon to first linebreak before and after braces.
-    const R_LIQUID = /((?:\n\s*)?{%-?([\s\S]*?)-?%}(?:\s*\n)?)/g;
+    const R_LIQUID = /((?:\n[\t ]*)?{%-?([\s\S]*?)-?%}(?:[\t ]*\n)?)/g;
 
     let match;
     while ((match = R_LIQUID.exec(input)) !== null) {
