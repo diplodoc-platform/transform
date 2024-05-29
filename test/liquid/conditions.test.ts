@@ -522,6 +522,37 @@ describe('Conditions', () => {
                             Postfix
                         `);
             });
+
+            test('Condition inside the cut block with multiple linebreaks', () => {
+                expect(
+                    conditions(
+                        trim`
+                    {% cut "Title" %}
+
+                    {% if locale == 'ru' %}
+
+                    a
+
+                    {% endif %}
+
+                    {% endcut %}
+                `,
+                        {locale: 'ru'},
+                        '',
+                        {
+                            sourceMap: {},
+                        },
+                    ),
+                ).toEqual(trim`
+                    {% cut "Title" %}
+
+
+                    a
+
+
+                    {% endcut %}
+            `);
+            });
         });
     });
 
