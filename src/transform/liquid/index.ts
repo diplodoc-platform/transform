@@ -124,7 +124,10 @@ function liquid<
         output = applySubstitutions(output, vars, path);
     }
 
-    output = conditionsInCode ? output : repairCode(output, codes);
+    if (!conditionsInCode && typeof output === 'string') {
+        output = repairCode(output, codes);
+    }
+
     codes.length = 0;
 
     if (withSourceMap) {

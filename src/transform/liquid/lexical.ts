@@ -6,6 +6,7 @@ const quoted = new RegExp(`${singleQuoted.source}|${doubleQuoted.source}`);
 export const quoteBalanced = new RegExp(`(?:${quoted.source}|[^'"])*`);
 
 export const vars = /((not_var)?({{2}([. \w-|(),]+)}{2}))/gm;
+export const singleVariable = /^{{2}([. \w-|(),]+)}{2}$/;
 
 // basic types
 const number = /-?\d+\.?\d*|\.?\d+/;
@@ -66,6 +67,7 @@ export const getParsedMethod = (exp: String) => {
 
 export const isLiteral = (str: string) => literalLine.test(str);
 export const isVariable = (str: string) => variableLine.test(str);
+export const isSingleVariable = (str: string) => singleVariable.test(str);
 
 export function parseLiteral(str: string) {
     let res = str.match(numberLine);

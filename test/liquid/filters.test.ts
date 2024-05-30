@@ -20,7 +20,7 @@ describe('Filters', () => {
             ).toEqual('Users count: 2');
         });
         test('Test2', () => {
-            expect(substitutions('{{ test | length }}', {test: 'hello world'})).toEqual('11');
+            expect(substitutions('{{ test | length }}', {test: 'hello world'})).toEqual(11);
         });
     });
 
