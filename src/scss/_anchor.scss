@@ -13,11 +13,11 @@
 
         .yfm-anchor::before {
             content: '#';
-            visibility: hidden;
+            opacity: 0;
         }
 
         &:hover .yfm-anchor::before {
-            visibility: visible;
+            opacity: 1;
         }
     }
 
