@@ -1,0 +1,10 @@
+@media print {
+    .yfm {
+        .yfm-term {
+            &_title {
+                color: currentColor;
+                border-bottom: none;
+            }
+        }
+    }
+}
