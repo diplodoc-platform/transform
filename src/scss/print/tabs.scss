@@ -5,6 +5,12 @@
                 display: none;
             }
 
+            &-panel {
+                visibility: visible;
+                height: auto;
+                display: block;
+            }
+
             &-panel:before {
                 content: attr(data-title);
                 margin-bottom: -1px;
