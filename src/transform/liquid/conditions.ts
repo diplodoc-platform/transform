@@ -205,7 +205,7 @@ function inlineConditions(
 
     return {
         result: start + result + end,
-        lastIndex: start.length + result.length,
+        lastIndex: start.length + result.length - tailLinebreak(ifTag.rawEnd).length,
         ifCon,
     };
 }
