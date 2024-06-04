@@ -217,6 +217,42 @@ describe('Conditions', () => {
                 {% endnote %}
             `);
         });
+
+        test('Falsy block condition after truthly block condition', () => {
+            expect(
+                conditions(
+                    trim`
+                        Start
+
+                        Before
+                        {% if product == "A" %}
+                        Truthly
+                        {% endif %}
+                        {% if product == "B" %}
+                        Falsy
+                        {% endif %}
+                        After
+
+                        End
+                `,
+                    {
+                        product: 'A',
+                    },
+                    '',
+                    {
+                        sourceMap: {},
+                    },
+                ),
+            ).toEqual(trim`
+                Start
+
+                Before
+                Truthly
+                After
+
+                End
+            `);
+        });
     });
 
     describe('Conditions', () => {
