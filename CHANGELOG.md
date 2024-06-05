@@ -1,5 +1,20 @@
 # Changelog
 
+## [4.18.0](https://github.com/diplodoc-platform/transform/compare/v4.17.2...v4.18.0) (2024-06-05)
+
+
+### Features
+
+* add print styles for term plugin ([3c1576a](https://github.com/diplodoc-platform/transform/commit/3c1576ac57ae6cbf1f68fc65f7dc911b49e54b38))
+* display all tabs sequentially ([fb5e241](https://github.com/diplodoc-platform/transform/commit/fb5e241c4e283ba0c957b73889b7ffdc80a9da22))
+* liquid returns result with type as type of variable ([f5af53c](https://github.com/diplodoc-platform/transform/commit/f5af53c689a593e46108a2d898e9eb7da2583c63))
+
+
+### Bug Fixes
+
+* display content of cut block in print mode ([73ffb2a](https://github.com/diplodoc-platform/transform/commit/73ffb2ae89768129a64972a83e5c2adf18cc8c7b))
+* make anchor opacity 0 and 1 instead of changing visibility ([#432](https://github.com/diplodoc-platform/transform/issues/432)) ([d081bbe](https://github.com/diplodoc-platform/transform/commit/d081bbe82601610135555d476f03b29ec09a171d))
+
 ## [4.17.2](https://github.com/diplodoc-platform/transform/compare/v4.17.1...v4.17.2) (2024-05-29)
 
 
