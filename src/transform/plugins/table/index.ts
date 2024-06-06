@@ -310,12 +310,12 @@ const yfmTable: MarkdownItPluginCb = (md) => {
                     // cells with rowspan symbol '^'. In spannedTokens we store the tokens that were already given
                     // rowspan attribute. For each encounter of '^' cell we iterate over all coordinates above it until
                     // we find a text token and increase it's rowspan value.
-                    if (contentToken.content.trim() === '^') {
+                    if (i !== 0 && contentToken.content.trim() === '^') {
                         // Check if the token above was a rowspan too.
                         // If it was - go to the token with rowspan and increase the attribute
                         rowSpanLocations[i].add(j);
                         // it was a span
-                        if (rowSpanLocations[i - 1].has(j)) {
+                        if (rowSpanLocations[i - 1]?.has(j)) {
                             // Go up row by row and find the token that has rowspan
                             let spannedToken: Token = spannedTokens[i - 1]?.[j];
                             for (let rowIdx = i - 2; rowIdx >= 0 && !spannedToken; rowIdx--) {
@@ -342,6 +342,20 @@ const yfmTable: MarkdownItPluginCb = (md) => {
                         state.tShift[begin.line] = oldTshift;
                         state.bMarks[begin.line] = oldBMark;
                         state.eMarks[end.line] = oldEMark;
+                    } else if (contentToken.content.trim() === '>') {
+                        const prevCell = state.tokens[state.tokens.length - 9];
+                        if (!prevCell) {
+                            continue;
+                        }
+                        const curColSpan = prevCell.attrGet('colspan');
+                        if (curColSpan) {
+                            const parsedColSpan = parseInt(curColSpan, 10);
+                            prevCell.attrSet('colspan', `${parsedColSpan + 1}`);
+                        } else {
+                            prevCell.attrSet('colspan', '2');
+                        }
+                        state.tokens.splice(state.tokens.length - 4, 4);
+                        curRowTokens.splice(curRowTokens.length - 1, 1);
                     } else {
                         state.lineMax = oldLineMax;
                         state.tShift[begin.line] = oldTshift;

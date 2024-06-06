@@ -660,156 +660,265 @@ describe('Table plugin', () => {
         expect(actual).toMatchSnapshot();
     });
 
-    it('should add rowspan for marked cells', () => {
-        expect(
-            transformYfm(
-                '#|\n' +
-                    '|| Heading1  | Heading2 ||\n' +
-                    '|| Text here | Text there  ||\n' +
-                    '|| ^ | More text ||\n' +
-                    '|#',
-            ),
-        ).toEqual(
-            '<table>\n' +
-                '<tbody>\n' +
-                '<tr>\n' +
-                '<td>\n' +
-                '<p>Heading1</p>\n' +
-                '</td>\n' +
-                '<td>\n' +
-                '<p>Heading2</p>\n' +
-                '</td>\n' +
-                '</tr>\n' +
-                '<tr>\n' +
-                '<td rowspan="2">\n' +
-                '<p>Text here</p>\n' +
-                '</td>\n' +
-                '<td>\n' +
-                '<p>Text there</p>\n' +
-                '</td>\n' +
-                '</tr>\n' +
-                '<tr>\n' +
-                '<td>\n' +
-                '<p>More text</p>\n' +
-                '</td>\n' +
-                '</tr>\n' +
-                '</tbody>\n' +
-                '</table>\n',
-        );
+    describe('rowspans', () => {
+        it('should add rowspan for marked cells', () => {
+            expect(
+                transformYfm(
+                    '#|\n' +
+                        '|| Heading1  | Heading2 ||\n' +
+                        '|| Text here | Text there  ||\n' +
+                        '|| ^ | More text ||\n' +
+                        '|#',
+                ),
+            ).toEqual(
+                '<table>\n' +
+                    '<tbody>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Heading1</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading2</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td rowspan="2">\n' +
+                    '<p>Text here</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Text there</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>More text</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '</tbody>\n' +
+                    '</table>\n',
+            );
+        });
+
+        it('consecutive rowspans should apply to correct cell', () => {
+            expect(
+                transformYfm(
+                    '#|\n' +
+                        '|| Heading1  | Heading2 ||\n' +
+                        '|| Text here | Text there  ||\n' +
+                        '|| ^ | More text ||\n' +
+                        '|| ^ | Even more text ||\n' +
+                        '|| ^ | Some more text ||\n' +
+                        '|#',
+                ),
+            ).toEqual(
+                '<table>\n' +
+                    '<tbody>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Heading1</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading2</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td rowspan="4">\n' +
+                    '<p>Text here</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Text there</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>More text</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Even more text</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Some more text</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '</tbody>\n' +
+                    '</table>\n',
+            );
+        });
+
+        it('multiple row spans in a table should work correctly', () => {
+            expect(
+                transformYfm(
+                    '#|\n' +
+                        '|| Heading1  | Heading2 | Heading3||\n' +
+                        '|| Text here | Text there | Text even here ||\n' +
+                        '|| ^ | More text | ^ ||\n' +
+                        '|| Another rowspan | Even more text | Out of example ideas||\n' +
+                        '|| ^ | Some more text | Test  ||\n' +
+                        '|#',
+                ),
+            ).toEqual(
+                '<table>\n' +
+                    '<tbody>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Heading1</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading2</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading3</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td rowspan="2">\n' +
+                    '<p>Text here</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Text there</p>\n' +
+                    '</td>\n' +
+                    '<td rowspan="2">\n' +
+                    '<p>Text even here</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>More text</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td rowspan="2">\n' +
+                    '<p>Another rowspan</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Even more text</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Out of example ideas</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Some more text</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Test</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '</tbody>\n' +
+                    '</table>\n',
+            );
+        });
     });
 
-    it('consecutive rowspans should apply to correct cell', () => {
-        expect(
-            transformYfm(
-                '#|\n' +
-                    '|| Heading1  | Heading2 ||\n' +
-                    '|| Text here | Text there  ||\n' +
-                    '|| ^ | More text ||\n' +
-                    '|| ^ | Even more text ||\n' +
-                    '|| ^ | Some more text ||\n' +
-                    '|#',
-            ),
-        ).toEqual(
-            '<table>\n' +
-                '<tbody>\n' +
-                '<tr>\n' +
-                '<td>\n' +
-                '<p>Heading1</p>\n' +
-                '</td>\n' +
-                '<td>\n' +
-                '<p>Heading2</p>\n' +
-                '</td>\n' +
-                '</tr>\n' +
-                '<tr>\n' +
-                '<td rowspan="4">\n' +
-                '<p>Text here</p>\n' +
-                '</td>\n' +
-                '<td>\n' +
-                '<p>Text there</p>\n' +
-                '</td>\n' +
-                '</tr>\n' +
-                '<tr>\n' +
-                '<td>\n' +
-                '<p>More text</p>\n' +
-                '</td>\n' +
-                '</tr>\n' +
-                '<tr>\n' +
-                '<td>\n' +
-                '<p>Even more text</p>\n' +
-                '</td>\n' +
-                '</tr>\n' +
-                '<tr>\n' +
-                '<td>\n' +
-                '<p>Some more text</p>\n' +
-                '</td>\n' +
-                '</tr>\n' +
-                '</tbody>\n' +
-                '</table>\n',
-        );
+    describe('colspans', () => {
+        it('should add colspans for marked cells', () => {
+            expect(
+                transformYfm(
+                    '#|\n' +
+                        '|| Heading1  | Heading2 ||\n' +
+                        '|| Text here | Text there  ||\n' +
+                        '|| More text | > ||\n' +
+                        '|#',
+                ),
+            ).toEqual(
+                '<table>\n' +
+                    '<tbody>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Heading1</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading2</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Text here</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Text there</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td colspan="2">\n' +
+                    '<p>More text</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '</tbody>\n' +
+                    '</table>\n',
+            );
+        });
+        it('should work for consecutive colspans', () => {
+            expect(
+                transformYfm(
+                    '#|\n' +
+                        '|| Heading1  | Heading2 | Heading3 ||\n' +
+                        '|| Text here | Text there | Some text||\n' +
+                        '|| More text | > | > ||\n' +
+                        '|#',
+                ),
+            ).toEqual(
+                '<table>\n' +
+                    '<tbody>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Heading1</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading2</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading3</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Text here</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Text there</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Some text</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td colspan="3">\n' +
+                    '<p>More text</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '</tbody>\n' +
+                    '</table>\n',
+            );
+        });
     });
 
-    it('multiple row spans in a table should work correctly', () => {
-        expect(
-            transformYfm(
-                '#|\n' +
-                    '|| Heading1  | Heading2 | Heading3||\n' +
-                    '|| Text here | Text there | Text even here ||\n' +
-                    '|| ^ | More text | ^ ||\n' +
-                    '|| Another rowspan | Even more text | Out of example ideas||\n' +
-                    '|| ^ | Some more text | Test  ||\n' +
-                    '|#',
-            ),
-        ).toEqual(
-            '<table>\n' +
-                '<tbody>\n' +
-                '<tr>\n' +
-                '<td>\n' +
-                '<p>Heading1</p>\n' +
-                '</td>\n' +
-                '<td>\n' +
-                '<p>Heading2</p>\n' +
-                '</td>\n' +
-                '<td>\n' +
-                '<p>Heading3</p>\n' +
-                '</td>\n' +
-                '</tr>\n' +
-                '<tr>\n' +
-                '<td rowspan="2">\n' +
-                '<p>Text here</p>\n' +
-                '</td>\n' +
-                '<td>\n' +
-                '<p>Text there</p>\n' +
-                '</td>\n' +
-                '<td rowspan="2">\n' +
-                '<p>Text even here</p>\n' +
-                '</td>\n' +
-                '</tr>\n' +
-                '<tr>\n' +
-                '<td>\n' +
-                '<p>More text</p>\n' +
-                '</td>\n' +
-                '</tr>\n' +
-                '<tr>\n' +
-                '<td rowspan="2">\n' +
-                '<p>Another rowspan</p>\n' +
-                '</td>\n' +
-                '<td>\n' +
-                '<p>Even more text</p>\n' +
-                '</td>\n' +
-                '<td>\n' +
-                '<p>Out of example ideas</p>\n' +
-                '</td>\n' +
-                '</tr>\n' +
-                '<tr>\n' +
-                '<td>\n' +
-                '<p>Some more text</p>\n' +
-                '</td>\n' +
-                '<td>\n' +
-                '<p>Test</p>\n' +
-                '</td>\n' +
-                '</tr>\n' +
-                '</tbody>\n' +
-                '</table>\n',
-        );
+    describe('edge cases', () => {
+        it('colspan in the first cell should not throw', () => {
+            expect(() =>
+                transformYfm(
+                    `#|
+|| >  | Text here ||
+|| More text | Some more text ||
+|#`,
+                ),
+            ).not.toThrow();
+        });
+
+        it('rowspan in the first row should not throw', () => {
+            expect(() =>
+                transformYfm(
+                    `#|
+|| Text here  | ^ ||
+|| More text | Some more text ||
+|#`,
+                ),
+            ).not.toThrow();
+        });
     });
 });
