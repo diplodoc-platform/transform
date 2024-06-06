@@ -1,5 +1,6 @@
 import StateBlock from 'markdown-it/lib/rules_block/state_block';
 import {MarkdownItPluginCb} from '../typings';
+import Token from 'markdown-it/lib/token';
 
 const pluginName = 'yfm_table';
 const pipeChar = 0x7c; // |
@@ -91,12 +92,26 @@ class StateIterator {
     }
 }
 
+/**
+ * Returns positions of the rows. Positions are
+ * @param state
+ * @param startPosition
+ * @param endPosition
+ * @param startLine
+ * @returns RowPositions
+ */
+
+interface RowPositions {
+    rows: [number, number, [Stats, Stats][]][];
+    endOfTable: number | null;
+}
+
 function getTableRows(
     state: StateBlock,
     startPosition: number,
     endPosition: number,
     startLine: number,
-) {
+): RowPositions {
     let endOfTable = null;
     let tableLevel = 0;
     let currentRow: [Stats, Stats][] = [];
@@ -254,11 +269,19 @@ const yfmTable: MarkdownItPluginCb = (md) => {
             token.map = [startLine + 1, endOfTable - 1];
 
             const maxRowLength = Math.max(...rows.map(([, , cols]) => cols.length));
+            let curRowTokens: Token[] = [];
+            let prevRowTokens: Token[] = [];
+            // spannedTokens[i][j] is the token on i-th row j-th column that has a rowspan attribute
+            const spannedTokens: Record<number, Record<number, Token>> = {};
+            // rowSpanLocations[i] - span locations for row i
+            // the set in rowSpanLocations[i] contains the columns for this row that were rowspan signs
+            const rowSpanLocations: Record<number, Set<number>> = {};
 
             for (let i = 0; i < rows.length; i++) {
                 const [rowLineStarts, rowLineEnds, cols] = rows[i];
 
                 const rowLength = cols.length;
+                rowSpanLocations[i] = new Set();
 
                 token = state.push('yfm_tr_open', 'tr', 1);
                 token.map = [rowLineStarts, rowLineEnds];
@@ -266,6 +289,7 @@ const yfmTable: MarkdownItPluginCb = (md) => {
                 for (let j = 0; j < cols.length; j++) {
                     const [begin, end] = cols[j];
                     token = state.push('yfm_td_open', 'td', 1);
+                    curRowTokens.push(token);
                     token.map = [begin.line, end.line];
 
                     const oldTshift = state.tShift[begin.line];
@@ -280,13 +304,53 @@ const yfmTable: MarkdownItPluginCb = (md) => {
 
                     state.md.block.tokenize(state, begin.line, end.line + 1);
 
-                    state.lineMax = oldLineMax;
-                    state.tShift[begin.line] = oldTshift;
-                    state.bMarks[begin.line] = oldBMark;
-                    state.eMarks[end.line] = oldEMark;
+                    const contentToken = state.tokens[state.tokens.length - 2];
 
-                    token = state.push('yfm_td_close', 'td', -1);
-                    state.tokens[state.tokens.length - 1].map = [end.line, end.line + 1];
+                    // Rowspan handling. In rowspanLocations we keep track of where we encountered
+                    // cells with rowspan symbol '^'. In spannedTokens we store the tokens that were already given
+                    // rowspan attribute. For each encounter of '^' cell we iterate over all coordinates above it until
+                    // we find a text token and increase it's rowspan value.
+                    if (contentToken.content.trim() === '^') {
+                        // Check if the token above was a rowspan too.
+                        // If it was - go to the token with rowspan and increase the attribute
+                        rowSpanLocations[i].add(j);
+                        // it was a span
+                        if (rowSpanLocations[i - 1].has(j)) {
+                            // Go up row by row and find the token that has rowspan
+                            let spannedToken: Token = spannedTokens[i - 1]?.[j];
+                            for (let rowIdx = i - 2; rowIdx >= 0 && !spannedToken; rowIdx--) {
+                                spannedToken = spannedTokens[rowIdx]?.[j];
+                            }
+                            const curSpanStr = spannedToken?.attrGet('rowspan');
+                            if (curSpanStr) {
+                                const curSpan = parseInt(curSpanStr, 10);
+                                spannedToken.attrSet('rowspan', `${curSpan + 1}`);
+                            }
+                        } else {
+                            const rowToken = prevRowTokens[j];
+                            if (!spannedTokens[i - 1]?.[j]) {
+                                spannedTokens[i - 1] = spannedTokens[i - 1] || {};
+                                spannedTokens[i - 1][j] = rowToken;
+                                rowToken.attrSet('rowspan', '2');
+                            }
+                        }
+
+                        state.tokens.splice(state.tokens.length - 4, 4);
+                        curRowTokens.splice(curRowTokens.length - 1, 1);
+
+                        state.lineMax = oldLineMax;
+                        state.tShift[begin.line] = oldTshift;
+                        state.bMarks[begin.line] = oldBMark;
+                        state.eMarks[end.line] = oldEMark;
+                    } else {
+                        state.lineMax = oldLineMax;
+                        state.tShift[begin.line] = oldTshift;
+                        state.bMarks[begin.line] = oldBMark;
+                        state.eMarks[end.line] = oldEMark;
+
+                        token = state.push('yfm_td_close', 'td', -1);
+                        state.tokens[state.tokens.length - 1].map = [end.line, end.line + 1];
+                    }
                 }
 
                 if (rowLength < maxRowLength) {
@@ -298,6 +362,8 @@ const yfmTable: MarkdownItPluginCb = (md) => {
                 }
 
                 token = state.push('yfm_tr_close', 'tr', -1);
+                prevRowTokens = curRowTokens;
+                curRowTokens = [];
             }
 
             token = state.push('yfm_tbody_close', 'tbody', -1);
