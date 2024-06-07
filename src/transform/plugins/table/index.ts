@@ -92,21 +92,12 @@ class StateIterator {
     }
 }
 
-/**
- * Returns positions of the rows. Positions are
- * @param state
- * @param startPosition
- * @param endPosition
- * @param startLine
- * @returns RowPositions
- */
-
 interface RowPositions {
     rows: [number, number, [Stats, Stats][]][];
     endOfTable: number | null;
 }
 
-function getTableRows(
+function getTableRowPositions(
     state: StateBlock,
     startPosition: number,
     endPosition: number,
@@ -229,10 +220,13 @@ const yfmTable: MarkdownItPluginCb = (md) => {
     md.block.ruler.before(
         'code',
         pluginName,
+        // eslint-disable-next-line complexity
         (state: StateBlock, startLine: number, endLine: number, silent: boolean) => {
             let token;
             const startPosition = state.bMarks[startLine] + state.tShift[startLine];
             const endPosition = state.eMarks[endLine];
+
+            const spanEscapeSequences = ['\\^', '\\>'];
 
             // #| minimum 2 symbols
             if (endPosition - startPosition < 2) {
@@ -247,7 +241,12 @@ const yfmTable: MarkdownItPluginCb = (md) => {
                 return true;
             }
 
-            const {rows, endOfTable} = getTableRows(state, startPosition, endPosition, startLine);
+            const {rows, endOfTable} = getTableRowPositions(
+                state,
+                startPosition,
+                endPosition,
+                startLine,
+            );
 
             if (!endOfTable) {
                 token = state.push('__yfm_lint', '', 0);
@@ -306,17 +305,19 @@ const yfmTable: MarkdownItPluginCb = (md) => {
 
                     const contentToken = state.tokens[state.tokens.length - 2];
 
-                    // Rowspan handling. In rowspanLocations we keep track of where we encountered
-                    // cells with rowspan symbol '^'. In spannedTokens we store the tokens that were already given
-                    // rowspan attribute. For each encounter of '^' cell we iterate over all coordinates above it until
-                    // we find a text token and increase it's rowspan value.
-                    if (i !== 0 && contentToken.content.trim() === '^') {
+                    const cellContent = contentToken.content.trim();
+
+                    if (i !== 0 && cellContent === '^') {
+                        // Rowspan handling.Keep track of where we encountered cells with rowspan symbol '^' in rowSpanLocations
+                        // In spannedTokens store the tokens that were already given rowspan attribute. For each
+                        // encounter of '^' cell iterate over all coordinates above it until a text token is found and
+                        // increase it's rowspan attribute value
+
+                        rowSpanLocations[i].add(j);
                         // Check if the token above was a rowspan too.
                         // If it was - go to the token with rowspan and increase the attribute
-                        rowSpanLocations[i].add(j);
-                        // it was a span
                         if (rowSpanLocations[i - 1]?.has(j)) {
-                            // Go up row by row and find the token that has rowspan
+                            // Go up row by row and find the token that has rowspan attibute
                             let spannedToken: Token = spannedTokens[i - 1]?.[j];
                             for (let rowIdx = i - 2; rowIdx >= 0 && !spannedToken; rowIdx--) {
                                 spannedToken = spannedTokens[rowIdx]?.[j];
@@ -342,7 +343,24 @@ const yfmTable: MarkdownItPluginCb = (md) => {
                         state.tShift[begin.line] = oldTshift;
                         state.bMarks[begin.line] = oldBMark;
                         state.eMarks[end.line] = oldEMark;
-                    } else if (contentToken.content.trim() === '>') {
+                    } else if (cellContent === '>') {
+                        // Colspan handling. For colspan just find the previous text cell in the row and add colspan
+                        // attribute to it. Special consideration needs to be given to cells with rowspan symbol.
+                        // In this case assume that the row above applies all the needed rowspan/colspan attrs and do
+                        // nothing.
+                        let skipColspan = false;
+                        for (let cellIndex = j; cellIndex >= 0; cellIndex--) {
+                            if (rowSpanLocations[i].has(cellIndex)) {
+                                // do nothing, colspan should be applied on the same line as the text
+                                skipColspan = true;
+                            }
+                        }
+                        // still need to remove the token even if we haven't added attributes
+                        if (skipColspan) {
+                            state.tokens.splice(state.tokens.length - 4, 4);
+                            curRowTokens.splice(curRowTokens.length - 1, 1);
+                            continue;
+                        }
                         const prevCell = state.tokens[state.tokens.length - 9];
                         if (!prevCell) {
                             continue;
@@ -356,7 +374,18 @@ const yfmTable: MarkdownItPluginCb = (md) => {
                         }
                         state.tokens.splice(state.tokens.length - 4, 4);
                         curRowTokens.splice(curRowTokens.length - 1, 1);
+
+                        state.lineMax = oldLineMax;
+                        state.tShift[begin.line] = oldTshift;
+                        state.bMarks[begin.line] = oldBMark;
+                        state.eMarks[end.line] = oldEMark;
                     } else {
+                        // Normal cells, no col/row spans.
+
+                        // Handle escape sequence so we can actually have cells with ">" and "^" characters
+                        if (spanEscapeSequences.includes(cellContent)) {
+                            contentToken.content.replace('\\', '');
+                        }
                         state.lineMax = oldLineMax;
                         state.tShift[begin.line] = oldTshift;
                         state.bMarks[begin.line] = oldBMark;

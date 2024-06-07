@@ -898,6 +898,141 @@ describe('Table plugin', () => {
         });
     });
 
+    describe('rowspan and colspan together', () => {
+        it('should correctly handle a case when rowspan and callspan are used together', () => {
+            expect(
+                transformYfm(
+                    '#|\n' +
+                        '|| Heading1  | Heading2 | Heading3 ||\n' +
+                        '|| Text here | > | Some text||\n' +
+                        '|| ^ | > | Other text ||\n' +
+                        '|#',
+                ),
+            ).toEqual(
+                '<table>\n' +
+                    '<tbody>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Heading1</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading2</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading3</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td colspan="2" rowspan="2">\n' +
+                    '<p>Text here</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Some text</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Other text</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '</tbody>\n' +
+                    '</table>\n',
+            );
+        });
+
+        it('should not throw on span mismatch', () => {
+            expect(() =>
+                transformYfm(
+                    '#|\n' +
+                        '|| Heading1  | Heading2 | Heading3 ||\n' +
+                        '|| Text here | > | Some text||\n' +
+                        '|| ^ | more text | Other text ||\n' +
+                        '|#',
+                ),
+            ).not.toThrow();
+        });
+
+        it('spans in the middle', () => {
+            expect(
+                transformYfm(
+                    '#|\n' +
+                        '|| Heading1  | Heading2 | Heading3 | Heading4 ||\n' +
+                        '|| Text here | Spanned | > | More text ||\n' +
+                        '|| Text there | ^ | > | More text ||\n' +
+                        '|#',
+                ),
+            ).toEqual(
+                '<table>\n' +
+                    '<tbody>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Heading1</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading2</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading3</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading4</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Text here</p>\n' +
+                    '</td>\n' +
+                    '<td colspan="2" rowspan="2">\n' +
+                    '<p>Spanned</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>More text</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Text there</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>More text</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '</tbody>\n' +
+                    '</table>\n',
+            );
+        });
+    });
+
+    it('should allow to escape colspan and rowspan and render symbols as is', () => {
+        expect(
+            transformYfm(`#|
+|| Heading1  | Heading2 ||
+|| \\> | \\^  ||
+|#`),
+        ).toEqual(
+            '<table>\n' +
+                '<tbody>\n' +
+                '<tr>\n' +
+                '<td>\n' +
+                '<p>Heading1</p>\n' +
+                '</td>\n' +
+                '<td>\n' +
+                '<p>Heading2</p>\n' +
+                '</td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '<td>\n' +
+                '<p>&gt;</p>\n' +
+                '</td>\n' +
+                '<td>\n' +
+                '<p>^</p>\n' +
+                '</td>\n' +
+                '</tr>\n' +
+                '</tbody>\n' +
+                '</table>\n',
+        );
+    });
+
     describe('edge cases', () => {
         it('colspan in the first cell should not throw', () => {
             expect(() =>
@@ -920,5 +1055,16 @@ describe('Table plugin', () => {
                 ),
             ).not.toThrow();
         });
+    });
+
+    it('two edge cases together should not throw', () => {
+        expect(() =>
+            transformYfm(
+                `#|
+|| ^  | > ||
+|| More text | Some more text ||
+|#`,
+            ),
+        ).not.toThrow();
     });
 });
