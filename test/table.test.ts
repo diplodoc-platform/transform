@@ -1001,6 +1001,41 @@ describe('Table plugin', () => {
                     '</table>\n',
             );
         });
+
+        it('should correctly apply a row span after a mixed span', () => {
+            expect(
+                transformYfm(`#|
+|| Heading1  | Heading2 | Heading3 ||
+|| Text | > | Text ||
+|| ^ | > | ^ ||
+|#`),
+            ).toEqual(
+                '<table>\n' +
+                    '<tbody>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Heading1</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading2</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading3</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td colspan="2" rowspan="2">\n' +
+                    '<p>Text</p>\n' +
+                    '</td>\n' +
+                    '<td rowspan="2">\n' +
+                    '<p>Text</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr></tr>\n' +
+                    '</tbody>\n' +
+                    '</table>\n',
+            );
+        });
     });
 
     it('should allow to escape colspan and rowspan and render symbols as is', () => {
@@ -1055,6 +1090,17 @@ describe('Table plugin', () => {
                 ),
             ).not.toThrow();
         });
+
+        it('two edge cases together should not throw', () => {
+            expect(() =>
+                transformYfm(
+                    `#|
+|| ^  | > ||
+|| More text | Some more text ||
+|#`,
+                ),
+            ).not.toThrow();
+        });
     });
 
     it('two edge cases together should not throw', () => {
@@ -1066,5 +1112,73 @@ describe('Table plugin', () => {
 |#`,
             ),
         ).not.toThrow();
+    });
+
+    describe('with attrs', () => {
+        it('should correctly add classes to table cell', () => {
+            expect(
+                transformYfm(`#|
+|| Heading1 | Heading2 | Heading3 | Heading4 ||
+|| Text | Text {.cell-align-center} | > | More text ||
+|#`),
+            ).toEqual(
+                '<table>\n' +
+                    '<tbody>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Heading1</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading2</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading3</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading4</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Text</p>\n' +
+                    '</td>\n' +
+                    '<td class="cell-align-center" colspan="2">\n' +
+                    '<p>Text</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>More text</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '</tbody>\n' +
+                    '</table>\n',
+            );
+        });
+
+        it('should correctly apply classes in case of last table cell in the row', () => {
+            expect(
+                transformYfm(`#|
+|| Heading1 | Heading2  ||
+|| Text {.cell-align-center} | > ||
+|#`),
+            ).toEqual(
+                '<table>\n' +
+                    '<tbody>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Heading1</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading2</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td class="cell-align-center" colspan="2">\n' +
+                    '<p>Text</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '</tbody>\n' +
+                    '</table>\n',
+            );
+        });
     });
 });

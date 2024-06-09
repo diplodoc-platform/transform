@@ -216,6 +216,104 @@ function getTableRowPositions(
     return {rows, endOfTable};
 }
 
+function removeAttrFromTokenContent(contentToken: Token, attr: string) {
+    // Replace the attribute in the token content with an empty string.
+    const blockRegex = /\s*\{[^}]*}/;
+    const allAttrs = contentToken.content.match(blockRegex);
+    if (!allAttrs) {
+        return;
+    }
+    let replacedContent = allAttrs[0].replace(`.${attr}`, '');
+    if (replacedContent.trim() === '{}') {
+        replacedContent = '';
+    }
+    contentToken.content = contentToken.content.replace(allAttrs[0], replacedContent);
+}
+
+function extractAndApplyClassFromToken(contentToken: Token, tdOpenToken: Token) {
+    // Regex to find class attribute in any position within brackets
+    const classAttrRegex = /(?<=\{[^}]*)\.([-_a-zA-Z0-9]+)/g;
+    const classAttrMatch = classAttrRegex.exec(contentToken.content);
+    if (classAttrMatch) {
+        const classAttr = classAttrMatch[1];
+        tdOpenToken.attrSet('class', classAttr);
+        removeAttrFromTokenContent(contentToken, classAttr);
+    }
+}
+
+const COLSPAN_SYMBOL = '>';
+const ROWSPAN_SYMBOL = '^';
+
+const applySpans = (contentMap: string[][], tokenMap: Token[][]) => {
+    // Walk the content map. If we find a symbol for row span or a col span, walk back until we hit some text.
+    // Once we reach the text token, save the colspan or row span value.
+    // If on the way back we hit the same symbol, increase the factor of row/col span
+    for (let i = 0; i < contentMap.length; i++) {
+        for (let j = 0; j < contentMap[0].length; j++) {
+            if (contentMap[i][j] === COLSPAN_SYMBOL) {
+                if (j === 0) {
+                    continue;
+                }
+                tokenMap[i][j].meta = {markForDeletion: true};
+                // walk back the columns;
+                let colspanFactor = 2;
+                for (let col = j - 1; col >= 0; col--) {
+                    if (contentMap[i][col] === COLSPAN_SYMBOL) {
+                        colspanFactor++;
+                        tokenMap[i][col].meta = {markForDeletion: true};
+                    } else if (contentMap[i][col] === ROWSPAN_SYMBOL) {
+                        // Do nothing, this should be applied on the row that's being extended
+                        break;
+                    } else {
+                        tokenMap[i][col].attrSet('colspan', colspanFactor.toString());
+                        break;
+                    }
+                }
+            }
+
+            if (contentMap[i][j] === ROWSPAN_SYMBOL) {
+                if (i === 0) {
+                    continue;
+                }
+                tokenMap[i][j].meta = {markForDeletion: true};
+                let rowSpanFactor = 2;
+                for (let row = i - 1; row >= 0; row--) {
+                    if (contentMap[row][j] === ROWSPAN_SYMBOL) {
+                        rowSpanFactor++;
+                        tokenMap[row][j].meta = {markForDeletion: true};
+                    } else if (contentMap[row][j] === COLSPAN_SYMBOL) {
+                        break;
+                    } else {
+                        tokenMap[row][j].attrSet('rowspan', rowSpanFactor.toString());
+                        break;
+                    }
+                }
+            }
+        }
+    }
+};
+
+const clearTokens = (tableStart: number, tokens: Token[]) => {
+    const splices = [];
+    for (let i = tableStart; i < tokens.length; i++) {
+        if (tokens[i].meta?.markForDeletion) {
+            // find matching td_close
+            splices.push([i]);
+            const level = tokens[i].level;
+            for (let j = i + 1; j < tokens.length; j++) {
+                if (tokens[j].type === 'yfm_td_close' && tokens[j].level === level) {
+                    splices[splices.length - 1].push(j);
+                    break;
+                }
+            }
+        }
+    }
+    splices.reverse();
+    splices.forEach(([start, end]) => {
+        tokens.splice(start, end - start + 1);
+    });
+};
+
 const yfmTable: MarkdownItPluginCb = (md) => {
     md.block.ruler.before(
         'code',
@@ -225,8 +323,6 @@ const yfmTable: MarkdownItPluginCb = (md) => {
             let token;
             const startPosition = state.bMarks[startLine] + state.tShift[startLine];
             const endPosition = state.eMarks[endLine];
-
-            const spanEscapeSequences = ['\\^', '\\>'];
 
             // #| minimum 2 symbols
             if (endPosition - startPosition < 2) {
@@ -261,6 +357,7 @@ const yfmTable: MarkdownItPluginCb = (md) => {
             state.lineMax = endOfTable;
             state.line = startLine;
 
+            const tableStart = state.tokens.length;
             token = state.push('yfm_table_open', 'table', 1);
             token.map = [startLine, endOfTable];
 
@@ -268,19 +365,17 @@ const yfmTable: MarkdownItPluginCb = (md) => {
             token.map = [startLine + 1, endOfTable - 1];
 
             const maxRowLength = Math.max(...rows.map(([, , cols]) => cols.length));
-            let curRowTokens: Token[] = [];
-            let prevRowTokens: Token[] = [];
-            // spannedTokens[i][j] is the token on i-th row j-th column that has a rowspan attribute
-            const spannedTokens: Record<number, Record<number, Token>> = {};
-            // rowSpanLocations[i] - span locations for row i
-            // the set in rowSpanLocations[i] contains the columns for this row that were rowspan signs
-            const rowSpanLocations: Record<number, Set<number>> = {};
+            // cellsMaps is a 2-D map of all td_open tokens in the table
+            const cellsMap: Token[][] = [];
+
+            // contentMap is a 2-D map of the text content within cells in the table
+            const contentMap: string[][] = [];
 
             for (let i = 0; i < rows.length; i++) {
                 const [rowLineStarts, rowLineEnds, cols] = rows[i];
-
+                cellsMap.push([]);
+                contentMap.push([]);
                 const rowLength = cols.length;
-                rowSpanLocations[i] = new Set();
 
                 token = state.push('yfm_tr_open', 'tr', 1);
                 token.map = [rowLineStarts, rowLineEnds];
@@ -288,7 +383,7 @@ const yfmTable: MarkdownItPluginCb = (md) => {
                 for (let j = 0; j < cols.length; j++) {
                     const [begin, end] = cols[j];
                     token = state.push('yfm_td_open', 'td', 1);
-                    curRowTokens.push(token);
+                    cellsMap[i].push(token);
                     token.map = [begin.line, end.line];
 
                     const oldTshift = state.tShift[begin.line];
@@ -302,98 +397,21 @@ const yfmTable: MarkdownItPluginCb = (md) => {
                     state.lineMax = end.line + 1;
 
                     state.md.block.tokenize(state, begin.line, end.line + 1);
-
                     const contentToken = state.tokens[state.tokens.length - 2];
+                    const content = contentToken.content.trim();
+                    contentMap[i].push(content);
 
-                    const cellContent = contentToken.content.trim();
+                    // we need to create the full td so that the token levels are not broken once we remove it
+                    token = state.push('yfm_td_close', 'td', -1);
+                    state.tokens[state.tokens.length - 1].map = [end.line, end.line + 1];
 
-                    if (i !== 0 && cellContent === '^') {
-                        // Rowspan handling.Keep track of where we encountered cells with rowspan symbol '^' in rowSpanLocations
-                        // In spannedTokens store the tokens that were already given rowspan attribute. For each
-                        // encounter of '^' cell iterate over all coordinates above it until a text token is found and
-                        // increase it's rowspan attribute value
+                    state.lineMax = oldLineMax;
+                    state.tShift[begin.line] = oldTshift;
+                    state.bMarks[begin.line] = oldBMark;
+                    state.eMarks[end.line] = oldEMark;
 
-                        rowSpanLocations[i].add(j);
-                        // Check if the token above was a rowspan too.
-                        // If it was - go to the token with rowspan and increase the attribute
-                        if (rowSpanLocations[i - 1]?.has(j)) {
-                            // Go up row by row and find the token that has rowspan attibute
-                            let spannedToken: Token = spannedTokens[i - 1]?.[j];
-                            for (let rowIdx = i - 2; rowIdx >= 0 && !spannedToken; rowIdx--) {
-                                spannedToken = spannedTokens[rowIdx]?.[j];
-                            }
-                            const curSpanStr = spannedToken?.attrGet('rowspan');
-                            if (curSpanStr) {
-                                const curSpan = parseInt(curSpanStr, 10);
-                                spannedToken.attrSet('rowspan', `${curSpan + 1}`);
-                            }
-                        } else {
-                            const rowToken = prevRowTokens[j];
-                            if (!spannedTokens[i - 1]?.[j]) {
-                                spannedTokens[i - 1] = spannedTokens[i - 1] || {};
-                                spannedTokens[i - 1][j] = rowToken;
-                                rowToken.attrSet('rowspan', '2');
-                            }
-                        }
-
-                        state.tokens.splice(state.tokens.length - 4, 4);
-                        curRowTokens.splice(curRowTokens.length - 1, 1);
-
-                        state.lineMax = oldLineMax;
-                        state.tShift[begin.line] = oldTshift;
-                        state.bMarks[begin.line] = oldBMark;
-                        state.eMarks[end.line] = oldEMark;
-                    } else if (cellContent === '>') {
-                        // Colspan handling. For colspan just find the previous text cell in the row and add colspan
-                        // attribute to it. Special consideration needs to be given to cells with rowspan symbol.
-                        // In this case assume that the row above applies all the needed rowspan/colspan attrs and do
-                        // nothing.
-                        let skipColspan = false;
-                        for (let cellIndex = j; cellIndex >= 0; cellIndex--) {
-                            if (rowSpanLocations[i].has(cellIndex)) {
-                                // do nothing, colspan should be applied on the same line as the text
-                                skipColspan = true;
-                            }
-                        }
-                        // still need to remove the token even if we haven't added attributes
-                        if (skipColspan) {
-                            state.tokens.splice(state.tokens.length - 4, 4);
-                            curRowTokens.splice(curRowTokens.length - 1, 1);
-                            continue;
-                        }
-                        const prevCell = state.tokens[state.tokens.length - 9];
-                        if (!prevCell) {
-                            continue;
-                        }
-                        const curColSpan = prevCell.attrGet('colspan');
-                        if (curColSpan) {
-                            const parsedColSpan = parseInt(curColSpan, 10);
-                            prevCell.attrSet('colspan', `${parsedColSpan + 1}`);
-                        } else {
-                            prevCell.attrSet('colspan', '2');
-                        }
-                        state.tokens.splice(state.tokens.length - 4, 4);
-                        curRowTokens.splice(curRowTokens.length - 1, 1);
-
-                        state.lineMax = oldLineMax;
-                        state.tShift[begin.line] = oldTshift;
-                        state.bMarks[begin.line] = oldBMark;
-                        state.eMarks[end.line] = oldEMark;
-                    } else {
-                        // Normal cells, no col/row spans.
-
-                        // Handle escape sequence so we can actually have cells with ">" and "^" characters
-                        if (spanEscapeSequences.includes(cellContent)) {
-                            contentToken.content.replace('\\', '');
-                        }
-                        state.lineMax = oldLineMax;
-                        state.tShift[begin.line] = oldTshift;
-                        state.bMarks[begin.line] = oldBMark;
-                        state.eMarks[end.line] = oldEMark;
-
-                        token = state.push('yfm_td_close', 'td', -1);
-                        state.tokens[state.tokens.length - 1].map = [end.line, end.line + 1];
-                    }
+                    const rowTokens = cellsMap[cellsMap.length - 1];
+                    extractAndApplyClassFromToken(contentToken, rowTokens[rowTokens.length - 1]);
                 }
 
                 if (rowLength < maxRowLength) {
@@ -405,9 +423,10 @@ const yfmTable: MarkdownItPluginCb = (md) => {
                 }
 
                 token = state.push('yfm_tr_close', 'tr', -1);
-                prevRowTokens = curRowTokens;
-                curRowTokens = [];
             }
+
+            applySpans(contentMap, cellsMap);
+            clearTokens(tableStart, state.tokens);
 
             token = state.push('yfm_tbody_close', 'tbody', -1);
 
