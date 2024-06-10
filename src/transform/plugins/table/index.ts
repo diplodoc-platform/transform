@@ -216,7 +216,15 @@ function getTableRowPositions(
     return {rows, endOfTable};
 }
 
-function removeAttrFromTokenContent(contentToken: Token, attr: string) {
+/**
+ * Removes the specified attribute from attributes in the content of a token.
+ *
+ * @param {Token} contentToken - The target token.
+ * @param {string} attr - The attribute to be removed from the token content.
+ *
+ * @return {void}
+ */
+function removeAttrFromTokenContent(contentToken: Token, attr: string): void {
     // Replace the attribute in the token content with an empty string.
     const blockRegex = /\s*\{[^}]*}/;
     const allAttrs = contentToken.content.match(blockRegex);
@@ -230,7 +238,15 @@ function removeAttrFromTokenContent(contentToken: Token, attr: string) {
     contentToken.content = contentToken.content.replace(allAttrs[0], replacedContent);
 }
 
-function extractAndApplyClassFromToken(contentToken: Token, tdOpenToken: Token) {
+/**
+ * Extracts the class attribute from the given content token and applies it to the tdOpenToken.
+ * Preserves other attributes.
+ *
+ * @param {Token} contentToken - Search the content of this token for the class.
+ * @param {Token} tdOpenToken - Parent td_open token. Extracted class is applied to this token.
+ * @returns {void}
+ */
+function extractAndApplyClassFromToken(contentToken: Token, tdOpenToken: Token): void {
     // Regex to find class attribute in any position within brackets
     const classAttrRegex = /(?<=\{[^}]*)\.([-_a-zA-Z0-9]+)/g;
     const classAttrMatch = classAttrRegex.exec(contentToken.content);
@@ -244,19 +260,28 @@ function extractAndApplyClassFromToken(contentToken: Token, tdOpenToken: Token) 
 const COLSPAN_SYMBOL = '>';
 const ROWSPAN_SYMBOL = '^';
 
-const applySpans = (contentMap: string[][], tokenMap: Token[][]) => {
-    // Walk the content map. If we find a symbol for row span or a col span, walk back until we hit some text.
-    // Once we reach the text token, save the colspan or row span value.
-    // If on the way back we hit the same symbol, increase the factor of row/col span
+/**
+ * Traverses through the content map, applying row/colspan attributes and marking the special cells for deletion.
+ * Upon encountering a symbol denoting a row span or a column span, proceed backwards in row or column
+ * until text cell is found. Upon finding the text cell, store the colspan or rowspan value.
+ * During the backward traversal, if the same symbol is encountered, increment the value of rowspan/colspan.
+ * Colspan symbol is ignored for the first column. Rowspan symbol is ignored for the first row
+ *
+ * @param contentMap string[][]
+ * @param tokenMap Token[][]
+ * @return {void}
+ */
+const applySpans = (contentMap: string[][], tokenMap: Token[][]): void => {
     for (let i = 0; i < contentMap.length; i++) {
         for (let j = 0; j < contentMap[0].length; j++) {
             if (contentMap[i][j] === COLSPAN_SYMBOL) {
+                // skip the first column
                 if (j === 0) {
                     continue;
                 }
                 tokenMap[i][j].meta = {markForDeletion: true};
-                // walk back the columns;
                 let colspanFactor = 2;
+                // traverse columns backwards
                 for (let col = j - 1; col >= 0; col--) {
                     if (contentMap[i][col] === COLSPAN_SYMBOL) {
                         colspanFactor++;
@@ -272,11 +297,13 @@ const applySpans = (contentMap: string[][], tokenMap: Token[][]) => {
             }
 
             if (contentMap[i][j] === ROWSPAN_SYMBOL) {
+                // skip the first row
                 if (i === 0) {
                     continue;
                 }
                 tokenMap[i][j].meta = {markForDeletion: true};
                 let rowSpanFactor = 2;
+                // traverse rows upward
                 for (let row = i - 1; row >= 0; row--) {
                     if (contentMap[row][j] === ROWSPAN_SYMBOL) {
                         rowSpanFactor++;
@@ -293,24 +320,37 @@ const applySpans = (contentMap: string[][], tokenMap: Token[][]) => {
     }
 };
 
+/**
+ * Removes td_open and matching td_close tokens and the content within them
+ *
+ * @param {number} tableStart - The index of the start of the table in the state tokens array.
+ * @param {Token[]} tokens - The array of tokens from state.
+ * @returns void
+ */
 const clearTokens = (tableStart: number, tokens: Token[]) => {
-    const splices = [];
+    // use splices array to avoid modifying the tokens array during iteration
+    const splices: number[][] = [];
     for (let i = tableStart; i < tokens.length; i++) {
         if (tokens[i].meta?.markForDeletion) {
-            // find matching td_close
-            splices.push([i]);
+            // Use unshift instead of push so that the splices indexes are in reverse order.
+            // Reverse order guarantees that we don't mess up the indexes while removing the items.
+            splices.unshift([i]);
             const level = tokens[i].level;
+            // find matching td_close with the same level
             for (let j = i + 1; j < tokens.length; j++) {
                 if (tokens[j].type === 'yfm_td_close' && tokens[j].level === level) {
-                    splices[splices.length - 1].push(j);
+                    splices[0].push(j);
                     break;
                 }
             }
         }
     }
-    splices.reverse();
     splices.forEach(([start, end]) => {
-        tokens.splice(start, end - start + 1);
+        // check that we have both start and end defined
+        // it's possible we didn't find td_close index
+        if (start && end) {
+            tokens.splice(start, end - start + 1);
+        }
     });
 };
 
@@ -318,7 +358,6 @@ const yfmTable: MarkdownItPluginCb = (md) => {
     md.block.ruler.before(
         'code',
         pluginName,
-        // eslint-disable-next-line complexity
         (state: StateBlock, startLine: number, endLine: number, silent: boolean) => {
             let token;
             const startPosition = state.bMarks[startLine] + state.tShift[startLine];
@@ -365,10 +404,13 @@ const yfmTable: MarkdownItPluginCb = (md) => {
             token.map = [startLine + 1, endOfTable - 1];
 
             const maxRowLength = Math.max(...rows.map(([, , cols]) => cols.length));
-            // cellsMaps is a 2-D map of all td_open tokens in the table
+
+            // cellsMaps is a 2-D map of all td_open tokens in the table.
+            // cellsMap is used to access the table cells by [row][column] coordinates
             const cellsMap: Token[][] = [];
 
-            // contentMap is a 2-D map of the text content within cells in the table
+            // contentMap is a 2-D map of the text content within cells in the table.
+            // To apply spans, traverse the contentMap and modify the cells from cellsMap
             const contentMap: string[][] = [];
 
             for (let i = 0; i < rows.length; i++) {
@@ -398,10 +440,12 @@ const yfmTable: MarkdownItPluginCb = (md) => {
 
                     state.md.block.tokenize(state, begin.line, end.line + 1);
                     const contentToken = state.tokens[state.tokens.length - 2];
-                    const content = contentToken.content.trim();
+
+                    // In case of ">" within a cell without whitespace it gets consumed as a blockquote.
+                    // To handle that, check markup as well
+                    const content = contentToken.content.trim() || contentToken.markup.trim();
                     contentMap[i].push(content);
 
-                    // we need to create the full td so that the token levels are not broken once we remove it
                     token = state.push('yfm_td_close', 'td', -1);
                     state.tokens[state.tokens.length - 1].map = [end.line, end.line + 1];
 

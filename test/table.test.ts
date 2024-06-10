@@ -699,6 +699,44 @@ describe('Table plugin', () => {
             );
         });
 
+        it('should work without whitespace', () => {
+            expect(
+                transformYfm(
+                    '#|\n' +
+                        '|| Heading1  | Heading2 ||\n' +
+                        '|| Text here | Text there  ||\n' +
+                        '||^| More text ||\n' +
+                        '|#',
+                ),
+            ).toEqual(
+                '<table>\n' +
+                    '<tbody>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Heading1</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading2</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td rowspan="2">\n' +
+                    '<p>Text here</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Text there</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>More text</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '</tbody>\n' +
+                    '</table>\n',
+            );
+        });
+
         it('consecutive rowspans should apply to correct cell', () => {
             expect(
                 transformYfm(
@@ -853,6 +891,45 @@ describe('Table plugin', () => {
                     '</table>\n',
             );
         });
+
+        it('should work without whitespace', () => {
+            expect(
+                transformYfm(
+                    '#|\n' +
+                        '|| Heading1  | Heading2 ||\n' +
+                        '|| Text here | Text there  ||\n' +
+                        '|| More text |>||\n' +
+                        '|#',
+                ),
+            ).toEqual(
+                '<table>\n' +
+                    '<tbody>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Heading1</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Heading2</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td>\n' +
+                    '<p>Text here</p>\n' +
+                    '</td>\n' +
+                    '<td>\n' +
+                    '<p>Text there</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '<tr>\n' +
+                    '<td colspan="2">\n' +
+                    '<p>More text</p>\n' +
+                    '</td>\n' +
+                    '</tr>\n' +
+                    '</tbody>\n' +
+                    '</table>\n',
+            );
+        });
+
         it('should work for consecutive colspans', () => {
             expect(
                 transformYfm(
