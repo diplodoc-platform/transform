@@ -325,9 +325,9 @@ const applySpans = (contentMap: string[][], tokenMap: Token[][]): void => {
  *
  * @param {number} tableStart - The index of the start of the table in the state tokens array.
  * @param {Token[]} tokens - The array of tokens from state.
- * @returns void
+ * @returns {void}
  */
-const clearTokens = (tableStart: number, tokens: Token[]) => {
+const clearTokens = (tableStart: number, tokens: Token[]): void => {
     // use splices array to avoid modifying the tokens array during iteration
     const splices: number[][] = [];
     for (let i = tableStart; i < tokens.length; i++) {
