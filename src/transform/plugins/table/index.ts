@@ -1,5 +1,6 @@
 import StateBlock from 'markdown-it/lib/rules_block/state_block';
 import {MarkdownItPluginCb} from '../typings';
+import Token from 'markdown-it/lib/token';
 
 const pluginName = 'yfm_table';
 const pipeChar = 0x7c; // |
@@ -91,12 +92,17 @@ class StateIterator {
     }
 }
 
-function getTableRows(
+interface RowPositions {
+    rows: [number, number, [Stats, Stats][]][];
+    endOfTable: number | null;
+}
+
+function getTableRowPositions(
     state: StateBlock,
     startPosition: number,
     endPosition: number,
     startLine: number,
-) {
+): RowPositions {
     let endOfTable = null;
     let tableLevel = 0;
     let currentRow: [Stats, Stats][] = [];
@@ -210,6 +216,144 @@ function getTableRows(
     return {rows, endOfTable};
 }
 
+/**
+ * Removes the specified attribute from attributes in the content of a token.
+ *
+ * @param {Token} contentToken - The target token.
+ * @param {string} attr - The attribute to be removed from the token content.
+ *
+ * @return {void}
+ */
+function removeAttrFromTokenContent(contentToken: Token, attr: string): void {
+    // Replace the attribute in the token content with an empty string.
+    const blockRegex = /\s*\{[^}]*}/;
+    const allAttrs = contentToken.content.match(blockRegex);
+    if (!allAttrs) {
+        return;
+    }
+    let replacedContent = allAttrs[0].replace(`.${attr}`, '');
+    if (replacedContent.trim() === '{}') {
+        replacedContent = '';
+    }
+    contentToken.content = contentToken.content.replace(allAttrs[0], replacedContent);
+}
+
+/**
+ * Extracts the class attribute from the given content token and applies it to the tdOpenToken.
+ * Preserves other attributes.
+ *
+ * @param {Token} contentToken - Search the content of this token for the class.
+ * @param {Token} tdOpenToken - Parent td_open token. Extracted class is applied to this token.
+ * @returns {void}
+ */
+function extractAndApplyClassFromToken(contentToken: Token, tdOpenToken: Token): void {
+    // Regex to find class attribute in any position within brackets
+    const classAttrRegex = /(?<=\{[^}]*)\.([-_a-zA-Z0-9]+)/g;
+    const classAttrMatch = classAttrRegex.exec(contentToken.content);
+    if (classAttrMatch) {
+        const classAttr = classAttrMatch[1];
+        tdOpenToken.attrSet('class', classAttr);
+        removeAttrFromTokenContent(contentToken, classAttr);
+    }
+}
+
+const COLSPAN_SYMBOL = '>';
+const ROWSPAN_SYMBOL = '^';
+
+/**
+ * Traverses through the content map, applying row/colspan attributes and marking the special cells for deletion.
+ * Upon encountering a symbol denoting a row span or a column span, proceed backwards in row or column
+ * until text cell is found. Upon finding the text cell, store the colspan or rowspan value.
+ * During the backward traversal, if the same symbol is encountered, increment the value of rowspan/colspan.
+ * Colspan symbol is ignored for the first column. Rowspan symbol is ignored for the first row
+ *
+ * @param contentMap string[][]
+ * @param tokenMap Token[][]
+ * @return {void}
+ */
+const applySpans = (contentMap: string[][], tokenMap: Token[][]): void => {
+    for (let i = 0; i < contentMap.length; i++) {
+        for (let j = 0; j < contentMap[0].length; j++) {
+            if (contentMap[i][j] === COLSPAN_SYMBOL) {
+                // skip the first column
+                if (j === 0) {
+                    continue;
+                }
+                tokenMap[i][j].meta = {markForDeletion: true};
+                let colspanFactor = 2;
+                // traverse columns backwards
+                for (let col = j - 1; col >= 0; col--) {
+                    if (contentMap[i][col] === COLSPAN_SYMBOL) {
+                        colspanFactor++;
+                        tokenMap[i][col].meta = {markForDeletion: true};
+                    } else if (contentMap[i][col] === ROWSPAN_SYMBOL) {
+                        // Do nothing, this should be applied on the row that's being extended
+                        break;
+                    } else {
+                        tokenMap[i][col].attrSet('colspan', colspanFactor.toString());
+                        break;
+                    }
+                }
+            }
+
+            if (contentMap[i][j] === ROWSPAN_SYMBOL) {
+                // skip the first row
+                if (i === 0) {
+                    continue;
+                }
+                tokenMap[i][j].meta = {markForDeletion: true};
+                let rowSpanFactor = 2;
+                // traverse rows upward
+                for (let row = i - 1; row >= 0; row--) {
+                    if (contentMap[row][j] === ROWSPAN_SYMBOL) {
+                        rowSpanFactor++;
+                        tokenMap[row][j].meta = {markForDeletion: true};
+                    } else if (contentMap[row][j] === COLSPAN_SYMBOL) {
+                        break;
+                    } else {
+                        tokenMap[row][j].attrSet('rowspan', rowSpanFactor.toString());
+                        break;
+                    }
+                }
+            }
+        }
+    }
+};
+
+/**
+ * Removes td_open and matching td_close tokens and the content within them
+ *
+ * @param {number} tableStart - The index of the start of the table in the state tokens array.
+ * @param {Token[]} tokens - The array of tokens from state.
+ * @returns {void}
+ */
+const clearTokens = (tableStart: number, tokens: Token[]): void => {
+    // use splices array to avoid modifying the tokens array during iteration
+    const splices: number[][] = [];
+    for (let i = tableStart; i < tokens.length; i++) {
+        if (tokens[i].meta?.markForDeletion) {
+            // Use unshift instead of push so that the splices indexes are in reverse order.
+            // Reverse order guarantees that we don't mess up the indexes while removing the items.
+            splices.unshift([i]);
+            const level = tokens[i].level;
+            // find matching td_close with the same level
+            for (let j = i + 1; j < tokens.length; j++) {
+                if (tokens[j].type === 'yfm_td_close' && tokens[j].level === level) {
+                    splices[0].push(j);
+                    break;
+                }
+            }
+        }
+    }
+    splices.forEach(([start, end]) => {
+        // check that we have both start and end defined
+        // it's possible we didn't find td_close index
+        if (start && end) {
+            tokens.splice(start, end - start + 1);
+        }
+    });
+};
+
 const yfmTable: MarkdownItPluginCb = (md) => {
     md.block.ruler.before(
         'code',
@@ -232,7 +376,12 @@ const yfmTable: MarkdownItPluginCb = (md) => {
                 return true;
             }
 
-            const {rows, endOfTable} = getTableRows(state, startPosition, endPosition, startLine);
+            const {rows, endOfTable} = getTableRowPositions(
+                state,
+                startPosition,
+                endPosition,
+                startLine,
+            );
 
             if (!endOfTable) {
                 token = state.push('__yfm_lint', '', 0);
@@ -247,6 +396,7 @@ const yfmTable: MarkdownItPluginCb = (md) => {
             state.lineMax = endOfTable;
             state.line = startLine;
 
+            const tableStart = state.tokens.length;
             token = state.push('yfm_table_open', 'table', 1);
             token.map = [startLine, endOfTable];
 
@@ -255,9 +405,18 @@ const yfmTable: MarkdownItPluginCb = (md) => {
 
             const maxRowLength = Math.max(...rows.map(([, , cols]) => cols.length));
 
+            // cellsMaps is a 2-D map of all td_open tokens in the table.
+            // cellsMap is used to access the table cells by [row][column] coordinates
+            const cellsMap: Token[][] = [];
+
+            // contentMap is a 2-D map of the text content within cells in the table.
+            // To apply spans, traverse the contentMap and modify the cells from cellsMap
+            const contentMap: string[][] = [];
+
             for (let i = 0; i < rows.length; i++) {
                 const [rowLineStarts, rowLineEnds, cols] = rows[i];
-
+                cellsMap.push([]);
+                contentMap.push([]);
                 const rowLength = cols.length;
 
                 token = state.push('yfm_tr_open', 'tr', 1);
@@ -266,6 +425,7 @@ const yfmTable: MarkdownItPluginCb = (md) => {
                 for (let j = 0; j < cols.length; j++) {
                     const [begin, end] = cols[j];
                     token = state.push('yfm_td_open', 'td', 1);
+                    cellsMap[i].push(token);
                     token.map = [begin.line, end.line];
 
                     const oldTshift = state.tShift[begin.line];
@@ -279,14 +439,23 @@ const yfmTable: MarkdownItPluginCb = (md) => {
                     state.lineMax = end.line + 1;
 
                     state.md.block.tokenize(state, begin.line, end.line + 1);
+                    const contentToken = state.tokens[state.tokens.length - 2];
+
+                    // In case of ">" within a cell without whitespace it gets consumed as a blockquote.
+                    // To handle that, check markup as well
+                    const content = contentToken.content.trim() || contentToken.markup.trim();
+                    contentMap[i].push(content);
+
+                    token = state.push('yfm_td_close', 'td', -1);
+                    state.tokens[state.tokens.length - 1].map = [end.line, end.line + 1];
 
                     state.lineMax = oldLineMax;
                     state.tShift[begin.line] = oldTshift;
                     state.bMarks[begin.line] = oldBMark;
                     state.eMarks[end.line] = oldEMark;
 
-                    token = state.push('yfm_td_close', 'td', -1);
-                    state.tokens[state.tokens.length - 1].map = [end.line, end.line + 1];
+                    const rowTokens = cellsMap[cellsMap.length - 1];
+                    extractAndApplyClassFromToken(contentToken, rowTokens[rowTokens.length - 1]);
                 }
 
                 if (rowLength < maxRowLength) {
@@ -299,6 +468,9 @@ const yfmTable: MarkdownItPluginCb = (md) => {
 
                 token = state.push('yfm_tr_close', 'tr', -1);
             }
+
+            applySpans(contentMap, cellsMap);
+            clearTokens(tableStart, state.tokens);
 
             token = state.push('yfm_tbody_close', 'tbody', -1);
 

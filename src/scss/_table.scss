@@ -1,0 +1,32 @@
+.yfm table td {
+    &.cell-align-top-left,
+    &.cell-align-bottom-left {
+        text-align: start;
+    }
+
+    &.cell-align-top-center,
+    &.cell-align-center {
+        text-align: center;
+    }
+
+    &.cell-align-top-right,
+    &.cell-align-bottom-right {
+        text-align: end;
+    }
+
+    &.cell-align-top-left,
+    &.cell-align-top-center,
+    &.cell-align-top-right {
+        vertical-align: top;
+    }
+
+    &.cell-align-center {
+        vertical-align: middle;
+    }
+
+    &.cell-align-bottom-left,
+    &.cell-align-bottom-right {
+        vertical-align: bottom;
+    }
+}
+
