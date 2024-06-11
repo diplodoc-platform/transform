@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.19.0](https://github.com/diplodoc-platform/transform/compare/v4.18.0...v4.19.0) (2024-06-11)
+
+
+### Features
+
+* bump tabs version ([54bf7d7](https://github.com/diplodoc-platform/transform/commit/54bf7d713175cdacd90d1f3f8a124ceea23e368a))
+* **checkbox:** add disabled option to prevent disabled attribute from being set for checkboxes ([30272fe](https://github.com/diplodoc-platform/transform/commit/30272fef031a710efcafc1fcf9516886203da26d))
+* **table:** add support for row/col spans in multiline tables ([cafabdf](https://github.com/diplodoc-platform/transform/commit/cafabdf4c6f3e370bc85921693a2b3cbf3dcd467))
+
+
+### Bug Fixes
+
+* Fix liquid conditions ([39d6be1](https://github.com/diplodoc-platform/transform/commit/39d6be1aff7eca4688efeff345dd3885978ba331))
+
 ## [4.18.0](https://github.com/diplodoc-platform/transform/compare/v4.17.2...v4.18.0) (2024-06-05)
 
 
