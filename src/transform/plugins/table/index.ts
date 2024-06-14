@@ -1,6 +1,7 @@
 import StateBlock from 'markdown-it/lib/rules_block/state_block';
 import {MarkdownItPluginCb} from '../typings';
 import Token from 'markdown-it/lib/token';
+import {parseAttrsClass} from './utils';
 
 const pluginName = 'yfm_table';
 const pipeChar = 0x7c; // |
@@ -217,28 +218,6 @@ function getTableRowPositions(
 }
 
 /**
- * Removes the specified attribute from attributes in the content of a token.
- *
- * @param {Token} contentToken - The target token.
- * @param {string} attr - The attribute to be removed from the token content.
- *
- * @return {void}
- */
-function removeAttrFromTokenContent(contentToken: Token, attr: string): void {
-    // Replace the attribute in the token content with an empty string.
-    const blockRegex = /\s*\{[^}]*}/;
-    const allAttrs = contentToken.content.match(blockRegex);
-    if (!allAttrs) {
-        return;
-    }
-    let replacedContent = allAttrs[0].replace(`.${attr}`, '');
-    if (replacedContent.trim() === '{}') {
-        replacedContent = '';
-    }
-    contentToken.content = contentToken.content.replace(allAttrs[0], replacedContent);
-}
-
-/**
  * Extracts the class attribute from the given content token and applies it to the tdOpenToken.
  * Preserves other attributes.
  *
@@ -248,12 +227,20 @@ function removeAttrFromTokenContent(contentToken: Token, attr: string): void {
  */
 function extractAndApplyClassFromToken(contentToken: Token, tdOpenToken: Token): void {
     // Regex to find class attribute in any position within brackets
-    const classAttrRegex = /(?<=\{[^}]*)\.([-_a-zA-Z0-9]+)/g;
-    const classAttrMatch = classAttrRegex.exec(contentToken.content);
-    if (classAttrMatch) {
-        const classAttr = classAttrMatch[1];
-        tdOpenToken.attrSet('class', classAttr);
-        removeAttrFromTokenContent(contentToken, classAttr);
+    const blockRegex = /\s*\{[^}]*}$/;
+    const allAttrs = contentToken.content.match(blockRegex);
+    if (!allAttrs) {
+        return;
+    }
+    const attrsClass = parseAttrsClass(allAttrs[0].trim());
+    if (attrsClass) {
+        tdOpenToken.attrSet('class', attrsClass);
+        // remove the class from the token so that it's not propagated to tr or table level
+        let replacedContent = allAttrs[0].replace(`.${attrsClass}`, '');
+        if (replacedContent.trim() === '{}') {
+            replacedContent = '';
+        }
+        contentToken.content = contentToken.content.replace(allAttrs[0], replacedContent);
     }
 }
 

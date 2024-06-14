@@ -1,5 +1,6 @@
-import transform from '../src/transform';
-import table from '../src/transform/plugins/table';
+import transform from '../../src/transform';
+import table from '../../src/transform/plugins/table';
+import includes from '../../src/transform/plugins/includes';
 
 const transformYfm = (text: string) => {
     const {
@@ -1257,5 +1258,60 @@ describe('Table plugin', () => {
                     '</table>\n',
             );
         });
+    });
+});
+
+const mocksPath = require.resolve('../utils.ts');
+
+const transformWithIncludes = (text: string) => {
+    const {
+        result: {html},
+    } = transform(text, {
+        plugins: [table, includes],
+        path: mocksPath,
+    });
+    return html;
+};
+
+describe('table with includes', () => {
+    it('should preserve include paths', () => {
+        expect(
+            transformWithIncludes(
+                '#|\n' +
+                    '|| **Table people** | **Table social_card** ||\n' +
+                    '||\n' +
+                    '\n' +
+                    '\n' +
+                    '{% include [create-folder](./mocks/include.md) %}\n' +
+                    '\n' +
+                    '|\n' +
+                    '\n' +
+                    '{% include [create-folder](./mocks/include.md) %}\n' +
+                    '\n' +
+                    '||\n' +
+                    '|#',
+            ),
+        ).toEqual(
+            '<table>\n' +
+                '<tbody>\n' +
+                '<tr>\n' +
+                '<td>\n' +
+                '<p><strong>Table people</strong></p>\n' +
+                '</td>\n' +
+                '<td>\n' +
+                '<p><strong>Table social_card</strong></p>\n' +
+                '</td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '<td>\n' +
+                '<p>{% include <a href="./mocks/include.md">create-folder</a> %}</p>\n' +
+                '</td>\n' +
+                '<td>\n' +
+                '<p>{% include <a href="./mocks/include.md">create-folder</a> %}</p>\n' +
+                '</td>\n' +
+                '</tr>\n' +
+                '</tbody>\n' +
+                '</table>\n',
+        );
     });
 });
