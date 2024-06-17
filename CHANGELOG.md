@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.19.1](https://github.com/diplodoc-platform/transform/compare/v4.19.0...v4.19.1) (2024-06-17)
+
+
+### Bug Fixes
+
+* **table:** make the parsing of cell class stricter ([#444](https://github.com/diplodoc-platform/transform/issues/444)) ([8932d81](https://github.com/diplodoc-platform/transform/commit/8932d81aa99a681be7fc44ff50f3800b4e11afbf))
+
 ## [4.19.0](https://github.com/diplodoc-platform/transform/compare/v4.18.0...v4.19.0) (2024-06-11)
 
 
