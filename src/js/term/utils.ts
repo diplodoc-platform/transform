@@ -99,7 +99,7 @@ export function setDefinitionPosition(
     definitionElement.style.top =
         Number(getCoords(termElement).top + offsetTop - customHeaderTop) + 'px';
     definitionElement.style.left = Number(offsetLeft - (isShiftLeftNeeded ? shiftLeft : 0)) + 'px';
-}
+
 
 function termOnResize() {
     const openDefinition = document.getElementsByClassName(openDefinitionClass)[0] as HTMLElement;
