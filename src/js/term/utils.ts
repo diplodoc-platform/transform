@@ -86,11 +86,8 @@ export function setDefinitionPosition(
     const fitDefinitionDocument =
         isAlignSwapped && !definitionOutOfScreenOnLeft ? definitionWidth - termWidth : 0;
     const customHeaderTop = getCoords(definitionParent).top - definitionParent.offsetTop;
-
     const offsetRight = 5;
-    const shiftLeft = definitionOutOfScreenOnRight
-        ? definitionRightCoordinate - document.body.clientWidth + offsetRight
-        : 0;
+    const shiftLeft = definitionOutOfScreenOnRight ? definitionRightCoordinate - document.body.clientWidth + offsetRight : 0;
     const offsetLeft =
         getCoords(termElement).left -
         definitionParentLeft +
