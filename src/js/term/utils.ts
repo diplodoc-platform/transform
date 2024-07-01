@@ -86,16 +86,21 @@ export function setDefinitionPosition(
     const fitDefinitionDocument =
         isAlignSwapped && !definitionOutOfScreenOnLeft ? definitionWidth - termWidth : 0;
     const customHeaderTop = getCoords(definitionParent).top - definitionParent.offsetTop;
+    const offsetRight = 5;
+    const shiftLeft = definitionOutOfScreenOnRight
+        ? definitionRightCoordinate - document.body.clientWidth + offsetRight
+        : 0;
+    const offsetLeft =
+        getCoords(termElement).left -
+        definitionParentLeft +
+        definitionParent.offsetLeft -
+        fitDefinitionDocument;
+
+    const isShiftLeftNeeded = offsetLeft + definitionWidth >= document.body.clientWidth;
 
     definitionElement.style.top =
         Number(getCoords(termElement).top + offsetTop - customHeaderTop) + 'px';
-    definitionElement.style.left =
-        Number(
-            getCoords(termElement).left -
-                definitionParentLeft +
-                definitionParent.offsetLeft -
-                fitDefinitionDocument,
-        ) + 'px';
+    definitionElement.style.left = Number(offsetLeft - (isShiftLeftNeeded ? shiftLeft : 0)) + 'px';
 }
 
 function termOnResize() {
