@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.20.0](https://github.com/diplodoc-platform/transform/compare/v4.19.1...v4.20.0) (2024-07-02)
+
+
+### Features
+
+* bump tabs plugin version ([ad296b5](https://github.com/diplodoc-platform/transform/commit/ad296b504e492dff2708de53f3320b66b5a24fb0))
+
+
+### Bug Fixes
+
+* terms extend beyond right edge of screen ([#447](https://github.com/diplodoc-platform/transform/issues/447)) ([04afecf](https://github.com/diplodoc-platform/transform/commit/04afecff52598053da7379bca2690a5be0e32042))
+
 ## [4.19.1](https://github.com/diplodoc-platform/transform/compare/v4.19.0...v4.19.1) (2024-06-17)
 
 
