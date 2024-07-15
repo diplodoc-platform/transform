@@ -124,7 +124,7 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
                 } else {
                     id = slugify(title, {
                         lower: true,
-                        remove: /[*+~.()'"!:@`ь]/g,
+                        remove: /[*+~.()'"!:@`ь?]/g,
                     });
                     ghId = slugger.slug(title);
                 }
