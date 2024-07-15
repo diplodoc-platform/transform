@@ -1,7 +1,7 @@
 import StateBlock from 'markdown-it/lib/rules_block/state_block';
 import {MarkdownItPluginCb} from '../typings';
 import Token from 'markdown-it/lib/token';
-import {parseAttrsClass} from './utils';
+import {parseAttrs} from './utils';
 
 const pluginName = 'yfm_table';
 const pipeChar = 0x7c; // |
@@ -96,6 +96,7 @@ class StateIterator {
 interface RowPositions {
     rows: [number, number, [Stats, Stats][]][];
     endOfTable: number | null;
+    pos: number;
 }
 
 function getTableRowPositions(
@@ -214,7 +215,17 @@ function getTableRowPositions(
 
         iter.next();
     }
-    return {rows, endOfTable};
+
+    const {pos} = iter;
+
+    return {rows, endOfTable, pos};
+}
+
+function extractAttributes(state: StateBlock, pos: number): Record<string, string[]> {
+    const attrsStringStart = state.skipSpaces(pos);
+    const attrsString = state.src.slice(attrsStringStart);
+
+    return parseAttrs(attrsString) ?? {};
 }
 
 /**
@@ -232,7 +243,7 @@ function extractAndApplyClassFromToken(contentToken: Token, tdOpenToken: Token):
     if (!allAttrs) {
         return;
     }
-    const attrsClass = parseAttrsClass(allAttrs[0].trim());
+    const attrsClass = parseAttrs(allAttrs[0].trim())?.class.join(' ');
     if (attrsClass) {
         tdOpenToken.attrSet('class', attrsClass);
         // remove the class from the token so that it's not propagated to tr or table level
@@ -363,12 +374,14 @@ const yfmTable: MarkdownItPluginCb = (md) => {
                 return true;
             }
 
-            const {rows, endOfTable} = getTableRowPositions(
+            const {rows, endOfTable, pos} = getTableRowPositions(
                 state,
                 startPosition,
                 endPosition,
                 startLine,
             );
+
+            const attrs = extractAttributes(state, pos);
 
             if (!endOfTable) {
                 token = state.push('__yfm_lint', '', 0);
@@ -385,6 +398,11 @@ const yfmTable: MarkdownItPluginCb = (md) => {
 
             const tableStart = state.tokens.length;
             token = state.push('yfm_table_open', 'table', 1);
+
+            for (const [property, values] of Object.entries(attrs)) {
+                token.attrJoin(property, values.join(' '));
+            }
+
             token.map = [startLine, endOfTable];
 
             token = state.push('yfm_tbody_open', 'tbody', 1);
