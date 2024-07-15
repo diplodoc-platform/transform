@@ -79,6 +79,49 @@ describe('Table plugin', () => {
                 '</table>\n',
         );
     });
+    it('should render simple table', () => {
+        expect(
+            transformYfm(
+                '#|\n' +
+                    '||Cell in column 1, row 1\n' +
+                    '|Cell in column 2, row 1||\n' +
+                    '||Cell in column 1, row 2\n' +
+                    '|Cell in column 2, row 2||\n' +
+                    '||Cell in column 1, row 3\n' +
+                    '|Cell in column 2, row 3||\n' +
+                    '|# {data-diplodoc-large-table=true .test .name #id wide-preview}',
+            ),
+        ).toBe(
+            '<table class="test name" id="id" data-diplodoc-large-table="true" data-wide-preview="true">\n' +
+                '<tbody>\n' +
+                '<tr>\n' +
+                '<td>\n' +
+                '<p>Cell in column 1, row 1</p>\n' +
+                '</td>\n' +
+                '<td>\n' +
+                '<p>Cell in column 2, row 1</p>\n' +
+                '</td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '<td>\n' +
+                '<p>Cell in column 1, row 2</p>\n' +
+                '</td>\n' +
+                '<td>\n' +
+                '<p>Cell in column 2, row 2</p>\n' +
+                '</td>\n' +
+                '</tr>\n' +
+                '<tr>\n' +
+                '<td>\n' +
+                '<p>Cell in column 1, row 3</p>\n' +
+                '</td>\n' +
+                '<td>\n' +
+                '<p>Cell in column 2, row 3</p>\n' +
+                '</td>\n' +
+                '</tr>\n' +
+                '</tbody>\n' +
+                '</table>\n',
+        );
+    });
     it('should render table between paragraphs', () => {
         expect(
             transformYfm(
