@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.21.0](https://github.com/diplodoc-platform/transform/compare/v4.20.0...v4.21.0) (2024-07-15)
+
+
+### Features
+
+* add custom attrs ([1c3bc13](https://github.com/diplodoc-platform/transform/commit/1c3bc13bb499ff4d79b961b0d08c927afda46c44))
+* escape question mark from anchor ([#460](https://github.com/diplodoc-platform/transform/issues/460)) ([5f35b15](https://github.com/diplodoc-platform/transform/commit/5f35b15bd572313c7bbec0aca15d5840fec9c97d))
+
+
+### Bug Fixes
+
+* pop-up definition overlaps header ([#457](https://github.com/diplodoc-platform/transform/issues/457)) ([d0a7c66](https://github.com/diplodoc-platform/transform/commit/d0a7c66e35050051ec444e8b3b1a39e74f2182fb))
+
 ## [4.20.0](https://github.com/diplodoc-platform/transform/compare/v4.19.1...v4.20.0) (2024-07-02)
 
 
