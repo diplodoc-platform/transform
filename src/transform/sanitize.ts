@@ -288,6 +288,7 @@ const htmlAttrs = [
     'referrerpolicy',
     'aria-describedby',
     'data-*',
+    'wide-content',
 ];
 
 const svgAttrs = [

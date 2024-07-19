@@ -1,7 +1,7 @@
 import StateBlock from 'markdown-it/lib/rules_block/state_block';
 import {MarkdownItPluginCb} from '../typings';
 import Token from 'markdown-it/lib/token';
-import {parseAttrs} from './utils';
+import {AttrsParser} from './attrs';
 
 const pluginName = 'yfm_table';
 const pipeChar = 0x7c; // |
@@ -225,7 +225,9 @@ function extractAttributes(state: StateBlock, pos: number): Record<string, strin
     const attrsStringStart = state.skipSpaces(pos);
     const attrsString = state.src.slice(attrsStringStart);
 
-    return parseAttrs(attrsString) ?? {};
+    const attrsParser = new AttrsParser();
+
+    return attrsParser.parse(attrsString);
 }
 
 /**
@@ -243,7 +245,10 @@ function extractAndApplyClassFromToken(contentToken: Token, tdOpenToken: Token):
     if (!allAttrs) {
         return;
     }
-    const attrsClass = parseAttrs(allAttrs[0].trim())?.class.join(' ');
+
+    const attrs = new AttrsParser().parse(allAttrs[0].trim());
+    const attrsClass = attrs?.class?.join(' ');
+
     if (attrsClass) {
         tdOpenToken.attrSet('class', attrsClass);
         // remove the class from the token so that it's not propagated to tr or table level
@@ -399,8 +404,13 @@ const yfmTable: MarkdownItPluginCb = (md) => {
             const tableStart = state.tokens.length;
             token = state.push('yfm_table_open', 'table', 1);
 
-            for (const [property, values] of Object.entries(attrs)) {
+            const {attr: singleKeyAttrs = [], ...fullAttrs} = attrs;
+            for (const [property, values] of Object.entries(fullAttrs)) {
                 token.attrJoin(property, values.join(' '));
+            }
+
+            for (const attr of singleKeyAttrs) {
+                token.attrJoin(attr, 'true');
             }
 
             token.map = [startLine, endOfTable];
