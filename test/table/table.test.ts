@@ -79,7 +79,7 @@ describe('Table plugin', () => {
                 '</table>\n',
         );
     });
-    it('should render simple table', () => {
+    it('should render simple table with attrs', () => {
         expect(
             transformYfm(
                 '#|\n' +
@@ -89,10 +89,10 @@ describe('Table plugin', () => {
                     '|Cell in column 2, row 2||\n' +
                     '||Cell in column 1, row 3\n' +
                     '|Cell in column 2, row 3||\n' +
-                    '|# {data-diplodoc-large-table=true .test .name #id wide-preview}',
+                    '|# {.test .name #id data-diplodoc-large-table data-wide-preview="true"}',
             ),
         ).toBe(
-            '<table class="test name" id="id" data-diplodoc-large-table="true" data-wide-preview="true">\n' +
+            '<table class="test name" id="id" data-wide-preview="true" data-diplodoc-large-table="true">\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
                 '<td>\n' +
