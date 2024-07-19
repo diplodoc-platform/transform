@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.22.0](https://github.com/diplodoc-platform/transform/compare/v4.21.0...v4.22.0) (2024-07-19)
+
+
+### Features
+
+* refactor custom attrs ([971d02a](https://github.com/diplodoc-platform/transform/commit/971d02ab2e096fa08d91b6494ce59f78bd108eee))
+
 ## [4.21.0](https://github.com/diplodoc-platform/transform/compare/v4.20.0...v4.21.0) (2024-07-15)
 
 
