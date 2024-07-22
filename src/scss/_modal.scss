@@ -1,0 +1,123 @@
+.wide-container {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0px;
+    left: 0px;
+    z-index: 200;
+
+    &.dc-doc-page {
+        max-width: 100% !important;
+    }
+
+    .wide-content-viewer {
+        visibility: hidden;
+    }
+
+    .wide-content-wrapper {
+        z-index: 200;
+        background-color: var(--g-color-base-background);   
+        height: 90vh;
+        width: 70vw;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+
+       .wide-content {
+            height: 95%;
+            width: 100%;
+
+            .wide-inner-element {
+                max-width: 100%;
+                width: 100%;
+                height: 100%;
+            }
+
+            table {
+                border-radius: 0px;
+            }
+
+            .wide-thead-content {
+                display: table;
+                width: 100%;
+            }
+       }
+
+       .wide-toolbar {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+       }
+
+       .wide-entity-name {
+            margin: 0;
+            font-size: 18px;
+       }
+
+       .wide-actions {
+            align-self: flex-end;
+
+            .close-action {
+                cursor: pointer;
+                border-radius: 3px;
+
+                transition: background 300ms;
+
+                &:hover {
+                    background: var(--g-color-base-simple-hover);
+                }
+            }
+       }
+    }
+}   
+
+.wide-element-wrapper {
+    display: inline-block;
+    position: relative;
+    padding-right: 30px;
+
+    &:hover > .wide-content-viewer {
+        visibility: visible;
+    }
+
+
+    .wide-inner-element {
+        max-width: 700px;
+    }
+}
+
+.wide-content-viewer {
+    position: absolute;
+    visibility: hidden;
+    width: 30px;
+    height: 30px;
+    z-index: 100;
+    padding: 6px;
+    right: -20px;
+    box-sizing: content-box;
+    color: var(--g-color-text-primary);
+    cursor: pointer;
+
+    & > svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+
+.wide-content-overlay {
+    z-index: 100;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: black;
+    opacity: 0.6;
+}

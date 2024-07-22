@@ -22,6 +22,17 @@ describe('attrs parser tests', () => {
         });
     });
 
+    it('parses wide mode', () => {
+        const attrs = new AttrsParser();
+
+        const result = attrs.parse('{wide-view wide-name="short table"}');
+
+        expect(result).toEqual({
+            attr: ['wide-view'],
+            'wide-name': ['short table'],
+        });
+    });
+
     it('parses full attrs', () => {
         const attrs = new AttrsParser();
 
