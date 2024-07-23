@@ -5,3 +5,5 @@ import './code';
 import './cut';
 import './term';
 import './wide-mode';
+
+import './patch';

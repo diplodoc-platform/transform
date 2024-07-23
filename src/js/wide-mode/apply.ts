@@ -21,8 +21,8 @@ const wrap = (target: HTMLElement) => {
 
     target.before(container);
 
-    container.appendChild(handler);
     container.appendChild(target);
+    container.appendChild(handler);
 };
 
 export const applyWideMode = () => {

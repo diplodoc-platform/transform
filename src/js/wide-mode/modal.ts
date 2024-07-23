@@ -57,8 +57,8 @@ const container = () => {
     const title = document.createElement('p');
     title.classList.add('wide-entity-name');
 
-    template.label = (content: string) => {
-        title.innerHTML = content;
+    template.label = (content?: string) => {
+        title.innerHTML = content || '';
     };
 
     const content = document.createElement('div');
@@ -96,10 +96,7 @@ const container = () => {
 const render = (content: HTMLElement) => {
     const template = container();
 
-    if (content.title) {
-        template.label(content.title);
-    }
-
+    template.label(content.title);
     template.content(content);
 
     template.style.display = 'flex';
