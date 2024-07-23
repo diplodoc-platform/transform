@@ -69,7 +69,7 @@ const common = {
             ...common,
             entryPoints: ['src/js/print/index.ts'],
             outfile: 'dist/js/print.js',
-        })
+        }),
     ]);
 
     await build({

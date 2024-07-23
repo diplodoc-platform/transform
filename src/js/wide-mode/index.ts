@@ -1,5 +1,5 @@
 import {applyWideMode} from './apply';
 
-if (typeof document !== 'undefined') {
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     window.addEventListener('load', applyWideMode);
 }
