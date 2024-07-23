@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.24.0](https://github.com/diplodoc-platform/transform/compare/v4.23.0...v4.24.0) (2024-07-23)
+
+
+### Features
+
+* add wide modal in trasform ([3a8ea7c](https://github.com/diplodoc-platform/transform/commit/3a8ea7cb8fd774bc9d959e721646d103777411ab))
+
 ## [4.23.0](https://github.com/diplodoc-platform/transform/compare/v4.22.0...v4.23.0) (2024-07-22)
 
 
