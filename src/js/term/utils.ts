@@ -24,6 +24,14 @@ export function setDefinitionId(definitionElement: HTMLElement, termElement: HTM
     definitionElement?.setAttribute('term-id', termId);
 }
 
+export function setDefinitonAriaLive(
+    definitionElement: HTMLElement,
+    termElement: HTMLElement,
+): void {
+    const ariaLive = termElement.getAttribute('aria-live') || 'polite';
+    definitionElement?.setAttribute('aria-live', ariaLive);
+}
+
 export function setDefinitionPosition(
     definitionElement: HTMLElement,
     termElement: HTMLElement,

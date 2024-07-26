@@ -6,6 +6,7 @@ import {
     openDefinitionClass,
     setDefinitionId,
     setDefinitionPosition,
+    setDefinitonAriaLive,
 } from './utils';
 import {getEventTarget, isCustom} from '../utils';
 
@@ -43,6 +44,7 @@ if (typeof document !== 'undefined') {
         }
 
         setDefinitionId(definitionElement, target);
+        setDefinitonAriaLive(definitionElement, target);
         setDefinitionPosition(definitionElement, target);
 
         definitionElement.classList.toggle(openClass);

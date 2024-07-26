@@ -141,6 +141,7 @@ function processTermDefinition(
     token.attrSet('class', 'yfm yfm-term_dfn');
     token.attrSet('id', ':' + label + '_element');
     token.attrSet('role', 'tooltip');
+    token.attrSet('aria-live', 'polite');
 
     state.tokens.push(token);
 
