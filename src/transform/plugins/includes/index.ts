@@ -77,7 +77,7 @@ function unfoldIncludes(state: StateCore, path: string, options: Options) {
                 }
             } catch (e) {
                 // @ts-ignore for some reason typescript fails here
-                const errPath = e.path.replace(root, '');
+                const errPath = e.path?.replace(root, '');
 
                 if (notFoundCb) {
                     notFoundCb(errPath);
