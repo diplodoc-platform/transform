@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.25.0](https://github.com/diplodoc-platform/transform/compare/v4.24.0...v4.25.0) (2024-07-30)
+
+
+### Features
+
+* add aria-live for term popup ([#470](https://github.com/diplodoc-platform/transform/issues/470)) ([7fafa30](https://github.com/diplodoc-platform/transform/commit/7fafa30433d15eb3ab1f5bc56972a3a0da9f1683))
+
+
+### Bug Fixes
+
+* unfoldIncludes should handle errors without path field ([#472](https://github.com/diplodoc-platform/transform/issues/472)) ([501c77b](https://github.com/diplodoc-platform/transform/commit/501c77bf3d2666a3adb6c7b3818fbfc1f0f3fd58))
+
 ## [4.24.0](https://github.com/diplodoc-platform/transform/compare/v4.23.0...v4.24.0) (2024-07-23)
 
 
