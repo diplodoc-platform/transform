@@ -78,19 +78,48 @@ function trimResult(content: string, ifTag: IfTag, ifCon: IfCondition | null) {
     if (!ifCon) {
         const head = headLinebreak(ifTag.rawStart);
         const tail = tailLinebreak(ifTag.rawEnd);
-        return ifTag.isBlock ? '\n' : head + tail;
+
+        let rest = head + tail;
+        if (rest !== head && rest !== tail) {
+            // We have extra line break, if condition was placed on individual line
+            rest = rest.replace('\n', '');
+        }
+
+        return ifTag.isBlock ? '\n' : rest;
     }
 
     content = content.substring(ifCon.start, ifCon.end);
 
-    const head = ifTag.isBlock ? headLinebreak(ifCon.rawStart) : headLinebreak(ifTag.rawStart);
+    if (ifTag.isBlock) {
+        return trimBlockResult(content, ifCon);
+    } else {
+        return trimInlineResult(content, ifTag);
+    }
+}
+
+function trimBlockResult(content: string, ifCon: IfCondition) {
+    const head = headLinebreak(ifCon.rawStart);
     if (head) {
-        content = (ifTag.isBlock ? '\n' : head) + content;
+        content = '\n' + content;
     }
 
-    const tail = ifTag.isBlock ? tailLinebreak(ifCon.rawEnd) : tailLinebreak(ifTag.rawEnd);
+    const tail = tailLinebreak(ifCon.rawEnd);
     if (tail) {
-        content = content + (ifTag.isBlock ? '\n' : tail);
+        content = content + '\n';
+    }
+
+    return content;
+}
+
+function trimInlineResult(content: string, ifTag: IfTag) {
+    const head = headLinebreak(ifTag.rawStart);
+    if (head) {
+        content = head + content;
+    }
+
+    const tail = tailLinebreak(ifTag.rawEnd);
+    if (tail) {
+        content = content + tail;
     }
 
     return content;
@@ -279,6 +308,10 @@ export = function conditions(
 
                 break;
             }
+            default:
+                // This is not condition.
+                // Step back last linebreaks to match them on next condition
+                R_LIQUID.lastIndex -= tailLinebreak(match[1]).length;
         }
     }
 

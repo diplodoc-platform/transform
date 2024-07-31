@@ -253,6 +253,59 @@ describe('Conditions', () => {
                 End
             `);
         });
+
+        test('Falsy inline condition after truthly inline condition', () => {
+            expect(
+                conditions(
+                    trim`
+                        {% if product == "A" %}A{% endif %}
+                        {% if product == "B" %}B{% endif %}
+                        C
+                `,
+                    {
+                        product: 'A',
+                    },
+                    '',
+                    {
+                        sourceMap: {},
+                    },
+                ),
+            ).toEqual(
+                trim`
+                        A
+                        C
+                `,
+            );
+        });
+
+        test('Around other curly braced structures', () => {
+            expect(
+                conditions(
+                    trim`
+                        * Title:
+                            * {% include [A](./A.md) %}
+                        {% if audience != "internal" %}
+                        * {% include [B](./B.md) %}
+                        {% endif %}
+                        * {% include [C](./C.md) %}
+                    `,
+                    {
+                        audience: 'other',
+                    },
+                    '',
+                    {
+                        sourceMap: {},
+                    },
+                ),
+            ).toEqual(
+                trim`
+                        * Title:
+                            * {% include [A](./A.md) %}
+                        * {% include [B](./B.md) %}
+                        * {% include [C](./C.md) %}
+                `,
+            );
+        });
     });
 
     describe('Conditions', () => {
