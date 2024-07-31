@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.25.1](https://github.com/diplodoc-platform/transform/compare/v4.25.0...v4.25.1) (2024-07-31)
+
+
+### Bug Fixes
+
+* Fix liquid conditions corner cases ([079a5cd](https://github.com/diplodoc-platform/transform/commit/079a5cdab2dd8d422bd2c64d32e66c5a95af4547))
+
 ## [4.25.0](https://github.com/diplodoc-platform/transform/compare/v4.24.0...v4.25.0) (2024-07-30)
 
 
