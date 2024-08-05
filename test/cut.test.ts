@@ -17,9 +17,10 @@ describe('Cut plugin', () => {
                 '{% cut "Cut title" %}\n' + '\n' + 'Cut content\n' + '\n' + '{% endcut %}',
             ).replace(/(\r\n|\n|\r)/gm, ''),
         ).toBe(
-            '<div class="yfm-cut"><div class="yfm-cut-title">Cut title</div>' +
-                '<div class="yfm-cut-content"><p>Cut content</p>' +
-                '</div></div>',
+            '<details class="yfm-cut">' +
+                '<summary class="yfm-cut-title">Cut title</summary>' +
+                '<div class="yfm-cut-content"><p>Cut content</p></div>' +
+                '</details>',
         );
     });
 
@@ -35,9 +36,12 @@ describe('Cut plugin', () => {
                     '{% endcut %}',
             ).replace(/(\r\n|\n|\r)/gm, ''),
         ).toBe(
-            '<div class="yfm-cut"><div class="yfm-cut-title">Cut title</div>' +
-                '<div class="yfm-cut-content"><pre><code class="hljs">Code</code></pre>' +
-                '</div></div>',
+            '<details class="yfm-cut">' +
+                '<summary class="yfm-cut-title">Cut title</summary>' +
+                '<div class="yfm-cut-content">' +
+                '<pre><code class="hljs">Code</code></pre>' +
+                '</div>' +
+                '</details>',
         );
     });
 
@@ -57,12 +61,15 @@ describe('Cut plugin', () => {
                     '{% endcut %}',
             ).replace(/(\r\n|\n|\r)/gm, ''),
         ).toBe(
-            '<div class="yfm-cut"><div class="yfm-cut-title">Cut title 1</div>' +
-                '<div class="yfm-cut-content"><p>Cut content 1</p></div>' +
-                '</div>' +
-                '<div class="yfm-cut"><div class="yfm-cut-title">Cut title 2</div>' +
-                '<div class="yfm-cut-content"><p>Cut content 2</p></div>' +
-                '</div>',
+            '<details class="yfm-cut">' +
+                '<summary class="yfm-cut-title">Cut title 1</summary>' +
+                '<div class="yfm-cut-content"><p>Cut content 1</p>' +
+                '</div></details>' +
+                '<details class="yfm-cut">' +
+                '<summary class="yfm-cut-title">Cut title 2</summary>' +
+                '<div class="yfm-cut-content">' +
+                '<p>Cut content 2</p>' +
+                '</div></details>',
         );
     });
 
@@ -82,11 +89,12 @@ describe('Cut plugin', () => {
                     '{% endcut %}',
             ).replace(/(\r\n|\n|\r)/gm, ''),
         ).toBe(
-            '<div class="yfm-cut"><div class="yfm-cut-title">Outer title</div>' +
-                '<div class="yfm-cut-content"><p>Outer content</p>' +
-                '<div class="yfm-cut"><div class="yfm-cut-title">Inner title</div>' +
-                '<div class="yfm-cut-content"><p>Inner content</p></div>' +
-                '</div></div></div>',
+            '<details class="yfm-cut"><summary class="yfm-cut-title">' +
+                'Outer title</summary><div class="yfm-cut-content">' +
+                '<p>Outer content</p><details class="yfm-cut">' +
+                '<summary class="yfm-cut-title">Inner title</summary>' +
+                '<div class="yfm-cut-content"><p>Inner content</p>' +
+                '</div></details></div></details>',
         );
     });
 
@@ -100,10 +108,11 @@ describe('Cut plugin', () => {
                     '{% endcut %}',
             ).replace(/(\r\n|\n|\r)/gm, ''),
         ).toBe(
-            '<div class="yfm-cut">' +
-                '<div class="yfm-cut-title"><strong>Strong cut title</strong></div>' +
-                '<div class="yfm-cut-content"><p>Content we want to hide</p></div>' +
-                '</div>',
+            '<details class="yfm-cut"><summary class="yfm-cut-title">' +
+                '<strong>Strong cut title</strong>' +
+                '</summary><div class="yfm-cut-content">' +
+                '<p>Content we want to hide</p>' +
+                '</div></details>',
         );
     });
 
@@ -119,8 +128,11 @@ describe('Cut plugin', () => {
                     '{% endcut %}',
             ).replace(/(\r\n|\n|\r)/gm, ''),
         ).toBe(
-            '<ul><li><div class="yfm-cut"><div class="yfm-cut-title">Cut 1</div>' +
-                '<div class="yfm-cut-content"><p>Some text</p><p>Some text</p></div></div></li></ul>',
+            '<ul><li>' +
+                '<details class="yfm-cut"><summary class="yfm-cut-title">Cut 1</summary>' +
+                '<div class="yfm-cut-content"><p>Some text</p>' +
+                '<p>Some text</p>' +
+                '</div></details></li></ul>',
         );
     });
 
@@ -146,12 +158,16 @@ describe('Cut plugin', () => {
                     '{% endcut %}',
             ).replace(/(\r\n|\n|\r)/gm, ''),
         ).toBe(
-            '<ul><li><div class="yfm-cut"><div class="yfm-cut-title">Cut 1</div>' +
-                '<div class="yfm-cut-content"><p>Some text</p></div></div></li>' +
-                '<li><div class="yfm-cut"><div class="yfm-cut-title">Cut 2</div>' +
-                '<div class="yfm-cut-content"><p>Some text</p></div></div></li>' +
-                '<li><div class="yfm-cut"><div class="yfm-cut-title">Cut 3</div>' +
-                '<div class="yfm-cut-content"><p>Some text</p></div></div></li></ul>',
+            '<ul><li>' +
+                '<details class="yfm-cut">' +
+                '<summary class="yfm-cut-title">Cut 1</summary>' +
+                '<div class="yfm-cut-content"><p>Some text</p></div>' +
+                '</details></li>' +
+                '<li><details class="yfm-cut">' +
+                '<summary class="yfm-cut-title">Cut 2</summary><div class="yfm-cut-content">' +
+                '<p>Some text</p></div></details></li><li><details class="yfm-cut">' +
+                '<summary class="yfm-cut-title">Cut 3</summary>' +
+                '<div class="yfm-cut-content"><p>Some text</p></div></details></li></ul>',
         );
     });
 });

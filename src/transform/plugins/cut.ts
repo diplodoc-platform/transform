@@ -39,11 +39,11 @@ const cut: MarkdownItPluginCb = (md, {path, log}) => {
                     continue;
                 }
 
-                const newOpenToken = new state.Token('yfm_cut_open', 'div', 1);
+                const newOpenToken = new state.Token('yfm_cut_open', 'details', 1);
                 newOpenToken.attrSet('class', 'yfm-cut');
                 newOpenToken.map = tokens[i].map;
 
-                const titleOpen = new state.Token('yfm_cut_title_open', 'div', 1);
+                const titleOpen = new state.Token('yfm_cut_title_open', 'summary', 1);
                 titleOpen.attrSet('class', 'yfm-cut-title');
 
                 const titleInline = state.md.parseInline(
@@ -51,7 +51,7 @@ const cut: MarkdownItPluginCb = (md, {path, log}) => {
                     state.env,
                 )[0];
 
-                const titleClose = new state.Token('yfm_cut_title_close', 'div', -1);
+                const titleClose = new state.Token('yfm_cut_title_close', 'summary', -1);
 
                 const contentOpen = new state.Token('yfm_cut_content_open', 'div', 1);
                 contentOpen.attrSet('class', 'yfm-cut-content');
@@ -65,7 +65,7 @@ const cut: MarkdownItPluginCb = (md, {path, log}) => {
 
                 const contentClose = new state.Token('yfm_cut_content_close', 'div', -1);
 
-                const newCloseToken = new state.Token('yfm_cut_close', 'div', -1);
+                const newCloseToken = new state.Token('yfm_cut_close', 'details', -1);
                 newCloseToken.map = tokens[closeTokenIdx].map;
 
                 const insideTokens = [
