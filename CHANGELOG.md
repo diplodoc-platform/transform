@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.26.0](https://github.com/diplodoc-platform/transform/compare/v4.25.1...v4.26.0) (2024-08-06)
+
+
+### Features
+
+* Add transformInline method ([b8db80a](https://github.com/diplodoc-platform/transform/commit/b8db80a11ff1f6ebb013e0c062a02560bc986d1e)), closes [#393](https://github.com/diplodoc-platform/transform/issues/393)
+* use &lt;details&gt; tag for cuts ([#476](https://github.com/diplodoc-platform/transform/issues/476)) ([dca71bb](https://github.com/diplodoc-platform/transform/commit/dca71bb11c133f76d481a7abf6e01ce98e5e8cbe))
+
 ## [4.25.1](https://github.com/diplodoc-platform/transform/compare/v4.25.0...v4.25.1) (2024-07-31)
 
 
