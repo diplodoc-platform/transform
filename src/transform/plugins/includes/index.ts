@@ -1,10 +1,11 @@
 import {bold} from 'chalk';
 
-import {GetFileTokensOpts, getFileTokens, getFullIncludePath, isFileExists} from '../../utilsFS';
-import {findBlockTokens} from '../../utils';
 import Token from 'markdown-it/lib/token';
+import {GetFileTokensOpts, getFileTokens, getFullIncludePath} from '../../utilsFS';
+import {findBlockTokens} from '../../utils';
+import {StateCore} from '../../typings';
+import {defaultFsContext} from '../../fsContext';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
-import {StateCore} from 'src/transform/typings';
 
 const INCLUDE_REGEXP = /^{%\s*include\s*(notitle)?\s*\[(.+?)]\((.+?)\)\s*%}$/;
 
@@ -20,8 +21,14 @@ type Options = MarkdownItPluginOpts &
         noReplaceInclude: boolean;
     };
 
-function unfoldIncludes(state: StateCore, path: string, options: Options) {
-    const {root, notFoundCb, log, noReplaceInclude = false} = options;
+function unfoldIncludes(state: StateCore, path: string, options: Options) {    
+    const {
+        root,
+        notFoundCb,
+        log,
+        noReplaceInclude = false,
+        fs = defaultFsContext,
+    } = options;
     const {tokens} = state;
     let i = 0;
 
@@ -44,7 +51,7 @@ function unfoldIncludes(state: StateCore, path: string, options: Options) {
                 let pathname = fullIncludePath;
                 let hash = '';
                 const hashIndex = fullIncludePath.lastIndexOf('#');
-                if (hashIndex > -1 && !isFileExists(pathname)) {
+                if (hashIndex > -1 && !fs.exist(pathname)) {
                     pathname = fullIncludePath.slice(0, hashIndex);
                     hash = fullIncludePath.slice(hashIndex + 1);
                 }
@@ -55,7 +62,7 @@ function unfoldIncludes(state: StateCore, path: string, options: Options) {
                     continue;
                 }
 
-                const fileTokens = getFileTokens(pathname, state, options);
+                const fileTokens = getFileTokens(fs, pathname, state, options);
 
                 let includedTokens;
                 if (hash) {

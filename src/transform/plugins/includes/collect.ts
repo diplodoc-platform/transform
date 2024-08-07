@@ -1,7 +1,8 @@
 import {relative} from 'path';
 import {bold} from 'chalk';
 
-import {isFileExists, resolveRelativePath} from '../../utilsFS';
+import {resolveRelativePath} from '../../utilsFS';
+import {defaultFsContext} from '../../fsContext';
 import {MarkdownItPluginOpts} from '../typings';
 
 const includesPaths: string[] = [];
@@ -13,7 +14,15 @@ type Opts = MarkdownItPluginOpts & {
 };
 
 const collect = (input: string, options: Opts) => {
-    const {root, path, destPath = '', log, copyFile, singlePage} = options;
+    const {
+        root,
+        path,
+        destPath = '',
+        log,
+        copyFile,
+        singlePage,
+        fs = defaultFsContext,
+    } = options;
     const INCLUDE_REGEXP = /{%\s*include\s*(notitle)?\s*\[(.+?)]\((.+?)\)\s*%}/g;
 
     let match,
@@ -25,7 +34,7 @@ const collect = (input: string, options: Opts) => {
 
         let includePath = resolveRelativePath(path, relativePath);
         const hashIndex = relativePath.lastIndexOf('#');
-        if (hashIndex > -1 && !isFileExists(includePath)) {
+        if (hashIndex > -1 && !fs.exist(includePath)) {
             includePath = includePath.slice(0, includePath.lastIndexOf('#'));
             relativePath = relativePath.slice(0, hashIndex);
         }

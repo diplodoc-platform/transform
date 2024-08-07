@@ -23,10 +23,39 @@ export type Heading = {
     items?: Heading[];
 };
 
+export interface FsContext {
+    read(path: string): string;
+    exist(path: string): boolean;
+    write(path: string, content: string): void;
+}
+
+export interface RevisionMeta {
+    files: {
+        [key: string]: {
+            mod_date: number; // modified_at
+            files: string[]; // dependedcies
+            vars: string[];
+            changed: boolean;
+        };
+    };
+}
+
+export interface RevisionContext {
+    files: string[];
+    meta: RevisionMeta | null;
+    deps: {
+        [key: string]: {
+            files: string[];
+            vars: string[];
+        };
+    };
+}
+
 export interface OptionsType {
     vars?: Record<string, string>;
     path?: string;
     extractTitle?: boolean;
+    cached?: boolean;
     needTitle?: boolean;
     allowHTML?: boolean;
     linkify?: boolean;
@@ -48,6 +77,8 @@ export interface OptionsType {
     rootPublicPath?: string;
     transformLink?: (href: string) => string;
     getPublicPath?: (options: OptionsType, href?: string) => string;
+    context?: RevisionContext;
+    fs?: FsContext;
     [x: string]: unknown;
 }
 

@@ -1,23 +1,10 @@
-import {readFileSync, statSync} from 'fs';
 import type {Dictionary} from 'lodash';
 import escapeRegExp from 'lodash/escapeRegExp';
 import {join, parse, relative, resolve, sep} from 'path';
 
 import liquid from './liquid';
-import {StateCore} from './typings';
+import {FsContext, StateCore} from './typings';
 import {defaultTransformLink} from './utils';
-
-const filesCache: Record<string, string> = {};
-
-export function isFileExists(file: string) {
-    try {
-        const stats = statSync(file);
-
-        return stats.isFile();
-    } catch (e) {
-        return false;
-    }
-}
 
 export function resolveRelativePath(fromPath: string, relativePath: string) {
     const {dir: fromDir} = parse(fromPath);
@@ -37,7 +24,7 @@ export type GetFileTokensOpts = {
     conditionsInCode?: boolean;
 };
 
-export function getFileTokens(path: string, state: StateCore, options: GetFileTokensOpts) {
+export function getFileTokens(fs: FsContext, path: string, state: StateCore, options: GetFileTokensOpts) {
     const {
         getVarsPerFile,
         vars,
@@ -49,16 +36,10 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
         inheritVars = true,
         conditionsInCode,
     } = options;
-    let content;
 
     const builtVars = (getVarsPerFile && !inheritVars ? getVarsPerFile(path) : vars) || {};
 
-    if (filesCache[path]) {
-        content = filesCache[path];
-    } else {
-        content = readFileSync(path, 'utf8');
-        filesCache[path] = content;
-    }
+    let content = fs.read(path);
 
     let sourceMap;
 

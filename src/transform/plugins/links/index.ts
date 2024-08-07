@@ -1,5 +1,7 @@
 import url from 'url';
 import {bold} from 'chalk';
+import path, {isAbsolute, parse, relative, resolve} from 'path';
+import Token from 'markdown-it/lib/token';
 import {
     PAGE_LINK_REGEXP,
     defaultTransformLink,
@@ -8,12 +10,11 @@ import {
     headingInfo,
     isLocalUrl,
 } from '../../utils';
-import {getFileTokens, isFileExists} from '../../utilsFS';
-import Token from 'markdown-it/lib/token';
-import {Logger} from 'src/transform/log';
+import {getFileTokens} from '../../utilsFS';
+import {Logger} from '../../log';
+import {FsContext, StateCore} from '../../typings';
+import {defaultFsContext} from '../../fsContext';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
-import path, {isAbsolute, parse, relative, resolve} from 'path';
-import {StateCore} from 'src/transform/typings';
 
 function getTitleFromTokens(tokens: Token[]) {
     let title = '';
@@ -46,6 +47,7 @@ type Options = {
     href: string;
     currentPath: string;
     log: Logger;
+    fs: FsContext;
 };
 
 const addTitle = (options: Options) => {
@@ -53,7 +55,7 @@ const addTitle = (options: Options) => {
         options;
 
     const id = hash && hash.slice(1);
-    const fileTokens = getFileTokens(file, state, {
+    const fileTokens = getFileTokens(options.fs, file, state, {
         ...opts,
         disableLint: true,
         disableTitleRefSubstitution: true,
@@ -109,6 +111,7 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
         needSkipLinkFn,
         log,
         getPublicPath = getDefaultPublicPath,
+        fs = defaultFsContext,
     } = opts;
 
     const currentPath = state.env.path || startPath;
@@ -135,7 +138,7 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
 
     if (pathname) {
         file = resolve(path.parse(currentPath).dir, pathname);
-        fileExists = isFileExists(file);
+        fileExists = fs.exist(file);
         isPageFile = PAGE_LINK_REGEXP.test(pathname);
 
         if (isPageFile && !fileExists) {
@@ -180,6 +183,7 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
             href,
             currentPath,
             log,
+            fs,
         });
     }
 
