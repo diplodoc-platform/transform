@@ -2,11 +2,10 @@ import {relative} from 'path';
 import {bold} from 'chalk';
 import {readFileSync} from 'fs';
 
-import {getRelativePath, isFileExists, resolveRelativePath} from '../../utilsFS';
+import {getRelativePath, resolveRelativePath} from '../../utilsFS';
+import {defaultFsContext} from '../../fsContext';
 
 import {IncludeCollectOpts} from './types';
-
-const includesPaths: string[] = [];
 
 function processRecursive(
     includePath: string,
@@ -54,8 +53,11 @@ function processRecursive(
     }
 }
 
-function collectRecursive(result: string, options: IncludeCollectOpts) {
-    const {root, path, destPath = '', log, singlePage} = options;
+function collectRecursive(
+    result: string,
+    options: IncludeCollectOpts,
+) {
+    const {root, path, destPath = '', log, singlePage, fs = defaultFsContext, deps} = options;
 
     const INCLUDE_REGEXP = /{%\s*include\s*(notitle)?\s*\[(.+?)]\((.+?)\)\s*%}/g;
 
@@ -67,19 +69,22 @@ function collectRecursive(result: string, options: IncludeCollectOpts) {
 
         let includePath = resolveRelativePath(path, relativePath);
         const hashIndex = relativePath.lastIndexOf('#');
-        if (hashIndex > -1 && !isFileExists(includePath)) {
+
+        deps?.markDep?.(path, includePath, 'include');
+
+        if (hashIndex > -1 && !fs.exist(includePath)) {
             includePath = includePath.slice(0, includePath.lastIndexOf('#'));
             relativePath = relativePath.slice(0, hashIndex);
         }
 
         const targetDestPath = resolveRelativePath(destPath, relativePath);
 
-        if (includesPaths.includes(includePath)) {
-            log.error(`Circular includes: ${bold(includesPaths.concat(path).join(' ▶ '))}`);
+        if (options.includesPaths?.includes(includePath)) {
+            log.error(`Circular includes: ${bold(options.includesPaths?.concat(path).join(' ▶ '))}`);
             break;
         }
 
-        if (singlePage && !includesPaths.length) {
+        if (singlePage && !options.includesPaths?.length) {
             const newRelativePath = relative(root, includePath);
             const newInclude = matchedInclude.replace(relativePath, newRelativePath);
 
@@ -89,11 +94,11 @@ function collectRecursive(result: string, options: IncludeCollectOpts) {
             INCLUDE_REGEXP.lastIndex = INCLUDE_REGEXP.lastIndex - delta;
         }
 
-        includesPaths.push(includePath);
+        options.includesPaths?.push(includePath);
 
         processRecursive(includePath, targetDestPath, options);
 
-        includesPaths.pop();
+        options.includesPaths?.pop();
     }
 
     return result;
@@ -102,11 +107,12 @@ function collectRecursive(result: string, options: IncludeCollectOpts) {
 function collect(input: string, options: IncludeCollectOpts) {
     const shouldWriteAppendix = !options.appendix;
 
+    options.includesPaths = options.includesPaths ?? [];
     options.appendix = options.appendix ?? new Map();
 
     input = collectRecursive(input, options);
 
-    if (shouldWriteAppendix) {
+    if (shouldWriteAppendix && options.appendix) {
         // Appendix should be appended to the end of the file (it supports depth structure, so the included files will have included as well)
         if (options.appendix.size > 0) {
             input += '\n' + [...options.appendix.values()].join('\n');
