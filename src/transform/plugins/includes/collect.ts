@@ -2,7 +2,8 @@ import {relative} from 'path';
 import {bold} from 'chalk';
 import {readFileSync} from 'fs';
 
-import {getRelativePath, isFileExists, resolveRelativePath} from '../../utilsFS';
+import {getRelativePath, resolveRelativePath} from '../../utilsFS';
+import {defaultFsContext} from '../../fsContext';
 
 import {IncludeCollectOpts} from './types';
 
@@ -64,7 +65,7 @@ function collectRecursive(
     options: IncludeCollectOpts,
     appendix: Map<string, string>,
 ) {
-    const {root, path, destPath = '', log, singlePage} = options;
+    const {root, path, destPath = '', log, singlePage, fs = defaultFsContext, deps} = options;
 
     const INCLUDE_REGEXP = /{%\s*include\s*(notitle)?\s*\[(.+?)]\((.+?)\)\s*%}/g;
 
@@ -76,7 +77,10 @@ function collectRecursive(
 
         let includePath = resolveRelativePath(path, relativePath);
         const hashIndex = relativePath.lastIndexOf('#');
-        if (hashIndex > -1 && !isFileExists(includePath)) {
+
+        deps?.markDep?.(path, includePath, 'include');
+
+        if (hashIndex > -1 && !fs.exist(includePath)) {
             includePath = includePath.slice(0, includePath.lastIndexOf('#'));
             relativePath = relativePath.slice(0, hashIndex);
         }
