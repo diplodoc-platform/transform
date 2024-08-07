@@ -1,5 +1,5 @@
 import type {Logger} from '../log';
-import type {FsContext, MarkdownIt, RevisionContext} from '../typings';
+import type {DependencyContext, FsContext, MarkdownIt, RevisionContext} from '../typings';
 
 export interface MarkdownItPluginOpts {
     path: string;
@@ -10,6 +10,7 @@ export interface MarkdownItPluginOpts {
     isLintRun: boolean;
     context?: RevisionContext;
     fs?: FsContext;
+    deps?: DependencyContext;
 }
 
 export type MarkdownItPluginCb<T extends {} = {}> = {

@@ -24,9 +24,16 @@ export type Heading = {
 };
 
 export interface FsContext {
-    read(path: string): string;
-    exist(path: string): boolean;
-    write(path: string, content: string): void;
+    read(path: string | null): string;
+    exist(path: string | null): boolean;
+    write(path: string | null, content: string): void;
+}
+
+export interface DependencyContext {
+    markDep?(path: string, dependencyPath: string): void;
+    unmarkDep?(path: string, dependencyPath: string): void;
+    markVars?(path: string, ...names: string[]): void;
+    unmarkVars?(path: string, ...names: string[]): void;
 }
 
 export interface RevisionMeta {
@@ -43,12 +50,6 @@ export interface RevisionMeta {
 export interface RevisionContext {
     files: string[];
     meta: RevisionMeta | null;
-    // deps: {
-    //     [key: string]: {
-    //         files: string[];
-    //         vars: string[];
-    //     };
-    // };
 }
 
 export interface OptionsType {
@@ -79,6 +80,7 @@ export interface OptionsType {
     getPublicPath?: (options: OptionsType, href?: string) => string;
     context?: RevisionContext;
     fs?: FsContext;
+    deps?: DependencyContext;
     [x: string]: unknown;
 }
 

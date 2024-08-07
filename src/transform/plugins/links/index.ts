@@ -112,6 +112,7 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
         log,
         getPublicPath = getDefaultPublicPath,
         fs = defaultFsContext,
+        deps,
     } = opts;
 
     const currentPath = state.env.path || startPath;
@@ -140,6 +141,10 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
         file = resolve(path.parse(currentPath).dir, pathname);
         fileExists = fs.exist(file);
         isPageFile = PAGE_LINK_REGEXP.test(pathname);
+
+        if (isPageFile) {
+            deps?.markDep?.(currentPath, file);
+        }
 
         if (isPageFile && !fileExists) {
             let needShowError = true;
