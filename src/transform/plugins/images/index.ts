@@ -2,12 +2,12 @@ import {join, sep} from 'path';
 import {bold} from 'chalk';
 import {optimize} from 'svgo';
 
-import {isFileExists, resolveRelativePath} from '../../utilsFS';
+import {resolveRelativePath} from '../../utilsFS';
 import {isExternalHref, isLocalUrl} from '../../utils';
 import Token from 'markdown-it/lib/token';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
-import {StateCore} from '../../typings';
-import {readFileSync} from 'fs';
+import {FsContext, StateCore} from '../../typings';
+import {defaultFsContext} from '../../fsContext';
 
 interface ImageOpts extends MarkdownItPluginOpts {
     assetsPublicPath: string;
@@ -15,6 +15,7 @@ interface ImageOpts extends MarkdownItPluginOpts {
 }
 
 function replaceImageSrc(
+    fs: FsContext,
     token: Token,
     state: StateCore,
     {assetsPublicPath = sep, root = '', path: optsPath, log}: ImageOpts,
@@ -28,7 +29,7 @@ function replaceImageSrc(
 
     const path = resolveRelativePath(currentPath, src);
 
-    if (isFileExists(path)) {
+    if (fs.exist(path)) {
         state.md.assets?.push(path);
     } else {
         log.error(`Asset not found: ${bold(src)} in ${bold(currentPath)}`);
@@ -51,6 +52,7 @@ function prefix() {
 }
 
 function convertSvg(
+    fs: FsContext,
     token: Token,
     state: StateCore,
     {path: optsPath, log, notFoundCb, root}: SVGOpts,
@@ -59,7 +61,7 @@ function convertSvg(
     const path = resolveRelativePath(currentPath, token.attrGet('src') || '');
 
     try {
-        const raw = readFileSync(path).toString();
+        const raw = fs.read(path).toString();
         const result = optimize(raw, {
             plugins: [
                 {
@@ -90,6 +92,8 @@ function convertSvg(
 type Opts = SVGOpts & ImageOpts;
 
 const index: MarkdownItPluginCb<Opts> = (md, opts) => {
+    const fs = opts.fs ?? defaultFsContext;
+
     md.assets = [];
 
     const plugin = (state: StateCore) => {
@@ -117,9 +121,9 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                     const shouldInlineSvg = opts.inlineSvg !== false && !isExternalHref(imgSrc);
 
                     if (imgSrc.endsWith('.svg') && shouldInlineSvg) {
-                        childrenTokens[j] = convertSvg(childrenTokens[j], state, opts);
+                        childrenTokens[j] = convertSvg(fs, childrenTokens[j], state, opts);
                     } else {
-                        replaceImageSrc(childrenTokens[j], state, opts);
+                        replaceImageSrc(fs, childrenTokens[j], state, opts);
                     }
 
                     childrenTokens[j].attrSet('yfm_patched', '1');

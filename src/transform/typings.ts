@@ -43,12 +43,12 @@ export interface RevisionMeta {
 export interface RevisionContext {
     files: string[];
     meta: RevisionMeta | null;
-    deps: {
-        [key: string]: {
-            files: string[];
-            vars: string[];
-        };
-    };
+    // deps: {
+    //     [key: string]: {
+    //         files: string[];
+    //         vars: string[];
+    //     };
+    // };
 }
 
 export interface OptionsType {
