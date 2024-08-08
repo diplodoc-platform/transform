@@ -1,6 +1,7 @@
 import type {Dictionary} from 'lodash';
 import escapeRegExp from 'lodash/escapeRegExp';
 import {join, parse, relative, resolve, sep} from 'path';
+import {statSync} from 'fs';
 
 import liquid from './liquid';
 import {FsContext, StateCore} from './typings';
@@ -23,6 +24,16 @@ export type GetFileTokensOpts = {
     inheritVars?: boolean;
     conditionsInCode?: boolean;
 };
+
+export function isFileExists(file: string) {
+    try {
+        const stats = statSync(file);
+
+        return stats.isFile();
+    } catch (e) {
+        return false;
+    }
+}
 
 export function getFileTokens(fs: FsContext, path: string, state: StateCore, options: GetFileTokensOpts) {
     const {

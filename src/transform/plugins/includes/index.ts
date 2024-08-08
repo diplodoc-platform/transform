@@ -28,6 +28,7 @@ function unfoldIncludes(state: StateCore, path: string, options: Options) {
         log,
         noReplaceInclude = false,
         fs = defaultFsContext,
+        deps,
     } = options;
     const {tokens} = state;
     let i = 0;
@@ -51,7 +52,11 @@ function unfoldIncludes(state: StateCore, path: string, options: Options) {
                 let pathname = fullIncludePath;
                 let hash = '';
                 const hashIndex = fullIncludePath.lastIndexOf('#');
-                if (hashIndex > -1 && !fs.exist(pathname)) {
+                const existed = fs.exist(pathname);
+
+                deps?.markDep?.(path, pathname);
+
+                if (hashIndex > -1 && !existed) {
                     pathname = fullIncludePath.slice(0, hashIndex);
                     hash = fullIncludePath.slice(hashIndex + 1);
                 }

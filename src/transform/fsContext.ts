@@ -1,16 +1,7 @@
-import {readFileSync, statSync, writeFileSync} from 'fs';
+import {readFileSync, writeFileSync} from 'fs';
 
-import { FsContext } from './typings';
-
-export function isFileExists(file: string) {
-    try {
-        const stats = statSync(file);
-
-        return stats.isFile();
-    } catch (e) {
-        return false;
-    }
-}
+import {FsContext} from './typings';
+import {isFileExists} from './utilsFS';
 
 export class DefaultFsContext implements FsContext {
     exist(path: string): boolean {
