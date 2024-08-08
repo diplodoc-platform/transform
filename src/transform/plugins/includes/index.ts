@@ -54,7 +54,7 @@ function unfoldIncludes(state: StateCore, path: string, options: Options) {
                 const hashIndex = fullIncludePath.lastIndexOf('#');
                 const existed = fs.exist(pathname);
 
-                deps?.markDep?.(path, pathname);
+                deps?.markDep?.(path, pathname, 'include');
 
                 if (hashIndex > -1 && !existed) {
                     pathname = fullIncludePath.slice(0, hashIndex);

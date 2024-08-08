@@ -143,7 +143,7 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
         isPageFile = PAGE_LINK_REGEXP.test(pathname);
 
         if (isPageFile) {
-            deps?.markDep?.(currentPath, file);
+            deps?.markDep?.(currentPath, file, 'link');
         }
 
         if (isPageFile && !fileExists) {

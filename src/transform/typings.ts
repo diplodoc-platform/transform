@@ -31,15 +31,17 @@ export interface FsContext {
 
 export interface DependencyContext {
     resetDeps?(path: string): void;
-    markDep?(path: string, dependencyPath: string): void;
-    unmarkDep?(path: string, dependencyPath: string): void;
+    markDep?(path: string, dependencyPath: string, type?: string): void;
+    unmarkDep?(path: string, dependencyPath: string, type?: string): void;
 }
 
 export interface RevisionMeta {
     files: {
         [key: string]: {
             mod_date: number; // modified_at
-            files: string[]; // dependedcies
+            dependencies: {
+                [type: string]: string[];
+            };
             changed: boolean;
         };
     };
