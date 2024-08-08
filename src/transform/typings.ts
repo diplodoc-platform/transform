@@ -30,10 +30,9 @@ export interface FsContext {
 }
 
 export interface DependencyContext {
+    resetDeps?(path: string): void;
     markDep?(path: string, dependencyPath: string): void;
     unmarkDep?(path: string, dependencyPath: string): void;
-    markVars?(path: string, ...names: string[]): void;
-    unmarkVars?(path: string, ...names: string[]): void;
 }
 
 export interface RevisionMeta {
@@ -41,7 +40,6 @@ export interface RevisionMeta {
         [key: string]: {
             mod_date: number; // modified_at
             files: string[]; // dependedcies
-            vars: string[];
             changed: boolean;
         };
     };
