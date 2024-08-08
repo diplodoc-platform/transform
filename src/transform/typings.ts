@@ -47,7 +47,7 @@ export interface RevisionMeta {
 
 export interface RevisionContext {
     files: string[];
-    meta: RevisionMeta | null;
+    meta: RevisionMeta;
 }
 
 export interface OptionsType {
