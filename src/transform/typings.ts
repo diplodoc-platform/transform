@@ -10,8 +10,14 @@ export interface MarkdownIt extends DefaultMarkdownIt {
     assets?: string[];
     meta?: string[];
 }
+
 export interface StateCore extends DefaultStateCore {
     md: MarkdownIt;
+}
+
+export interface CacheContext {
+    get(key: string): string | null | undefined;
+    set(key: string, value: string | null | undefined): void;
 }
 
 export type HighlightLangMap = Record<string, LanguageFn>;
@@ -49,6 +55,7 @@ export interface OptionsType {
     transformLink?: (href: string) => string;
     getPublicPath?: (options: OptionsType, href?: string) => string;
     renderInline?: boolean;
+    cache?: CacheContext;
     [x: string]: unknown;
 }
 
