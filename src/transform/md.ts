@@ -121,9 +121,11 @@ function initCompiler(md: MarkdownIt, options: OptionsType, env: EnvType) {
     const {needToSanitizeHtml = true, renderInline = false, sanitizeOptions} = options;
 
     return (tokens: Token[]) => {
-        const html = renderInline
-            ? md.renderer.renderInline(tokens, md.options, env)
-            : md.renderer.render(tokens, md.options, env);
+        if (renderInline) {
+            tokens = tokens.filter((token) => token.type === 'inline');
+        }
+
+        const html = md.renderer.render(tokens, md.options, env);
 
         return needToSanitizeHtml ? sanitizeHtml(html, sanitizeOptions) : html;
     };
