@@ -48,11 +48,13 @@ type Options = {
     log: Logger;
 };
 
-const addTitle = (options: Options) => {
-    const {hash, file, state, opts, isEmptyLink, tokens, idx, nextToken, href, currentPath, log} =
-        options;
+const cacheTitle: {
+    [key: string]: string;
+} = {};
 
-    const id = hash && hash.slice(1);
+const getTitle = (id: string | null, options: Options) => {
+    const {file, state, opts} = options;
+
     const fileTokens = getFileTokens(file, state, {
         ...opts,
         disableLint: true,
@@ -61,7 +63,16 @@ const addTitle = (options: Options) => {
         inheritVars: false,
     });
     const sourceTokens = id ? findBlockTokens(fileTokens, id) : fileTokens;
-    const title = getTitleFromTokens(sourceTokens);
+    return getTitleFromTokens(sourceTokens);
+};
+
+const addTitle = (options: Options) => {
+    const {hash, state, isEmptyLink, tokens, idx, nextToken, href, currentPath, log} = options;
+
+    const id = hash && hash.slice(1);
+    const key = [id, path].join('::');
+    const title = cacheTitle[key] ?? getTitle(id, options);
+    cacheTitle[key] = title;
 
     if (title) {
         let textToken;
