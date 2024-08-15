@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.27.0](https://github.com/diplodoc-platform/transform/compare/v4.26.0...v4.27.0) (2024-08-15)
+
+
+### Features
+
+* update @diplodoc/tabs-extension package to v3.2.0 ([#482](https://github.com/diplodoc-platform/transform/issues/482)) ([86d77a7](https://github.com/diplodoc-platform/transform/commit/86d77a718aa4a0ff7966533128c7197d6d0bf66e))
+
+
+### Bug Fixes
+
+* Fix inline rendering beheavior ([60bdf22](https://github.com/diplodoc-platform/transform/commit/60bdf22c69795d75fd81a15ca4934d5e617c4ed4))
+
 ## [4.26.0](https://github.com/diplodoc-platform/transform/compare/v4.25.1...v4.26.0) (2024-08-06)
 
 
