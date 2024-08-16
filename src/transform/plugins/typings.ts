@@ -1,5 +1,5 @@
 import type {Logger} from '../log';
-import type {MarkdownIt} from '../typings';
+import type {CacheContext, MarkdownIt} from '../typings';
 
 export interface MarkdownItPluginOpts {
     path: string;
@@ -8,6 +8,7 @@ export interface MarkdownItPluginOpts {
     root: string;
     rootPublicPath: string;
     isLintRun: boolean;
+    cache?: CacheContext;
 }
 
 export type MarkdownItPluginCb<T extends {} = {}> = {

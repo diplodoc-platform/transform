@@ -11,9 +11,9 @@ import {
 import {getFileTokens, isFileExists} from '../../utilsFS';
 import Token from 'markdown-it/lib/token';
 import {Logger} from 'src/transform/log';
+import {CacheContext, StateCore} from '../../typings';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
 import path, {isAbsolute, parse, relative, resolve} from 'path';
-import {StateCore} from 'src/transform/typings';
 
 function getTitleFromTokens(tokens: Token[]) {
     let title = '';
@@ -46,13 +46,12 @@ type Options = {
     href: string;
     currentPath: string;
     log: Logger;
+    cache?: CacheContext;
 };
 
-const addTitle = (options: Options) => {
-    const {hash, file, state, opts, isEmptyLink, tokens, idx, nextToken, href, currentPath, log} =
-        options;
+const getTitle = (id: string | null, options: Options) => {
+    const {file, state, opts} = options;
 
-    const id = hash && hash.slice(1);
     const fileTokens = getFileTokens(file, state, {
         ...opts,
         disableLint: true,
@@ -61,7 +60,17 @@ const addTitle = (options: Options) => {
         inheritVars: false,
     });
     const sourceTokens = id ? findBlockTokens(fileTokens, id) : fileTokens;
-    const title = getTitleFromTokens(sourceTokens);
+    return getTitleFromTokens(sourceTokens);
+};
+
+const addTitle = (options: Options) => {
+    const {hash, state, isEmptyLink, tokens, idx, nextToken, href, currentPath, log, cache} =
+        options;
+
+    const id = hash && hash.slice(1);
+    const key = [id, path].join('::');
+    const title = cache?.get(key) ?? getTitle(id, options);
+    cache?.set(key, title);
 
     if (title) {
         let textToken;
@@ -109,6 +118,7 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
         needSkipLinkFn,
         log,
         getPublicPath = getDefaultPublicPath,
+        cache,
     } = opts;
 
     const currentPath = state.env.path || startPath;
@@ -180,6 +190,7 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
             href,
             currentPath,
             log,
+            cache,
         });
     }
 
