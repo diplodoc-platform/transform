@@ -20,13 +20,21 @@ import {Options} from './typings';
 import type {Dictionary} from 'lodash';
 import {LogLevels, Logger} from '../log';
 import {yfm009} from './markdownlint-custom-rule/yfm009';
+import defaultPreprocessors from '../preprocessors';
 
 const defaultLintRules = [yfm001, yfm002, yfm003, yfm004, yfm005, yfm006, yfm007, yfm008, yfm009];
 
 const lintCache = new Set();
 
 function yfmlint(opts: Options) {
-    const {input, plugins: customPlugins, pluginOptions, customLintRules, sourceMap} = opts;
+    let {input} = opts;
+    const {
+        plugins: customPlugins,
+        preprocessors = defaultPreprocessors,
+        pluginOptions,
+        customLintRules,
+        sourceMap,
+    } = opts;
     const {path = 'input', log} = pluginOptions;
 
     pluginOptions.isLintRun = true;
@@ -55,6 +63,10 @@ function yfmlint(opts: Options) {
 
     const plugins = customPlugins && [attrs, ...customPlugins];
     const preparedPlugins = plugins && plugins.map((plugin) => [plugin, pluginOptions]);
+
+    for (const preprocessor of preprocessors) {
+        input = preprocessor(input, pluginOptions);
+    }
 
     let result;
     try {

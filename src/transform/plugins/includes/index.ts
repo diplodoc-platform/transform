@@ -1,10 +1,17 @@
 import {bold} from 'chalk';
-
-import {GetFileTokensOpts, getFileTokens, getFullIncludePath, isFileExists} from '../../utilsFS';
-import {findBlockTokens} from '../../utils';
 import Token from 'markdown-it/lib/token';
+
+import {StateCore} from '../../typings';
+import {
+    GetFileTokensOpts,
+    getFileTokens,
+    getFullIncludePath,
+    isFileExists,
+    resolveRelativePath,
+} from '../../utilsFS';
+import {findBlockTokens} from '../../utils';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
-import {StateCore} from 'src/transform/typings';
+import {MarkdownItIncluded} from './types';
 
 const INCLUDE_REGEXP = /^{%\s*include\s*(notitle)?\s*\[(.+?)]\((.+?)\)\s*%}$/;
 
@@ -20,7 +27,7 @@ type Options = MarkdownItPluginOpts &
         noReplaceInclude: boolean;
     };
 
-function unfoldIncludes(state: StateCore, path: string, options: Options) {
+function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, options: Options) {
     const {root, notFoundCb, log, noReplaceInclude = false} = options;
     const {tokens} = state;
     let i = 0;
@@ -41,6 +48,11 @@ function unfoldIncludes(state: StateCore, path: string, options: Options) {
                 const [, keyword /* description */, , includePath] = match;
 
                 const fullIncludePath = getFullIncludePath(includePath, root, path);
+                const relativeIncludePath = resolveRelativePath(path, includePath);
+
+                // Check the existed included store and extract it
+                const included = md.included?.[relativeIncludePath];
+
                 let pathname = fullIncludePath;
                 let hash = '';
                 const hashIndex = fullIncludePath.lastIndexOf('#');
@@ -55,7 +67,10 @@ function unfoldIncludes(state: StateCore, path: string, options: Options) {
                     continue;
                 }
 
-                const fileTokens = getFileTokens(pathname, state, options);
+                const fileTokens = getFileTokens(pathname, state, {
+                    ...options,
+                    content: included, // The content forces the function to use it instead of reading from the disk
+                });
 
                 let includedTokens;
                 if (hash) {
@@ -92,7 +107,7 @@ function unfoldIncludes(state: StateCore, path: string, options: Options) {
     }
 }
 
-const index: MarkdownItPluginCb<Options> = (md, options) => {
+const index: MarkdownItPluginCb<Options> = (md: MarkdownItIncluded, options) => {
     const {path: optPath, log} = options;
 
     const plugin = (state: StateCore) => {
@@ -113,7 +128,7 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
         }
 
         env.includes.push(path);
-        unfoldIncludes(state, path, options);
+        unfoldIncludes(md, state, path, options);
         env.includes.pop();
     };
 

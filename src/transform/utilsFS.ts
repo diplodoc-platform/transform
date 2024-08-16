@@ -35,6 +35,7 @@ export type GetFileTokensOpts = {
     disableCircularError?: boolean;
     inheritVars?: boolean;
     conditionsInCode?: boolean;
+    content?: string;
 };
 
 export function getFileTokens(path: string, state: StateCore, options: GetFileTokensOpts) {
@@ -49,15 +50,18 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
         inheritVars = true,
         conditionsInCode,
     } = options;
-    let content;
+    let {content} = options;
 
     const builtVars = (getVarsPerFile && !inheritVars ? getVarsPerFile(path) : vars) || {};
 
-    if (filesCache[path]) {
-        content = filesCache[path];
-    } else {
-        content = readFileSync(path, 'utf8');
-        filesCache[path] = content;
+    // Read the content only if we dont have one in the args
+    if (!content) {
+        if (filesCache[path]) {
+            content = filesCache[path];
+        } else {
+            content = readFileSync(path, 'utf8');
+            filesCache[path] = content;
+        }
     }
 
     let sourceMap;
@@ -147,4 +151,11 @@ export function getPublicPath(
     const transformer = transformLink || defaultTransformLink;
     const href = transformer(filePath);
     return href;
+}
+
+export function getRelativePath(path: string, toPath: string) {
+    const pathDirs = path.split(sep);
+    pathDirs.pop();
+    const parentPath = pathDirs.join(sep);
+    return relative(parentPath, toPath);
 }

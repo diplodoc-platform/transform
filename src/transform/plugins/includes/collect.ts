@@ -1,23 +1,38 @@
 import {relative} from 'path';
 import {bold} from 'chalk';
 
-import {isFileExists, resolveRelativePath} from '../../utilsFS';
+import {getRelativePath, isFileExists, resolveRelativePath} from '../../utilsFS';
 import {MarkdownItPluginOpts} from '../typings';
 
 const includesPaths: string[] = [];
 
 type Opts = MarkdownItPluginOpts & {
     destPath: string;
-    copyFile(path: string, dest: string, opts: Opts): void;
+    copyFile(path: string, dest: string, opts: Opts): string | null | undefined;
     singlePage: Boolean;
+    included: Boolean;
+    includedParentPath?: string;
 };
 
 const collect = (input: string, options: Opts) => {
-    const {root, path, destPath = '', log, copyFile, singlePage} = options;
+    const {
+        root,
+        path,
+        destPath = '',
+        log,
+        copyFile,
+        singlePage,
+        includedParentPath: includedParentPathNullable,
+        included,
+    } = options;
+    const includedParentPath = includedParentPathNullable || path;
+
     const INCLUDE_REGEXP = /{%\s*include\s*(notitle)?\s*\[(.+?)]\((.+?)\)\s*%}/g;
 
     let match,
         result = input;
+
+    const appendix: Map<string, string> = new Map();
 
     while ((match = INCLUDE_REGEXP.exec(result)) !== null) {
         let [, , , relativePath] = match;
@@ -55,7 +70,27 @@ const collect = (input: string, options: Opts) => {
         };
 
         try {
-            copyFile(includePath, targetDestPath, includeOptions);
+            const content = copyFile(includePath, targetDestPath, includeOptions);
+
+            // To reduce file reading we can include the file content into the generated content
+            if (included && content) {
+                const includedRelativePath = getRelativePath(includedParentPath, includePath);
+
+                // The appendix is the map that protects from multiple include files
+                if (!appendix.has(includedRelativePath)) {
+                    // Recursive function to include the depth structure
+                    const includeContent = collect(content, {
+                        ...options,
+                        path: includePath,
+                        includedParentPath,
+                    });
+                    // Add to appendix set structure
+                    appendix.set(
+                        includedRelativePath,
+                        `{% included (${includedRelativePath}) %}\n${includeContent}\n{% endincluded %}`,
+                    );
+                }
+            }
         } catch (e) {
             log.error(`No such file or has no access to ${bold(includePath)} in ${bold(path)}`);
         } finally {
@@ -63,11 +98,16 @@ const collect = (input: string, options: Opts) => {
         }
     }
 
+    // Appendix should be appended to the end of the file (it supports depth structure, so the included files will have included as well)
+    if (appendix.size > 0) {
+        result += '\n' + [...appendix.values()].join('\n');
+    }
+
     if (singlePage) {
         return result;
     }
 
-    return null;
+    return result;
 };
 
 export = collect;

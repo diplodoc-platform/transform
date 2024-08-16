@@ -2,8 +2,7 @@ import {LanguageFn} from 'highlight.js';
 import DefaultMarkdownIt from 'markdown-it';
 import DefaultStateCore from 'markdown-it/lib/rules_core/state_core';
 import {SanitizeOptions} from './sanitize';
-import {MarkdownItPluginCb} from './plugins/typings';
-import {LogLevels} from './log';
+import {LogLevels, Logger} from './log';
 import {ChangelogItem} from './plugins/changelog/types';
 
 export interface MarkdownIt extends DefaultMarkdownIt {
@@ -48,7 +47,9 @@ export interface OptionsType {
     needFlatListHeadings?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     plugins?: MarkdownItPluginCb<any>[];
+    preprocessors?: MarkdownItPreprocessorCb[]; // Preprocessors should modify the input before passing it to MD
     highlightLangs?: HighlightLangMap;
+    disableRules?: string[];
     extractChangelogs?: boolean;
     root?: string;
     rootPublicPath?: string;
@@ -73,3 +74,26 @@ export type EnvType<Extras extends {} = {}> = {
     meta?: object;
     changelogs?: ChangelogItem[];
 } & Extras;
+
+export interface MarkdownItPluginOpts {
+    path: string;
+    log: Logger;
+    lang: 'ru' | 'en' | 'es' | 'fr' | 'cs' | 'ar' | 'he';
+    root: string;
+    rootPublicPath: string;
+    isLintRun: boolean;
+    cache?: CacheContext;
+    conditionsInCode?: boolean;
+    vars?: Record<string, string>;
+    extractTitle?: boolean;
+    disableLiquid?: boolean;
+}
+
+export type MarkdownItPluginCb<T extends {} = {}> = {
+    // TODO: use "T extends unknown = {}"
+    (md: MarkdownIt, opts: T & MarkdownItPluginOpts): void;
+};
+
+export type MarkdownItPreprocessorCb<T extends unknown = {}> = {
+    (input: string, opts: T & Partial<MarkdownItPluginOpts>, md?: MarkdownIt): string;
+};
