@@ -1,81 +1,50 @@
-import {
-    Selector,
-    closeDefinition,
-    createDefinitionElement,
-    openClass,
-    openDefinitionClass,
-    setDefinitionId,
-    setDefinitionPosition,
-    setDefinitonAriaLive,
-} from './utils';
 import {getEventTarget, isCustom} from '../utils';
+import {
+    closeDefinition,
+    openClass,
+    openDefinition,
+    openDefinitionClass,
+    setDefinitionPosition,
+} from './utils';
 
 if (typeof document !== 'undefined') {
     document.addEventListener('click', (event) => {
-        const openDefinition = document.getElementsByClassName(
-            openDefinitionClass,
-        )[0] as HTMLElement;
-        const target = getEventTarget(event) as HTMLElement;
-
-        const termId = target.getAttribute('id');
-        const termKey = target.getAttribute('term-key');
-        let definitionElement = document.getElementById(termKey + '_element');
-
-        if (termKey && !definitionElement) {
-            definitionElement = createDefinitionElement(target);
+        if (getEventTarget(event) || !isCustom(event)) {
+            openDefinition(getEventTarget(event) as HTMLElement);
         }
-
-        const isSameTerm = openDefinition && termId === openDefinition.getAttribute('term-id');
-        if (isSameTerm) {
-            closeDefinition(openDefinition);
-            return;
-        }
-
-        const isTargetDefinitionContent = target.closest(
-            [Selector.CONTENT.replace(' ', ''), openClass].join('.'),
-        );
-
-        if (openDefinition && !isTargetDefinitionContent) {
-            closeDefinition(openDefinition);
-        }
-
-        if (isCustom(event) || !target.matches(Selector.TITLE) || !definitionElement) {
-            return;
-        }
-
-        setDefinitionId(definitionElement, target);
-        setDefinitonAriaLive(definitionElement, target);
-        setDefinitionPosition(definitionElement, target);
-
-        definitionElement.classList.toggle(openClass);
     });
 
     document.addEventListener('keydown', (event) => {
-        const openDefinition = document.getElementsByClassName(
+        const openedDefinition = document.getElementsByClassName(
             openDefinitionClass,
         )[0] as HTMLElement;
-        if (event.key === 'Escape' && openDefinition) {
-            closeDefinition(openDefinition);
+
+        if (event.key === 'Enter' && document.activeElement) {
+            openDefinition(document.activeElement as HTMLElement);
+        }
+
+        if (event.key === 'Escape' && openedDefinition) {
+            closeDefinition(openedDefinition);
         }
     });
 
     window.addEventListener('resize', () => {
-        const openDefinition = document.getElementsByClassName(
+        const openedDefinition = document.getElementsByClassName(
             openDefinitionClass,
         )[0] as HTMLElement;
 
-        if (!openDefinition) {
+        if (!openedDefinition) {
             return;
         }
 
-        const termId = openDefinition.getAttribute('term-id') || '';
+        const termId = openedDefinition.getAttribute('term-id') || '';
         const termElement = document.getElementById(termId);
 
         if (!termElement) {
-            openDefinition.classList.toggle(openClass);
+            openedDefinition.classList.toggle(openClass);
             return;
         }
 
-        setDefinitionPosition(openDefinition, termElement);
+        setDefinitionPosition(openedDefinition, termElement);
     });
 }

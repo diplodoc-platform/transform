@@ -137,16 +137,95 @@ function termParentElement(term: HTMLElement | null) {
     return closestScrollableParent || term.parentElement;
 }
 
+export function openDefinition(target: HTMLElement) {
+    const openDefinition = document.getElementsByClassName(openDefinitionClass)[0] as HTMLElement;
+
+    const termId = target.getAttribute('id');
+    const termKey = target.getAttribute('term-key');
+    let definitionElement = document.getElementById(termKey + '_element');
+
+    if (termKey && !definitionElement) {
+        definitionElement = createDefinitionElement(target);
+    }
+
+    const isSameTerm = openDefinition && termId === openDefinition.getAttribute('term-id');
+    if (isSameTerm) {
+        closeDefinition(openDefinition);
+        return;
+    }
+
+    const isTargetDefinitionContent = target.closest(
+        [Selector.CONTENT.replace(' ', ''), openClass].join('.'),
+    );
+
+    if (openDefinition && !isTargetDefinitionContent) {
+        closeDefinition(openDefinition);
+    }
+
+    if (!target.matches(Selector.TITLE) || !definitionElement) {
+        return;
+    }
+
+    setDefinitionId(definitionElement, target);
+    setDefinitonAriaLive(definitionElement, target);
+    setDefinitionPosition(definitionElement, target);
+
+    definitionElement.classList.toggle(openClass);
+
+    trapFocus(definitionElement);
+}
+
+export function openDefinition2(target: HTMLElement) {
+    const openDefinition = document.getElementsByClassName(openDefinitionClass)[0] as HTMLElement;
+
+    const termId = target.getAttribute('id');
+    const termKey = target.getAttribute('term-key');
+    let definitionElement = document.getElementById(termKey + '_element');
+
+    if (termKey && !definitionElement) {
+        definitionElement = createDefinitionElement(target);
+    }
+
+    const isSameTerm = openDefinition && termId === openDefinition.getAttribute('term-id');
+    if (isSameTerm) {
+        closeDefinition(openDefinition);
+        return;
+    }
+
+    const isTargetDefinitionContent = target.closest(
+        [Selector.CONTENT.replace(' ', ''), openClass].join('.'),
+    );
+
+    if (openDefinition && !isTargetDefinitionContent) {
+        closeDefinition(openDefinition);
+    }
+
+    if (!target.matches(Selector.TITLE) || !definitionElement) {
+        return;
+    }
+
+    setDefinitionId(definitionElement, target);
+    setDefinitonAriaLive(definitionElement, target);
+    setDefinitionPosition(definitionElement, target);
+
+    definitionElement.classList.toggle(openClass);
+
+    trapFocus(definitionElement);
+}
+
 export function closeDefinition(definition: HTMLElement) {
     definition.classList.remove(openClass);
     const termId = definition.getAttribute('term-id') || '';
-    const termParent = termParentElement(document.getElementById(termId));
+    const term = document.getElementById(termId);
+    const termParent = termParentElement(term);
 
     if (!termParent) {
         return;
     }
 
     termParent.removeEventListener('scroll', termOnResize);
+    term?.focus(); // Set focus back to open button after closing popup
+
     isListenerNeeded = true;
 }
 
@@ -166,4 +245,33 @@ function getCoords(elem: HTMLElement) {
     const left = box.left + scrollLeft - clientLeft;
 
     return {top: Math.round(top), left: Math.round(left)};
+}
+
+export function trapFocus(element: HTMLElement) {
+    const focusableElements = element.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+    );
+    const firstFocusableElement = focusableElements[0];
+    const lastFocusableElement = focusableElements[focusableElements.length - 1];
+
+    firstFocusableElement?.focus();
+
+    element.addEventListener('keydown', function (e) {
+        const isTabPressed = e.key === 'Tab' || e.keyCode === 9;
+        if (!isTabPressed) {
+            return;
+        }
+
+        if (e.shiftKey) {
+            if (document.activeElement === firstFocusableElement) {
+                lastFocusableElement.focus();
+                e.preventDefault();
+            }
+        } else {
+            if (document.activeElement === lastFocusableElement) {
+                firstFocusableElement.focus();
+                e.preventDefault();
+            }
+        }
+    });
 }
