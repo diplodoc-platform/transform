@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.28.0](https://github.com/diplodoc-platform/transform/compare/v4.27.0...v4.28.0) (2024-08-20)
+
+
+### Features
+
+* add autotitle cache context ([#483](https://github.com/diplodoc-platform/transform/issues/483)) ([3ce51f7](https://github.com/diplodoc-platform/transform/commit/3ce51f7bf71786f5617b97eeaf0e7c4df615e952))
+* bump tabs plugin ([18e49aa](https://github.com/diplodoc-platform/transform/commit/18e49aa98679fa6a677d76e7285fc13f08319011))
+* improve focus behavior on terms, anchors, clipboard button ([#486](https://github.com/diplodoc-platform/transform/issues/486)) ([4323b50](https://github.com/diplodoc-platform/transform/commit/4323b5039de79d8e93c4cd06c7a18c00b589fb1f))
+
 ## [4.27.0](https://github.com/diplodoc-platform/transform/compare/v4.26.0...v4.27.0) (2024-08-15)
 
 
