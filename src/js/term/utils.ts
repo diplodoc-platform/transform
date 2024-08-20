@@ -112,19 +112,19 @@ export function setDefinitionPosition(
 }
 
 function termOnResize() {
-    const openDefinition = document.getElementsByClassName(openDefinitionClass)[0] as HTMLElement;
+    const openedDefinition = document.getElementsByClassName(openDefinitionClass)[0] as HTMLElement;
 
-    if (!openDefinition) {
+    if (!openedDefinition) {
         return;
     }
-    const termId = openDefinition.getAttribute('term-id') || '';
+    const termId = openedDefinition.getAttribute('term-id') || '';
     const termElement = document.getElementById(termId);
 
     if (!termElement) {
         return;
     }
 
-    setDefinitionPosition(openDefinition, termElement);
+    setDefinitionPosition(openedDefinition, termElement);
 }
 
 function termParentElement(term: HTMLElement | null) {
@@ -138,7 +138,7 @@ function termParentElement(term: HTMLElement | null) {
 }
 
 export function openDefinition(target: HTMLElement) {
-    const openDefinition = document.getElementsByClassName(openDefinitionClass)[0] as HTMLElement;
+    const openedDefinition = document.getElementsByClassName(openDefinitionClass)[0] as HTMLElement;
 
     const termId = target.getAttribute('id');
     const termKey = target.getAttribute('term-key');
@@ -148,9 +148,9 @@ export function openDefinition(target: HTMLElement) {
         definitionElement = createDefinitionElement(target);
     }
 
-    const isSameTerm = openDefinition && termId === openDefinition.getAttribute('term-id');
+    const isSameTerm = openedDefinition && termId === openedDefinition.getAttribute('term-id');
     if (isSameTerm) {
-        closeDefinition(openDefinition);
+        closeDefinition(openedDefinition);
         return;
     }
 
@@ -158,46 +158,8 @@ export function openDefinition(target: HTMLElement) {
         [Selector.CONTENT.replace(' ', ''), openClass].join('.'),
     );
 
-    if (openDefinition && !isTargetDefinitionContent) {
-        closeDefinition(openDefinition);
-    }
-
-    if (!target.matches(Selector.TITLE) || !definitionElement) {
-        return;
-    }
-
-    setDefinitionId(definitionElement, target);
-    setDefinitonAriaLive(definitionElement, target);
-    setDefinitionPosition(definitionElement, target);
-
-    definitionElement.classList.toggle(openClass);
-
-    trapFocus(definitionElement);
-}
-
-export function openDefinition2(target: HTMLElement) {
-    const openDefinition = document.getElementsByClassName(openDefinitionClass)[0] as HTMLElement;
-
-    const termId = target.getAttribute('id');
-    const termKey = target.getAttribute('term-key');
-    let definitionElement = document.getElementById(termKey + '_element');
-
-    if (termKey && !definitionElement) {
-        definitionElement = createDefinitionElement(target);
-    }
-
-    const isSameTerm = openDefinition && termId === openDefinition.getAttribute('term-id');
-    if (isSameTerm) {
-        closeDefinition(openDefinition);
-        return;
-    }
-
-    const isTargetDefinitionContent = target.closest(
-        [Selector.CONTENT.replace(' ', ''), openClass].join('.'),
-    );
-
-    if (openDefinition && !isTargetDefinitionContent) {
-        closeDefinition(openDefinition);
+    if (openedDefinition && !isTargetDefinitionContent) {
+        closeDefinition(openedDefinition);
     }
 
     if (!target.matches(Selector.TITLE) || !definitionElement) {
@@ -254,7 +216,10 @@ export function trapFocus(element: HTMLElement) {
     const firstFocusableElement = focusableElements[0];
     const lastFocusableElement = focusableElements[focusableElements.length - 1];
 
-    firstFocusableElement?.focus();
+    if(firstFocusableElement){
+        console.log('test12333333');
+        firstFocusableElement.focus();
+    }
 
     element.addEventListener('keydown', function (e) {
         const isTabPressed = e.key === 'Tab' || e.keyCode === 9;
