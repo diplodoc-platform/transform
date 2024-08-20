@@ -216,8 +216,7 @@ export function trapFocus(element: HTMLElement) {
     const firstFocusableElement = focusableElements[0];
     const lastFocusableElement = focusableElements[focusableElements.length - 1];
 
-    if(firstFocusableElement){
-        console.log('test12333333');
+    if (firstFocusableElement) {
         firstFocusableElement.focus();
     }
 
@@ -232,11 +231,9 @@ export function trapFocus(element: HTMLElement) {
                 lastFocusableElement.focus();
                 e.preventDefault();
             }
-        } else {
-            if (document.activeElement === lastFocusableElement) {
-                firstFocusableElement.focus();
-                e.preventDefault();
-            }
+        } else if (document.activeElement === lastFocusableElement) {
+            firstFocusableElement.focus();
+            e.preventDefault();
         }
     });
 }
