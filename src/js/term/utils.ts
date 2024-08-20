@@ -213,8 +213,8 @@ export function trapFocus(element: HTMLElement) {
     const focusableElements = element.querySelectorAll(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
-    const firstFocusableElement = focusableElements[0];
-    const lastFocusableElement = focusableElements[focusableElements.length - 1];
+    const firstFocusableElement = focusableElements[0] as HTMLElement;
+    const lastFocusableElement = focusableElements[focusableElements.length - 1] as HTMLElement;
 
     if (firstFocusableElement) {
         firstFocusableElement.focus();
