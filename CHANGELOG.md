@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.28.1](https://github.com/diplodoc-platform/transform/compare/v4.28.0...v4.28.1) (2024-08-20)
+
+
+### Bug Fixes
+
+* clipboard opacity on hover ([#488](https://github.com/diplodoc-platform/transform/issues/488)) ([91c6fc8](https://github.com/diplodoc-platform/transform/commit/91c6fc80354053b2ed4a86a8f3de436aa5cd05e0))
+
 ## [4.28.0](https://github.com/diplodoc-platform/transform/compare/v4.27.0...v4.28.0) (2024-08-20)
 
 
