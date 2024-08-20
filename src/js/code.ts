@@ -59,7 +59,7 @@ if (typeof document !== 'undefined') {
         }
 
         copyToClipboard(code.innerText).then(() => {
-            notifySuccess(parent.querySelector('.yfm-clipboard-button'));
+            notifySuccess(parent.querySelector('.yfm-clipboard-icon'));
         });
     });
 }

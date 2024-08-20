@@ -100,6 +100,7 @@ const term: MarkdownItPluginCb = (md, options) => {
                     token.attrSet('class', 'yfm yfm-term_title');
                     token.attrSet('term-key', ':' + termKey);
                     token.attrSet('aria-describedby', ':' + termKey + '_element');
+                    token.attrSet('tabindex', '0');
                     token.attrSet('id', generateID());
                     nodes.push(token);
 
