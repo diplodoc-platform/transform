@@ -9,11 +9,17 @@
 
             text-align: center;
             font-size: 18px;
-        }
 
-        .yfm-anchor::before {
-            content: '#';
-            opacity: 0;
+            &:focus {
+                &::before {
+                    opacity: 1;
+                }
+            }
+
+            &::before {
+                content: '#';
+                opacity: 0;
+            }
         }
 
         &:hover .yfm-anchor::before {
