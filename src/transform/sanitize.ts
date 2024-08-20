@@ -485,7 +485,7 @@ const defaultCssWhitelist = {
     '--method': true,
 };
 
-const yfmHtmlAttrs = ['note-type', 'term-key'];
+const yfmHtmlAttrs = ['note-type', 'yfm2xliff-explicit', 'term-key'];
 
 const allowedTags = Array.from(
     new Set([...htmlTags, ...svgTags, ...sanitizeHtml.defaults.allowedTags]),
@@ -518,7 +518,7 @@ export const defaultOptions: SanitizeOptions = {
 function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) {
     const styleTags = dom('style');
 
-    styleTags.each((_index, element) => {
+    styleTags.each((_index: number, element: cheerio.Element) => {
         const styleText = dom(element).text();
 
         try {
