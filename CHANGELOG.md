@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.28.2](https://github.com/diplodoc-platform/transform/compare/v4.28.1...v4.28.2) (2024-08-21)
+
+
+### Bug Fixes
+
+* clipboard aria-label & term role ([#490](https://github.com/diplodoc-platform/transform/issues/490)) ([abc298f](https://github.com/diplodoc-platform/transform/commit/abc298f78886b0444e892a4cb2c882f52ae3a115))
+
 ## [4.28.1](https://github.com/diplodoc-platform/transform/compare/v4.28.0...v4.28.1) (2024-08-20)
 
 
