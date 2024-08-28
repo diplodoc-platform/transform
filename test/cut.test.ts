@@ -24,6 +24,19 @@ describe('Cut plugin', () => {
         );
     });
 
+    it('should render simple cut with attrs', () => {
+        expect(
+            transformYfm(
+                '{% cut "Cut title" %} {#testid}\n' + '\n' + 'Cut content\n' + '\n' + '{% endcut %}',
+            ).replace(/(\r\n|\n|\r)/gm, ''),
+        ).toBe(
+            '<details class="yfm-cut" id="testid">' +
+                '<summary class="yfm-cut-title">Cut title</summary>' +
+                '<div class="yfm-cut-content"><p>Cut content</p></div>' +
+                '</details>',
+        );
+    });
+
     it('should render simple cut with code in it', () => {
         expect(
             transformYfm(
