@@ -27,7 +27,11 @@ describe('Cut plugin', () => {
     it('should render simple cut with attrs', () => {
         expect(
             transformYfm(
-                '{% cut "Cut title" %} {#testid}\n' + '\n' + 'Cut content\n' + '\n' + '{% endcut %}',
+                '{% cut "Cut title" %} {#testid}\n' +
+                    '\n' +
+                    'Cut content\n' +
+                    '\n' +
+                    '{% endcut %}',
             ).replace(/(\r\n|\n|\r)/gm, ''),
         ).toBe(
             '<details class="yfm-cut" id="testid">' +

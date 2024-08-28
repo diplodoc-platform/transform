@@ -44,10 +44,8 @@ function findActiveCut() {
     const cutId = window.location.hash.slice(1);
     const cutNode = document.getElementById(cutId) as HTMLDetailsElement | null;
 
-    console.log(cutNode, cutId, Selector.CUT)
-
     if (!(cutNode instanceof HTMLElement)) {
-        return
+        return;
     }
 
     if (!cutNode.matches(Selector.CUT)) {
@@ -56,7 +54,7 @@ function findActiveCut() {
 
     cutNode.classList.toggle(ClassName.OPEN);
     cutNode.setAttribute('open', 'true');
-    cutNode.scrollIntoView(); 
+    cutNode.scrollIntoView();
 }
 
 if (typeof document !== 'undefined') {
@@ -73,5 +71,5 @@ if (typeof document !== 'undefined') {
 
         toggleCut(title);
     });
-    document.addEventListener('DOMContentLoaded', findActiveCut)
+    document.addEventListener('DOMContentLoaded', findActiveCut);
 }

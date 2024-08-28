@@ -1,4 +1,4 @@
-import Token from "markdown-it/lib/token";
+import Token from 'markdown-it/lib/token';
 
 type Attrs = 'class' | 'id' | 'attr';
 
@@ -13,12 +13,11 @@ export class AttrsParser {
 
     state: Record<string, string[]> = {};
 
-    constructor(value?: string){
+    constructor(value?: string) {
         if (value) {
             this.parse(value);
-        }  
+        }
     }
-
 
     #key = '';
     #pending = '';
@@ -222,4 +221,3 @@ export class AttrsParser {
         return this.ALLOWED_CHARS.test(target);
     }
 }
-

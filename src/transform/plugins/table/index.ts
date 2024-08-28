@@ -404,7 +404,7 @@ const yfmTable: MarkdownItPluginCb = (md) => {
             const tableStart = state.tokens.length;
             token = state.push('yfm_table_open', 'table', 1);
 
-           attrs.apply(token);
+            attrs.apply(token);
 
             token.map = [startLine, endOfTable];
 

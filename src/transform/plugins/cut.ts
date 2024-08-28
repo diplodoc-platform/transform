@@ -2,7 +2,7 @@ import type Core from 'markdown-it/lib/parser_core';
 import type Token from 'markdown-it/lib/token';
 import {MarkdownItPluginCb} from './typings';
 import {MatchTokenFunction, nestedCloseTokenIdxFactory as closeTokenFactory} from './utils';
-import { AttrsParser } from './attrs';
+import {AttrsParser} from './attrs';
 
 const CUT_REGEXP = /^{%\s*cut\s*["|'](.*)["|']\s*%}(.*)?$/;
 
@@ -43,9 +43,8 @@ const cut: MarkdownItPluginCb = (md, {path, log}) => {
                 const title = match[1];
                 const attrs = match[2] || '';
 
-
                 if (typeof title === 'undefined') {
-                    throw new Error(`No title provided for cut ${match[0]}`)
+                    throw new Error(`No title provided for cut ${match[0]}`);
                 }
 
                 const attrsParser = new AttrsParser(attrs);
@@ -59,10 +58,7 @@ const cut: MarkdownItPluginCb = (md, {path, log}) => {
                 const titleOpen = new state.Token('yfm_cut_title_open', 'summary', 1);
                 titleOpen.attrSet('class', 'yfm-cut-title');
 
-                const titleInline = state.md.parseInline(
-                    title,
-                    state.env,
-                )[0];
+                const titleInline = state.md.parseInline(title, state.env)[0];
 
                 const titleClose = new state.Token('yfm_cut_title_close', 'summary', -1);
 

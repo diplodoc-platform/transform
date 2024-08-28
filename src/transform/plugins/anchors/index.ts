@@ -171,7 +171,11 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
     }
 
     md.renderer.rules.anchor_hidden_desc = function (tokens, index) {
-        return '<span class="visually-hidden" data-no-index="true">' + escapeHtml(tokens[index].content) + '</span>';
+        return (
+            '<span class="visually-hidden" data-no-index="true">' +
+            escapeHtml(tokens[index].content) +
+            '</span>'
+        );
     };
 };
 
