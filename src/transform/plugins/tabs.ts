@@ -1,3 +1,3 @@
 import {transform} from '@diplodoc/tabs-extension';
 
-export = transform({bundle: false});
+export = transform({bundle: false}) as any;

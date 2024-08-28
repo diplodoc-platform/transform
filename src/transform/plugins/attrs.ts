@@ -1,3 +1,5 @@
+import Token from "markdown-it/lib/token";
+
 type Attrs = 'class' | 'id' | 'attr';
 
 export class AttrsParser {
@@ -8,6 +10,15 @@ export class AttrsParser {
     ALLOWED_CHARS = /[a-zA-Z0-9_\- {}.|/]/;
     /* allowed in all query chars */
     VALIDATION_CHARS = /[a-zA-Z0-9_\- {}.#="|/]/;
+
+    state: Record<string, string[]> = {};
+
+    constructor(value?: string){
+        if (value) {
+            this.parse(value);
+        }  
+    }
+
 
     #key = '';
     #pending = '';
@@ -22,15 +33,17 @@ export class AttrsParser {
     };
 
     #handlers = Object.entries(this.#selectors) as [Attrs, RegExp][];
-    #state: Record<string, string[]> = {};
 
     parse(target: string): Record<string, string[]> {
         /* escape from {} */
-        const content = this.extract(target);
+        const content = this.extract(target.trim());
 
         if (!content) {
             return {};
         }
+
+        this.clear();
+        this.state = {};
 
         for (const char of content) {
             this.next(char);
@@ -41,13 +54,25 @@ export class AttrsParser {
 
         this.clear();
 
-        return this.#state;
+        return this.state;
+    }
+
+    apply(target: Token) {
+        const {attr: singleKeyAttrs = [], ...fullAttrs} = this.state;
+        for (const [property, values] of Object.entries(fullAttrs)) {
+            target.attrJoin(property, values.join(' '));
+        }
+
+        for (const attr of singleKeyAttrs) {
+            target.attrJoin(attr, 'true');
+        }
     }
 
     private extract(target: string): string | false {
         if (!target.startsWith('{')) {
             return false;
         }
+
         let balance = 1;
 
         for (let i = 1; i < target.length; i++) {
@@ -164,11 +189,11 @@ export class AttrsParser {
             return;
         }
 
-        if (!this.#state[key]) {
-            this.#state[key] = [];
+        if (!this.state[key]) {
+            this.state[key] = [];
         }
 
-        this.#state[key].push(value);
+        this.state[key].push(value);
     }
 
     private clear() {
@@ -197,3 +222,4 @@ export class AttrsParser {
         return this.ALLOWED_CHARS.test(target);
     }
 }
+

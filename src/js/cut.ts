@@ -40,6 +40,25 @@ function findTitleInPath(event: MouseEvent): HTMLElement | undefined {
     return path?.find(matchTitle) as HTMLElement | undefined;
 }
 
+function findActiveCut() {
+    const cutId = window.location.hash.slice(1);
+    const cutNode = document.getElementById(cutId) as HTMLDetailsElement | null;
+
+    console.log(cutNode, cutId, Selector.CUT)
+
+    if (!(cutNode instanceof HTMLElement)) {
+        return
+    }
+
+    if (!cutNode.matches(Selector.CUT)) {
+        return;
+    }
+
+    cutNode.classList.toggle(ClassName.OPEN);
+    cutNode.setAttribute('open', 'true');
+    cutNode.scrollIntoView(); 
+}
+
 if (typeof document !== 'undefined') {
     document.addEventListener('click', (event) => {
         if (isCustom(event)) {
@@ -54,4 +73,5 @@ if (typeof document !== 'undefined') {
 
         toggleCut(title);
     });
+    document.addEventListener('DOMContentLoaded', findActiveCut)
 }

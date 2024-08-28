@@ -1,4 +1,4 @@
-import {AttrsParser} from '../../src/transform/plugins/table/attrs';
+import {AttrsParser} from '../../src/transform/plugins/attrs';
 
 describe('attrs parser tests', () => {
     it('parses classes and ids', () => {
