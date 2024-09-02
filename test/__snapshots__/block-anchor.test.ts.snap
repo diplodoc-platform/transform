@@ -12,7 +12,7 @@ exports[`block-anchor handles multiple anchors in the input 1`] = `
 `;
 
 exports[`block-anchor parses anchors surrounded by other blocks 1`] = `
-"<h1 id=\\"heading\\"><a href=\\"#heading\\" class=\\"yfm-anchor\\" aria-hidden=\\"true\\"><span class=\\"visually-hidden\\">Heading</span></a>Heading</h1>
+"<h1 id=\\"heading\\"><a href=\\"#heading\\" class=\\"yfm-anchor\\" aria-hidden=\\"true\\"><span class=\\"visually-hidden\\" data-no-index=\\"true\\">Heading</span></a>Heading</h1>
 <hr id=\\"my-anchor\\" class=\\"visually-hidden\\" /><p>paragraph with content</p>
 "
 `;
@@ -25,6 +25,6 @@ exports[`block-anchor parses block anchors 1`] = `
 exports[`block-anchor renders block-anchor 1`] = `"<hr id=\\"my-anchor\\" class=\\"visually-hidden\\" />"`;
 
 exports[`block-anchor works with heading anchors 1`] = `
-"<h1 id=\\"heading-anchor\\"><a href=\\"#heading-anchor\\" class=\\"yfm-anchor\\" aria-hidden=\\"true\\"><span class=\\"visually-hidden\\">Heading</span></a>Heading</h1>
+"<h1 id=\\"heading-anchor\\"><a href=\\"#heading-anchor\\" class=\\"yfm-anchor\\" aria-hidden=\\"true\\"><span class=\\"visually-hidden\\" data-no-index=\\"true\\">Heading</span></a>Heading</h1>
 <hr id=\\"my-anchor\\" class=\\"visually-hidden\\" />"
 `;

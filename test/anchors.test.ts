@@ -26,14 +26,14 @@ describe('Anchors', () => {
 
     it('should add single anchor with auto naming', () => {
         expect(transformYfm('## Test\n' + '\n' + 'Content\n')).toBe(
-            '<h2 id="test"><a href="link.html#test" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden">Test</span></a>Test</h2>\n' +
+            '<h2 id="test"><a href="link.html#test" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Test</span></a>Test</h2>\n' +
                 '<p>Content</p>\n',
         );
     });
 
     it('should add single anchor', () => {
         expect(transformYfm('## Test {#test1}\n' + '\n' + 'Content\n')).toBe(
-            '<h2 id="test1"><a href="link.html#test1" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden">Test</span></a>Test</h2>\n' +
+            '<h2 id="test1"><a href="link.html#test1" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Test</span></a>Test</h2>\n' +
                 '<p>Content</p>\n',
         );
     });
@@ -41,9 +41,9 @@ describe('Anchors', () => {
     it('should add multiple anchors', () => {
         expect(transformYfm('## Test {#test1} {#test2} {#test3}\n' + '\n' + 'Content\n')).toBe(
             '<h2 id="test1">' +
-                '<a id="test3" href="link.html#test3" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden">Test</span></a>' +
-                '<a id="test2" href="link.html#test2" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden">Test</span></a>' +
-                '<a href="link.html#test1" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden">Test</span></a>Test</h2>\n' +
+                '<a id="test3" href="link.html#test3" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Test</span></a>' +
+                '<a id="test2" href="link.html#test2" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Test</span></a>' +
+                '<a href="link.html#test1" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Test</span></a>Test</h2>\n' +
                 '<p>Content</p>\n',
         );
     });
@@ -58,9 +58,9 @@ describe('Anchors', () => {
                     '{% include [test](./include-anchor.md) %}\n',
             ),
         ).toBe(
-            '<h2 id="test0"><a href="link.html#test0" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden">Test</span></a>Test</h2>\n' +
+            '<h2 id="test0"><a href="link.html#test0" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Test</span></a>Test</h2>\n' +
                 '<p>Content before include</p>\n' +
-                '<h1 id="test1"><a href="link.html#test1" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden">Title</span></a>Title</h1>\n' +
+                '<h1 id="test1"><a href="link.html#test1" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Title</span></a>Title</h1>\n' +
                 '<p>Content</p>\n',
         );
     });
@@ -75,12 +75,12 @@ describe('Anchors', () => {
                     '{% include [test](./include-multiple-anchors.md) %}\n',
             ),
         ).toBe(
-            '<h2 id="test0"><a href="link.html#test0" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden">Test</span></a>Test</h2>\n' +
+            '<h2 id="test0"><a href="link.html#test0" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Test</span></a>Test</h2>\n' +
                 '<p>Content before include</p>\n' +
                 '<h1 id="test1">' +
-                '<a id="test3" href="link.html#test3" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden">Title</span></a>' +
-                '<a id="test2" href="link.html#test2" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden">Title</span></a>' +
-                '<a href="link.html#test1" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden">Title</span></a>Title</h1>\n' +
+                '<a id="test3" href="link.html#test3" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Title</span></a>' +
+                '<a id="test2" href="link.html#test2" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Title</span></a>' +
+                '<a href="link.html#test1" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Title</span></a>Title</h1>\n' +
                 '<p>Content</p>\n',
         );
     });
@@ -88,7 +88,7 @@ describe('Anchors', () => {
     it('should be transliterated correctly', () => {
         expect(transformYfm('## Максимальный размер дисков \n' + '\n' + 'Content\n')).toBe(
             '<h2 id="maksimalnyj-razmer-diskov">' +
-                '<a href="link.html#maksimalnyj-razmer-diskov" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden">Максимальный размер дисков</span></a>' +
+                '<a href="link.html#maksimalnyj-razmer-diskov" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Максимальный размер дисков</span></a>' +
                 'Максимальный размер дисков' +
                 '</h2>\n' +
                 '<p>Content</p>\n',
@@ -98,7 +98,7 @@ describe('Anchors', () => {
     it('should be removed fences after transliteration', () => {
         expect(transformYfm('## `Test`\n' + '\n' + 'Content\n')).toBe(
             '<h2 id="test">' +
-                '<a href="link.html#test" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden">Test</span></a><code>Test</code>' +
+                '<a href="link.html#test" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Test</span></a><code>Test</code>' +
                 '</h2>\n' +
                 '<p>Content</p>\n',
         );
@@ -115,7 +115,7 @@ describe('Anchors', () => {
             ),
         ).toBe(
             '<p>Content before include</p>\n' +
-                '<h2 id="anchor"><a href="link.html#anchor" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden">Subtitle</span></a>Subtitle</h2>\n' +
+                '<h2 id="anchor"><a href="link.html#anchor" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Subtitle</span></a>Subtitle</h2>\n' +
                 '<p>Subcontent</p>\n' +
                 '<p>After include</p>\n',
         );
@@ -125,7 +125,7 @@ describe('Anchors', () => {
         expect(transformYfm('## _Lorem ~~ipsum **dolor** sit~~ amet_\n\nParagraph\n')).toBe(
             '<h2 id="lorem-ipsum-dolor-sit-amet">' +
                 '<a href="link.html#lorem-ipsum-dolor-sit-amet" class="yfm-anchor" aria-hidden="true">' +
-                '<span class="visually-hidden">Lorem ipsum dolor sit amet</span></a>' +
+                '<span class="visually-hidden" data-no-index="true">Lorem ipsum dolor sit amet</span></a>' +
                 '<em>Lorem <s>ipsum <strong>dolor</strong> sit</s> amet</em></h2>\n' +
                 '<p>Paragraph</p>\n',
         );
