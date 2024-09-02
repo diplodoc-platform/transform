@@ -24,12 +24,13 @@ export function setDefinitionId(definitionElement: HTMLElement, termElement: HTM
     definitionElement?.setAttribute('term-id', termId);
 }
 
-export function setDefinitonAriaLive(
+export function setDefinitonAriaAttributes(
     definitionElement: HTMLElement,
     termElement: HTMLElement,
 ): void {
     const ariaLive = termElement.getAttribute('aria-live') || 'polite';
     definitionElement?.setAttribute('aria-live', ariaLive);
+    definitionElement?.setAttribute('aria-modal', 'true');
 }
 
 export function setDefinitionPosition(
@@ -167,7 +168,7 @@ export function openDefinition(target: HTMLElement) {
     }
 
     setDefinitionId(definitionElement, target);
-    setDefinitonAriaLive(definitionElement, target);
+    setDefinitonAriaAttributes(definitionElement, target);
     setDefinitionPosition(definitionElement, target);
 
     definitionElement.classList.toggle(openClass);

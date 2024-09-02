@@ -140,8 +140,9 @@ function processTermDefinition(
     token = new state.Token('dfn_open', 'dfn', 1);
     token.attrSet('class', 'yfm yfm-term_dfn');
     token.attrSet('id', ':' + label + '_element');
-    token.attrSet('role', 'tooltip');
+    token.attrSet('role', 'dialog');
     token.attrSet('aria-live', 'polite');
+    token.attrSet('aria-modal', 'true');
 
     state.tokens.push(token);
 
