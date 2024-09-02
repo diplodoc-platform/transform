@@ -3,6 +3,8 @@
 // Process @[vine](vineVideoID)
 // Process @[prezi](preziID)
 // Process @[osf](guid)
+// Process @[yandexVideo](videoID)
+// Process @[vkVideo](videoID)
 
 import type MarkdownIt from 'markdown-it';
 // eslint-disable-next-line no-duplicate-imports
@@ -69,15 +71,11 @@ function tokenizeVideo(md: MarkdownIt, options: VideoFullOptions): Renderer.Rend
 
         return videoID === ''
             ? ''
-            : '<div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item ' +
-                  service +
-                  '-player" type="text/html" width="' +
-                  width +
-                  '" height="' +
-                  height +
-                  '" src="' +
-                  options.url(service, videoID, options) +
-                  '" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>';
+            : `<div class="embed-responsive embed-responsive-16by9"><iframe` +
+                  ` class="embed-responsive-item ${service}-player"` +
+                  ` type="text/html" width="${width}" height="${height}"` +
+                  ` src="${options.url(service, videoID, options)}"` +
+                  `frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>`;
     };
 }
 

@@ -12,6 +12,8 @@ export type VideoServicesOptions = {
     [VideoService.Vine]: {width: number; height: number; embed: 'simple' | string};
     [VideoService.Prezi]: {width: number; height: number};
     [VideoService.Osf]: {width: string; height: string};
+    [VideoService.YandexVideo]: {width: number; height: number};
+    [VideoService.VkVideo]: {width: number; height: number};
 };
 
 export type VideoFullOptions = VideoServicesOptions & {

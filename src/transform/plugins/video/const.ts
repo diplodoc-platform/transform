@@ -9,6 +9,8 @@ export enum VideoService {
     Vine = 'vine',
     Prezi = 'prezi',
     Osf = 'osf',
+    YandexVideo = 'yandexVideo',
+    VkVideo = 'vkVideo',
 }
 
 export const defaults: VideoFullOptions = {
@@ -18,4 +20,6 @@ export const defaults: VideoFullOptions = {
     vine: {width: 600, height: 600, embed: 'simple'},
     prezi: {width: 550, height: 400},
     osf: {width: '100%', height: '100%'},
+    yandexVideo: {width: 640, height: 390},
+    vkVideo: {width: 640, height: 390},
 };
