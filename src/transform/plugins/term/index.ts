@@ -99,7 +99,7 @@ const term: MarkdownItPluginCb = (md, options) => {
                     token = new state.Token('term_open', 'i', 1);
                     token.attrSet('class', 'yfm yfm-term_title');
                     token.attrSet('term-key', ':' + termKey);
-                    token.attrSet('role', 'term');
+                    token.attrSet('role', 'button');
                     token.attrSet('aria-describedby', ':' + termKey + '_element');
                     token.attrSet('tabindex', '0');
                     token.attrSet('id', generateID());
