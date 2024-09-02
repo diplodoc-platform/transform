@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.28.3](https://github.com/diplodoc-platform/transform/compare/v4.28.2...v4.28.3) (2024-09-02)
+
+
+### Bug Fixes
+
+* **a11y:** set role button for term ([0467211](https://github.com/diplodoc-platform/transform/commit/0467211a8e8e6180218071288921236bc33531c3))
+* Add data-no-index attribute to anchors ([b9be4a2](https://github.com/diplodoc-platform/transform/commit/b9be4a23d5822f04e30057376ef7d8810833f0ca))
+
 ## [4.28.2](https://github.com/diplodoc-platform/transform/compare/v4.28.1...v4.28.2) (2024-08-21)
 
 
