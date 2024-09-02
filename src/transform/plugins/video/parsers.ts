@@ -33,6 +33,18 @@ export function mfrParser(url: string) {
     return match ? match[1] : url;
 }
 
+const yandexVideoRegex = /^https:\/\/runtime.video.cloud.yandex.net\/player\/video\/([a-zA-Z0-9]+)/;
+export function yandexVideoParser(url: string) {
+    const match = url.match(yandexVideoRegex);
+    return match ? match[1] : url;
+}
+
+const vkVideoRegex = /^https:\/\/vk.com\/video_ext\.php?(oid=[-\d]+&id=[-\d]+)/;
+export function vkVideoParser(url: string) {
+    const match = url.match(vkVideoRegex);
+    return match ? match[1] : url;
+}
+
 export function parseVideoUrl(service: string, url: string): string | false {
     let videoID = '';
 
@@ -51,6 +63,12 @@ export function parseVideoUrl(service: string, url: string): string | false {
             break;
         case VideoService.Osf:
             videoID = mfrParser(url);
+            break;
+        case VideoService.YandexVideo:
+            videoID = yandexVideoParser(url);
+            break;
+        case VideoService.VkVideo:
+            videoID = vkVideoParser(url);
             break;
         default:
             return false;
