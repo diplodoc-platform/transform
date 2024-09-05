@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.30.1](https://github.com/diplodoc-platform/transform/compare/v4.30.0...v4.30.1) (2024-09-05)
+
+
+### Bug Fixes
+
+* Fix link to build script ([4b5ce79](https://github.com/diplodoc-platform/transform/commit/4b5ce79f77ad9639197be44ab4b4f69c0fbd45e9))
+
 ## [4.30.0](https://github.com/diplodoc-platform/transform/compare/v4.29.0...v4.30.0) (2024-09-05)
 
 
