@@ -33,15 +33,15 @@ export function mfrParser(url: string) {
     return match ? match[1] : url;
 }
 
-const yandexVideoRegex = /^https:\/\/runtime.video.cloud.yandex.net\/player\/video\/([a-zA-Z0-9]+)/;
-export function yandexVideoParser(url: string) {
-    const match = url.match(yandexVideoRegex);
+const yandexRegex = /^https:\/\/runtime.video.cloud.yandex.net\/player\/video\/([a-zA-Z0-9]+)/;
+export function yandexParser(url: string) {
+    const match = url.match(yandexRegex);
     return match ? match[1] : url;
 }
 
-const vkVideoRegex = /^https:\/\/vk.com\/video_ext\.php?(oid=[-\d]+&id=[-\d]+)/;
-export function vkVideoParser(url: string) {
-    const match = url.match(vkVideoRegex);
+const vkRegex = /^https:\/\/vk.com\/video_ext\.php?(oid=[-\d]+&id=[-\d]+)/;
+export function vkParser(url: string) {
+    const match = url.match(vkRegex);
     return match ? match[1] : url;
 }
 
@@ -64,11 +64,11 @@ export function parseVideoUrl(service: string, url: string): string | false {
         case VideoService.Osf:
             videoID = mfrParser(url);
             break;
-        case VideoService.YandexVideo:
-            videoID = yandexVideoParser(url);
+        case VideoService.Yandex:
+            videoID = yandexParser(url);
             break;
-        case VideoService.VkVideo:
-            videoID = vkVideoParser(url);
+        case VideoService.Vk:
+            videoID = vkParser(url);
             break;
         default:
             return false;

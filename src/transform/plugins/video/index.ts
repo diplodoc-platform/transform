@@ -3,8 +3,8 @@
 // Process @[vine](vineVideoID)
 // Process @[prezi](preziID)
 // Process @[osf](guid)
-// Process @[yandexVideo](videoID)
-// Process @[vkVideo](videoID)
+// Process @[yandex](videoID)
+// Process @[vk](videoID)
 
 import type MarkdownIt from 'markdown-it';
 // eslint-disable-next-line no-duplicate-imports
