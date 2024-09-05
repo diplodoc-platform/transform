@@ -30,7 +30,7 @@
   ],
   "scripts": {
     "build": "npm run build:lib && npm run build:dist",
-    "build:dist": "./esbuild/build.js",
+    "build:dist": "./esbuild/build.mjs",
     "build:lib": "tsc -p tsconfig.transform.json",
     "prepublishOnly": "npm run lint && npm run test && npm run build",
     "test": "jest --coverage",
