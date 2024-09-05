@@ -1,28 +1,6 @@
+import dedent from 'ts-dedent';
+
 import conditions from '../../src/transform/liquid/conditions';
-
-const getPadX = (string: string) => {
-    const match = /^(\s+)/.exec(string);
-    const pad = (match && match[1]) || '';
-
-    return pad.length || 0;
-};
-
-export function trim(string: string | TemplateStringsArray): string {
-    const strings = ([] as string[]).concat(string as string) as string[];
-    let lines: string[] = ([] as string[]).concat(...strings.map((string) => string.split('\n')));
-
-    let pad: number;
-    if (lines[0].trim() === '') {
-        pad = getPadX(lines[1]);
-        lines = lines.slice(1);
-    } else {
-        pad = getPadX(lines[0]);
-    }
-
-    lines = lines.map((line) => line.slice(pad));
-
-    return lines.join('\n').trim();
-}
 
 describe('Conditions', () => {
     describe('location', () => {
@@ -142,36 +120,42 @@ describe('Conditions', () => {
         test('Two multiple if blocks in a row', () => {
             expect(
                 conditions(
-                    '{% if test %}\n' +
-                        `${' '.repeat(4)}How are you?\n` +
-                        '{% endif %}\n' +
-                        '{% if test %}\n' +
-                        `${' '.repeat(4)}How are you?\n` +
-                        '{% endif %}',
+                    dedent`
+                    {% if test %}
+                        How are you?
+                    {% endif %}
+                    {% if test %}
+                        How are you?
+                    {% endif %}
+                `,
                     {test: true},
                     '',
                     {sourceMap: {}},
                 ),
-            ).toEqual(`${' '.repeat(4)}How are you?\n` + `${' '.repeat(4)}How are you?`);
+            ).toEqual(`    How are you?\n    How are you?`);
         });
 
         test('Condition inside the list item content', () => {
             expect(
                 conditions(
-                    '1. list item 1\n\n' + `${' '.repeat(4)}{% if true %}Test{% endif %}\n`,
+                    dedent`
+                    1. list item 1
+
+                        {% if true %}Test{% endif %}
+                `,
                     {},
                     '',
                     {
                         sourceMap: {},
                     },
                 ),
-            ).toEqual('1. list item 1\n\n' + `${' '.repeat(4)}Test\n`);
+            ).toEqual(`1. list item 1\n\n    Test`);
         });
 
         test('Condition inside the note block (at start)', () => {
             expect(
                 conditions(
-                    trim`
+                    dedent`
                     {% note alert %}
 
                     {% if locale == 'ru' %}You can't use the public geofence names.{% endif %}Test
@@ -184,7 +168,7 @@ describe('Conditions', () => {
                         sourceMap: {},
                     },
                 ),
-            ).toEqual(trim`
+            ).toEqual(dedent`
                 {% note alert %}
 
                 Test
@@ -196,7 +180,7 @@ describe('Conditions', () => {
         test('Condition inside the note block (at end)', () => {
             expect(
                 conditions(
-                    trim`
+                    dedent`
                     {% note alert %}
 
                     Test{% if locale == 'ru' %}You can't use the public geofence names.{% endif %}
@@ -209,7 +193,7 @@ describe('Conditions', () => {
                         sourceMap: {},
                     },
                 ),
-            ).toEqual(trim`
+            ).toEqual(dedent`
                 {% note alert %}
 
                 Test
@@ -221,7 +205,7 @@ describe('Conditions', () => {
         test('Falsy block condition after truthly block condition', () => {
             expect(
                 conditions(
-                    trim`
+                    dedent`
                         Start
 
                         Before
@@ -243,7 +227,7 @@ describe('Conditions', () => {
                         sourceMap: {},
                     },
                 ),
-            ).toEqual(trim`
+            ).toEqual(dedent`
                 Start
 
                 Before
@@ -257,7 +241,7 @@ describe('Conditions', () => {
         test('Falsy inline condition after truthly inline condition', () => {
             expect(
                 conditions(
-                    trim`
+                    dedent`
                         {% if product == "A" %}A{% endif %}
                         {% if product == "B" %}B{% endif %}
                         C
@@ -271,7 +255,7 @@ describe('Conditions', () => {
                     },
                 ),
             ).toEqual(
-                trim`
+                dedent`
                         A
                         C
                 `,
@@ -281,7 +265,7 @@ describe('Conditions', () => {
         test('Around other curly braced structures', () => {
             expect(
                 conditions(
-                    trim`
+                    dedent`
                         * Title:
                             * {% include [A](./A.md) %}
                         {% if audience != "internal" %}
@@ -298,7 +282,7 @@ describe('Conditions', () => {
                     },
                 ),
             ).toEqual(
-                trim`
+                dedent`
                         * Title:
                             * {% include [A](./A.md) %}
                         * {% include [B](./B.md) %}
@@ -615,7 +599,7 @@ describe('Conditions', () => {
             test('Condition inside the cut block with multiple linebreaks', () => {
                 expect(
                     conditions(
-                        trim`
+                        dedent`
                     {% cut "Title" %}
 
                     {% if locale == 'ru' %}
@@ -632,7 +616,7 @@ describe('Conditions', () => {
                             sourceMap: {},
                         },
                     ),
-                ).toEqual(trim`
+                ).toEqual(dedent`
                     {% cut "Title" %}
 
 

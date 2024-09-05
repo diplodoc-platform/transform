@@ -1,4 +1,5 @@
 import MarkdownIt from 'markdown-it';
+
 import code from '../src/transform/plugins/code';
 import {MarkdownItPluginOpts} from '../src/transform/plugins/typings';
 

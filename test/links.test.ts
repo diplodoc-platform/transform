@@ -1,14 +1,16 @@
+import type {OptionsType} from '../src/transform/typings';
+
 import {dirname, resolve} from 'path';
 import {readFileSync} from 'fs';
+
 import transform from '../src/transform';
 import links from '../src/transform/plugins/links';
 import includes from '../src/transform/plugins/includes';
+import {getPublicPath} from '../src/transform/utilsFS';
+import {log} from '../src/transform/log';
+
 import {callPlugin, tokenize} from './utils';
 import {customTitle, title} from './data/links';
-import {getPublicPath} from '../src/transform/utilsFS';
-
-import {log} from '../src/transform/log';
-import type {OptionsType} from '../src/transform/typings';
 
 const mocksPath = require.resolve('./utils.ts');
 

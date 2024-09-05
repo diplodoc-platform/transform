@@ -1,4 +1,5 @@
 import Token from 'markdown-it/lib/token';
+
 import {Heading} from './typings';
 
 function getTitle(token: Token) {

@@ -1,9 +1,10 @@
 import {bold} from 'chalk';
 import StateCore from 'markdown-it/lib/rules_core/state_core';
 import Token from 'markdown-it/lib/token';
-import {MarkdownItPluginCb} from '../typings';
 
+import {MarkdownItPluginCb} from '../typings';
 import {MatchTokenFunction, nestedCloseTokenIdxFactory as closeTokenFactory} from '../utils';
+
 import {TITLES} from './constants';
 
 const ALERT_RE = /^{% note (alert|info|tip|warning)\s*(?:"(.*?)")? %}$/;
@@ -84,7 +85,6 @@ const index: MarkdownItPluginCb = (md, {lang, notesAutotitle, path: optPath, log
                 const titleInline = new state.Token('inline', '', 0);
                 const titleClose = new state.Token('yfm_note_title_close', 'p', -1);
 
-                if (match[2]) titleOpen.attrSet('yfm2xliff-explicit', 'true');
                 titleOpen.block = true;
                 titleClose.block = true;
 

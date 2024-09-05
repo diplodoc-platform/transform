@@ -1,6 +1,7 @@
-import transform from '../src/transform';
 import path from 'path';
 import fs from 'fs';
+
+import transform from '../src/transform';
 import changelogPlugin from '../src/transform/plugins/changelog';
 import changelogCollect from '../src/transform/plugins/changelog/collect';
 import imsize from '../src/transform/plugins/imsize';

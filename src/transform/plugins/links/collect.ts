@@ -1,8 +1,10 @@
 import MarkdownIt from 'markdown-it';
 import {sep} from 'path';
 import url from 'url';
+
 import {PAGE_LINK_REGEXP, getHrefTokenAttr, isLocalUrl} from '../../utils';
 import {getSinglePageAnchorId, resolveRelativePath} from '../../utilsFS';
+
 import index from './index';
 
 const replaceLinkHref = (input: string, href: string, newHref: string) => {

@@ -1,6 +1,8 @@
 import StateBlock from 'markdown-it/lib/rules_block/state_block';
-import {MarkdownItPluginCb} from '../typings';
 import Token from 'markdown-it/lib/token';
+
+import {MarkdownItPluginCb} from '../typings';
+
 import {AttrsParser} from './attrs';
 
 const pluginName = 'yfm_table';

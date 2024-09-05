@@ -1,10 +1,12 @@
 'use strict';
 
+import type {CheckboxOptions} from '../src/transform/plugins/checkbox/checkbox';
+
 import path from 'path';
+import MarkdownIt from 'markdown-it';
+
 import transform from '../src/transform';
 import plugin from '../src/transform/plugins/checkbox';
-import type {CheckboxOptions} from '../src/transform/plugins/checkbox/checkbox';
-import MarkdownIt from 'markdown-it';
 
 const generate = require('markdown-it-testgen');
 const assert = require('assert');

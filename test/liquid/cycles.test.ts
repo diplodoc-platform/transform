@@ -1,3 +1,5 @@
+import dedent from 'ts-dedent';
+
 import liquid from '../../src/transform/liquid';
 
 const commentsByPage = [
@@ -45,91 +47,101 @@ describe('Cycles', () => {
         test('Multiline for block', () => {
             expect(
                 liquid(
-                    'Prefix\n' +
-                        '{% for user in users %}\n' +
-                        '{{user}}\n' +
-                        '{% endfor %}\n' +
-                        'Postfix',
+                    dedent`
+                    Prefix
+                    {% for user in users %}
+                    {{user}}
+                    {% endfor %}
+                    Postfix
+                `,
                     vars,
                     '',
                 ),
-            ).toEqual('Prefix\n' + 'Alice\n' + 'Ivan\n' + 'Petr\n' + 'Postfix');
+            ).toEqual(dedent`
+                Prefix
+                Alice
+                Ivan
+                Petr
+                Postfix
+            `);
         });
 
         test('Multiline for block2', () => {
-            const input = `
-Prefix
+            const input = dedent`
+                Prefix
 
-{% for project in projects %}
+                {% for project in projects %}
 
-## {{project.projectName}}
-{% for item in project.commentsByPage %}
+                ## {{project.projectName}}
+                {% for item in project.commentsByPage %}
 
-[{{item.linkUrl}}]({{item.linkUrl}})
-{% for item2 in item.comments %}
-* {{item2}}
-{% endfor %}
+                [{{item.linkUrl}}]({{item.linkUrl}})
+                {% for item2 in item.comments %}
+                * {{item2}}
+                {% endfor %}
 
-{% endfor %}
-{% endfor %}
+                {% endfor %}
+                {% endfor %}
 
-Postfix
-`.trim();
-            const result = `
-Prefix
+                Postfix
+            `;
+            const result = dedent`
+                Prefix
 
 
-## First project
+                ## First project
 
-[https://example.com](https://example.com)
-* First comment
-* Second comment
+                [https://example.com](https://example.com)
+                * First comment
+                * Second comment
 
-[https://example2.com](https://example2.com)
-* Third comment
-* Fourth comment
+                [https://example2.com](https://example2.com)
+                * Third comment
+                * Fourth comment
 
-## Second project
+                ## Second project
 
-[https://example.com](https://example.com)
-* First comment
-* Second comment
+                [https://example.com](https://example.com)
+                * First comment
+                * Second comment
 
-[https://example2.com](https://example2.com)
-* Third comment
-* Fourth comment
+                [https://example2.com](https://example2.com)
+                * Third comment
+                * Fourth comment
 
-Postfix
-                `.trim();
+                Postfix
+            `;
             expect(liquid(input, vars, '')).toEqual(result);
         });
 
         test('Multiline nested for block without indent', () => {
             expect(
                 liquid(
-                    'Prefix\n' +
-                        '{% for user1 in users %}\n' +
-                        '{% for user2 in users %}\n' +
-                        '{{user1}}+{{user2}}\n' +
-                        '{% endfor %}\n' +
-                        '{% endfor %}\n' +
-                        'Postfix',
+                    dedent`
+                    Prefix
+                    {% for user1 in users %}
+                    {% for user2 in users %}
+                    {{user1}}+{{user2}}
+                    {% endfor %}
+                    {% endfor %}
+                    Postfix
+                `,
                     vars,
                     '',
                 ),
-            ).toEqual(
-                'Prefix\n' +
-                    'Alice+Alice\n' +
-                    'Alice+Ivan\n' +
-                    'Alice+Petr\n' +
-                    'Ivan+Alice\n' +
-                    'Ivan+Ivan\n' +
-                    'Ivan+Petr\n' +
-                    'Petr+Alice\n' +
-                    'Petr+Ivan\n' +
-                    'Petr+Petr\n' +
-                    'Postfix',
-            );
+            ).toEqual(dedent`
+                Prefix
+                Alice+Alice
+                Alice+Ivan
+                Alice+Petr
+                Ivan+Alice
+                Ivan+Ivan
+                Ivan+Petr
+                Petr+Alice
+                Petr+Ivan
+                Petr+Petr
+                Postfix
+            `);
         });
     });
 

@@ -1,4 +1,4 @@
-const getTokens = (title: string, custom = false) => {
+const getTokens = (title: string) => {
     return [
         {
             attrs: null,
@@ -80,9 +80,7 @@ const getTokens = (title: string, custom = false) => {
             type: 'yfm_note_open',
         },
         {
-            attrs: [['class', 'yfm-note-title']].concat(
-                custom ? [['yfm2xliff-explicit', 'true']] : [],
-            ),
+            attrs: [['class', 'yfm-note-title']],
             block: true,
             children: null,
             content: '',
@@ -315,5 +313,5 @@ const getTokens = (title: string, custom = false) => {
 };
 
 export const base = getTokens('Примечание');
-export const customTitle = getTokens('Custom title', true);
+export const customTitle = getTokens('Custom title');
 export const emptyTitle = getTokens('');

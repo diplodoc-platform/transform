@@ -1,0 +1,87 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Alerts should render nested notes 1`] = `
+<div class="yfm-note yfm-accent-info"
+     note-type="info"
+>
+  <p class="yfm-note-title">
+    Outer title
+  </p>
+  <div class="yfm-note-content">
+    <p>
+      Outer content
+    </p>
+    <div class="yfm-note yfm-accent-info"
+         note-type="info"
+    >
+      <p class="yfm-note-title">
+        Inner title
+      </p>
+      <div class="yfm-note-content">
+        <p>
+          Inner content
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Alerts should render siblings notes 1`] = `
+<div class="yfm-note yfm-accent-info"
+     note-type="info"
+>
+  <p class="yfm-note-title">
+    Note title 1
+  </p>
+  <div class="yfm-note-content">
+    <p>
+      Note content 1
+    </p>
+  </div>
+</div>
+<div class="yfm-note yfm-accent-info"
+     note-type="info"
+>
+  <p class="yfm-note-title">
+    Note title 2
+  </p>
+  <div class="yfm-note-content">
+    <p>
+      Note content 2
+    </p>
+  </div>
+</div>
+`;
+
+exports[`Alerts should render simple note 1`] = `
+<div class="yfm-note yfm-accent-info"
+     note-type="info"
+>
+  <p class="yfm-note-title">
+    Note title
+  </p>
+  <div class="yfm-note-content">
+    <p>
+      Note content
+    </p>
+  </div>
+</div>
+`;
+
+exports[`Alerts should render title with format 1`] = `
+<div class="yfm-note yfm-accent-info"
+     note-type="info"
+>
+  <p class="yfm-note-title">
+    <em>
+      Italic note title
+    </em>
+  </p>
+  <div class="yfm-note-content">
+    <p>
+      Content
+    </p>
+  </div>
+</div>
+`;

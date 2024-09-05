@@ -1,6 +1,5 @@
 // @ts-expect-error
 import {addErrorDetailIf, filterTokens, forEachInlineCodeSpan} from 'markdownlint-rule-helpers';
-
 import {MarkdownItToken, Rule} from 'markdownlint';
 
 export const yfm001: Rule = {

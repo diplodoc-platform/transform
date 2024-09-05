@@ -1,5 +1,10 @@
 import url from 'url';
 import {bold} from 'chalk';
+import Token from 'markdown-it/lib/token';
+import path, {isAbsolute, parse, relative, resolve} from 'path';
+
+import {Logger} from 'src/transform/log';
+
 import {
     PAGE_LINK_REGEXP,
     defaultTransformLink,
@@ -9,11 +14,8 @@ import {
     isLocalUrl,
 } from '../../utils';
 import {getFileTokens, isFileExists} from '../../utilsFS';
-import Token from 'markdown-it/lib/token';
-import {Logger} from 'src/transform/log';
 import {CacheContext, StateCore} from '../../typings';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
-import path, {isAbsolute, parse, relative, resolve} from 'path';
 
 function getTitleFromTokens(tokens: Token[]) {
     let title = '';

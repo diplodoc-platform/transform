@@ -1,4 +1,5 @@
 import type {PluginWithOptions} from 'markdown-it';
+
 import {CheckboxOptions, checkboxReplace} from './checkbox';
 
 /**

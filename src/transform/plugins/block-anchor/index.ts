@@ -1,4 +1,5 @@
 import MarkdownIt from 'markdown-it';
+
 import {TOKEN_NAME, renderTokens, replaceTokens} from './block-anchor';
 
 const blockAnchor = (md: MarkdownIt) => {

@@ -1,4 +1,5 @@
 import StateInline, {Delimiter} from 'markdown-it/lib/rules_inline/state_inline';
+
 import {MarkdownItPluginCb} from './typings';
 
 const monospace: MarkdownItPluginCb = (md) => {
@@ -108,7 +109,6 @@ const monospace: MarkdownItPluginCb = (md) => {
             state.delimiters.push({
                 marker: marker,
                 length: 0, // disable "rule of 3" length checks meant for emphasis
-                jump: i / 2, // 1 delimiter = 2 characters
                 token: state.tokens.length - 1,
                 end: -1,
                 open: scanned.can_open,

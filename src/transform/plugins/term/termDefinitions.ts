@@ -1,6 +1,8 @@
 import StateBlock from 'markdown-it/lib/rules_block/state_block';
+
 import {MarkdownIt} from '../../typings';
 import {MarkdownItPluginOpts} from '../typings';
+
 import {BASIC_TERM_REGEXP} from './constants';
 
 export function termDefinitions(md: MarkdownIt, options: MarkdownItPluginOpts) {

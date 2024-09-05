@@ -1,4 +1,5 @@
 import getHeadings from '../src/transform/headings';
+
 import {tokenize} from './utils';
 
 type Head = {

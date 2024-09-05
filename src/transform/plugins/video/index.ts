@@ -9,8 +9,8 @@ import type MarkdownIt from 'markdown-it';
 import type {PluginWithOptions} from 'markdown-it';
 import type ParserInline from 'markdown-it/lib/parser_inline';
 import type Renderer from 'markdown-it/lib/renderer';
-
 import type {VideoFullOptions, VideoPluginOptions, VideoToken} from './types';
+
 import {parseVideoUrl} from './parsers';
 import {VideoService, defaults} from './const';
 

@@ -1,4 +1,5 @@
 import {dirname} from 'path';
+import dedent from 'ts-dedent';
 
 import includes from '../src/transform/plugins/includes';
 import anchors from '../src/transform/plugins/anchors';
@@ -7,7 +8,7 @@ import transform from '../src/transform';
 import {getPublicPath} from '../src/transform/utilsFS';
 
 const mocksPath = require.resolve('./mocks/link.md');
-const transformYfm = (text: string) => {
+const html = (text: string) => {
     const {
         result: {html},
     } = transform(text, {
@@ -25,110 +26,99 @@ describe('Anchors', () => {
     });
 
     it('should add single anchor with auto naming', () => {
-        expect(transformYfm('## Test\n' + '\n' + 'Content\n')).toBe(
-            '<h2 id="test"><a href="link.html#test" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Test</span></a>Test</h2>\n' +
-                '<p>Content</p>\n',
-        );
+        expect(
+            html(dedent`
+            ## Test
+
+            Content
+        `),
+        ).toMatchSnapshot();
     });
 
     it('should add single anchor', () => {
-        expect(transformYfm('## Test {#test1}\n' + '\n' + 'Content\n')).toBe(
-            '<h2 id="test1"><a href="link.html#test1" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Test</span></a>Test</h2>\n' +
-                '<p>Content</p>\n',
-        );
+        expect(
+            html(dedent`
+            ## Test {#test1}
+
+            Content
+        `),
+        ).toMatchSnapshot();
     });
 
     it('should add multiple anchors', () => {
-        expect(transformYfm('## Test {#test1} {#test2} {#test3}\n' + '\n' + 'Content\n')).toBe(
-            '<h2 id="test1">' +
-                '<a id="test3" href="link.html#test3" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Test</span></a>' +
-                '<a id="test2" href="link.html#test2" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Test</span></a>' +
-                '<a href="link.html#test1" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Test</span></a>Test</h2>\n' +
-                '<p>Content</p>\n',
-        );
+        expect(
+            html(`
+                ## Test {#test1} {#test2} {#test3}
+
+                Content
+        `),
+        ).toMatchSnapshot();
     });
 
     it('should add single anchor when included', () => {
         expect(
-            transformYfm(
-                '## Test {#test0}\n' +
-                    '\n' +
-                    'Content before include\n' +
-                    '\n' +
-                    '{% include [test](./include-anchor.md) %}\n',
-            ),
-        ).toBe(
-            '<h2 id="test0"><a href="link.html#test0" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Test</span></a>Test</h2>\n' +
-                '<p>Content before include</p>\n' +
-                '<h1 id="test1"><a href="link.html#test1" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Title</span></a>Title</h1>\n' +
-                '<p>Content</p>\n',
-        );
+            html(dedent`
+            ## Test {#test0}
+
+            Content before include
+
+            {% include [test](./include-anchor.md) %}
+        `),
+        ).toMatchSnapshot();
     });
 
     it('should add multiple anchors when included', () => {
         expect(
-            transformYfm(
-                '## Test {#test0}\n' +
-                    '\n' +
-                    'Content before include\n' +
-                    '\n' +
-                    '{% include [test](./include-multiple-anchors.md) %}\n',
-            ),
-        ).toBe(
-            '<h2 id="test0"><a href="link.html#test0" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Test</span></a>Test</h2>\n' +
-                '<p>Content before include</p>\n' +
-                '<h1 id="test1">' +
-                '<a id="test3" href="link.html#test3" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Title</span></a>' +
-                '<a id="test2" href="link.html#test2" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Title</span></a>' +
-                '<a href="link.html#test1" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Title</span></a>Title</h1>\n' +
-                '<p>Content</p>\n',
-        );
+            html(dedent`
+            ## Test {#test0}
+
+            Content before include
+
+            {% include [test](./include-multiple-anchors.md) %}
+        `),
+        ).toMatchSnapshot();
     });
 
     it('should be transliterated correctly', () => {
-        expect(transformYfm('## Максимальный размер дисков \n' + '\n' + 'Content\n')).toBe(
-            '<h2 id="maksimalnyj-razmer-diskov">' +
-                '<a href="link.html#maksimalnyj-razmer-diskov" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Максимальный размер дисков</span></a>' +
-                'Максимальный размер дисков' +
-                '</h2>\n' +
-                '<p>Content</p>\n',
-        );
+        expect(
+            html(dedent`
+            ## Максимальный размер дисков
+
+            Content
+        `),
+        ).toMatchSnapshot();
     });
 
     it('should be removed fences after transliteration', () => {
-        expect(transformYfm('## `Test`\n' + '\n' + 'Content\n')).toBe(
-            '<h2 id="test">' +
-                '<a href="link.html#test" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Test</span></a><code>Test</code>' +
-                '</h2>\n' +
-                '<p>Content</p>\n',
-        );
+        expect(
+            html(dedent`
+                ## \`Test\`
+
+                Content
+            `),
+        ).toMatchSnapshot();
     });
 
     it('should include content by anchor in sharped path file', () => {
         expect(
-            transformYfm(
-                'Content before include\n' +
-                    '\n' +
-                    '{% include [file](./folder-with-#-sharp/file-with-#-sharp.md#anchor) %}\n' +
-                    '\n' +
-                    'After include',
-            ),
-        ).toBe(
-            '<p>Content before include</p>\n' +
-                '<h2 id="anchor"><a href="link.html#anchor" class="yfm-anchor" aria-hidden="true"><span class="visually-hidden" data-no-index="true">Subtitle</span></a>Subtitle</h2>\n' +
-                '<p>Subcontent</p>\n' +
-                '<p>After include</p>\n',
-        );
+            html(dedent`
+            Content before include
+
+            {% include [file](./folder-with-#-sharp/file-with-#-sharp.md#anchor) %}
+
+            After include
+        `),
+        ).toMatchSnapshot();
     });
 
     it('should add anchor with auto naming, using entire heading text', () => {
-        expect(transformYfm('## _Lorem ~~ipsum **dolor** sit~~ amet_\n\nParagraph\n')).toBe(
-            '<h2 id="lorem-ipsum-dolor-sit-amet">' +
-                '<a href="link.html#lorem-ipsum-dolor-sit-amet" class="yfm-anchor" aria-hidden="true">' +
-                '<span class="visually-hidden" data-no-index="true">Lorem ipsum dolor sit amet</span></a>' +
-                '<em>Lorem <s>ipsum <strong>dolor</strong> sit</s> amet</em></h2>\n' +
-                '<p>Paragraph</p>\n',
-        );
+        expect(
+            html(dedent`
+            ## _Lorem ~~ipsum **dolor** sit~~ amet_
+
+            Paragraph
+        `),
+        ).toMatchSnapshot();
     });
 
     describe('with extract title', () => {
@@ -145,8 +135,12 @@ describe('Anchors', () => {
         };
 
         it('should not add an anchor for level 1 heading', () => {
-            const result = transformWithTitle('# Test {#test1}\n' + '\n' + 'Content\n');
-            expect(result[0]).toBe('<p>Content</p>\n');
+            const result = transformWithTitle(dedent`
+                # Test {#test1}
+
+                Content
+            `);
+            expect(result[0]).toMatchSnapshot();
             expect(result[1]).toBe('Test');
         });
     });

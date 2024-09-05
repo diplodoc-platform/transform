@@ -1,9 +1,14 @@
+import type {Dictionary} from 'lodash';
+
 import {Rule, sync} from 'markdownlint';
 import merge from 'lodash/merge';
 import union from 'lodash/union';
 import attrs from 'markdown-it-attrs';
-import baseDefaultLintConfig from './yfmlint';
 
+import {LogLevels, Logger} from '../log';
+import defaultPreprocessors from '../preprocessors';
+
+import baseDefaultLintConfig from './yfmlint';
 import {
     yfm001,
     yfm002,
@@ -14,13 +19,9 @@ import {
     yfm007,
     yfm008,
 } from './markdownlint-custom-rule';
-
 import {errorToString, getLogLevel} from './utils';
 import {Options} from './typings';
-import type {Dictionary} from 'lodash';
-import {LogLevels, Logger} from '../log';
 import {yfm009} from './markdownlint-custom-rule/yfm009';
-import defaultPreprocessors from '../preprocessors';
 
 const defaultLintRules = [yfm001, yfm002, yfm003, yfm004, yfm005, yfm006, yfm007, yfm008, yfm009];
 

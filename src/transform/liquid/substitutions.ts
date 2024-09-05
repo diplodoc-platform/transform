@@ -1,9 +1,10 @@
 import {bold} from 'chalk';
 
-import ArgvService from './services/argv';
 import getObject from '../getObject';
-import {evalExp} from './evaluation';
 import {log} from '../log';
+
+import ArgvService from './services/argv';
+import {evalExp} from './evaluation';
 import {
     isSingleVariable,
     isVariable,

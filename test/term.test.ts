@@ -1,5 +1,6 @@
 import {dirname, resolve} from 'path';
 import {readFileSync} from 'fs';
+
 import transform from '../src/transform';
 import links from '../src/transform/plugins/links';
 import term from '../src/transform/plugins/term';

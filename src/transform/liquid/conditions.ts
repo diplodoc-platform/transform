@@ -1,7 +1,9 @@
 import {bold} from 'chalk';
+
+import {log} from '../log';
+
 import {NoValue, evalExp} from './evaluation';
 import {tagLine} from './lexical';
-import {log} from '../log';
 import {SourceMapApi, createSourceMapApi, getLineNumber} from './sourceMap';
 
 interface SourceMap {

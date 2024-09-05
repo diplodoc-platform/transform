@@ -1,0 +1,125 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Monospace plugin should not render header 1`] = `
+<h2>
+  Header
+</h2>
+`;
+
+exports[`Monospace plugin should not render if open token incorrect 1`] = `
+<p>
+  #asd##
+</p>
+`;
+
+exports[`Monospace plugin should not render if space after open token 1`] = `
+<h2>
+  test##
+</h2>
+`;
+
+exports[`Monospace plugin should not render if space before close token 1`] = `
+<p>
+  ##test ##
+</p>
+`;
+
+exports[`Monospace plugin should not render last open token 1`] = `
+<p>
+  <samp>
+    test1
+    <strong>
+      bold
+    </strong>
+  </samp>
+  test2 ##test3
+</p>
+`;
+
+exports[`Monospace plugin should not render opened token 1`] = `
+<p>
+  test ##test
+</p>
+`;
+
+exports[`Monospace plugin should not render with empty content 1`] = `
+<p>
+  test #### test
+</p>
+`;
+
+exports[`Monospace plugin should render content with # 1`] = `
+<p>
+  #
+  <samp>
+    test
+  </samp>
+</p>
+`;
+
+exports[`Monospace plugin should render inline markup 1`] = `
+<p>
+  <samp>
+    test
+    <strong>
+      bold
+    </strong>
+  </samp>
+</p>
+`;
+
+exports[`Monospace plugin should render siblings monospace 1`] = `
+<p>
+  <samp>
+    test1
+  </samp>
+  <samp>
+    test2
+  </samp>
+</p>
+`;
+
+exports[`Monospace plugin should render simple block 1`] = `
+<p>
+  <samp>
+    text
+  </samp>
+</p>
+`;
+
+exports[`Monospace plugin should render simple block between texts 1`] = `
+<p>
+  test
+  <samp>
+    text
+  </samp>
+  test
+</p>
+`;
+
+exports[`Monospace plugin should render simple block with text after 1`] = `
+<p>
+  <samp>
+    text
+  </samp>
+  test
+</p>
+`;
+
+exports[`Monospace plugin should render simple block with text before 1`] = `
+<p>
+  test
+  <samp>
+    text
+  </samp>
+</p>
+`;
+
+exports[`Monospace plugin should render with open token inside 1`] = `
+<p>
+  test1 ##test2
+  <samp>
+    test3
+  </samp>
+</p>
+`;

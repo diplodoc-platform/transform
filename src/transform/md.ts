@@ -2,11 +2,12 @@ import type {EnvType, MarkdownIt, MarkdownItPluginOpts, OptionsType} from './typ
 import type Token from 'markdown-it/lib/token';
 
 import DefaultMarkdownIt from 'markdown-it';
+import attrs from 'markdown-it-attrs';
+
 import DefaultPlugins from './plugins';
 import DefaultPreprocessors from './preprocessors';
 import {log} from './log';
 import makeHighlight from './highlight';
-import attrs from 'markdown-it-attrs';
 import extractTitle from './title';
 import getHeadings from './headings';
 import sanitizeHtml from './sanitize';

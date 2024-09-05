@@ -1,9 +1,10 @@
-import {MarkdownItPluginCb} from '../typings';
 import Core from 'markdown-it/lib/parser_core';
 import Token from 'markdown-it/lib/token';
 import {bold} from 'chalk';
 import yaml from 'js-yaml';
 import StateCore from 'markdown-it/lib/rules_core/state_core';
+
+import {MarkdownItPluginCb} from '../typings';
 
 interface Options {
     extractChangelogs?: boolean;

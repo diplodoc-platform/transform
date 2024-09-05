@@ -1,10 +1,12 @@
 import {bold} from 'chalk';
 
+import {log} from '../log';
+
 import {evalExp} from './evaluation';
 import {tagLine, variable} from './lexical';
-import {log} from '../log';
 import {getPreparedLeftContent} from './utils';
 import {createSourceMapApi, getLineNumber} from './sourceMap';
+
 import applyLiquid from './index';
 
 type Options = {

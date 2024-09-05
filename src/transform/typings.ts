@@ -1,6 +1,7 @@
 import {LanguageFn} from 'highlight.js';
 import DefaultMarkdownIt from 'markdown-it';
 import DefaultStateCore from 'markdown-it/lib/rules_core/state_core';
+
 import {SanitizeOptions} from './sanitize';
 import {LogLevels, Logger} from './log';
 import {ChangelogItem} from './plugins/changelog/types';

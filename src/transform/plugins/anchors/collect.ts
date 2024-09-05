@@ -3,9 +3,10 @@ import {sep} from 'path';
 
 import {getSinglePageAnchorId, resolveRelativePath} from '../../utilsFS';
 import {transformLinkToOriginalArticle} from '../../utils';
-import {CUSTOM_ID_EXCEPTION, CUSTOM_ID_REGEXP} from './constants';
 import {сarriage} from '../utils';
 import {MarkdownItPluginOpts} from '../typings';
+
+import {CUSTOM_ID_EXCEPTION, CUSTOM_ID_REGEXP} from './constants';
 
 const slugify: (str: string, opts: {}) => string = require('slugify');
 

@@ -1,4 +1,5 @@
 import type {VideoFullOptions} from './types';
+
 import {videoUrl} from './utils';
 
 /** Supported services */

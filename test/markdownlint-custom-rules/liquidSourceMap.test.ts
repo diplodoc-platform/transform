@@ -109,21 +109,14 @@ describe('Check source map after liquid', () => {
     });
 
     it('Should works with fences: 1 line', () => {
-        const input =
-            /*1*/ 'Prefix\n' +
-            /*2*/ '```' +
-            /*3*/ 'some code there\n' +
-            /*4*/ '```\n' +
-            /*5*/ 'Postfix';
-
+        const input = 'Prefix\n```some code there\n```\nPostfix';
         const {sourceMap} = liquid(input, vars, testFn, {withSourceMap: true});
 
         expect(sourceMap).toEqual(getDefaultSourceMap(5));
     });
 
     it('Should works with fences: inline', () => {
-        const input = /*1*/ 'Prefix\n' + /*2*/ '```some code there```\n' + /*3*/ 'Postfix';
-
+        const input = 'Prefix\n```some code there```\nPostfix';
         const {sourceMap} = liquid(input, vars, testFn, {withSourceMap: true});
 
         expect(sourceMap).toEqual(getDefaultSourceMap(3));

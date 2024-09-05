@@ -1,21 +1,19 @@
 #!/usr/bin/env node
 
-const {build} = require('esbuild');
-const {sassPlugin} = require('esbuild-sass-plugin');
-const autoprefixer = require('autoprefixer');
-const postcssPresetEnv = require('postcss-preset-env');
-const postcss = require('postcss');
-const tsconfigJson = require('../tsconfig.json');
+import {build} from 'esbuild';
+import {sassPlugin} from 'esbuild-sass-plugin';
+import autoprefixer from 'autoprefixer';
+import postcssPresetEnv from 'postcss-preset-env';
+import postcss from 'postcss';
 
-const {
-    compilerOptions: {target},
-} = tsconfigJson;
+import tsconfigJson from '../tsconfig.json' assert {type: 'json'};
 
+/** @type {import('esbuild').BuildOptions}*/
 const common = {
     bundle: true,
     sourcemap: true,
     platform: 'browser',
-    target,
+    target: tsconfigJson.compilerOptions.target,
     tsconfig: './tsconfig.json',
 };
 
@@ -47,7 +45,7 @@ const common = {
             outfile: 'dist/css/print.css',
             format: 'iife',
             plugins,
-        })
+        }),
     ]);
 
     await build({

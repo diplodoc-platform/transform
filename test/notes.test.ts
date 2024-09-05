@@ -1,10 +1,12 @@
+import dedent from 'ts-dedent';
+
 import alerts from '../src/transform/plugins/notes';
+import transform from '../src/transform';
+
 import {callPlugin, tokenize} from './utils';
 import {base, customTitle, emptyTitle} from './data/alerts';
 
-import transform from '../src/transform';
-
-const transformYfm = (text: string) => {
+const html = (text: string) => {
     const {
         result: {html},
     } = transform(text, {
@@ -91,78 +93,61 @@ describe('Alerts', () => {
 
     test('should render simple note', () => {
         expect(
-            transformYfm(
-                '{% note info "Note title" %}\n' + '\n' + 'Note content\n' + '\n' + '{% endnote %}',
-            ),
-        ).toBe(
-            '<div class="yfm-note yfm-accent-info" note-type="info"><p class="yfm-note-title" yfm2xliff-explicit="true">Note title</p>\n' +
-                '<div class="yfm-note-content"><p>Note content</p>\n' +
-                '</div></div>',
-        );
+            html(dedent`
+            {% note info "Note title" %}
+
+            Note content
+
+            {% endnote %}
+        `),
+        ).toMatchSnapshot();
     });
 
     test('should render siblings notes', () => {
         expect(
-            transformYfm(
-                '{% note info "Note title 1" %}\n' +
-                    '\n' +
-                    'Note content 1\n' +
-                    '\n' +
-                    '{% endnote %}\n' +
-                    '\n' +
-                    '{% note info "Note title 2" %}\n' +
-                    '\n' +
-                    'Note content 2\n' +
-                    '\n' +
-                    '{% endnote %}',
-            ),
-        ).toBe(
-            '<div class="yfm-note yfm-accent-info" note-type="info"><p class="yfm-note-title" yfm2xliff-explicit="true">Note title 1</p>\n' +
-                '<div class="yfm-note-content"><p>Note content 1</p>\n' +
-                '</div></div><div class="yfm-note yfm-accent-info" note-type="info"><p class="yfm-note-title" yfm2xliff-explicit="true">Note title 2</p>\n' +
-                '<div class="yfm-note-content"><p>Note content 2</p>\n' +
-                '</div></div>',
-        );
+            html(dedent`
+            {% note info "Note title 1" %}
+
+            Note content 1
+
+            {% endnote %}
+
+            {% note info "Note title 2" %}
+
+            Note content 2
+
+            {% endnote %}
+        `),
+        ).toMatchSnapshot();
     });
 
     test('should render nested notes', () => {
         expect(
-            transformYfm(
-                '{% note info "Outer title" %}\n' +
-                    '\n' +
-                    'Outer content\n' +
-                    '\n' +
-                    '{% note info "Inner title" %}\n' +
-                    '\n' +
-                    'Inner content\n' +
-                    '\n' +
-                    '{% endnote %}\n' +
-                    '\n' +
-                    '{% endnote %}',
-            ),
-        ).toBe(
-            '<div class="yfm-note yfm-accent-info" note-type="info"><p class="yfm-note-title" yfm2xliff-explicit="true">Outer title</p>\n' +
-                '<div class="yfm-note-content"><p>Outer content</p>\n' +
-                '<div class="yfm-note yfm-accent-info" note-type="info"><p class="yfm-note-title" yfm2xliff-explicit="true">Inner title</p>\n' +
-                '<div class="yfm-note-content"><p>Inner content</p>\n' +
-                '</div></div></div></div>',
-        );
+            html(dedent`
+            {% note info "Outer title" %}
+
+            Outer content
+
+            {% note info "Inner title" %}
+
+            Inner content
+
+            {% endnote %}
+
+            {% endnote %}
+        `),
+        ).toMatchSnapshot();
     });
 
     test('should render title with format', () => {
         expect(
-            transformYfm(
-                '{% note info "_Italic note title_" %}\n' +
-                    '\n' +
-                    'Content\n' +
-                    '\n' +
-                    '{% endnote %}',
-            ),
-        ).toBe(
-            '<div class="yfm-note yfm-accent-info" note-type="info">' +
-                '<p class="yfm-note-title" yfm2xliff-explicit="true"><em>Italic note title</em></p>\n' +
-                '<div class="yfm-note-content"><p>Content</p>\n' +
-                '</div></div>',
-        );
+            html(dedent`
+            {% note info "_Italic note title_" %}
+
+            Content
+
+            {% endnote %}
+        `),
+        ).toMatchSnapshot();
     });
 });

@@ -1,5 +1,7 @@
 import type {EnvType, OptionsType, OutputType} from './typings';
+
 import {bold} from 'chalk';
+
 import {log} from './log';
 import liquid from './liquid';
 import initMarkdownit from './md';

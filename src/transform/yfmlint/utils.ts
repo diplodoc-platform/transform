@@ -1,7 +1,9 @@
-import {LogLevels} from '../log';
-import {LintError} from 'markdownlint';
 import type {Dictionary} from 'lodash';
+
+import {LintError} from 'markdownlint';
 import {sep} from 'path';
+
+import {LogLevels} from '../log';
 
 export function errorToString(path: string, error: LintError, sourceMap?: Dictionary<string>) {
     const ruleMoniker = error.ruleNames

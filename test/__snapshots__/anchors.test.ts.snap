@@ -1,0 +1,241 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Anchors should add anchor with auto naming, using entire heading text 1`] = `
+<h2 id="lorem-ipsum-dolor-sit-amet">
+  <a href="link.html#lorem-ipsum-dolor-sit-amet"
+     class="yfm-anchor"
+     aria-hidden="true"
+  >
+    <span class="visually-hidden"
+          data-no-index="true"
+    >
+      Lorem ipsum dolor sit amet
+    </span>
+  </a>
+  <em>
+    Lorem
+    <s>
+      ipsum
+      <strong>
+        dolor
+      </strong>
+      sit
+    </s>
+    amet
+  </em>
+</h2>
+<p>
+  Paragraph
+</p>
+`;
+
+exports[`Anchors should add multiple anchors 1`] = `
+<pre>
+  <code>
+    ## Test {#test1} {#test2} {#test3}
+
+            Content
+  </code>
+</pre>
+`;
+
+exports[`Anchors should add multiple anchors when included 1`] = `
+<h2 id="test0">
+  <a href="link.html#test0"
+     class="yfm-anchor"
+     aria-hidden="true"
+  >
+    <span class="visually-hidden"
+          data-no-index="true"
+    >
+      Test
+    </span>
+  </a>
+  Test
+</h2>
+<p>
+  Content before include
+</p>
+<h1 id="test1">
+  <a id="test3"
+     href="link.html#test3"
+     class="yfm-anchor"
+     aria-hidden="true"
+  >
+    <span class="visually-hidden"
+          data-no-index="true"
+    >
+      Title
+    </span>
+  </a>
+  <a id="test2"
+     href="link.html#test2"
+     class="yfm-anchor"
+     aria-hidden="true"
+  >
+    <span class="visually-hidden"
+          data-no-index="true"
+    >
+      Title
+    </span>
+  </a>
+  <a href="link.html#test1"
+     class="yfm-anchor"
+     aria-hidden="true"
+  >
+    <span class="visually-hidden"
+          data-no-index="true"
+    >
+      Title
+    </span>
+  </a>
+  Title
+</h1>
+<p>
+  Content
+</p>
+`;
+
+exports[`Anchors should add single anchor 1`] = `
+<h2 id="test1">
+  <a href="link.html#test1"
+     class="yfm-anchor"
+     aria-hidden="true"
+  >
+    <span class="visually-hidden"
+          data-no-index="true"
+    >
+      Test
+    </span>
+  </a>
+  Test
+</h2>
+<p>
+  Content
+</p>
+`;
+
+exports[`Anchors should add single anchor when included 1`] = `
+<h2 id="test0">
+  <a href="link.html#test0"
+     class="yfm-anchor"
+     aria-hidden="true"
+  >
+    <span class="visually-hidden"
+          data-no-index="true"
+    >
+      Test
+    </span>
+  </a>
+  Test
+</h2>
+<p>
+  Content before include
+</p>
+<h1 id="test1">
+  <a href="link.html#test1"
+     class="yfm-anchor"
+     aria-hidden="true"
+  >
+    <span class="visually-hidden"
+          data-no-index="true"
+    >
+      Title
+    </span>
+  </a>
+  Title
+</h1>
+<p>
+  Content
+</p>
+`;
+
+exports[`Anchors should add single anchor with auto naming 1`] = `
+<h2 id="test">
+  <a href="link.html#test"
+     class="yfm-anchor"
+     aria-hidden="true"
+  >
+    <span class="visually-hidden"
+          data-no-index="true"
+    >
+      Test
+    </span>
+  </a>
+  Test
+</h2>
+<p>
+  Content
+</p>
+`;
+
+exports[`Anchors should be removed fences after transliteration 1`] = `
+<h2 id="test">
+  <a href="link.html#test"
+     class="yfm-anchor"
+     aria-hidden="true"
+  >
+    <span class="visually-hidden"
+          data-no-index="true"
+    >
+      Test
+    </span>
+  </a>
+  <code>
+    Test
+  </code>
+</h2>
+<p>
+  Content
+</p>
+`;
+
+exports[`Anchors should be transliterated correctly 1`] = `
+<h2 id="maksimalnyj-razmer-diskov">
+  <a href="link.html#maksimalnyj-razmer-diskov"
+     class="yfm-anchor"
+     aria-hidden="true"
+  >
+    <span class="visually-hidden"
+          data-no-index="true"
+    >
+      Максимальный размер дисков
+    </span>
+  </a>
+  Максимальный размер дисков
+</h2>
+<p>
+  Content
+</p>
+`;
+
+exports[`Anchors should include content by anchor in sharped path file 1`] = `
+<p>
+  Content before include
+</p>
+<h2 id="anchor">
+  <a href="link.html#anchor"
+     class="yfm-anchor"
+     aria-hidden="true"
+  >
+    <span class="visually-hidden"
+          data-no-index="true"
+    >
+      Subtitle
+    </span>
+  </a>
+  Subtitle
+</h2>
+<p>
+  Subcontent
+</p>
+<p>
+  After include
+</p>
+`;
+
+exports[`Anchors with extract title should not add an anchor for level 1 heading 1`] = `
+<p>
+  Content
+</p>
+`;

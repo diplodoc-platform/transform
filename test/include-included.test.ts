@@ -1,9 +1,11 @@
 import {resolve} from 'path';
 import {readFileSync} from 'fs';
 import {readFile} from 'node:fs/promises';
+
 import transform from '../src/transform';
 import collect from '../src/transform/plugins/includes/collect';
 import includes from '../src/transform/plugins/includes';
+
 import {log} from './utils';
 
 const transformYfm = (text: string, path = 'mocks/included.md') => {

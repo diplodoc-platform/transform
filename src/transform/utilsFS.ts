@@ -1,5 +1,6 @@
-import {readFileSync, statSync} from 'fs';
 import type {Dictionary} from 'lodash';
+
+import {readFileSync, statSync} from 'fs';
 import escapeRegExp from 'lodash/escapeRegExp';
 import {join, parse, relative, resolve, sep} from 'path';
 

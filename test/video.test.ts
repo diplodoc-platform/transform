@@ -1,9 +1,9 @@
 import path from 'path';
 import MarkdownIt from 'markdown-it';
-const generate = require('markdown-it-testgen');
 
 import video from '../src/transform/plugins/video/index';
 
+const generate = require('markdown-it-testgen');
 const assert = require('assert');
 
 // eslint-disable-next-line no-implicit-globals

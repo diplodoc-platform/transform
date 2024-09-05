@@ -3,6 +3,7 @@ import Token from 'markdown-it/lib/token';
 
 import {MarkdownItPluginCb} from '../typings';
 import {generateID} from '../utils';
+
 import {termDefinitions} from './termDefinitions';
 import {BASIC_TERM_REGEXP} from './constants';
 

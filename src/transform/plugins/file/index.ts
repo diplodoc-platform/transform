@@ -1,4 +1,5 @@
 import type {PluginWithOptions} from 'markdown-it';
+
 import {FILE_TOKEN, RULE_NAME} from './const';
 import {FileOptions, fileParser, fileRenderer} from './file';
 

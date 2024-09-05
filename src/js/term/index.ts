@@ -1,4 +1,5 @@
 import {getEventTarget, isCustom} from '../utils';
+
 import {
     closeDefinition,
     openClass,

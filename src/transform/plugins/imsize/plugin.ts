@@ -1,6 +1,7 @@
 import type MarkdownIt from 'markdown-it';
 import type ParserInline from 'markdown-it/lib/parser_inline';
 import type Token from 'markdown-it/lib/token';
+
 import {ImsizeAttr} from './const';
 import {parseImageSize} from './helpers';
 

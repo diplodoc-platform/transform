@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Linkify should linkify .cloud tld with linkifyTlds option 1`] = `
+<p>
+  <a href="http://yandex.cloud">
+    yandex.cloud
+  </a>
+</p>
+`;
+
+exports[`Linkify should not linkify .cloud tld without linkifyTlds option 1`] = `
+<p>
+  yandex.cloud
+</p>
+`;

@@ -2,7 +2,9 @@
 import Token from 'markdown-it/lib/token';
 import MarkdownIt from 'markdown-it';
 import StateCore from 'markdown-it/lib/rules_core/state_core';
+
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from 'src/transform/plugins/typings';
+
 import {log} from '../src/transform/log';
 
 type DeepPartial<T> = T extends object

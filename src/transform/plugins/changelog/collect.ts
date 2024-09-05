@@ -1,9 +1,12 @@
 import {bold} from 'chalk';
-import {ChangelogItem} from './types';
+
 import initMarkdownit from '../../md';
-import changelogPlugin from './index';
 import imsize from '../imsize';
 import {MarkdownItPluginOpts} from '../typings';
+
+import {ChangelogItem} from './types';
+
+import changelogPlugin from './index';
 
 const BLOCK_START = '{% changelog %}';
 const BLOCK_END = '{% endchangelog %}';

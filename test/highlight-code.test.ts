@@ -1,4 +1,5 @@
 import {dirname} from 'path';
+
 import transform from '../src/transform';
 
 const mocksPath = require.resolve('./utils.ts');

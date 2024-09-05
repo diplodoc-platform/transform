@@ -1,0 +1,313 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[` & JavaScript includes 1`] = `<br size="&amp;{alert('XSS')}">`;
+
+exports[` Anonymous HTML with style attribute 1`] = `""`;
+
+exports[` Assuming you can only fit in a few characters and it filters against ".js" 1`] = `""`;
+
+exports[` BASE tag 1`] = `""`;
+
+exports[` BGSOUND 1`] = `""`;
+
+exports[` Case insensitive XSS attack vector 1`] = `
+<p>
+  &lt;img src=JaVaScRiPt:alert('XSS')&gt;
+</p>
+`;
+
+exports[` DIV background-image 1`] = `
+<div>
+</div>
+`;
+
+exports[` DIV background-image with unicoded XSS exploit 1`] = `
+<div style="background-image:\\0075\\0072\\006C\\0028'\\006a\\0061\\0076\\0061\\0073\\0063\\0072\\0069\\0070\\0074\\003a\\0061\\006c\\0065\\0072\\0074\\0028.1027\\0058.1053\\0053\\0027\\0029'\\0029">
+</div>
+`;
+
+exports[` DIV background-image with unicoded XSS exploit 2 1`] = `
+<div>
+</div>
+`;
+
+exports[` DIV expression 1`] = `
+<div style="width:expression(alert('XSS'))">
+</div>
+`;
+
+exports[` Decimal HTML character references 1`] = `<img>`;
+
+exports[` Decimal HTML character references without trailing semicolons 1`] = `<img>`;
+
+exports[` Default src tag by leaving it empty 1`] = `
+<p>
+  &lt;img src= onmouseover="alert('xxs')"&gt;
+</p>
+`;
+
+exports[` Default src tag by leaving it out entirely 1`] = `<img>`;
+
+exports[` Default src tag to get past filters that check src domain 1`] = `<img src="#">`;
+
+exports[` Double open angle brackets 1`] = `""`;
+
+exports[` Downlevel-Hidden block 1`] = `""`;
+
+exports[` Embedded Encoded tab 1`] = `<img>`;
+
+exports[` Embedded carriage return to break up XSS 1`] = `<img>`;
+
+exports[` Embedded newline to break up XSS 1`] = `<img>`;
+
+exports[` Embedded tab 1`] = `<img>`;
+
+exports[` End title tag 1`] = `""`;
+
+exports[` Escaping JavaScript escapes 1`] = `
+<p>
+  ";alert('XSS');//
+</p>
+`;
+
+exports[` Grave accent obfuscation 1`] = `
+<p>
+  &lt;img src='javascript:alert("RSnake says, 'XSS'")'&gt;
+</p>
+`;
+
+exports[` HTML entities 1`] = `
+<p>
+  &lt;img src=javascript:alert("XSS")&gt;
+</p>
+`;
+
+exports[` Half open HTML/JavaScript XSS vector 1`] = `
+<p>
+  &lt;img src="javascript:alert('XSS')"
+</p>
+`;
+
+exports[` Hexadecimal HTML character references without trailing semicolons 1`] = `<img>`;
+
+exports[` Image XSS using the JavaScript directive 1`] = `<img>`;
+
+exports[` List-style-image 1`] = `
+<style>
+</style>
+<ul>
+  <li>
+    XSS
+    <br>
+  </li>
+</ul>
+`;
+
+exports[` Livescript 1`] = `<img>`;
+
+exports[` Local htc file 1`] = `""`;
+
+exports[` Malformed A tags 1`] = `
+<p>
+  <a>
+    xxs link
+  </a>
+</p>
+`;
+
+exports[` Malformed img tags 1`] = `
+<p>
+  &lt;img """&gt;"&gt;
+</p>
+`;
+
+exports[` No Filter Evasion 1`] = `""`;
+
+exports[` No closing script tags 1`] = `""`;
+
+exports[` No quotes and no semicolon 1`] = `
+<p>
+  &lt;img src=javascript:alert('XSS')&gt;
+</p>
+`;
+
+exports[` Non-alpha-non-digit XSS 1 1`] = `
+<p>
+  &lt;script/xss src="http://ha.ckers.org/xss.js"&gt;
+</p>
+`;
+
+exports[` Non-alpha-non-digit XSS 2 1`] = `""`;
+
+exports[` Non-alpha-non-digit XSS 3 1`] = `
+<p>
+  &lt;script/src="http://ha.ckers.org/xss.js"&gt;
+</p>
+`;
+
+exports[` Non-alpha-non-digit XSS 4 1`] = `
+<p>
+  &lt;
+</p>
+`;
+
+exports[` Null breaks up JavaScript directive 1`] = `
+<p>
+  perl -e 'print "&lt;img src=java�script:alert("XSS")&gt;";' &gt; out
+</p>
+`;
+
+exports[` OBJECT tag 1`] = `
+<p>
+</p>
+`;
+
+exports[` PHP 1`] = `"alert(\\"XSS\\")'); ?&gt;"`;
+
+exports[` Protocol resolution in script tags 1`] = `""`;
+
+exports[` Remote style sheet 1`] = `""`;
+
+exports[` Remote style sheet part 2 1`] = `
+<style>
+</style>
+`;
+
+exports[` Remote style sheet part 3 1`] = `""`;
+
+exports[` Remote style sheet part 4 1`] = `
+<style>
+</style>
+`;
+
+exports[` SSI (Server Side Includes) 1`] = `""`;
+
+exports[` Spaces and meta chars before the JavaScript in images for XSS 1`] = `<img>`;
+
+exports[` TABLE 1`] = `
+<table background="javascript:alert('XSS')">
+</table>
+`;
+
+exports[` TD 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td background="javascript:alert('XSS')">
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[` US-ASCII encoding 1`] = `
+<p>
+  ¼script¾alert(¢XSS¢)¼/script¾
+</p>
+`;
+
+exports[` Using an EMBED tag you can embed a Flash movie that contains XSS 1`] = `
+<p>
+  &lt;embed src="http://ha.ckers.Using an EMBED tag you can embed a Flash movie that contains XSS. Click here for a demo. If you add the attributes allowScriptAccess="never" and allownetworking="internal" it can mitigate this risk (thank you to Jonathan Vanasco for the info).:org/xss.swf" AllowScriptAccess="always"&gt;
+</p>
+`;
+
+exports[` VBscript in an image 1`] = `<img>`;
+
+exports[` XML tag 1`] = `
+<p>
+</p>
+`;
+
+exports[` XSS Locator 1 1`] = `
+<p>
+  ';alert(String.fromCharCode(88,83,83))//';alert(String.fromCharCode(88,83,83))//";alert(String.fromCharCode(88,83,83))//";alert(String.fromCharCode(88,83,83))//--&gt;"&gt;'&gt;
+</p>
+`;
+
+exports[` XSS locator 2 1`] = `
+<p>
+  '';!--"=&amp;
+</p>
+`;
+
+exports[` You can EMBED SVG which can contain your XSS vector 1`] = `
+<p>
+</p>
+`;
+
+exports[` body image 1`] = `""`;
+
+exports[` body tag 1`] = `""`;
+
+exports[` frame 1`] = `""`;
+
+exports[` fromCharCode 1`] = `<img>`;
+
+exports[` iframe 1`] = `
+<iframe>
+</iframe>
+`;
+
+exports[` iframe Event based 1`] = `
+<iframe src="#">
+</iframe>
+`;
+
+exports[` img Dynsrc 1`] = `<img>`;
+
+exports[` img lowsrc 1`] = `<img>`;
+
+exports[` img style with expression 1`] = `
+<p>
+  exp/
+  <em>
+    &lt;a style='no\\xss:noxss("
+  </em>
+  //*");
+</p>
+`;
+
+exports[` img style with expression 2`] = `
+<p>
+  exp/
+  <em>
+    &lt;a style='no\\xss:noxss("
+  </em>
+  //*");
+</p>
+`;
+
+exports[` input image 1`] = `<input type="image">`;
+
+exports[` meta 1`] = `""`;
+
+exports[` style sheet 1`] = `""`;
+
+exports[` style tag 1`] = `
+<style type="text/javascript">
+  alert('XSS');
+</style>
+`;
+
+exports[` style tag using background 1`] = `
+<style type="text/css">
+</style>
+`;
+
+exports[` style tag using background-image 1`] = `
+<style>
+  .xss {
+  background-image: url("javascript:alert('XSS')");
+}
+</style>
+<a class="XSS">
+</a>
+`;
+
+exports[` style tags with broken up JavaScript for XSS 1`] = `
+<style>
+</style>
+`;
+
+exports[` style tags with broken up JavaScript for XSS part 2 1`] = `<img>`;

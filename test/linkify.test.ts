@@ -6,13 +6,13 @@ describe('Linkify', () => {
             result: {html},
         } = transform('yandex.cloud');
 
-        expect(html).toBe('<p>yandex.cloud</p>\n');
+        expect(html).toMatchSnapshot();
     });
     it('should linkify .cloud tld with linkifyTlds option', () => {
         const {
             result: {html},
         } = transform('yandex.cloud', {linkifyTlds: 'cloud', linkify: true});
 
-        expect(html).toBe('<p><a href="http://yandex.cloud">yandex.cloud</a></p>\n');
+        expect(html).toMatchSnapshot();
     });
 });

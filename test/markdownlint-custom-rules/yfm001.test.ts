@@ -1,5 +1,6 @@
-import yfmlint from '../../src/transform/yfmlint';
 import merge from 'lodash/merge';
+
+import yfmlint from '../../src/transform/yfmlint';
 import {LogLevels, log} from '../../src/transform/log';
 
 const testInput = `

@@ -1,5 +1,6 @@
-import yfmTransform from '../src/transform';
 import type {FileOptions} from '../src/transform/plugins/file/file';
+
+import yfmTransform from '../src/transform';
 
 const transform = (text: string, opts?: FileOptions): string => {
     const {

@@ -2,9 +2,10 @@ import {dirname} from 'path';
 
 import includes from '../src/transform/plugins/includes';
 import yfmlint from '../src/transform/yfmlint';
+import {log} from '../src/transform/log';
+
 import {callPlugin, tokenize} from './utils';
 import {codeInBackQuote, notitle, sharpedFile, title} from './data/includes';
-import {log} from '../src/transform/log';
 
 describe('Includes', () => {
     beforeEach(() => {

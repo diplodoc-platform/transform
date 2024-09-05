@@ -1,12 +1,13 @@
 import {bold} from 'chalk';
 import GithubSlugger from 'github-slugger';
-
-import {headingInfo} from '../../utils';
-import {CUSTOM_ID_EXCEPTION, CUSTOM_ID_REGEXP} from './constants';
 import StateCore from 'markdown-it/lib/rules_core/state_core';
 import Token from 'markdown-it/lib/token';
 import {escapeHtml} from 'markdown-it/lib/common/utils';
+
+import {headingInfo} from '../../utils';
 import {MarkdownItPluginCb} from '../typings';
+
+import {CUSTOM_ID_EXCEPTION, CUSTOM_ID_REGEXP} from './constants';
 
 const slugify: (str: string, opts: {}) => string = require('slugify');
 

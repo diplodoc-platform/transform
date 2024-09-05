@@ -1,11 +1,10 @@
+import type {Dictionary} from 'lodash';
+
 import applySubstitutions from './substitutions';
 import {prepareSourceMap} from './sourceMap';
-
 import applyCycles from './cycles';
 import applyConditions from './conditions';
-
 import ArgvService, {ArgvSettings} from './services/argv';
-import type {Dictionary} from 'lodash';
 
 const fence = '```';
 

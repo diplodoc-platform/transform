@@ -1,4 +1,5 @@
 import {escapeHtml} from 'markdown-it/lib/common/utils';
+
 import {HighlightLangMap} from './typings';
 
 export = function makeHighlight(langs: HighlightLangMap = {}) {

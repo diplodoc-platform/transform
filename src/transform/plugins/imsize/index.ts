@@ -1,4 +1,5 @@
 import {PluginSimple} from 'markdown-it';
+
 import {imageWithSize} from './plugin';
 
 /**
