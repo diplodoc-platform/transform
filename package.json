@@ -32,9 +32,6 @@
     "build": "npm run build:lib && npm run build:dist",
     "build:dist": "./esbuild/build.js",
     "build:lib": "tsc -p tsconfig.transform.json",
-    "lint": "eslint --max-warnings=0 \"{src,test}/**/*.{js,jsx,ts,tsx}\"",
-    "lint:fix": "eslint --fix --max-warnings=0 \"{src,test}/**/*.{js,jsx,ts,tsx}\"",
-    "precommit": "npm run lint && npm run test",
     "prepublishOnly": "npm run lint && npm run test && npm run build",
     "test": "jest --coverage",
     "typecheck": "tsc -p tsconfig.json --noEmit"
@@ -63,8 +60,6 @@
   },
   "devDependencies": {
     "@diplodoc/babel-preset": "^1.0.2",
-    "@diplodoc/eslint-config": "^2.0.0",
-    "@diplodoc/prettier-config": "^2.0.0",
     "@diplodoc/tsconfig": "^1.0.2",
     "@types/css": "0.0.34",
     "@types/github-slugger": "^1.3.0",
