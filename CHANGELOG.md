@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.30.0](https://github.com/diplodoc-platform/transform/compare/v4.29.0...v4.30.0) (2024-09-05)
+
+
+### Features
+
+* add merge included ([#485](https://github.com/diplodoc-platform/transform/issues/485)) ([0cf1e0e](https://github.com/diplodoc-platform/transform/commit/0cf1e0efb88a0b53fd1871b119208dff77cdf185))
+* add yandex video, vk video iframes ([6a5033a](https://github.com/diplodoc-platform/transform/commit/6a5033aa88256d70b3615c0f07ec637f3ea2e3ed))
+
+
+### Bug Fixes
+
+* Trim new video formats names ([b48d452](https://github.com/diplodoc-platform/transform/commit/b48d452abf39531ac85eb8109a1c8e6b0f5ec827))
+
 ## [4.29.0](https://github.com/diplodoc-platform/transform/compare/v4.28.3...v4.29.0) (2024-09-05)
 
 
