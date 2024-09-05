@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.29.0](https://github.com/diplodoc-platform/transform/compare/v4.28.3...v4.29.0) (2024-09-05)
+
+
+### Features
+
+* add cut plugin ([540e7f0](https://github.com/diplodoc-platform/transform/commit/540e7f0bca98182f724ac2309b5c1c86a5095629))
+* replace cut with an extension from separate package ([9964674](https://github.com/diplodoc-platform/transform/commit/99646747ef591225b88114113a3f6c3c02c7de82))
+
 ## [4.28.3](https://github.com/diplodoc-platform/transform/compare/v4.28.2...v4.28.3) (2024-09-02)
 
 
