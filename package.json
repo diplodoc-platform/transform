@@ -34,7 +34,11 @@
     "build:lib": "tsc -p tsconfig.transform.json",
     "prepublishOnly": "npm run lint && npm run test && npm run build",
     "test": "jest --coverage",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "lint update && lint",
+    "lint:fix": "lint update && lint fix",
+    "pre-commit": "lint update && lint-staged",
+    "prepare": "husky"
   },
   "dependencies": {
     "@diplodoc/cut-extension": "^0.2.5",
@@ -60,6 +64,7 @@
   },
   "devDependencies": {
     "@diplodoc/babel-preset": "^1.0.2",
+    "@diplodoc/lint": "^1.1.3",
     "@diplodoc/tsconfig": "^1.0.2",
     "@types/css": "0.0.34",
     "@types/github-slugger": "^1.3.0",
