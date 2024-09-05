@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "@diplodoc/babel-preset": "^1.0.2",
-    "@diplodoc/lint": "^1.1.3",
+    "@diplodoc/lint": "^1.2.0",
     "@diplodoc/tsconfig": "^1.0.2",
     "@types/css": "0.0.34",
     "@types/github-slugger": "^1.3.0",
