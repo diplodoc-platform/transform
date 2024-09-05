@@ -1,8 +1,9 @@
-import type {EnvType, MarkdownIt, OptionsType} from './typings';
+import type {EnvType, MarkdownIt, MarkdownItPluginOpts, OptionsType} from './typings';
 import type Token from 'markdown-it/lib/token';
 
 import DefaultMarkdownIt from 'markdown-it';
 import DefaultPlugins from './plugins';
+import DefaultPreprocessors from './preprocessors';
 import {log} from './log';
 import makeHighlight from './highlight';
 import attrs from 'markdown-it-attrs';
@@ -11,10 +12,21 @@ import getHeadings from './headings';
 import sanitizeHtml from './sanitize';
 
 function initMarkdownit(options: OptionsType) {
-    const {allowHTML = false, linkify = false, breaks = true, highlightLangs = {}} = options;
+    const {
+        allowHTML = false,
+        linkify = false,
+        breaks = true,
+        highlightLangs = {},
+        disableRules = [],
+    } = options;
 
     const highlight = makeHighlight(highlightLangs);
     const md = new DefaultMarkdownIt({html: allowHTML, linkify, highlight, breaks}) as MarkdownIt;
+
+    if (disableRules?.length) {
+        md.disable(disableRules);
+    }
+
     const env = {
         // TODO: move md.meta directly to env
         get meta() {
@@ -38,30 +50,32 @@ function initMarkdownit(options: OptionsType) {
         title: '',
     } as EnvType;
 
-    initPlugins(md, options);
+    // Plugin options is the plugin context that remains during the build of one file
+    const pluginOptions = getPluginOptions(options);
 
-    const parse = initParser(md, options, env);
+    // Init the plugins. Which install the md rules (core, block, ...)
+    initPlugins(md, options, pluginOptions);
+
+    // Init preprocessor and MD parser
+    const parse = initParser(md, options, env, pluginOptions);
+
+    // Init render to HTML compiler
     const compile = initCompiler(md, options, env);
 
     return {parse, compile, env};
 }
 
-function initPlugins(md: MarkdownIt, options: OptionsType) {
+function getPluginOptions(options: OptionsType) {
     const {
         vars = {},
         path,
         extractTitle,
         conditionsInCode = false,
         disableLiquid = false,
-        linkify = false,
-        linkifyTlds,
-        leftDelimiter = '{',
-        rightDelimiter = '}',
-        plugins = DefaultPlugins,
         ...customOptions
     } = options;
 
-    const pluginOptions = {
+    return {
         ...customOptions,
         conditionsInCode,
         vars,
@@ -69,7 +83,17 @@ function initPlugins(md: MarkdownIt, options: OptionsType) {
         extractTitle,
         disableLiquid,
         log,
-    };
+    } as MarkdownItPluginOpts;
+}
+
+function initPlugins(md: MarkdownIt, options: OptionsType, pluginOptions: MarkdownItPluginOpts) {
+    const {
+        linkify = false,
+        linkifyTlds,
+        leftDelimiter = '{',
+        rightDelimiter = '}',
+        plugins = DefaultPlugins,
+    } = options;
 
     // Need for ids of headers
     md.use(attrs, {leftDelimiter, rightDelimiter});
@@ -81,17 +105,30 @@ function initPlugins(md: MarkdownIt, options: OptionsType) {
     }
 }
 
-function initParser(md: MarkdownIt, options: OptionsType, env: EnvType) {
+function initParser(
+    md: MarkdownIt,
+    options: OptionsType,
+    env: EnvType,
+    pluginOptions: MarkdownItPluginOpts,
+) {
     return (input: string) => {
         const {
             extractTitle: extractTitleOption,
             needTitle,
             needFlatListHeadings = false,
             getPublicPath,
+            preprocessors = DefaultPreprocessors,
         } = options;
 
+        // Run input preprocessor
+        for (const preprocessor of preprocessors) {
+            input = preprocessor(input, pluginOptions, md);
+        }
+
+        // Generate global href link
         const href = getPublicPath ? getPublicPath(options) : '';
 
+        // Generate MD tokens
         let tokens = md.parse(input, env);
 
         if (extractTitleOption) {
@@ -121,12 +158,15 @@ function initCompiler(md: MarkdownIt, options: OptionsType, env: EnvType) {
     const {needToSanitizeHtml = true, renderInline = false, sanitizeOptions} = options;
 
     return (tokens: Token[]) => {
+        // Remove inline tokens if inline mode is activated
         if (renderInline) {
             tokens = tokens.filter((token) => token.type === 'inline');
         }
 
+        // Generate HTML
         const html = md.renderer.render(tokens, md.options, env);
 
+        // Sanitize the page
         return needToSanitizeHtml ? sanitizeHtml(html, sanitizeOptions) : html;
     };
 }
