@@ -75,7 +75,7 @@ function tokenizeVideo(md: MarkdownIt, options: VideoFullOptions): Renderer.Rend
                   ` class="embed-responsive-item ${service}-player"` +
                   ` type="text/html" width="${width}" height="${height}"` +
                   ` src="${options.url(service, videoID, options)}"` +
-                  `frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>`;
+                  ` frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>`;
     };
 }
 
