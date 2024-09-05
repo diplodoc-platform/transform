@@ -2,37 +2,68 @@ import {relative} from 'path';
 import {bold} from 'chalk';
 
 import {getRelativePath, isFileExists, resolveRelativePath} from '../../utilsFS';
-import {MarkdownItPluginOpts} from '../typings';
+
+import {IncludeCollectOpts} from './types';
 
 const includesPaths: string[] = [];
 
-type Opts = MarkdownItPluginOpts & {
-    destPath: string;
-    copyFile(path: string, dest: string, opts: Opts): string | null | undefined;
-    singlePage: Boolean;
-    included: Boolean;
-    includedParentPath?: string;
-};
-
-const collect = (input: string, options: Opts) => {
-    const {
-        root,
-        path,
-        destPath = '',
-        log,
-        copyFile,
-        singlePage,
-        includedParentPath: includedParentPathNullable,
-        included,
-    } = options;
+function processRecursive(
+    includePath: string,
+    targetDestPath: string,
+    options: IncludeCollectOpts,
+    appendix: Map<string, string>,
+) {
+    const {path, log, copyFile, includedParentPath: includedParentPathNullable, included} = options;
     const includedParentPath = includedParentPathNullable || path;
+
+    const includeOptions = {
+        ...options,
+        path: includePath,
+        destPath: targetDestPath,
+    };
+
+    try {
+        const content = copyFile(includePath, targetDestPath, includeOptions);
+
+        // To reduce file reading we can include the file content into the generated content
+        if (included && content) {
+            const includedRelativePath = getRelativePath(includedParentPath, includePath);
+
+            // The appendix is the map that protects from multiple include files
+            if (!appendix.has(includedRelativePath)) {
+                // Recursive function to include the depth structure
+                const includeContent = collectRecursive(
+                    content,
+                    {
+                        ...options,
+                        path: includePath,
+                        includedParentPath,
+                    },
+                    appendix,
+                );
+
+                // Add to appendix set structure
+                appendix.set(
+                    includedRelativePath,
+                    `{% included (${includedRelativePath}) %}\n${includeContent}\n{% endincluded %}`,
+                );
+            }
+        }
+    } catch (e) {
+        log.error(`No such file or has no access to ${bold(includePath)} in ${bold(path)}`);
+    }
+}
+
+function collectRecursive(
+    result: string,
+    options: IncludeCollectOpts,
+    appendix: Map<string, string>,
+) {
+    const {root, path, destPath = '', log, singlePage} = options;
 
     const INCLUDE_REGEXP = /{%\s*include\s*(notitle)?\s*\[(.+?)]\((.+?)\)\s*%}/g;
 
-    let match,
-        result = input;
-
-    const appendix: Map<string, string> = new Map();
+    let match: RegExpExecArray | null;
 
     while ((match = INCLUDE_REGEXP.exec(result)) !== null) {
         let [, , , relativePath] = match;
@@ -63,51 +94,43 @@ const collect = (input: string, options: Opts) => {
         }
 
         includesPaths.push(includePath);
-        const includeOptions = {
-            ...options,
-            path: includePath,
-            destPath: targetDestPath,
-        };
 
-        try {
-            const content = copyFile(includePath, targetDestPath, includeOptions);
+        processRecursive(includePath, targetDestPath, options, appendix);
 
-            // To reduce file reading we can include the file content into the generated content
-            if (included && content) {
-                const includedRelativePath = getRelativePath(includedParentPath, includePath);
-
-                // The appendix is the map that protects from multiple include files
-                if (!appendix.has(includedRelativePath)) {
-                    // Recursive function to include the depth structure
-                    const includeContent = collect(content, {
-                        ...options,
-                        path: includePath,
-                        includedParentPath,
-                    });
-                    // Add to appendix set structure
-                    appendix.set(
-                        includedRelativePath,
-                        `{% included (${includedRelativePath}) %}\n${includeContent}\n{% endincluded %}`,
-                    );
-                }
-            }
-        } catch (e) {
-            log.error(`No such file or has no access to ${bold(includePath)} in ${bold(path)}`);
-        } finally {
-            includesPaths.pop();
-        }
-    }
-
-    // Appendix should be appended to the end of the file (it supports depth structure, so the included files will have included as well)
-    if (appendix.size > 0) {
-        result += '\n' + [...appendix.values()].join('\n');
-    }
-
-    if (singlePage) {
-        return result;
+        includesPaths.pop();
     }
 
     return result;
-};
+}
+
+function collect(input: string, options: IncludeCollectOpts) {
+    const {path, destPath = '', included} = options;
+
+    const appendix: Map<string, string> = new Map();
+
+    // Collect autotiles into the root without processing autotiles inside the deps
+    if (included) {
+        let match;
+        const regexp = /\[{#T}\]\(\s*(.+?)\s*\)/g;
+
+        while ((match = regexp.exec(input)) !== null) {
+            const [, relativePath] = match;
+
+            const includePath = resolveRelativePath(path, relativePath);
+            const targetDestPath = resolveRelativePath(destPath, relativePath);
+
+            processRecursive(includePath, targetDestPath, options, appendix);
+        }
+    }
+
+    input = collectRecursive(input, options, appendix);
+
+    // Appendix should be appended to the end of the file (it supports depth structure, so the included files will have included as well)
+    if (appendix.size > 0) {
+        input += '\n' + [...appendix.values()].join('\n');
+    }
+
+    return input;
+}
 
 export = collect;

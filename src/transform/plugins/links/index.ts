@@ -16,6 +16,7 @@ import {
 import {getFileTokens, isFileExists} from '../../utilsFS';
 import {CacheContext, StateCore} from '../../typings';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
+import {MarkdownItIncluded} from '../includes/types';
 
 function getTitleFromTokens(tokens: Token[]) {
     let title = '';
@@ -49,10 +50,11 @@ type Options = {
     currentPath: string;
     log: Logger;
     cache?: CacheContext;
+    content?: string;
 };
 
 const getTitle = (id: string | null, options: Options) => {
-    const {file, state, opts} = options;
+    const {file, state, opts, content} = options;
 
     const fileTokens = getFileTokens(file, state, {
         ...opts,
@@ -60,6 +62,7 @@ const getTitle = (id: string | null, options: Options) => {
         disableTitleRefSubstitution: true,
         disableCircularError: true,
         inheritVars: false,
+        content, // The content forces the function to use it instead of reading from the disk
     });
     const sourceTokens = id ? findBlockTokens(fileTokens, id) : fileTokens;
     return getTitleFromTokens(sourceTokens);
@@ -111,7 +114,13 @@ function getDefaultPublicPath(
 }
 
 // eslint-disable-next-line complexity
-function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcOpts) {
+function processLink(
+    md: MarkdownItIncluded,
+    state: StateCore,
+    tokens: Token[],
+    idx: number,
+    opts: ProcOpts,
+) {
     const {
         path: startPath,
         root,
@@ -147,7 +156,7 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
 
     if (pathname) {
         file = resolve(path.parse(currentPath).dir, pathname);
-        fileExists = isFileExists(file);
+        fileExists = md.included?.[file] || isFileExists(file);
         isPageFile = PAGE_LINK_REGEXP.test(pathname);
 
         if (isPageFile && !fileExists) {
@@ -180,7 +189,11 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
         isPageFile &&
         !state.env.disableTitleRefSubstitution
     ) {
+        // Check the existed included store and extract it
+        const content = md.included?.[file];
+
         addTitle({
+            content,
             hash,
             file,
             state,
@@ -213,7 +226,7 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
     }
 }
 
-const index: MarkdownItPluginCb<ProcOpts & Options> = (md, opts) => {
+const index: MarkdownItPluginCb<ProcOpts & Options> = (md: MarkdownItIncluded, opts) => {
     const plugin = (state: StateCore) => {
         const tokens = state.tokens;
         let i = 0;
@@ -231,7 +244,7 @@ const index: MarkdownItPluginCb<ProcOpts & Options> = (md, opts) => {
                     const isYfmAnchor = tokenClass ? tokenClass.includes('yfm-anchor') : false;
 
                     if (isLinkOpenToken && !isYfmAnchor) {
-                        processLink(state, childrenTokens, j, opts);
+                        processLink(md, state, childrenTokens, j, opts);
                     }
 
                     j++;
