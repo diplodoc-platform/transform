@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import {dirname} from 'node:path';
+import {createRequire} from 'node:module';
 import {build} from 'esbuild';
 import {sassPlugin} from 'esbuild-sass-plugin';
 import autoprefixer from 'autoprefixer';
@@ -7,6 +9,8 @@ import postcssPresetEnv from 'postcss-preset-env';
 import postcss from 'postcss';
 
 import tsconfigJson from '../tsconfig.json' assert {type: 'json'};
+
+const require = createRequire(import.meta.url);
 
 /** @type {import('esbuild').BuildOptions}*/
 const common = {
@@ -20,6 +24,14 @@ const common = {
 (async function buildCss() {
     const plugins = [
         sassPlugin({
+            importMapper: (path) => {
+                if (path.startsWith('@diplodoc')) {
+                    return dirname(require.resolve(path));
+                }
+
+                return path;
+            },
+
             async transform(source) {
                 const {css} = await postcss([
                     autoprefixer({cascade: false}),
