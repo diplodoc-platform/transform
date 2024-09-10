@@ -1,16 +1,10 @@
-@import 'variables';
-
-$infoColor: $accentColor;
-$tipColor: #56bd67;
-$warningColor: #f19518;
-$importantColor: #ff4645;
-
-$infoBackgroundColor: rgba(2, 123, 243, 0.08);
-$tipBackgroundColor: rgba(63, 201, 46, 0.1);
-$warningBackgroundColor: rgba(255, 136, 0, 0.15);
-$importantBackgroundColor: rgba(235, 50, 38, 0.08);
+@import 'private';
+@import 'brand';
 
 .yfm .yfm-note {
+    @include private-brand();
+    @include brand();
+
     max-width: 1296px;
     margin: 20px 0;
     padding: 20px 20px 20px 64px;
@@ -42,10 +36,10 @@ $importantBackgroundColor: rgba(235, 50, 38, 0.08);
     }
 
     $colors: (
-        yfm-accent-info: $infoColor,
-        yfm-accent-tip: $tipColor,
-        yfm-accent-alert: $importantColor,
-        yfm-accent-warning: $warningColor
+        yfm-accent-info: var(--yfm-color-accent),
+        yfm-accent-tip: var(--yfm-color-note-tip),
+        yfm-accent-alert: var(--yfm-color-note-important),
+        yfm-accent-warning: var(--yfm-color-note-warning),
     );
 
     @each $type, $color in $colors {
@@ -59,10 +53,10 @@ $importantBackgroundColor: rgba(235, 50, 38, 0.08);
     }
 
     $backgroundColors: (
-        yfm-accent-info: $infoBackgroundColor,
-        yfm-accent-tip: $tipBackgroundColor,
-        yfm-accent-alert: $importantBackgroundColor,
-        yfm-accent-warning: $warningBackgroundColor
+        yfm-accent-info: var(--yfm-color-note-info-background),
+        yfm-accent-tip: var(--yfm-color-note-tip-background),
+        yfm-accent-alert: var(--yfm-color-note-important-background),
+        yfm-accent-warning: var(--yfm-color-note-warning-background),
     );
 
     @each $type, $color in $backgroundColors {

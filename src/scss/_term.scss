@@ -1,6 +1,12 @@
+@import 'private';
+@import 'brand';
+
 .yfm-term {
+    @include private-brand();
+    @include brand();
+
     &_title {
-        color: #027bf3;
+        color: var(--yfm-color-term-title);
         cursor: pointer;
 
         border-bottom: 1px dotted;
@@ -10,7 +16,7 @@
         font-style: normal;
 
         &:hover {
-            color: #004080;
+            color: var(--yfm-color-term-title-hover);
         }
     }
 
@@ -32,7 +38,7 @@
 
         padding: 10px;
 
-        background-color: rgb(255, 255, 255);
+        background-color: var(--yfm-color-term-dfn-background);
 
         font-size: inherit;
         line-height: inherit;
@@ -40,7 +46,7 @@
 
         border-radius: 4px;
 
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 8px 20px var(--yfm-color-term-dfn-shadow);
         outline: none;
 
         &::before {
@@ -53,7 +59,7 @@
             left: 0;
 
             border-radius: inherit;
-            box-shadow: 0 0 0 1px rgb(229, 229, 229);
+            box-shadow: 0 0 0 1px var(--yfm-color-term-dfn-pseudo-shadow);
         }
 
         &.open {
