@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.31.0](https://github.com/diplodoc-platform/transform/compare/v4.30.2...v4.31.0) (2024-09-11)
+
+
+### Features
+
+* add merge included optimisation ([#504](https://github.com/diplodoc-platform/transform/issues/504)) ([b30899e](https://github.com/diplodoc-platform/transform/commit/b30899e3eb48d0c6e802e319bb64f7ab2e27f88a))
+
 ## [4.30.2](https://github.com/diplodoc-platform/transform/compare/v4.30.1...v4.30.2) (2024-09-06)
 
 
