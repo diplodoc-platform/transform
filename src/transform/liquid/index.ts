@@ -80,6 +80,7 @@ function liquid<
         conditions = true,
         substitutions = true,
         conditionsInCode = false,
+        useLegacyConditions = false,
         keepNotVar = false,
         withSourceMap,
     } = settings || {};
@@ -89,6 +90,7 @@ function liquid<
         conditions,
         substitutions,
         conditionsInCode,
+        useLegacyConditions,
         keepNotVar,
         withSourceMap,
     });
@@ -116,7 +118,7 @@ function liquid<
 
     if (conditions) {
         const strict = conditions === 'strict';
-        output = applyConditions(output, vars, path, {sourceMap, strict});
+        output = applyConditions(output, vars, path, {sourceMap, strict, useLegacyConditions});
     }
 
     if (substitutions) {
