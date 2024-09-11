@@ -284,11 +284,7 @@ exports[` meta 1`] = `""`;
 
 exports[` style sheet 1`] = `""`;
 
-exports[` style tag 1`] = `
-<style type="text/javascript">
-  alert('XSS');
-</style>
-`;
+exports[` style tag 1`] = `""`;
 
 exports[` style tag using background 1`] = `
 <style type="text/css">
@@ -311,3 +307,12 @@ exports[` style tags with broken up JavaScript for XSS 1`] = `
 `;
 
 exports[` style tags with broken up JavaScript for XSS part 2 1`] = `<img>`;
+
+exports[` svg with style tag and foreignObject inside 1`] = `
+<p>
+  <svg>
+    <style>
+    </style>
+  </svg>
+</p>
+`;

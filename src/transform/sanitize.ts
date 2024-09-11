@@ -560,7 +560,9 @@ function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) 
             });
 
             dom(element).text(css.stringify(parsedCSS));
-        } catch {}
+        } catch {
+            dom(element).remove();
+        }
     });
 }
 

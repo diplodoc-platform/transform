@@ -112,6 +112,10 @@ const ckecks = [
         'style tag using background',
         `<style type="text/css">body{background:url("javascript:alert('XSS')")}</style>`,
     ],
+    [
+        'svg with style tag and foreignObject inside',
+        '<svg><style><foreignObject><img src="a" onerror=alert(1)/></foreignObject></style></svg>',
+    ],
     ['Anonymous HTML with style attribute', `<xss style="xss:expression(alert('XSS'))">`],
     ['Local htc file', `<xss style="behavior: url(xss.htc);">`],
     ['US-ASCII encoding', `¼script¾alert(¢XSS¢)¼/script¾`],
