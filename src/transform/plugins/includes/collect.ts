@@ -1,5 +1,6 @@
 import {relative} from 'path';
 import {bold} from 'chalk';
+import {readFileSync} from 'fs';
 
 import {getRelativePath, isFileExists, resolveRelativePath} from '../../utilsFS';
 
@@ -23,30 +24,34 @@ function processRecursive(
     };
 
     try {
-        const content = copyFile(includePath, targetDestPath, includeOptions);
+        const contentProcessed = copyFile(includePath, targetDestPath, includeOptions);
 
         // To reduce file reading we can include the file content into the generated content
-        if (included && content) {
-            const includedRelativePath = getRelativePath(includedParentPath, includePath);
+        if (included) {
+            const content = contentProcessed ?? readFileSync(targetDestPath, 'utf8');
 
-            // The appendix is the map that protects from multiple include files
-            if (!appendix.has(includedRelativePath)) {
-                // Recursive function to include the depth structure
-                const includeContent = collectRecursive(
-                    content,
-                    {
-                        ...options,
-                        path: includePath,
-                        includedParentPath,
-                    },
-                    appendix,
-                );
+            if (content) {
+                const includedRelativePath = getRelativePath(includedParentPath, includePath);
 
-                // Add to appendix set structure
-                appendix.set(
-                    includedRelativePath,
-                    `{% included (${includedRelativePath}) %}\n${includeContent}\n{% endincluded %}`,
-                );
+                // The appendix is the map that protects from multiple include files
+                if (!appendix.has(includedRelativePath)) {
+                    // Recursive function to include the depth structure
+                    const includeContent = collectRecursive(
+                        content,
+                        {
+                            ...options,
+                            path: includePath,
+                            includedParentPath,
+                        },
+                        appendix,
+                    );
+
+                    // Add to appendix set structure
+                    appendix.set(
+                        includedRelativePath,
+                        `{% included (${includedRelativePath}) %}\n${includeContent}\n{% endincluded %}`,
+                    );
+                }
             }
         }
     } catch (e) {
