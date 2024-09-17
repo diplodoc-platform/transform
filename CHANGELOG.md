@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.31.1](https://github.com/diplodoc-platform/transform/compare/v4.31.0...v4.31.1) (2024-09-17)
+
+
+### Bug Fixes
+
+* add included read file sync ([#509](https://github.com/diplodoc-platform/transform/issues/509)) ([8534be2](https://github.com/diplodoc-platform/transform/commit/8534be2b306046552aa3f8dc931e8edf856da4a6))
+
 ## [4.31.0](https://github.com/diplodoc-platform/transform/compare/v4.30.2...v4.31.0) (2024-09-11)
 
 
