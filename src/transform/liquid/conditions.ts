@@ -5,6 +5,7 @@ import {log} from '../log';
 import {NoValue, evalExp} from './evaluation';
 import {tagLine} from './lexical';
 import {SourceMapApi, createSourceMapApi, getLineNumber} from './sourceMap';
+import legacyConditions from './legacyConditions';
 
 interface SourceMap {
     start: number;
@@ -248,8 +249,13 @@ export = function conditions(
     settings?: {
         sourceMap: Record<number, number>;
         strict?: boolean;
+        useLegacyConditions?: boolean;
     },
 ) {
+    if (settings?.useLegacyConditions) {
+        return legacyConditions(input, vars, path, settings);
+    }
+
     const sourceMap = settings?.sourceMap || {};
     const strict = settings?.strict || false;
     const tagStack: IfTag[] = [];

@@ -5,6 +5,7 @@ export type ArgvSettings = {
     substitutions?: boolean;
     keepNotVar?: boolean;
     withSourceMap?: boolean;
+    useLegacyConditions?: boolean;
 };
 
 let _argv: ArgvSettings;
