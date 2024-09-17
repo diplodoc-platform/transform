@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.31.2](https://github.com/diplodoc-platform/transform/compare/v4.31.1...v4.31.2) (2024-09-17)
+
+
+### Bug Fixes
+
+* add useLegacyConditions ([#508](https://github.com/diplodoc-platform/transform/issues/508)) ([56273ef](https://github.com/diplodoc-platform/transform/commit/56273efbc214a7d8eb19043bcd030df26df41efb))
+* Ignore tag style, if sanitize cant parse CSS inside it [#506](https://github.com/diplodoc-platform/transform/issues/506) ([#507](https://github.com/diplodoc-platform/transform/issues/507)) ([182985d](https://github.com/diplodoc-platform/transform/commit/182985d7a2bfe60bc6501db85c0e9040c9dd97e5))
+
 ## [4.31.1](https://github.com/diplodoc-platform/transform/compare/v4.31.0...v4.31.1) (2024-09-17)
 
 
