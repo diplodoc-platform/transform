@@ -324,7 +324,7 @@
         background-color: $inlineCodeBackgroundColor;
         border-radius: 4px;
         font-size: 0.875em;
-        white-space: normal;
+        white-space: pre-wrap;
         color: $inlineCodeColor;
     }
 
