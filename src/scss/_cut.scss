@@ -1,10 +1,4 @@
-@import 'private';
-@import 'brand';
-
 .yfm-cut {
-    @include private-brand();
-    @include brand();
-
     $class: &;
     margin-bottom: 15px;
 

@@ -1,12 +1,6 @@
 /* stylelint-disable declaration-no-important */
 
-@import 'private';
-@import 'brand';
-
 .wide-container {
-    @include private-brand();
-    @include brand();
-
     position: fixed;
     width: 100vw;
     height: 100vh;

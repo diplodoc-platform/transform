@@ -1,10 +1,4 @@
-@import 'private';
-@import 'brand';
-
 .yfm .yfm-note {
-    @include private-brand();
-    @include brand();
-
     max-width: 1296px;
     margin: 20px 0;
     padding: 20px 20px 20px 64px;
@@ -15,7 +9,7 @@
     }
 
     & > p {
-        margin: 0 0 10px 0;
+        margin: 0 0 10px;
 
         &:first-child {
             &::before {

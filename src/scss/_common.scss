@@ -1,4 +1,5 @@
 /* stylelint-disable declaration-no-important */
+
 @import 'private';
 @import 'brand';
 
@@ -34,7 +35,12 @@
         margin-bottom: 0 !important;
     }
 
-    h1, h2, h3, h4, h5, h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
         margin-bottom: 15px;
         font-weight: 500;
     }
@@ -74,31 +80,32 @@
         color: var(--yfm-color-link);
         text-decoration: none;
 
-        &:hover, &:active {
+        &:hover,
+        &:active {
             color: var(--yfm-color-link-hover);
         }
 
         &:not([href]) {
             color: inherit;
         }
-
     }
 
     strong {
         font-weight: 700;
     }
 
-    img, svg {
+    img,
+    svg {
         box-sizing: content-box;
         max-width: 100%;
         border: none;
         vertical-align: middle;
 
-        &[align=right] {
+        &[align='right'] {
             padding-left: 20px;
         }
 
-        &[align=left] {
+        &[align='left'] {
             padding-right: 20px;
         }
     }
@@ -127,10 +134,12 @@
     dl,
     table,
     pre {
-        margin: 0 0 15px 0;
+        margin: 0 0 15px;
     }
 
-    ul, ol, dl {
+    ul,
+    ol,
+    dl {
         & pre {
             margin-top: 15px;
         }
@@ -178,24 +187,27 @@
         border-spacing: 0;
         background: var(--yfm-color-base);
 
-        thead, tr:nth-child(2n) {
+        thead,
+        tr:nth-child(2n) {
             background-color: var(--yfm-color-table-row-background);
         }
 
         tr:first-child {
-            td, th {
+            td,
+            th {
                 border-top: none;
             }
         }
 
         tr:last-child {
-            td, th {
+            td,
+            th {
                 border-bottom: none;
             }
         }
 
-
-        th, td {
+        th,
+        td {
             padding: 10px 20px;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -214,10 +226,12 @@
             text-align: left;
         }
 
-        tr td:first-child, tr th:first-child {
+        tr td:first-child,
+        tr th:first-child {
             border-left: none;
         }
-        tr td:last-child, tr th:last-child {
+        tr td:last-child,
+        tr th:last-child {
             border-right: none;
         }
     }
@@ -280,7 +294,8 @@
         }
     }
 
-    ul, ol {
+    ul,
+    ol {
         padding-left: 2.2em;
     }
 
@@ -363,7 +378,8 @@
         white-space: pre;
     }
 
-    sup, sub {
+    sup,
+    sub {
         line-height: 0;
     }
 
@@ -393,6 +409,8 @@
         user-select: none;
     }
 
-    --yfm-font-family-monospace: "Menlo", "Monaco", "Consolas", "Ubuntu Mono", "Liberation Mono", "DejaVu Sans Mono", "Courier New", "Courier", monospace;
-    --yfm-font-family-sans: 'Segoe UI', Arial, Helvetica, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    --yfm-font-family-monospace: 'Menlo', 'Monaco', 'Consolas', 'Ubuntu Mono', 'Liberation Mono',
+        'DejaVu Sans Mono', 'Courier New', 'Courier', monospace;
+    --yfm-font-family-sans: 'Segoe UI', arial, helvetica, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol';
 }
