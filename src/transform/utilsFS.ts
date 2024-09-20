@@ -4,7 +4,7 @@ import {readFileSync, statSync} from 'fs';
 import escapeRegExp from 'lodash/escapeRegExp';
 import {join, parse, relative, resolve, sep} from 'path';
 
-import liquid from './liquid';
+import liquidSnippet from './liquid';
 import {StateCore} from './typings';
 import {defaultTransformLink} from './utils';
 
@@ -68,7 +68,7 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
     let sourceMap;
 
     if (!disableLiquid) {
-        const liquidResult = liquid(content, builtVars, path, {
+        const liquidResult = liquidSnippet(content, builtVars, path, {
             withSourceMap: true,
             conditionsInCode,
         });
