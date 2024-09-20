@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.31.3](https://github.com/diplodoc-platform/transform/compare/v4.31.2...v4.31.3) (2024-09-20)
+
+
+### Bug Fixes
+
+* bump tab plugin ([9775a64](https://github.com/diplodoc-platform/transform/commit/9775a64b703a57ed1694a35b9979196b27ccf6e4))
+
 ## [4.31.2](https://github.com/diplodoc-platform/transform/compare/v4.31.1...v4.31.2) (2024-09-17)
 
 
