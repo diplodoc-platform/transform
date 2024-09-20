@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@diplodoc/cut-extension": "^0.2.5",
-    "@diplodoc/tabs-extension": "^3.3.1",
+    "@diplodoc/tabs-extension": "^3.3.2",
     "chalk": "^4.1.2",
     "cheerio": "^1.0.0",
     "css": "^3.0.0",
