@@ -3,7 +3,7 @@ import type {EnvType, OptionsType, OutputType} from './typings';
 import {bold} from 'chalk';
 
 import {log} from './log';
-import liquid from './liquid';
+import liquidSnippet from './liquid';
 import initMarkdownit from './md';
 
 function applyLiquid(input: string, options: OptionsType) {
@@ -15,7 +15,9 @@ function applyLiquid(input: string, options: OptionsType) {
         isLiquided = false,
     } = options;
 
-    return disableLiquid || isLiquided ? input : liquid(input, vars, path, {conditionsInCode});
+    return disableLiquid || isLiquided
+        ? input
+        : liquidSnippet(input, vars, path, {conditionsInCode});
 }
 
 function handleError(error: unknown, path?: string): never {

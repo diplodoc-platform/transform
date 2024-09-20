@@ -1,5 +1,13 @@
 import type {Dictionary} from 'lodash';
 
+import {
+    countLineAmount,
+    emplaceSerializedFrontMatter,
+    separateAndExtractFrontMatter,
+    serializeFrontMatter,
+    transformFrontMatterValues,
+} from '../frontmatter';
+
 import applySubstitutions from './substitutions';
 import {prepareSourceMap} from './sourceMap';
 import applyCycles from './cycles';
@@ -66,7 +74,7 @@ function repairCode(str: string, codes: string[]) {
     return replace(fence, fence, (code) => codes[Number(code)], str);
 }
 
-function liquid<
+function liquidSnippet<
     B extends boolean = false,
     C = B extends false ? string : {output: string; sourceMap: Dictionary<string>},
 >(
@@ -141,6 +149,67 @@ function liquid<
     return output as unknown as C;
 }
 
-// 'export default' instead of 'export = ' because of circular dependency with './cycles.ts'.
-// somehow it breaks import in './cycles.ts' and imports nothing
-export default liquid;
+type TransformSourceMapOptions = {
+    emplacedResultOffset: number;
+    emplacedSourceOffset: number;
+};
+
+function transformSourceMap(
+    sourceMap: Dictionary<string>,
+    {emplacedResultOffset, emplacedSourceOffset}: TransformSourceMapOptions,
+) {
+    return Object.fromEntries(
+        Object.entries(sourceMap).map(([lineInResult, lineInSource]) => [
+            (Number(lineInResult) + emplacedResultOffset).toString(),
+            (Number(lineInSource) + emplacedSourceOffset).toString(),
+        ]),
+    );
+}
+
+function liquidDocument<
+    B extends boolean = false,
+    C = B extends false ? string : {output: string; sourceMap: Dictionary<string>},
+>(
+    originInput: string,
+    vars: Record<string, unknown>,
+    path?: string,
+    settings?: ArgvSettings & {withSourceMap?: B},
+): C {
+    const {frontMatter, frontMatterStrippedContent, frontMatterLineCount} =
+        separateAndExtractFrontMatter(originInput, path);
+
+    const transformedFrontMatter = transformFrontMatterValues(frontMatter, (v) =>
+        typeof v === 'string'
+            ? liquidSnippet(v, vars, path, {...settings, withSourceMap: false})
+            : v,
+    );
+    const transformedAndSerialized = serializeFrontMatter(transformedFrontMatter);
+
+    // -1 comes from the fact that the last line in serialized FM is the same as the first line in stripped content
+    const resultFrontMatterOffset = Math.max(0, countLineAmount(transformedAndSerialized) - 1);
+    const sourceFrontMatterOffset = Math.max(0, frontMatterLineCount - 1);
+
+    const liquidProcessedContent = liquidSnippet(frontMatterStrippedContent, vars, path, settings);
+
+    // typeof check for better inference; the catch is that return of liquidSnippet can be an
+    // object even with source maps off, see `substitutions.test.ts`
+    return (settings?.withSourceMap && typeof liquidProcessedContent === 'object'
+        ? {
+              output: emplaceSerializedFrontMatter(
+                  liquidProcessedContent.output,
+                  transformedAndSerialized,
+              ),
+              sourceMap: transformSourceMap(liquidProcessedContent.sourceMap, {
+                  emplacedResultOffset: resultFrontMatterOffset,
+                  emplacedSourceOffset: sourceFrontMatterOffset,
+              }),
+          }
+        : emplaceSerializedFrontMatter(
+              liquidProcessedContent as string,
+              transformedAndSerialized,
+          )) as unknown as C;
+}
+
+// both default and named exports for convenience
+export {liquidDocument, liquidSnippet};
+export default liquidDocument;

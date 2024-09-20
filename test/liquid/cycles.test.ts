@@ -1,6 +1,6 @@
 import dedent from 'ts-dedent';
 
-import liquid from '../../src/transform/liquid';
+import liquidSnippet from '../../src/transform/liquid';
 
 const commentsByPage = [
     {
@@ -28,13 +28,17 @@ describe('Cycles', () => {
     describe('location', () => {
         test('Inline for block', () => {
             expect(
-                liquid('Prefix {% for user in users %} {{user}} {% endfor %} Postfix', vars, ''),
+                liquidSnippet(
+                    'Prefix {% for user in users %} {{user}} {% endfor %} Postfix',
+                    vars,
+                    '',
+                ),
             ).toEqual('Prefix Alice Ivan Petr Postfix');
         });
 
         test('Nested inline for block', () => {
             expect(
-                liquid(
+                liquidSnippet(
                     'Prefix {% for user1 in users %} {% for user2 in users %} {{user1}}+{{user2}} {% endfor %} {% endfor %} Postfix',
                     vars,
                     '',
@@ -46,7 +50,7 @@ describe('Cycles', () => {
 
         test('Multiline for block', () => {
             expect(
-                liquid(
+                liquidSnippet(
                     dedent`
                     Prefix
                     {% for user in users %}
@@ -111,12 +115,12 @@ describe('Cycles', () => {
 
                 Postfix
             `;
-            expect(liquid(input, vars, '')).toEqual(result);
+            expect(liquidSnippet(input, vars, '')).toEqual(result);
         });
 
         test('Multiline nested for block without indent', () => {
             expect(
-                liquid(
+                liquidSnippet(
                     dedent`
                     Prefix
                     {% for user1 in users %}
@@ -148,7 +152,7 @@ describe('Cycles', () => {
     describe('with conditions, filters, substitutions', () => {
         test('Test 1', () => {
             expect(
-                liquid(
+                liquidSnippet(
                     'Prefix {% for user in users2 %}{% if needCapitalize %} {{user | capitalize}}+{{user2}} {% else %} {{user}} {% endif %}{% endfor %} Postfix',
                     vars,
                     '',
@@ -160,7 +164,7 @@ describe('Cycles', () => {
     describe('with code blocks', () => {
         test('code block before cycle block', () => {
             expect(
-                liquid(
+                liquidSnippet(
                     '```\nCode block\n```\n\n {% for user in users %} {{user}} {% endfor %}',
                     vars,
                     '',
@@ -170,7 +174,7 @@ describe('Cycles', () => {
 
         test('cycle block in code block', () => {
             expect(
-                liquid('```\n{% for user in users %} {{user}} {% endfor %}\n```', vars, '', {
+                liquidSnippet('```\n{% for user in users %} {{user}} {% endfor %}\n```', vars, '', {
                     conditionsInCode: true,
                 }),
             ).toEqual('```\nAlice Ivan Petr\n```');
