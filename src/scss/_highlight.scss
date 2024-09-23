@@ -1,25 +1,19 @@
-@import 'variables';
-
 .yfm {
     .hljs {
         display: block;
         overflow-x: auto;
         padding: 16px;
-        background: $codeBackgroundColor;
         background: var(--yfm-color-hljs-background);
     }
 
     .hljs,
     .hljs-subst {
-        color: #444;
         color: var(--yfm-color-hljs-subst);
     }
 
     .hljs-comment {
-        color: #888888;
         color: var(--yfm-color-hljs-comment);
     }
-
 
     .hljs-keyword,
     .hljs-attribute,
@@ -38,13 +32,11 @@
     .hljs-quote,
     .hljs-template-tag,
     .hljs-deletion {
-        color: #880000;
         color: var(--yfm-color-hljs-deletion);
     }
 
     .hljs-title,
     .hljs-section {
-        color: #880000;
         color: var(--yfm-color-hljs-section);
         font-weight: bold;
     }
@@ -56,13 +48,10 @@
     .hljs-link,
     .hljs-selector-attr,
     .hljs-selector-pseudo {
-        color: #BC6060;
         color: var(--yfm-color-hljs-pseudo);
     }
 
-
     .hljs-literal {
-        color: #78A960;
         color: var(--yfm-color-hljs-literal);
     }
 
@@ -70,21 +59,16 @@
     .hljs-bullet,
     .hljs-code,
     .hljs-addition {
-        color: #397300;
         color: var(--yfm-color-hljs-addition);
     }
 
-
     .hljs-meta {
-        color: #1f7199;
         color: var(--yfm-color-hljs-meta);
     }
 
     .hljs-meta-string {
-        color: #4d99bf;
         color: var(--yfm-color-hljs-meta-string);
     }
-
 
     .hljs-emphasis {
         font-style: italic;

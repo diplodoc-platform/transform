@@ -1,3 +1,5 @@
+/* stylelint-disable declaration-no-important */
+
 .wide-container {
     position: fixed;
     width: 100vw;
@@ -19,14 +21,14 @@
 
     .wide-content-wrapper {
         z-index: 200;
-        background-color: var(--g-color-base-background);   
+        background-color: var(--yfm-color-modal-content);
         height: 90vh;
         width: 70vw;
         border-radius: 10px;
         display: flex;
         flex-direction: column;
 
-       .wide-content {
+        .wide-content {
             height: 95%;
             width: 100%;
 
@@ -44,23 +46,23 @@
                 display: table;
                 width: 100%;
             }
-       }
+        }
 
-       .wide-toolbar {
+        .wide-toolbar {
             display: flex;
             flex-direction: row;
             width: 100%;
             justify-content: space-between;
             align-items: center;
             padding: 10px 12px;
-       }
+        }
 
-       .wide-entity-name {
+        .wide-entity-name {
             margin: 0;
             font-size: 18px;
-       }
+        }
 
-       .wide-actions {
+        .wide-actions {
             align-self: flex-end;
 
             .close-action {
@@ -70,12 +72,12 @@
                 transition: background 300ms;
 
                 &:hover {
-                    background: var(--g-color-base-simple-hover);
+                    background: var(--yfm-color-modal-actions-hover);
                 }
             }
-       }
+        }
     }
-}   
+}
 
 .wide-element-wrapper {
     display: flex;
@@ -98,7 +100,7 @@
     z-index: 100;
     padding: 6px;
     box-sizing: content-box;
-    color: var(--g-color-text-primary);
+    color: var(--yfm-color-modal-wide-content);
     cursor: pointer;
 
     & > svg {
@@ -114,6 +116,6 @@
     position: fixed;
     top: 0;
     left: 0;
-    background-color: black;
+    background-color: var(--yfm-color-modal-wide-content-overlay);
     opacity: 0.6;
 }

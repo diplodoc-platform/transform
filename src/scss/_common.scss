@@ -1,4 +1,7 @@
-@import 'variables';
+/* stylelint-disable declaration-no-important */
+
+@import 'private';
+@import 'brand';
 
 @mixin removeMarginForEdgeChildren {
     & > *:first-child {
@@ -11,11 +14,14 @@
 }
 
 .yfm {
+    @include private-brand();
+    @include brand();
+
     font-family: var(--yfm-font-family-sans);
     font-size: 15px;
     line-height: 20px;
     word-wrap: break-word;
-    color: $textColor;
+    color: var(--yfm-color-text);
 
     * {
         box-sizing: border-box;
@@ -29,7 +35,12 @@
         margin-bottom: 0 !important;
     }
 
-    h1, h2, h3, h4, h5, h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
         margin-bottom: 15px;
         font-weight: 500;
     }
@@ -66,41 +77,42 @@
 
     a {
         background-color: transparent;
-        color: $linkColor;
+        color: var(--yfm-color-link);
         text-decoration: none;
 
-        &:hover, &:active {
-            color: $linkHoverColor;
+        &:hover,
+        &:active {
+            color: var(--yfm-color-link-hover);
         }
 
         &:not([href]) {
             color: inherit;
         }
-
     }
 
     strong {
         font-weight: 700;
     }
 
-    img, svg {
+    img,
+    svg {
         box-sizing: content-box;
         max-width: 100%;
         border: none;
         vertical-align: middle;
 
-        &[align=right] {
+        &[align='right'] {
             padding-left: 20px;
         }
 
-        &[align=left] {
+        &[align='left'] {
             padding-right: 20px;
         }
     }
 
     img {
         object-fit: contain;
-        background-color: $baseColor;
+        background-color: var(--yfm-color-base);
     }
 
     svg {
@@ -122,10 +134,12 @@
     dl,
     table,
     pre {
-        margin: 0 0 15px 0;
+        margin: 0 0 15px;
     }
 
-    ul, ol, dl {
+    ul,
+    ol,
+    dl {
         & pre {
             margin-top: 15px;
         }
@@ -157,7 +171,7 @@
     }
 
     table {
-        color: #333;
+        color: var(--yfm-color-table);
 
         display: inline-block;
         max-width: 100%;
@@ -167,34 +181,37 @@
         z-index: 1;
 
         box-sizing: border-box;
-        border: 1px solid $borderColor;
+        border: 1px solid var(--yfm-color-border);
         border-radius: 8px;
         border-collapse: collapse;
         border-spacing: 0;
-        background: $baseColor;
+        background: var(--yfm-color-base);
 
-        thead, tr:nth-child(2n) {
-            background-color: $tableRowBackgroundColor;
+        thead,
+        tr:nth-child(2n) {
+            background-color: var(--yfm-color-table-row-background);
         }
 
         tr:first-child {
-            td, th {
+            td,
+            th {
                 border-top: none;
             }
         }
 
         tr:last-child {
-            td, th {
+            td,
+            th {
                 border-bottom: none;
             }
         }
 
-
-        th, td {
+        th,
+        td {
             padding: 10px 20px;
             overflow: hidden;
             text-overflow: ellipsis;
-            border: 1px solid $borderColor;
+            border: 1px solid var(--yfm-color-border);
 
             @include removeMarginForEdgeChildren();
         }
@@ -209,10 +226,12 @@
             text-align: left;
         }
 
-        tr td:first-child, tr th:first-child {
+        tr td:first-child,
+        tr th:first-child {
             border-left: none;
         }
-        tr td:last-child, tr th:last-child {
+        tr td:last-child,
+        tr th:last-child {
             border-right: none;
         }
     }
@@ -224,7 +243,7 @@
         margin: 1.5em 0;
         overflow: hidden;
 
-        background-color: $borderColor;
+        background-color: var(--yfm-color-border);
         border: none;
 
         &::before {
@@ -242,7 +261,7 @@
     blockquote {
         position: relative;
         padding-left: 12px;
-        border-left: 3px solid $accentColor;
+        border-left: 3px solid var(--yfm-color-accent);
 
         @include removeMarginForEdgeChildren();
     }
@@ -275,7 +294,8 @@
         }
     }
 
-    ul, ol {
+    ul,
+    ol {
         padding-left: 2.2em;
     }
 
@@ -321,11 +341,11 @@
 
     code {
         padding: 0.1em 0.4em 0.15em;
-        background-color: $inlineCodeBackgroundColor;
+        background-color: var(--yfm-color-inline-code-background);
         border-radius: 4px;
         font-size: 0.875em;
         white-space: pre-wrap;
-        color: $inlineCodeColor;
+        color: var(--yfm-color-inline-code);
     }
 
     pre {
@@ -344,7 +364,7 @@
         word-wrap: normal;
         background-color: transparent;
         border: 0;
-        color: $textColor;
+        color: var(--yfm-color-text);
     }
 
     pre > code {
@@ -352,13 +372,14 @@
         padding: 16px;
         overflow: auto;
 
-        background-color: $codeBackgroundColor;
-        color: $textColor;
+        background-color: var(--yfm-color-code-background);
+        color: var(--yfm-color-text);
 
         white-space: pre;
     }
 
-    sup, sub {
+    sup,
+    sub {
         line-height: 0;
     }
 
@@ -388,17 +409,8 @@
         user-select: none;
     }
 
-    // highlight.js colors
-    --yfm-color-hljs-background: #{$codeBackgroundColor};
-    --yfm-color-hljs-subst: #444;
-    --yfm-color-hljs-comment: #888888;
-    --yfm-color-hljs-deletion: #880000;
-    --yfm-color-hljs-section: #880000;
-    --yfm-color-hljs-pseudo: #BC6060;
-    --yfm-color-hljs-literal: #78A960;
-    --yfm-color-hljs-addition: #397300;
-    --yfm-color-hljs-meta: #1f7199;
-    --yfm-color-hljs-meta-string: #4d99bf;
-    --yfm-font-family-monospace: "Menlo", "Monaco", "Consolas", "Ubuntu Mono", "Liberation Mono", "DejaVu Sans Mono", "Courier New", "Courier", monospace;
-    --yfm-font-family-sans: 'Segoe UI', Arial, Helvetica, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    --yfm-font-family-monospace: 'Menlo', 'Monaco', 'Consolas', 'Ubuntu Mono', 'Liberation Mono',
+        'DejaVu Sans Mono', 'Courier New', 'Courier', monospace;
+    --yfm-font-family-sans: 'Segoe UI', arial, helvetica, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol';
 }

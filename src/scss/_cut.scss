@@ -14,7 +14,7 @@
         }
 
         &:focus {
-            outline-color: $accentColor;
+            outline-color: var(--yfm-color-accent);
         }
 
         &:before {
