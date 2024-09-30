@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.32.0](https://github.com/diplodoc-platform/transform/compare/v4.31.3...v4.32.0) (2024-09-30)
+
+
+### Features
+
+* add css-api ([#515](https://github.com/diplodoc-platform/transform/issues/515)) ([d9b2284](https://github.com/diplodoc-platform/transform/commit/d9b2284d33b79c934746041060560ae177fa1668))
+* **deps:** bump diplodoc/tabs-extension to v3.4.0 ([#522](https://github.com/diplodoc-platform/transform/issues/522)) ([357ad7c](https://github.com/diplodoc-platform/transform/commit/357ad7cae2133d6c1a6fa83f98ab04dd07a7b10c))
+* fump cut plugin ([324d200](https://github.com/diplodoc-platform/transform/commit/324d200d89660bed298d18cce03192b803834392))
+* liquid markdown front matter separately from the rest of the content ([7230d7f](https://github.com/diplodoc-platform/transform/commit/7230d7fe4ef2f4e8186b7c892a54a5d60ca27896))
+
 ## [4.31.3](https://github.com/diplodoc-platform/transform/compare/v4.31.2...v4.31.3) (2024-09-20)
 
 
