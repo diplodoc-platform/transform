@@ -5,14 +5,18 @@ export const transformFrontMatterValues = (
     valueMapper: (v: unknown) => unknown,
 ): FrontMatter => {
     const transformInner = (something: unknown): unknown => {
+        if (Array.isArray(something)) {
+            return something.map((el) => transformInner(el));
+        }
+
         if (typeof something === 'object' && something !== null) {
             return Object.fromEntries(
                 Object.entries(something).map(([k, v]) => [k, transformInner(v)]),
             );
         }
 
-        if (Array.isArray(something)) {
-            return something.map((el) => transformInner(el));
+        if (typeof something === 'function') {
+            return something;
         }
 
         return valueMapper(something);
