@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.32.1](https://github.com/diplodoc-platform/transform/compare/v4.32.0...v4.32.1) (2024-10-01)
+
+
+### Bug Fixes
+
+* replace variables with values ([34ec9a9](https://github.com/diplodoc-platform/transform/commit/34ec9a9602e378955f88982f99891b235c8e98f3))
+
 ## [4.32.0](https://github.com/diplodoc-platform/transform/compare/v4.31.3...v4.32.0) (2024-09-30)
 
 
