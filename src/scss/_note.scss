@@ -29,11 +29,14 @@
         }
     }
 
+
+    // @todo replace with variables
+
     $colors: (
-        yfm-accent-info: var(--yfm-color-accent),
-        yfm-accent-tip: var(--yfm-color-note-tip),
-        yfm-accent-alert: var(--yfm-color-note-important),
-        yfm-accent-warning: var(--yfm-color-note-warning),
+        yfm-accent-info: #027bf3,
+        yfm-accent-tip: #56bd67,
+        yfm-accent-warning: #f19518,
+        yfm-accent-alert: #ff4645,
     );
 
     @each $type, $color in $colors {
