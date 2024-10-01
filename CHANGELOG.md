@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.32.2](https://github.com/diplodoc-platform/transform/compare/v4.32.1...v4.32.2) (2024-10-01)
+
+
+### Bug Fixes
+
+* do an `isArray` check first when transforming front matter values ([7f918f5](https://github.com/diplodoc-platform/transform/commit/7f918f5958128b7db98d294f2ded2dfd6274ad91))
+
 ## [4.32.1](https://github.com/diplodoc-platform/transform/compare/v4.32.0...v4.32.1) (2024-10-01)
 
 
