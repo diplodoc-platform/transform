@@ -36,7 +36,7 @@ Use it in your code to work with text during program execution. For example, to 
 
 The package provides the `transform()` function:
 
-- Input data: [Settings](settings.md) and a string with YFM.
+- Input data: [Settings](https://diplodoc.com/docs/en/tools/transform/settings) and a string with YFM.
 - Returned value: An object with the `result` and `logs` fields.
 
 ### Result field
@@ -44,7 +44,7 @@ The package provides the `transform()` function:
 `result`: Resulting object, contains the fields:
 
 - `html`: A line with HTML.
-- `meta`: [Metadata](../../syntax/meta.md#meta) from the transmitted content.
+- `meta`: Metadata from the transmitted content.
 - `title`: The document title. Returned if `extractTitle = true` or `needTitle = true`.
 - `headings`: A list of document headers.
 
