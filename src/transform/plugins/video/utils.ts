@@ -18,7 +18,7 @@ export const videoUrl: VideoUrlFn = (service, videoID, options) => {
         case 'osf':
             return `https://mfr.osf.io/render?url=https://osf.io/${videoID}/?action=download`;
         case 'yandex':
-            return `https://runtime.video.cloud.yandex.net/player/${videoID}`;
+            return `https://runtime.video.cloud.yandex.net/player/video/${videoID}`;
         case 'vk':
             return `https://vk.com/video_ext.php?${videoID}`;
         default:
