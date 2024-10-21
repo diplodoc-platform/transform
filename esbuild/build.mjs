@@ -54,7 +54,14 @@ const common = {
         build({
             ...common,
             entryPoints: ['src/scss/base.scss'],
-            outfile: 'dist/css/yfm-base.css',
+            outfile: 'dist/css/base.css',
+            format: 'iife',
+            plugins,
+        }),
+        build({
+            ...common,
+            entryPoints: ['src/scss/_yfm-only.scss'],
+            outfile: 'dist/css/_yfm-only.css',
             format: 'iife',
             plugins,
         }),
@@ -75,8 +82,14 @@ const common = {
     });
     await build({
         ...common,
-        entryPoints: ['dist/css/yfm-base.css'],
-        outfile: 'dist/css/yfm-base.min.css',
+        entryPoints: ['dist/css/base.css'],
+        outfile: 'dist/css/base.min.css',
+        minify: true,
+    });
+    await build({
+        ...common,
+        entryPoints: ['dist/css/_yfm-only.css'],
+        outfile: 'dist/css/_yfm-only.min.css',
         minify: true,
     });
 })();
@@ -91,7 +104,7 @@ const common = {
         build({
             ...common,
             entryPoints: ['src/js/base.ts'],
-            outfile: 'dist/js/yfm-base.js',
+            outfile: 'dist/js/base.js',
         }),
         build({
             ...common,
@@ -108,8 +121,8 @@ const common = {
     });
     await build({
         ...common,
-        entryPoints: ['dist/js/yfm-base.js'],
-        outfile: 'dist/js/yfm-base.min.js',
+        entryPoints: ['dist/js/base.js'],
+        outfile: 'dist/js/base.min.js',
         minify: true,
     });
 })();
