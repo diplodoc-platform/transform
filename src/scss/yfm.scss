@@ -1,12 +1,3 @@
-@import 'common';
-@import 'note';
-@import 'anchor';
-@import 'highlight';
-@import 'code';
-@import 'file';
-@import 'term';
-@import 'table';
-@import 'modal';
-
+@import 'base';
 @import '@diplodoc/cut-extension/runtime';
 @import '@diplodoc/tabs-extension/runtime';
