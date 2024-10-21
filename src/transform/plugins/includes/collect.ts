@@ -113,9 +113,11 @@ function collect(input: string, options: IncludeCollectOpts) {
 
     input = collectRecursive(input, options, appendix);
 
-    // Appendix should be appended to the end of the file (it supports depth structure, so the included files will have included as well)
-    if (appendix.size > 0) {
-        input += '\n' + [...appendix.values()].join('\n');
+    if (!options.path.includes('_includes')) {
+        // Appendix should be appended to the end of the file (it supports depth structure, so the included files will have included as well)
+        if (appendix.size > 0) {
+            input += '\n' + [...appendix.values()].join('\n');
+        }
     }
 
     return input;
