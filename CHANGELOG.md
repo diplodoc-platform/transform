@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.34.0](https://github.com/diplodoc-platform/transform/compare/v4.33.0...v4.34.0) (2024-10-22)
+
+
+### Features
+
+* add included ignore includes ([#542](https://github.com/diplodoc-platform/transform/issues/542)) ([1495b47](https://github.com/diplodoc-platform/transform/commit/1495b47c0c2d78649fdf6678c942e51d3db54334))
+
 ## [4.33.0](https://github.com/diplodoc-platform/transform/compare/v4.32.4...v4.33.0) (2024-10-22)
 
 
