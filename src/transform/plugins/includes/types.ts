@@ -14,4 +14,5 @@ export type IncludeCollectOpts = MarkdownItPluginOpts & {
     included: Boolean;
     includedParentPath?: string;
     additionalIncludedList?: string[];
+    appendix?: Map<string, string>;
 };
