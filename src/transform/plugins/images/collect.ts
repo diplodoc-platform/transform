@@ -12,21 +12,21 @@ type Options = MarkdownItPluginOpts & {
     singlePage: boolean;
 };
 
-const collect = (input: string, options: Options) => {
+const collect = async (input: string, options: Options) => {
     const md = new MarkdownIt().use(imsize);
 
     const {root, path, destPath = '', copyFile, singlePage, deps} = options;
     const tokens = md.parse(input, {});
     let result = input;
 
-    tokens.forEach((token) => {
+    for (const token of tokens) {
         if (token.type !== 'inline') {
             return;
         }
 
         const children = token.children || [];
 
-        children.forEach((childToken) => {
+        for (const childToken of children) {
             if (childToken.type !== 'image') {
                 return;
             }
@@ -47,9 +47,9 @@ const collect = (input: string, options: Options) => {
                 result = result.replace(src, newSrc);
             }
 
-            copyFile(targetPath, targetDestPath);
-        });
-    });
+            await copyFile(targetPath, targetDestPath);
+        }
+    }
 
     if (singlePage) {
         return result;

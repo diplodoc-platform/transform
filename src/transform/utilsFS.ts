@@ -3,6 +3,7 @@ import type {Dictionary} from 'lodash';
 import escapeRegExp from 'lodash/escapeRegExp';
 import {join, parse, relative, resolve, sep} from 'path';
 import {statSync} from 'fs';
+import {stat} from 'fs/promises';
 
 import liquidSnippet from './liquid';
 import {FsContext, StateCore} from './typings';
@@ -30,6 +31,16 @@ export type GetFileTokensOpts = {
 export function isFileExists(file: string) {
     try {
         const stats = statSync(file);
+
+        return stats.isFile();
+    } catch (e) {
+        return false;
+    }
+}
+
+export async function isFileExistsAsync(file: string) {
+    try {
+        const stats = await stat(file);
 
         return stats.isFile();
     } catch (e) {

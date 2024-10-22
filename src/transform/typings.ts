@@ -33,6 +33,9 @@ export interface FsContext {
     read(path: string | null): string;
     exist(path: string | null): boolean;
     write(path: string | null, content: string): void;
+    readAsync(path: string | null): Promise<string>;
+    existAsync(path: string | null): Promise<boolean>;
+    writeAsync(path: string | null, content: string): Promise<void>;
 }
 
 export interface DependencyContext {
