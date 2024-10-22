@@ -53,6 +53,20 @@ const common = {
         }),
         build({
             ...common,
+            entryPoints: ['src/scss/base.scss'],
+            outfile: 'dist/css/base.css',
+            format: 'iife',
+            plugins,
+        }),
+        build({
+            ...common,
+            entryPoints: ['src/scss/_yfm-only.scss'],
+            outfile: 'dist/css/_yfm-only.css',
+            format: 'iife',
+            plugins,
+        }),
+        build({
+            ...common,
             entryPoints: ['src/scss/print.scss'],
             outfile: 'dist/css/print.css',
             format: 'iife',
@@ -60,12 +74,26 @@ const common = {
         }),
     ]);
 
-    await build({
-        ...common,
-        entryPoints: ['dist/css/yfm.css'],
-        outfile: 'dist/css/yfm.min.css',
-        minify: true,
-    });
+    await Promise.all([
+        build({
+            ...common,
+            entryPoints: ['dist/css/yfm.css'],
+            outfile: 'dist/css/yfm.min.css',
+            minify: true,
+        }),
+        build({
+            ...common,
+            entryPoints: ['dist/css/base.css'],
+            outfile: 'dist/css/base.min.css',
+            minify: true,
+        }),
+        build({
+            ...common,
+            entryPoints: ['dist/css/_yfm-only.css'],
+            outfile: 'dist/css/_yfm-only.min.css',
+            minify: true,
+        }),
+    ]);
 })();
 
 (async function buildJs() {
@@ -77,15 +105,39 @@ const common = {
         }),
         build({
             ...common,
+            entryPoints: ['src/js/base.ts'],
+            outfile: 'dist/js/base.js',
+        }),
+        build({
+            ...common,
+            entryPoints: ['src/js/_yfm-only.ts'],
+            outfile: 'dist/js/_yfm-only.js',
+        }),
+        build({
+            ...common,
             entryPoints: ['src/js/print/index.ts'],
             outfile: 'dist/js/print.js',
         }),
     ]);
 
-    await build({
-        ...common,
-        entryPoints: ['dist/js/yfm.js'],
-        outfile: 'dist/js/yfm.min.js',
-        minify: true,
-    });
+    await Promise.all([
+        build({
+            ...common,
+            entryPoints: ['dist/js/yfm.js'],
+            outfile: 'dist/js/yfm.min.js',
+            minify: true,
+        }),
+        build({
+            ...common,
+            entryPoints: ['dist/js/base.js'],
+            outfile: 'dist/js/base.min.js',
+            minify: true,
+        }),
+        build({
+            ...common,
+            entryPoints: ['dist/js/_yfm-only.js'],
+            outfile: 'dist/js/_yfm-only.min.js',
+            minify: true,
+        }),
+    ]);
 })();
