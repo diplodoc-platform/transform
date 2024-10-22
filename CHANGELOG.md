@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.33.0](https://github.com/diplodoc-platform/transform/compare/v4.32.4...v4.33.0) (2024-10-22)
+
+
+### Features
+
+* **dist:** export css and js without tabs and cuts ([#540](https://github.com/diplodoc-platform/transform/issues/540)) ([7fa01c7](https://github.com/diplodoc-platform/transform/commit/7fa01c7333ebaec2f07de7cd9b6bd838a974ee4a))
+
 ## [4.32.4](https://github.com/diplodoc-platform/transform/compare/v4.32.3...v4.32.4) (2024-10-21)
 
 
