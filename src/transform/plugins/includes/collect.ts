@@ -12,7 +12,6 @@ function processRecursive(
     includePath: string,
     targetDestPath: string,
     options: IncludeCollectOpts,
-    appendix: Map<string, string>,
 ) {
     const {path, log, copyFile, includedParentPath: includedParentPathNullable, included} = options;
     const includedParentPath = includedParentPathNullable || path;
@@ -34,20 +33,16 @@ function processRecursive(
                 const includedRelativePath = getRelativePath(includedParentPath, includePath);
 
                 // The appendix is the map that protects from multiple include files
-                if (!appendix.has(includedRelativePath)) {
+                if (!options.appendix?.has(includedRelativePath)) {
                     // Recursive function to include the depth structure
-                    const includeContent = collectRecursive(
-                        content,
-                        {
-                            ...options,
-                            path: includePath,
-                            includedParentPath,
-                        },
-                        appendix,
-                    );
+                    const includeContent = collectRecursive(content, {
+                        ...options,
+                        path: includePath,
+                        includedParentPath,
+                    });
 
                     // Add to appendix set structure
-                    appendix.set(
+                    options.appendix?.set(
                         includedRelativePath,
                         `{% included (${includedRelativePath}) %}\n${includeContent}\n{% endincluded %}`,
                     );
@@ -59,11 +54,7 @@ function processRecursive(
     }
 }
 
-function collectRecursive(
-    result: string,
-    options: IncludeCollectOpts,
-    appendix: Map<string, string>,
-) {
+function collectRecursive(result: string, options: IncludeCollectOpts) {
     const {root, path, destPath = '', log, singlePage} = options;
 
     const INCLUDE_REGEXP = /{%\s*include\s*(notitle)?\s*\[(.+?)]\((.+?)\)\s*%}/g;
@@ -100,7 +91,7 @@ function collectRecursive(
 
         includesPaths.push(includePath);
 
-        processRecursive(includePath, targetDestPath, options, appendix);
+        processRecursive(includePath, targetDestPath, options);
 
         includesPaths.pop();
     }
@@ -109,14 +100,16 @@ function collectRecursive(
 }
 
 function collect(input: string, options: IncludeCollectOpts) {
-    const appendix: Map<string, string> = new Map();
+    const shouldWriteAppendix = !options.appendix;
 
-    input = collectRecursive(input, options, appendix);
+    options.appendix = options.appendix ?? new Map();
 
-    if (!options.path.includes('_includes')) {
+    input = collectRecursive(input, options);
+
+    if (shouldWriteAppendix) {
         // Appendix should be appended to the end of the file (it supports depth structure, so the included files will have included as well)
-        if (appendix.size > 0) {
-            input += '\n' + [...appendix.values()].join('\n');
+        if (options.appendix.size > 0) {
+            input += '\n' + [...options.appendix.values()].join('\n');
         }
     }
 
