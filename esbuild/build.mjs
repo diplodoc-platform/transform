@@ -74,24 +74,26 @@ const common = {
         }),
     ]);
 
-    await build({
-        ...common,
-        entryPoints: ['dist/css/yfm.css'],
-        outfile: 'dist/css/yfm.min.css',
-        minify: true,
-    });
-    await build({
-        ...common,
-        entryPoints: ['dist/css/base.css'],
-        outfile: 'dist/css/base.min.css',
-        minify: true,
-    });
-    await build({
-        ...common,
-        entryPoints: ['dist/css/_yfm-only.css'],
-        outfile: 'dist/css/_yfm-only.min.css',
-        minify: true,
-    });
+    await Promise.all([
+        build({
+            ...common,
+            entryPoints: ['dist/css/yfm.css'],
+            outfile: 'dist/css/yfm.min.css',
+            minify: true,
+        }),
+        build({
+            ...common,
+            entryPoints: ['dist/css/base.css'],
+            outfile: 'dist/css/base.min.css',
+            minify: true,
+        }),
+        build({
+            ...common,
+            entryPoints: ['dist/css/_yfm-only.css'],
+            outfile: 'dist/css/_yfm-only.min.css',
+            minify: true,
+        }),
+    ]);
 })();
 
 (async function buildJs() {
