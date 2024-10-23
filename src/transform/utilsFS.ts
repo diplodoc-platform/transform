@@ -1,24 +1,13 @@
 import type {Dictionary} from 'lodash';
 
-import {readFileSync, statSync} from 'fs';
 import escapeRegExp from 'lodash/escapeRegExp';
 import {join, parse, relative, resolve, sep} from 'path';
+import {statSync} from 'fs';
+import {stat} from 'fs/promises';
 
 import liquidSnippet from './liquid';
-import {StateCore} from './typings';
+import {FsContext, StateCore} from './typings';
 import {defaultTransformLink} from './utils';
-
-const filesCache: Record<string, string> = {};
-
-export function isFileExists(file: string) {
-    try {
-        const stats = statSync(file);
-
-        return stats.isFile();
-    } catch (e) {
-        return false;
-    }
-}
 
 export function resolveRelativePath(fromPath: string, relativePath: string) {
     const {dir: fromDir} = parse(fromPath);
@@ -39,7 +28,32 @@ export type GetFileTokensOpts = {
     content?: string;
 };
 
-export function getFileTokens(path: string, state: StateCore, options: GetFileTokensOpts) {
+export function isFileExists(file: string) {
+    try {
+        const stats = statSync(file);
+
+        return stats.isFile();
+    } catch (e) {
+        return false;
+    }
+}
+
+export async function isFileExistsAsync(file: string) {
+    try {
+        const stats = await stat(file);
+
+        return stats.isFile();
+    } catch (e) {
+        return false;
+    }
+}
+
+export function getFileTokens(
+    fs: FsContext,
+    path: string,
+    state: StateCore,
+    options: GetFileTokensOpts,
+) {
     const {
         getVarsPerFile,
         vars,
@@ -57,12 +71,7 @@ export function getFileTokens(path: string, state: StateCore, options: GetFileTo
 
     // Read the content only if we dont have one in the args
     if (!content) {
-        if (filesCache[path]) {
-            content = filesCache[path];
-        } else {
-            content = readFileSync(path, 'utf8');
-            filesCache[path] = content;
-        }
+        content = fs.read(path);
     }
 
     let sourceMap;
