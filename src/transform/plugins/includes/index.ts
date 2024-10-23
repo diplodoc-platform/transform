@@ -1,15 +1,15 @@
 import {bold} from 'chalk';
 import Token from 'markdown-it/lib/token';
 
-import {StateCore} from '../../typings';
 import {
     GetFileTokensOpts,
     getFileTokens,
     getFullIncludePath,
-    isFileExists,
     resolveRelativePath,
 } from '../../utilsFS';
 import {findBlockTokens} from '../../utils';
+import {StateCore} from '../../typings';
+import {defaultFsContext} from '../../fsContext';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
 
 import {MarkdownItIncluded} from './types';
@@ -29,7 +29,7 @@ type Options = MarkdownItPluginOpts &
     };
 
 function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, options: Options) {
-    const {root, notFoundCb, log, noReplaceInclude = false} = options;
+    const {root, notFoundCb, log, noReplaceInclude = false, fs = defaultFsContext, deps} = options;
     const {tokens} = state;
     let i = 0;
 
@@ -57,7 +57,11 @@ function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, 
                 let pathname = fullIncludePath;
                 let hash = '';
                 const hashIndex = fullIncludePath.lastIndexOf('#');
-                if (hashIndex > -1 && !isFileExists(pathname)) {
+                const existed = fs.exist(pathname);
+
+                deps?.markDep?.(path, pathname, 'include');
+
+                if (hashIndex > -1 && !existed) {
                     pathname = fullIncludePath.slice(0, hashIndex);
                     hash = fullIncludePath.slice(hashIndex + 1);
                 }
@@ -68,7 +72,7 @@ function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, 
                     continue;
                 }
 
-                const fileTokens = getFileTokens(pathname, state, {
+                const fileTokens = getFileTokens(fs, pathname, state, {
                     ...options,
                     content: included, // The content forces the function to use it instead of reading from the disk
                 });

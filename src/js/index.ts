@@ -1,8 +1,7 @@
 import '@diplodoc/cut-extension/runtime';
 import '@diplodoc/tabs-extension/runtime';
 
-import './polyfill';
-import './code';
-import './term';
+import './base';
+import './_yfm-only';
 import './wide-mode';
 import './patch';

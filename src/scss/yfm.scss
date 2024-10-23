@@ -1,12 +1,5 @@
-@import 'common';
-@import 'note';
-@import 'anchor';
-@import 'highlight';
-@import 'code';
-@import 'file';
-@import 'term';
-@import 'table';
+@import 'base';
+@import 'yfm-only';
 @import 'modal';
-
 @import '@diplodoc/cut-extension/runtime';
 @import '@diplodoc/tabs-extension/runtime';

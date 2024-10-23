@@ -1,20 +1,24 @@
 import {relative} from 'path';
 import {bold} from 'chalk';
-import {readFileSync} from 'fs';
 
-import {getRelativePath, isFileExists, resolveRelativePath} from '../../utilsFS';
+import {getRelativePath, resolveRelativePath} from '../../utilsFS';
+import {defaultFsContext} from '../../fsContext';
 
 import {IncludeCollectOpts} from './types';
 
-const includesPaths: string[] = [];
-
-function processRecursive(
+async function processRecursive(
     includePath: string,
     targetDestPath: string,
     options: IncludeCollectOpts,
-    appendix: Map<string, string>,
 ) {
-    const {path, log, copyFile, includedParentPath: includedParentPathNullable, included} = options;
+    const {
+        path,
+        log,
+        copyFile,
+        includedParentPath: includedParentPathNullable,
+        included,
+        fs,
+    } = options;
     const includedParentPath = includedParentPathNullable || path;
 
     const includeOptions = {
@@ -24,30 +28,26 @@ function processRecursive(
     };
 
     try {
-        const contentProcessed = copyFile(includePath, targetDestPath, includeOptions);
+        const contentProcessed = await copyFile(includePath, targetDestPath, includeOptions);
 
         // To reduce file reading we can include the file content into the generated content
         if (included) {
-            const content = contentProcessed ?? readFileSync(targetDestPath, 'utf8');
+            const content = contentProcessed ?? (await fs?.readAsync(targetDestPath));
 
             if (content) {
                 const includedRelativePath = getRelativePath(includedParentPath, includePath);
 
                 // The appendix is the map that protects from multiple include files
-                if (!appendix.has(includedRelativePath)) {
+                if (!options.appendix?.has(includedRelativePath)) {
                     // Recursive function to include the depth structure
-                    const includeContent = collectRecursive(
-                        content,
-                        {
-                            ...options,
-                            path: includePath,
-                            includedParentPath,
-                        },
-                        appendix,
-                    );
+                    const includeContent = await collectRecursive(content, {
+                        ...options,
+                        path: includePath,
+                        includedParentPath,
+                    });
 
                     // Add to appendix set structure
-                    appendix.set(
+                    options.appendix?.set(
                         includedRelativePath,
                         `{% included (${includedRelativePath}) %}\n${includeContent}\n{% endincluded %}`,
                     );
@@ -59,12 +59,8 @@ function processRecursive(
     }
 }
 
-function collectRecursive(
-    result: string,
-    options: IncludeCollectOpts,
-    appendix: Map<string, string>,
-) {
-    const {root, path, destPath = '', log, singlePage} = options;
+async function collectRecursive(result: string, options: IncludeCollectOpts) {
+    const {root, path, destPath = '', log, singlePage, fs = defaultFsContext, deps} = options;
 
     const INCLUDE_REGEXP = /{%\s*include\s*(notitle)?\s*\[(.+?)]\((.+?)\)\s*%}/g;
 
@@ -76,19 +72,24 @@ function collectRecursive(
 
         let includePath = resolveRelativePath(path, relativePath);
         const hashIndex = relativePath.lastIndexOf('#');
-        if (hashIndex > -1 && !isFileExists(includePath)) {
+
+        deps?.markDep?.(path, includePath, 'include');
+
+        if (hashIndex > -1 && !(await fs.existAsync(includePath))) {
             includePath = includePath.slice(0, includePath.lastIndexOf('#'));
             relativePath = relativePath.slice(0, hashIndex);
         }
 
         const targetDestPath = resolveRelativePath(destPath, relativePath);
 
-        if (includesPaths.includes(includePath)) {
-            log.error(`Circular includes: ${bold(includesPaths.concat(path).join(' ▶ '))}`);
+        if (options.includesPaths?.includes(includePath)) {
+            log.error(
+                `Circular includes: ${bold(options.includesPaths?.concat(path).join(' ▶ '))}`,
+            );
             break;
         }
 
-        if (singlePage && !includesPaths.length) {
+        if (singlePage && !options.includesPaths?.length) {
             const newRelativePath = relative(root, includePath);
             const newInclude = matchedInclude.replace(relativePath, newRelativePath);
 
@@ -98,25 +99,28 @@ function collectRecursive(
             INCLUDE_REGEXP.lastIndex = INCLUDE_REGEXP.lastIndex - delta;
         }
 
-        includesPaths.push(includePath);
+        options.includesPaths?.push(includePath);
 
-        processRecursive(includePath, targetDestPath, options, appendix);
+        await processRecursive(includePath, targetDestPath, options);
 
-        includesPaths.pop();
+        options.includesPaths?.pop();
     }
 
     return result;
 }
 
-function collect(input: string, options: IncludeCollectOpts) {
-    const appendix: Map<string, string> = new Map();
+async function collect(input: string, options: IncludeCollectOpts) {
+    const shouldWriteAppendix = !options.appendix;
 
-    input = collectRecursive(input, options, appendix);
+    options.includesPaths = options.includesPaths ?? [];
+    options.appendix = options.appendix ?? new Map();
 
-    if (!options.path.includes('_includes')) {
+    input = await collectRecursive(input, options);
+
+    if (shouldWriteAppendix) {
         // Appendix should be appended to the end of the file (it supports depth structure, so the included files will have included as well)
-        if (appendix.size > 0) {
-            input += '\n' + [...appendix.values()].join('\n');
+        if (options.appendix.size > 0) {
+            input += '\n' + [...options.appendix.values()].join('\n');
         }
     }
 

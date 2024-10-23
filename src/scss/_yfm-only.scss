@@ -1,0 +1,12 @@
+/**
+    Note: This file excludes "cut" and "tabs" as they are handled separately
+    in dedicated extensions (packages). In the future, "note", "file", "term"
+    and "table" will also be excluded from this file and moved to yfm.scss,
+    once they are moved to separate packages. Direct usage is not recommended,
+    as the file is subject to changes without prior notice.
+ */
+
+@import 'note';
+@import 'file';
+@import 'table';
+@import 'term';

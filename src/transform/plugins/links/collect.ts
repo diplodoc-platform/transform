@@ -4,6 +4,7 @@ import url from 'url';
 
 import {PAGE_LINK_REGEXP, getHrefTokenAttr, isLocalUrl} from '../../utils';
 import {getSinglePageAnchorId, resolveRelativePath} from '../../utilsFS';
+import {MarkdownItPluginOpts} from '../typings';
 
 import index from './index';
 
@@ -12,9 +13,7 @@ const replaceLinkHref = (input: string, href: string, newHref: string) => {
     return input.replace(`](${href})`, `](${newHref})`);
 };
 
-type Options = {
-    root: string;
-    path: string;
+type Options = MarkdownItPluginOpts & {
     singlePage: boolean;
 };
 
@@ -22,7 +21,7 @@ type Options = {
  *  Example: replace [Text](../../path/to/file.md#anchor) with [Text](#_path_to_file_anchor)
  * */
 const collect = (input: string, options: Options) => {
-    const {root, path: startPath, singlePage} = options;
+    const {root, path: startPath, singlePage, deps} = options;
 
     if (!singlePage) {
         return;
@@ -66,6 +65,8 @@ const collect = (input: string, options: Options) => {
                 if (pathname) {
                     const isPageFile = PAGE_LINK_REGEXP.test(pathname);
                     if (isPageFile) {
+                        deps?.markDep?.(startPath, pathname, 'link');
+
                         const newHref = getSinglePageAnchorId({
                             root,
                             currentPath: startPath,
