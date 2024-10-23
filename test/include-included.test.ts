@@ -1,5 +1,4 @@
 import {resolve} from 'path';
-import {readFileSync} from 'fs';
 import {readFile} from 'node:fs/promises';
 
 import transform from '../src/transform';
@@ -26,7 +25,7 @@ const collectIncluded = (text: string, path: string) => {
         included: true,
         path: path,
         root: resolve(path, '../'),
-        copyFile: (includePath) => readFileSync(includePath, 'utf-8'),
+        copyFile: (includePath) => readFile(includePath, 'utf-8'),
         singlePage: false,
         destPath: '',
         isLintRun: false,
@@ -46,7 +45,7 @@ describe('Included to md', () => {
             const expectPath = resolve(__dirname, './mocks/include-included-3.expect.md');
             const expectContent = await readFile(expectPath, 'utf8');
 
-            const result = collectIncluded(input, inputPath);
+            const result = await collectIncluded(input, inputPath);
 
             expect(result).toBe(expectContent);
         });
@@ -70,7 +69,7 @@ describe('Included to md', () => {
             const expectPath = resolve(__dirname, './mocks/include-included-3-deep.expect.md');
             const expectContent = await readFile(expectPath, 'utf8');
 
-            const result = collectIncluded(input, inputPath);
+            const result = await collectIncluded(input, inputPath);
 
             expect(result).toBe(expectContent);
         });

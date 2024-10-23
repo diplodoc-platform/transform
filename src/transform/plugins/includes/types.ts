@@ -9,10 +9,15 @@ export interface MarkdownItIncluded extends MarkdownIt {
 
 export type IncludeCollectOpts = MarkdownItPluginOpts & {
     destPath: string;
-    copyFile(path: string, dest: string, opts: IncludeCollectOpts): string | null | undefined;
+    copyFile(
+        path: string,
+        dest: string,
+        opts: IncludeCollectOpts,
+    ): Promise<string | null | undefined>;
     singlePage: Boolean;
     included: Boolean;
     includedParentPath?: string;
     additionalIncludedList?: string[];
+    includesPaths?: string[];
     appendix?: Map<string, string>;
 };
