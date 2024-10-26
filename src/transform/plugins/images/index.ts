@@ -29,7 +29,7 @@ function replaceImageSrc(
     const path = resolveRelativePath(currentPath, src);
 
     if (isFileExists(path)) {
-        state.md.assets?.push(path);
+        state.md.assets?.push(src);
     } else {
         log.error(`Asset not found: ${bold(src)} in ${bold(currentPath)}`);
     }
