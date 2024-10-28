@@ -1,9 +1,7 @@
 import url from 'url';
 import {bold} from 'chalk';
-import Token from 'markdown-it/lib/token';
 import path, {isAbsolute, parse, relative, resolve} from 'path';
-
-import {Logger} from 'src/transform/log';
+import Token from 'markdown-it/lib/token';
 
 import {
     PAGE_LINK_REGEXP,
@@ -13,8 +11,10 @@ import {
     headingInfo,
     isLocalUrl,
 } from '../../utils';
-import {getFileTokens, isFileExists} from '../../utilsFS';
-import {CacheContext, StateCore} from '../../typings';
+import {getFileTokens} from '../../utilsFS';
+import {Logger} from '../../log';
+import {CacheContext, FsContext, StateCore} from '../../typings';
+import {defaultFsContext} from '../../fsContext';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
 
 function getTitleFromTokens(tokens: Token[]) {
@@ -49,12 +49,13 @@ type Options = {
     currentPath: string;
     log: Logger;
     cache?: CacheContext;
+    fs: FsContext;
 };
 
 const getTitle = (id: string | null, options: Options) => {
     const {file, state, opts} = options;
 
-    const fileTokens = getFileTokens(file, state, {
+    const fileTokens = getFileTokens(options.fs, file, state, {
         ...opts,
         disableLint: true,
         disableTitleRefSubstitution: true,
@@ -121,6 +122,8 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
         log,
         getPublicPath = getDefaultPublicPath,
         cache,
+        fs = defaultFsContext,
+        deps,
     } = opts;
 
     const currentPath = state.env.path || startPath;
@@ -147,8 +150,12 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
 
     if (pathname) {
         file = resolve(path.parse(currentPath).dir, pathname);
-        fileExists = isFileExists(file);
+        fileExists = fs.exist(file);
         isPageFile = PAGE_LINK_REGEXP.test(pathname);
+
+        if (isPageFile) {
+            deps?.markDep?.(currentPath, file, 'link');
+        }
 
         if (isPageFile && !fileExists) {
             let needShowError = true;
@@ -193,6 +200,7 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
             currentPath,
             log,
             cache,
+            fs,
         });
     }
 

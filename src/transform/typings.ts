@@ -29,6 +29,38 @@ export type Heading = {
     items?: Heading[];
 };
 
+export interface FsContext {
+    read(path: string | null): string;
+    exist(path: string | null): boolean;
+    write(path: string | null, content: string): void;
+    readAsync(path: string | null): Promise<string>;
+    existAsync(path: string | null): Promise<boolean>;
+    writeAsync(path: string | null, content: string): Promise<void>;
+}
+
+export interface DependencyContext {
+    resetDeps?(path: string): void;
+    markDep?(path: string, dependencyPath: string, type?: string): void;
+    unmarkDep?(path: string, dependencyPath: string, type?: string): void;
+}
+
+export interface RevisionMeta {
+    files: {
+        [key: string]: {
+            modifyedDate: number; // modified_at
+            dependencies: {
+                [type: string]: string[];
+            };
+            changed: boolean;
+        };
+    };
+}
+
+export interface RevisionContext {
+    files: string[];
+    meta: RevisionMeta;
+}
+
 export interface OptionsType {
     vars?: Record<string, string>;
     path?: string;
@@ -58,6 +90,9 @@ export interface OptionsType {
     getPublicPath?: (options: OptionsType, href?: string) => string;
     renderInline?: boolean;
     cache?: CacheContext;
+    context?: RevisionContext;
+    fs?: FsContext;
+    deps?: DependencyContext;
     [x: string]: unknown;
 }
 
@@ -84,6 +119,9 @@ export interface MarkdownItPluginOpts {
     rootPublicPath: string;
     isLintRun: boolean;
     cache?: CacheContext;
+    context?: RevisionContext;
+    fs?: FsContext;
+    deps?: DependencyContext;
     conditionsInCode?: boolean;
     vars?: Record<string, string>;
     extractTitle?: boolean;
