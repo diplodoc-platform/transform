@@ -206,6 +206,27 @@ export const imageWithSize = (md: MarkdownIt): ParserInline.RuleInline => {
             if (height !== '') {
                 token.attrs.push([ImsizeAttr.Height, height]);
             }
+
+            let style: string | undefined;
+
+            if (width !== '') {
+                const widthWithPercent = width.includes('%');
+                const heightWithPercent = height.includes('%');
+
+                const widthString = widthWithPercent ? width : `${width}px`;
+                style = `width: ${widthString};`;
+
+                if (height !== '' && !heightWithPercent && !widthWithPercent) {
+                    style += ` aspect-ratio: ${width} / ${height}; height: auto;`;
+                }
+            } else if (height !== '') {
+                const heightString = height.includes('%') ? height : `${height}px`;
+                style = `height: ${heightString};`;
+            }
+
+            if (style) {
+                token.attrs.push([ImsizeAttr.Style, style]);
+            }
         }
 
         state.pos = pos;
