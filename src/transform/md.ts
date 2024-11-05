@@ -12,7 +12,7 @@ import extractTitle from './title';
 import getHeadings from './headings';
 import sanitizeHtml from './sanitize';
 
-function initMarkdownit(options: OptionsType) {
+function initMarkdownIt(options: OptionsType) {
     const {
         allowHTML = false,
         linkify = false,
@@ -172,4 +172,4 @@ function initCompiler(md: MarkdownIt, options: OptionsType, env: EnvType) {
     };
 }
 
-export = initMarkdownit;
+export = initMarkdownIt;

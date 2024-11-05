@@ -7,17 +7,18 @@ export type VideoToken = Token & {
 };
 
 export type VideoServicesOptions = {
-    [VideoService.YouTube]: {width: number; height: number};
-    [VideoService.Vimeo]: {width: number; height: number};
-    [VideoService.Vine]: {width: number; height: number; embed: 'simple' | string};
-    [VideoService.Prezi]: {width: number; height: number};
-    [VideoService.Osf]: {width: string; height: string};
-    [VideoService.Yandex]: {width: number; height: number};
-    [VideoService.Vk]: {width: number; height: number};
+    [service in VideoService]: {
+        width: number | string;
+        height: number | string;
+    };
+} & {
+    vine: {
+        embed: 'simple' | (string & {});
+    };
 };
 
 export type VideoFullOptions = VideoServicesOptions & {
-    url: VideoUrlFn;
+    videoUrl: VideoUrlFn;
 };
 
 export type VideoPluginOptions = Partial<VideoFullOptions>;

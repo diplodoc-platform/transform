@@ -11,10 +11,19 @@ export enum VideoService {
     Osf = 'osf',
     Yandex = 'yandex',
     Vk = 'vk',
+    Rutube = 'rutube',
+    url = 'url',
 }
 
+export type Service = {
+    csp?: Record<string, string[]>;
+    extract(url: string): string;
+};
+
+export type Services = [VideoService, Service][];
+
 export const defaults: VideoFullOptions = {
-    url: videoUrl,
+    videoUrl,
     youtube: {width: 640, height: 390},
     vimeo: {width: 500, height: 281},
     vine: {width: 600, height: 600, embed: 'simple'},
@@ -22,4 +31,6 @@ export const defaults: VideoFullOptions = {
     osf: {width: '100%', height: '100%'},
     yandex: {width: 640, height: 390},
     vk: {width: 640, height: 390},
+    rutube: {width: 640, height: 390},
+    url: {width: 640, height: 390},
 };

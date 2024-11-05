@@ -1,6 +1,6 @@
 import {bold} from 'chalk';
 
-import initMarkdownit from '../../md';
+import initMarkdownIt from '../../md';
 import imsize from '../imsize';
 import {MarkdownItPluginOpts} from '../typings';
 
@@ -12,7 +12,7 @@ const BLOCK_START = '{% changelog %}';
 const BLOCK_END = '{% endchangelog %}';
 
 function parseChangelogs(str: string, path?: string) {
-    const {parse, compile, env} = initMarkdownit({
+    const {parse, compile, env} = initMarkdownIt({
         plugins: [changelogPlugin, imsize],
         extractChangelogs: true,
         path,

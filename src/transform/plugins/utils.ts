@@ -37,3 +37,19 @@ export const сarriage = platform === 'win32' ? '\r\n' : '\n';
 export function generateID() {
     return Math.random().toString(36).substr(2, 8);
 }
+
+export function append<T extends Record<string, []>, Key extends keyof T>(
+    target: T,
+    key: Key,
+    ...values: T[Key]
+) {
+    if (!target[key]) {
+        target[key] = values;
+
+        return;
+    }
+
+    values.forEach((value) => target[key].push(value));
+
+    return target;
+}
