@@ -21,6 +21,10 @@ export const videoUrl: VideoUrlFn = (service, videoID, options) => {
             return `https://runtime.video.cloud.yandex.net/player/video/${videoID}`;
         case 'vk':
             return `https://vk.com/video_ext.php?${videoID}`;
+        case 'rutube':
+            return `https://rutube.ru/play/embed/${videoID}`;
+        case 'url':
+            return videoID;
         default:
             return service;
     }

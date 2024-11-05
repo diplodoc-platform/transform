@@ -5,6 +5,8 @@
 // Process @[osf](guid)
 // Process @[yandex](videoID)
 // Process @[vk](videoID)
+// Process @[rutube](videoID)
+// Process @[url](fullLink)
 
 import type MarkdownIt from 'markdown-it';
 // eslint-disable-next-line no-duplicate-imports
@@ -12,6 +14,8 @@ import type {PluginWithOptions} from 'markdown-it';
 import type ParserInline from 'markdown-it/lib/parser_inline';
 import type Renderer from 'markdown-it/lib/renderer';
 import type {VideoFullOptions, VideoPluginOptions, VideoToken} from './types';
+
+import {append} from '../utils';
 
 import {parseVideoUrl} from './parsers';
 import {VideoService, defaults} from './const';
@@ -74,13 +78,13 @@ function tokenizeVideo(md: MarkdownIt, options: VideoFullOptions): Renderer.Rend
             : `<div class="embed-responsive embed-responsive-16by9"><iframe` +
                   ` class="embed-responsive-item ${service}-player"` +
                   ` type="text/html" width="${width}" height="${height}"` +
-                  ` src="${options.url(service, videoID, options)}"` +
+                  ` src="${options.videoUrl(service, videoID, options)}"` +
                   ` frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div>`;
     };
 }
 
 const EMBED_REGEX = /@\[([a-zA-Z].+)]\([\s]*(.*?)[\s]*[)]/im;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 function videoEmbed(md: MarkdownIt, _options: VideoFullOptions): ParserInline.RuleInline {
     return (state, silent) => {
         const theState = state;
@@ -100,11 +104,13 @@ function videoEmbed(md: MarkdownIt, _options: VideoFullOptions): ParserInline.Ru
         }
 
         const service = match[1];
-        const videoID = parseVideoUrl(service, match[2]);
+        const parsed = parseVideoUrl(service, match[2]);
 
-        if (videoID === false) {
+        if (parsed === false) {
             return false;
         }
+
+        const [videoID, csp] = parsed;
 
         const serviceStart = oldPos + 2;
         const serviceEnd = md.helpers.parseLinkLabel(state, oldPos + 1, false);
@@ -127,6 +133,12 @@ function videoEmbed(md: MarkdownIt, _options: VideoFullOptions): ParserInline.Ru
         }
 
         theState.pos += theState.src.indexOf(')', theState.pos);
+
+        if (csp) {
+            state.env.meta ??= {};
+            append(state.env.meta, 'csp', csp);
+        }
+
         return true;
     };
 }

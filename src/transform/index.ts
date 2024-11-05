@@ -4,7 +4,7 @@ import {bold} from 'chalk';
 
 import {log} from './log';
 import liquidSnippet from './liquid';
-import initMarkdownit from './md';
+import initMarkdownIt from './md';
 
 function applyLiquid(input: string, options: OptionsType) {
     const {
@@ -36,7 +36,7 @@ function emitResult(html: string, env: EnvType): OutputType {
 // eslint-disable-next-line consistent-return
 function transform(originInput: string, options: OptionsType = {}) {
     const input = applyLiquid(originInput, options);
-    const {parse, compile, env} = initMarkdownit(options);
+    const {parse, compile, env} = initMarkdownIt(options);
 
     try {
         return emitResult(compile(parse(input)), env);

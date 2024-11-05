@@ -1,4 +1,4 @@
-import {VideoService} from './const';
+import {Services} from './const';
 
 const ytRegex = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
 export function youtubeParser(url: string) {
@@ -39,45 +39,73 @@ export function yandexParser(url: string) {
     return match ? match[1] : url;
 }
 
-const vkRegex = /^https:\/\/vk.com\/video_ext\.php?(oid=[-\d]+&id=[-\d]+)/;
+const vkRegex = /^https:\/\/vk\.com\/video_ext\.php\?(oid=[-\d]+&id=[-\d]+)/;
 export function vkParser(url: string) {
     const match = url.match(vkRegex);
     return match ? match[1] : url;
 }
 
-export function parseVideoUrl(service: string, url: string): string | false {
-    let videoID = '';
+const rutubeRegex = /^https:\/\/rutube\.ru\/video\/([a-zA-Z0-9]+)\/?/;
+export function rutubeParser(url: string) {
+    const match = url.match(rutubeRegex);
+    return match ? match[1] : url;
+}
 
-    switch (service.toLowerCase()) {
-        case VideoService.YouTube:
-            videoID = youtubeParser(url);
-            break;
-        case VideoService.Vimeo:
-            videoID = vimeoParser(url);
-            break;
-        case VideoService.Vine:
-            videoID = vineParser(url);
-            break;
-        case VideoService.Prezi:
-            videoID = preziParser(url);
-            break;
-        case VideoService.Osf:
-            videoID = mfrParser(url);
-            break;
-        case VideoService.Yandex:
-            videoID = yandexParser(url);
-            break;
-        case VideoService.Vk:
-            videoID = vkParser(url);
-            break;
-        default:
-            return false;
+const urlParser = (url: string) => url;
+
+const supportedServices = Object.entries({
+    osf: {
+        extract: mfrParser,
+    },
+    prezi: {
+        extract: preziParser,
+    },
+    vimeo: {
+        extract: vimeoParser,
+    },
+    vine: {
+        extract: vineParser,
+    },
+    yandex: {
+        extract: yandexParser,
+    },
+    youtube: {
+        extract: youtubeParser,
+    },
+    vk: {
+        extract: vkParser,
+        csp: {
+            'frame-src': 'https://vk.com/',
+        },
+    },
+    rutube: {
+        extract: rutubeParser,
+        csp: {
+            'frame-src': 'https://rutube.ru/play/embed/',
+        },
+    },
+    url: {
+        extract: urlParser,
+    },
+}) as Services;
+
+export function parseVideoUrl(service: string, url: string) {
+    let videoID = '';
+    const normalizedService = service.toLowerCase();
+    const parsed = supportedServices.find(([name]) => name === normalizedService);
+
+    if (!parsed) {
+        return false;
     }
+
+    const [, videoParser] = parsed;
+
+    videoID = videoParser.extract(url);
 
     // If the videoID field is empty, regex currently make it the close parenthesis.
     if (videoID === ')') {
         videoID = '';
     }
 
-    return videoID;
+    return [videoID, videoParser.csp] as const;
 }
