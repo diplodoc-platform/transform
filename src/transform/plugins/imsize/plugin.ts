@@ -225,6 +225,8 @@ export const imageWithSize = (md: MarkdownIt, opts?: ImsizeOptions): ParserInlin
                 if (height !== '') {
                     if (width !== '' && !heightWithPercent && !widthWithPercent) {
                         style += `aspect-ratio: ${width} / ${height};height: auto;`;
+                        state.env.forcedSanitizeCssWhiteList ??= {};
+                        state.env.forcedSanitizeCssWhiteList['aspect-ratio'] = true;
                     } else {
                         const heightString = heightWithPercent ? height : `${height}px`;
                         style += `height: ${heightString};`;

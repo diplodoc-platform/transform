@@ -168,7 +168,9 @@ function initCompiler(md: MarkdownIt, options: OptionsType, env: EnvType) {
         const html = md.renderer.render(tokens, md.options, env);
 
         // Sanitize the page
-        return needToSanitizeHtml ? sanitizeHtml(html, sanitizeOptions) : html;
+        return needToSanitizeHtml
+            ? sanitizeHtml(html, sanitizeOptions, env.forcedSanitizeCssWhiteList)
+            : html;
     };
 }
 
