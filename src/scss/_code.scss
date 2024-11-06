@@ -36,5 +36,11 @@
         &-icon {
             pointer-events: none;
         }
+
+        &::before {
+            content: '';
+            position: absolute;
+            inset: -5px;
+        }
     }
 }
