@@ -5,7 +5,11 @@ import type Token from 'markdown-it/lib/token';
 import {ImsizeAttr} from './const';
 import {parseImageSize} from './helpers';
 
-export const imageWithSize = (md: MarkdownIt): ParserInline.RuleInline => {
+export type ImsizeOptions = {
+    inlineSizeStyling?: boolean;
+};
+
+export const imageWithSize = (md: MarkdownIt, opts?: ImsizeOptions): ParserInline.RuleInline => {
     // eslint-disable-next-line complexity
     return (state, silent) => {
         if (state.src.charCodeAt(state.pos) !== 0x21 /* ! */) {
@@ -207,27 +211,29 @@ export const imageWithSize = (md: MarkdownIt): ParserInline.RuleInline => {
                 token.attrs.push([ImsizeAttr.Height, height]);
             }
 
-            let style: string | undefined = '';
+            if (opts?.inlineSizeStyling) {
+                let style: string | undefined = '';
 
-            const widthWithPercent = width.includes('%');
-            const heightWithPercent = height.includes('%');
+                const widthWithPercent = width.includes('%');
+                const heightWithPercent = height.includes('%');
 
-            if (width !== '') {
-                const widthString = widthWithPercent ? width : `${width}px`;
-                style += `width: ${widthString};`;
-            }
-
-            if (height !== '') {
-                if (width !== '' && !heightWithPercent && !widthWithPercent) {
-                    style += `aspect-ratio: ${width} / ${height};height: auto;`;
-                } else {
-                    const heightString = heightWithPercent ? height : `${height}px`;
-                    style += `height: ${heightString};`;
+                if (width !== '') {
+                    const widthString = widthWithPercent ? width : `${width}px`;
+                    style += `width: ${widthString};`;
                 }
-            }
 
-            if (style) {
-                token.attrs.push([ImsizeAttr.Style, style]);
+                if (height !== '') {
+                    if (width !== '' && !heightWithPercent && !widthWithPercent) {
+                        style += `aspect-ratio: ${width} / ${height};height: auto;`;
+                    } else {
+                        const heightString = heightWithPercent ? height : `${height}px`;
+                        style += `height: ${heightString};`;
+                    }
+                }
+
+                if (style) {
+                    token.attrs.push([ImsizeAttr.Style, style]);
+                }
             }
         }
 
