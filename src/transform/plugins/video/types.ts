@@ -17,6 +17,13 @@ export type VideoServicesOptions = {
     };
 };
 
+export type Service = {
+    csp?: Record<string, string[]>;
+    extract(url: string): string;
+};
+
+export type Services = Record<VideoService, Service>;
+
 export type VideoFullOptions = VideoServicesOptions & {
     videoUrl: VideoUrlFn;
 };

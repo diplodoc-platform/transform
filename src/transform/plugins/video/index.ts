@@ -83,7 +83,7 @@ function tokenizeVideo(md: MarkdownIt, options: VideoFullOptions): Renderer.Rend
     };
 }
 
-const EMBED_REGEX = /@\[([a-zA-Z].+)]\([\s]*(.*?)[\s]*[)]/im;
+const EMBED_REGEX = /@\[([a-zA-Z]*?)]\([\s]*(.*?)[\s]*[)]/im;
 
 function videoEmbed(md: MarkdownIt, _options: VideoFullOptions): ParserInline.RuleInline {
     return (state, silent) => {
@@ -98,12 +98,11 @@ function videoEmbed(md: MarkdownIt, _options: VideoFullOptions): ParserInline.Ru
         }
 
         const match = EMBED_REGEX.exec(state.src.slice(state.pos, state.src.length));
-
         if (!match || match.length < 3) {
             return false;
         }
 
-        const service = match[1];
+        const service = match[1] || 'url';
         const parsed = parseVideoUrl(service, match[2]);
 
         if (parsed === false) {
@@ -126,13 +125,19 @@ function videoEmbed(md: MarkdownIt, _options: VideoFullOptions): ParserInline.Ru
             const newState = new theState.md.inline.State(service, theState.md, theState.env, []);
             newState.md.inline.tokenize(newState);
 
-            const token = theState.push('video', '', 0);
-            (token as VideoToken).videoID = videoID;
-            (token as VideoToken).service = service;
+            const token = theState.push('video', '', 0) as VideoToken;
+
+            token.videoID = videoID;
+            token.service = service;
+
             token.level = theState.level;
         }
 
-        theState.pos += theState.src.indexOf(')', theState.pos);
+        if (service === 'url') {
+            theState.pos = theState.src.indexOf(')', theState.pos) + 1;
+        } else {
+            theState.pos += theState.src.indexOf(')', theState.pos);
+        }
 
         if (csp) {
             state.env.meta ??= {};

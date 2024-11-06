@@ -15,13 +15,6 @@ export enum VideoService {
     url = 'url',
 }
 
-export type Service = {
-    csp?: Record<string, string[]>;
-    extract(url: string): string;
-};
-
-export type Services = [VideoService, Service][];
-
 export const defaults: VideoFullOptions = {
     videoUrl,
     youtube: {width: 640, height: 390},
