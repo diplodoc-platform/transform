@@ -1,4 +1,5 @@
-import {Services} from './const';
+import {VideoService} from './const';
+import {Services} from './types';
 
 const ytRegex = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
 export function youtubeParser(url: string) {
@@ -53,7 +54,7 @@ export function rutubeParser(url: string) {
 
 const urlParser = (url: string) => url;
 
-const supportedServices = Object.entries({
+const supportedServices = {
     osf: {
         extract: mfrParser,
     },
@@ -75,37 +76,37 @@ const supportedServices = Object.entries({
     vk: {
         extract: vkParser,
         csp: {
-            'frame-src': 'https://vk.com/',
+            'frame-src': ['https://vk.com/'],
         },
     },
     rutube: {
         extract: rutubeParser,
         csp: {
-            'frame-src': 'https://rutube.ru/play/embed/',
+            'frame-src': ['https://rutube.ru/play/embed/'],
         },
     },
     url: {
         extract: urlParser,
     },
-}) as Services;
+} as Services;
 
 export function parseVideoUrl(service: string, url: string) {
     let videoID = '';
     const normalizedService = service.toLowerCase();
-    const parsed = supportedServices.find(([name]) => name === normalizedService);
+    const parsed = supportedServices[normalizedService as VideoService];
 
     if (!parsed) {
         return false;
     }
 
-    const [, videoParser] = parsed;
+    const {extract, csp} = parsed;
 
-    videoID = videoParser.extract(url);
+    videoID = extract(url);
 
     // If the videoID field is empty, regex currently make it the close parenthesis.
     if (videoID === ')') {
         videoID = '';
     }
 
-    return [videoID, videoParser.csp] as const;
+    return [videoID, csp] as const;
 }

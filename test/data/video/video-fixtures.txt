@@ -325,7 +325,7 @@ Coverage. Line Breaks
 .
 @[vine](MhQ2lvg29Un) @[vine](MhQ2lvg29Un)
 .
-<p>@<a href="MhQ2lvg29Un">vine</a> <div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item vine-player" type="text/html" width="600" height="600" src="https://vine.co/v/MhQ2lvg29Un/embed/simple" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div></p>
+<p><div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item vine-player" type="text/html" width="600" height="600" src="https://vine.co/v/MhQ2lvg29Un/embed/simple" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div><div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item vine-player" type="text/html" width="600" height="600" src="https://vine.co/v/MhQ2lvg29Un/embed/simple" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div></p>
 .
 .
 @[vine](MhQ2lvg29Un)
