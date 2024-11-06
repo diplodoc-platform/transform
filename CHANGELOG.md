@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.35.0](https://github.com/diplodoc-platform/transform/compare/v4.34.0...v4.35.0) (2024-11-06)
+
+
+### Features
+
+* support custom csp from transform ([0d670f4](https://github.com/diplodoc-platform/transform/commit/0d670f423f2f180d7867c1ac09ead3408188506c))
+* support video by url only ([3d2469d](https://github.com/diplodoc-platform/transform/commit/3d2469d6f3239f17e5ab5823312d573be67ecab1))
+
 ## [4.34.0](https://github.com/diplodoc-platform/transform/compare/v4.33.0...v4.34.0) (2024-10-22)
 
 
