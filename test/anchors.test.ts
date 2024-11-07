@@ -144,4 +144,34 @@ describe('Anchors', () => {
             expect(result[1]).toBe('Test');
         });
     });
+
+    describe('with disableSEOFixForTitles', () => {
+        it('should not add anchor links when disableSEOFixForTitles is true', () => {
+            const {
+                result: {html},
+            } = transform('## Test heading', {
+                plugins: [includes, anchors],
+                path: mocksPath,
+                root: dirname(mocksPath),
+                getPublicPath,
+                disableSEOFixForTitles: true,
+            });
+
+            expect(html).toEqual('<h2 id="test-heading">Test heading</h2>\n');
+        });
+
+        it('should not add anchor links for custom anchors when disableSEOFixForTitles is true', () => {
+            const {
+                result: {html},
+            } = transform('## Test heading {#custom-id}', {
+                plugins: [includes, anchors],
+                path: mocksPath,
+                root: dirname(mocksPath),
+                getPublicPath,
+                disableSEOFixForTitles: true,
+            });
+
+            expect(html).toEqual('<h2 id="custom-id">Test heading</h2>\n');
+        });
+    });
 });

@@ -76,12 +76,14 @@ const removeCustomIds = (token: Token) => {
 interface Options {
     extractTitle?: boolean;
     supportGithubAnchors?: boolean;
+    disableSEOFixForTitles?: boolean;
     transformLink: (v: string) => string;
     getPublicPath?: (options: Options, v?: string) => string;
 }
 
 const index: MarkdownItPluginCb<Options> = (md, options) => {
-    const {extractTitle, path, log, supportGithubAnchors, getPublicPath} = options;
+    const {extractTitle, path, log, supportGithubAnchors, getPublicPath, disableSEOFixForTitles} =
+        options;
 
     const plugin = (state: StateCore) => {
         /* Do not use the plugin if it is included in the file */
@@ -143,9 +145,16 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
                 const anchorTitle = removeCustomId(title).replace(/`/g, '');
                 allAnchorIds.forEach((customId) => {
                     const setId = id !== customId;
-                    const linkTokens = createLinkTokens(state, customId, anchorTitle, setId, href);
-
-                    inlineToken.children?.unshift(...linkTokens);
+                    if (!disableSEOFixForTitles) {
+                        const linkTokens = createLinkTokens(
+                            state,
+                            customId,
+                            anchorTitle,
+                            setId,
+                            href,
+                        );
+                        inlineToken.children?.unshift(...linkTokens);
+                    }
 
                     if (supportGithubAnchors) {
                         const ghLinkTokens = createLinkTokens(state, ghId, anchorTitle, true, href);
