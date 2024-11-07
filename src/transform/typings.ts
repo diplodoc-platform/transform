@@ -74,7 +74,7 @@ export type EnvType<Extras extends {} = {}> = {
     assets?: unknown[];
     meta?: object;
     changelogs?: ChangelogItem[];
-    forcedSanitizeCssWhiteList?: CssWhiteList;
+    additionalOptionsCssWhiteList?: CssWhiteList;
 } & Extras;
 
 export interface MarkdownItPluginOpts {

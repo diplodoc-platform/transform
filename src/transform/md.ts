@@ -169,7 +169,7 @@ function initCompiler(md: MarkdownIt, options: OptionsType, env: EnvType) {
 
         // Sanitize the page
         return needToSanitizeHtml
-            ? sanitizeHtml(html, sanitizeOptions, env.forcedSanitizeCssWhiteList)
+            ? sanitizeHtml(html, sanitizeOptions, {cssWhiteList: env.additionalOptionsCssWhiteList})
             : html;
     };
 }

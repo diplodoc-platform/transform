@@ -6,7 +6,7 @@ import {ImsizeAttr} from './const';
 import {parseImageSize} from './helpers';
 
 export type ImsizeOptions = {
-    inlineSizeStyling?: boolean;
+    enableInlineStyling?: boolean;
 };
 
 export const imageWithSize = (md: MarkdownIt, opts?: ImsizeOptions): ParserInline.RuleInline => {
@@ -211,7 +211,7 @@ export const imageWithSize = (md: MarkdownIt, opts?: ImsizeOptions): ParserInlin
                 token.attrs.push([ImsizeAttr.Height, height]);
             }
 
-            if (opts?.inlineSizeStyling) {
+            if (opts?.enableInlineStyling) {
                 let style: string | undefined = '';
 
                 const widthWithPercent = width.includes('%');
@@ -225,8 +225,8 @@ export const imageWithSize = (md: MarkdownIt, opts?: ImsizeOptions): ParserInlin
                 if (height !== '') {
                     if (width !== '' && !heightWithPercent && !widthWithPercent) {
                         style += `aspect-ratio: ${width} / ${height};height: auto;`;
-                        state.env.forcedSanitizeCssWhiteList ??= {};
-                        state.env.forcedSanitizeCssWhiteList['aspect-ratio'] = true;
+                        state.env.additionalOptionsCssWhiteList ??= {};
+                        state.env.additionalOptionsCssWhiteList['aspect-ratio'] = true;
                     } else {
                         const heightString = heightWithPercent ? height : `${height}px`;
                         style += `height: ${heightString};`;

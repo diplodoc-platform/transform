@@ -20,7 +20,7 @@ describe('imsize with inlineStyling', () => {
         html: true,
         linkify: false,
         typographer: false,
-    }).use(imsize, {inlineSizeStyling: true});
+    }).use(imsize, {enableInlineStyling: true});
 
     generate(path.join(__dirname, 'data/imsize/imsize-inlineSizeStyling-fixtures.txt'), md);
 });

@@ -601,14 +601,14 @@ function sanitizeStyles(html: string, options: SanitizeOptions) {
 export default function sanitize(
     html: string,
     options?: SanitizeOptions,
-    forcedSanitizeCssWhiteList?: CssWhiteList,
+    additionalOptions?: SanitizeOptions,
 ) {
     const sanitizeOptions = options || defaultOptions;
 
-    if (forcedSanitizeCssWhiteList) {
+    if (additionalOptions?.cssWhiteList) {
         sanitizeOptions.cssWhiteList = {
             ...sanitizeOptions.cssWhiteList,
-            ...forcedSanitizeCssWhiteList,
+            ...additionalOptions.cssWhiteList,
         };
     }
 
