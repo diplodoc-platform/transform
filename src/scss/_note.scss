@@ -4,31 +4,32 @@
     padding: 20px 20px 20px 64px;
     border-radius: 10px;
 
+    // First paragraph should show the icon regardless of title presence
+    > p:first-child {
+        &::before {
+            box-sizing: content-box;
+            display: block;
+            width: 24px;
+            height: 24px;
+            margin-top: -2px;
+            margin-left: -44px;
+            padding-right: 20px;
+            float: left;
+        }
+    }
+
     .yfm-note-title {
         font-weight: 700;
-    }
-
-    & > p {
         margin: 0 0 10px;
-
-        &:first-child {
-            &::before {
-                box-sizing: content-box;
-                display: block;
-                width: 24px;
-                height: 24px;
-                margin-top: -2px;
-                margin-left: -44px;
-                padding-right: 20px;
-                float: left;
-            }
-        }
-
-        &:last-child {
-            margin-bottom: 0;
-        }
     }
 
+    .yfm-note-content > p:first-child {
+        margin-top: 0;
+    }
+
+    .yfm-note-content > p:last-child {
+        margin-bottom: 0;
+    }
 
     // @todo replace with variables
 

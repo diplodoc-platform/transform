@@ -27,6 +27,45 @@ exports[`Alerts should render nested notes 1`] = `
 </div>
 `;
 
+exports[`Alerts should render note with empty string title 1`] = `
+<div class="yfm-note yfm-accent-info"
+     note-type="info"
+>
+  <div class="yfm-note-content">
+    <p>
+      Note content with empty string title
+    </p>
+  </div>
+</div>
+`;
+
+exports[`Alerts should render note without title (notesAutotitle: false) 1`] = `
+<div class="yfm-note yfm-accent-info"
+     note-type="info"
+>
+  <div class="yfm-note-content">
+    <p>
+      Note content without title
+    </p>
+  </div>
+</div>
+`;
+
+exports[`Alerts should render note without title (notesAutotitle: true) 1`] = `
+<div class="yfm-note yfm-accent-info"
+     note-type="info"
+>
+  <p class="yfm-note-title">
+    Примечание
+  </p>
+  <div class="yfm-note-content">
+    <p>
+      Note content without title
+    </p>
+  </div>
+</div>
+`;
+
 exports[`Alerts should render siblings notes 1`] = `
 <div class="yfm-note yfm-accent-info"
      note-type="info"
