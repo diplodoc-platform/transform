@@ -74,6 +74,7 @@ export type EnvType<Extras extends {} = {}> = {
     assets?: unknown[];
     meta?: object;
     changelogs?: ChangelogItem[];
+    additionalOptionsCssWhiteList?: CssWhiteList;
 } & Extras;
 
 export interface MarkdownItPluginOpts {
@@ -98,3 +99,5 @@ export type MarkdownItPluginCb<T extends {} = {}> = {
 export type MarkdownItPreprocessorCb<T extends unknown = {}> = {
     (input: string, opts: T & Partial<MarkdownItPluginOpts>, md?: MarkdownIt): string;
 };
+
+export type CssWhiteList = {[property: string]: boolean};

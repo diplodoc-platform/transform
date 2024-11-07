@@ -4,4 +4,5 @@ export enum ImsizeAttr {
     Title = 'title',
     Width = 'width',
     Height = 'height',
+    Style = 'style',
 }

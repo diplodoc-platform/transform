@@ -283,6 +283,26 @@ Coverage. Image
 .
 <p><img src="test" alt="test" width="100%"></p>
 .
+.
+![test](test =x100%)
+.
+<p><img src="test" alt="test" height="100%"></p>
+.
+.
+![test](test =100%x100%)
+.
+<p><img src="test" alt="test" width="100%" height="100%"></p>
+.
+.
+![test](test =100%x200)
+.
+<p><img src="test" alt="test" width="100%" height="200"></p>
+.
+.
+![test](test =100x100%)
+.
+<p><img src="test" alt="test" width="100" height="100%"></p>
+.
 
 Coverage. Link
 .

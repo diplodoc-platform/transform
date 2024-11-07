@@ -1,6 +1,6 @@
-import {PluginSimple} from 'markdown-it';
+import {PluginWithOptions} from 'markdown-it';
 
-import {imageWithSize} from './plugin';
+import {ImsizeOptions, imageWithSize} from './plugin';
 
 /**
  * Imsize plugin for markdown-it.
@@ -8,8 +8,8 @@ import {imageWithSize} from './plugin';
  * Forked from https://github.com/tatsy/markdown-it-imsize
  */
 
-const imsize: PluginSimple = (md) => {
-    md.inline.ruler.before('emphasis', 'image', imageWithSize(md));
+const imsize: PluginWithOptions<ImsizeOptions> = (md, opts) => {
+    md.inline.ruler.before('emphasis', 'image', imageWithSize(md, opts));
 };
 
 export = imsize;

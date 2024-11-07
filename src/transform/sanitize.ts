@@ -4,6 +4,8 @@ import cssfilter from 'cssfilter';
 import * as cheerio from 'cheerio';
 import css from 'css';
 
+import {CssWhiteList} from './typings';
+
 const htmlTags = [
     'a',
     'abbr',
@@ -492,8 +494,6 @@ const allowedTags = Array.from(
 );
 const allowedAttributes = Array.from(new Set([...htmlAttrs, ...svgAttrs, ...yfmHtmlAttrs]));
 
-export type CssWhiteList = {[property: string]: boolean};
-
 export interface SanitizeOptions extends sanitizeHtml.IOptions {
     cssWhiteList?: CssWhiteList;
     disableStyleSanitizer?: boolean;
@@ -598,8 +598,19 @@ function sanitizeStyles(html: string, options: SanitizeOptions) {
     return styles + content;
 }
 
-export default function sanitize(html: string, options?: SanitizeOptions) {
+export default function sanitize(
+    html: string,
+    options?: SanitizeOptions,
+    additionalOptions?: SanitizeOptions,
+) {
     const sanitizeOptions = options || defaultOptions;
+
+    if (additionalOptions?.cssWhiteList) {
+        sanitizeOptions.cssWhiteList = {
+            ...sanitizeOptions.cssWhiteList,
+            ...additionalOptions.cssWhiteList,
+        };
+    }
 
     const needToSanitizeStyles = !(sanitizeOptions.disableStyleSanitizer ?? false);
 
