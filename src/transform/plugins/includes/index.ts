@@ -2,13 +2,7 @@ import {bold} from 'chalk';
 import Token from 'markdown-it/lib/token';
 
 import {StateCore} from '../../typings';
-import {
-    GetFileTokensOpts,
-    getFileTokens,
-    getFullIncludePath,
-    isFileExists,
-    resolveRelativePath,
-} from '../../utilsFS';
+import {GetFileTokensOpts, getFileTokens, getFullIncludePath, isFileExists} from '../../utilsFS';
 import {findBlockTokens} from '../../utils';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
 
@@ -49,10 +43,6 @@ function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, 
                 const [, keyword /* description */, , includePath] = match;
 
                 const fullIncludePath = getFullIncludePath(includePath, root, path);
-                const relativeIncludePath = resolveRelativePath(path, includePath);
-
-                // Check the existed included store and extract it
-                const included = md.included?.[relativeIncludePath];
 
                 let pathname = fullIncludePath;
                 let hash = '';
@@ -68,10 +58,10 @@ function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, 
                     continue;
                 }
 
-                const fileTokens = getFileTokens(pathname, state, {
-                    ...options,
-                    content: included, // The content forces the function to use it instead of reading from the disk
-                });
+                // Check the existed included store and extract it
+                const included = md.included?.[pathname];
+
+                const fileTokens = getFileTokens(pathname, state, options, included);
 
                 let includedTokens;
                 if (hash) {

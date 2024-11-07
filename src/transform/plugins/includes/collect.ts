@@ -2,19 +2,20 @@ import {relative} from 'path';
 import {bold} from 'chalk';
 import {readFileSync} from 'fs';
 
-import {getRelativePath, isFileExists, resolveRelativePath} from '../../utilsFS';
+import {isFileExists, resolveRelativePath} from '../../utilsFS';
 
 import {IncludeCollectOpts} from './types';
 
 const includesPaths: string[] = [];
 
 function processRecursive(
+    relativePath: string,
     includePath: string,
     targetDestPath: string,
     options: IncludeCollectOpts,
 ) {
     const {path, log, copyFile, includedParentPath: includedParentPathNullable, included} = options;
-    const includedParentPath = includedParentPathNullable || path;
+    const includedParentPath = includedParentPathNullable || [];
 
     const includeOptions = {
         ...options,
@@ -30,21 +31,22 @@ function processRecursive(
             const content = contentProcessed ?? readFileSync(targetDestPath, 'utf8');
 
             if (content) {
-                const includedRelativePath = getRelativePath(includedParentPath, includePath);
+                const key = [...includedParentPath, relativePath];
+                const hash = key.join(':');
 
                 // The appendix is the map that protects from multiple include files
-                if (!options.appendix?.has(includedRelativePath)) {
+                if (!options.appendix?.has(hash)) {
                     // Recursive function to include the depth structure
                     const includeContent = collectRecursive(content, {
                         ...options,
                         path: includePath,
-                        includedParentPath,
+                        includedParentPath: key,
                     });
 
                     // Add to appendix set structure
                     options.appendix?.set(
-                        includedRelativePath,
-                        `{% included (${includedRelativePath}) %}\n${includeContent}\n{% endincluded %}`,
+                        relativePath,
+                        `{% included (${hash}) %}\n${includeContent}\n{% endincluded %}`,
                     );
                 }
             }
@@ -91,7 +93,7 @@ function collectRecursive(result: string, options: IncludeCollectOpts) {
 
         includesPaths.push(includePath);
 
-        processRecursive(includePath, targetDestPath, options);
+        processRecursive(relativePath, includePath, targetDestPath, options);
 
         includesPaths.pop();
     }

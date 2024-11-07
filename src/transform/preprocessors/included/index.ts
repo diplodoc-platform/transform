@@ -26,12 +26,14 @@ const preprocessLine = (
         return false;
     }
 
-    const includePathRelative = match[1];
+    const includePathKey = match[1];
 
     // Protect from empty path
-    if (!includePathRelative) {
+    if (!includePathKey) {
         return false;
     }
+
+    const includePaths = includePathKey.split(':');
 
     // Read all content from top to bottom(!) char of the included block
     const data = [];
@@ -55,7 +57,11 @@ const preprocessLine = (
         }
 
         // Normalize the path to absolute
-        const includePath = getFullIncludePath(includePathRelative, root, path);
+        let includePath = getFullIncludePath(includePaths[0], root, path);
+        for (let index = 1; index < includePaths.length; index++) {
+            const pathname = includePaths[index];
+            includePath = getFullIncludePath(pathname, root, includePath);
+        }
 
         // Store the included content
         md.included[includePath] = data.join('\n');
