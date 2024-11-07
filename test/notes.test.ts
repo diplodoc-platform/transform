@@ -6,10 +6,11 @@ import transform from '../src/transform';
 import {callPlugin, tokenize} from './utils';
 import {base, customTitle, emptyTitle} from './data/alerts';
 
-const html = (text: string) => {
+const html = (text: string, notesAutotitle = true) => {
     const {
         result: {html},
     } = transform(text, {
+        notesAutotitle,
         plugins: [alerts],
     });
     return html;
@@ -148,6 +149,45 @@ describe('Alerts', () => {
 
             {% endnote %}
         `),
+        ).toMatchSnapshot();
+    });
+
+    test('should render note without title (notesAutotitle: true)', () => {
+        expect(
+            html(dedent`
+                {% note info %}
+
+                Note content without title
+
+                {% endnote %}
+            `),
+        ).toMatchSnapshot();
+    });
+
+    test('should render note without title (notesAutotitle: false)', () => {
+        expect(
+            html(
+                dedent`
+                {% note info %}
+
+                Note content without title
+
+                {% endnote %}
+            `,
+                false,
+            ),
+        ).toMatchSnapshot();
+    });
+
+    test('should render note with empty string title', () => {
+        expect(
+            html(dedent`
+                {% note info "" %}
+
+                Note content with empty string title
+
+                {% endnote %}
+            `),
         ).toMatchSnapshot();
     });
 });

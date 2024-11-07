@@ -108,16 +108,18 @@ const index: MarkdownItPluginCb = (md, {lang, notesAutotitle, path: optPath, log
                     titleInline.children,
                 );
 
-                const insideTokens = [
-                    newOpenToken,
-                    titleOpen,
-                    titleInline,
-                    titleClose,
+                const insideTokens = [newOpenToken];
+                if (titleInline.content) {
+                    insideTokens.push(titleOpen, titleInline, titleClose);
+                }
+
+                insideTokens.push(
                     contentOpen,
                     ...tokens.slice(i + 3, closeTokenIdx),
                     contentClose,
                     newCloseToken,
-                ];
+                );
+
                 tokens.splice(i, closeTokenIdx - i + 3, ...insideTokens);
 
                 i++;
