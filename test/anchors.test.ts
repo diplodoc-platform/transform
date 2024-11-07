@@ -145,8 +145,8 @@ describe('Anchors', () => {
         });
     });
 
-    describe('with disableHeadingsHiddenContent', () => {
-        it('should not add anchor links when disableHeadingsHiddenContent is true', () => {
+    describe('with disableCommonAnchors', () => {
+        it('should not add anchor links when disableCommonAnchors is true', () => {
             const {
                 result: {html},
             } = transform('## Test heading', {
@@ -154,13 +154,13 @@ describe('Anchors', () => {
                 path: mocksPath,
                 root: dirname(mocksPath),
                 getPublicPath,
-                disableHeadingsHiddenContent: true,
+                disableCommonAnchors: true,
             });
 
             expect(html).toEqual('<h2 id="test-heading">Test heading</h2>\n');
         });
 
-        it('should not add anchor links for custom anchors when disableHeadingsHiddenContent is true', () => {
+        it('should not add anchor links for custom anchors when disableCommonAnchors is true', () => {
             const {
                 result: {html},
             } = transform('## Test heading {#custom-id}', {
@@ -168,7 +168,7 @@ describe('Anchors', () => {
                 path: mocksPath,
                 root: dirname(mocksPath),
                 getPublicPath,
-                disableHeadingsHiddenContent: true,
+                disableCommonAnchors: true,
             });
 
             expect(html).toEqual('<h2 id="custom-id">Test heading</h2>\n');

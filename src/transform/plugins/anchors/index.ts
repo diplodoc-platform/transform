@@ -76,20 +76,14 @@ const removeCustomIds = (token: Token) => {
 interface Options {
     extractTitle?: boolean;
     supportGithubAnchors?: boolean;
-    disableHeadingsHiddenContent?: boolean;
+    disableCommonAnchors?: boolean;
     transformLink: (v: string) => string;
     getPublicPath?: (options: Options, v?: string) => string;
 }
 
 const index: MarkdownItPluginCb<Options> = (md, options) => {
-    const {
-        extractTitle,
-        path,
-        log,
-        supportGithubAnchors,
-        getPublicPath,
-        disableHeadingsHiddenContent,
-    } = options;
+    const {extractTitle, path, log, supportGithubAnchors, getPublicPath, disableCommonAnchors} =
+        options;
 
     const plugin = (state: StateCore) => {
         /* Do not use the plugin if it is included in the file */
@@ -151,7 +145,7 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
                 const anchorTitle = removeCustomId(title).replace(/`/g, '');
                 allAnchorIds.forEach((customId) => {
                     const setId = id !== customId;
-                    if (!disableHeadingsHiddenContent) {
+                    if (!disableCommonAnchors) {
                         const linkTokens = createLinkTokens(
                             state,
                             customId,
