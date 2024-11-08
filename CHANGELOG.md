@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.36.0](https://github.com/diplodoc-platform/transform/compare/v4.35.0...v4.36.0) (2024-11-08)
+
+
+### Features
+
+* **imsize:** rework image styling to get more control ([#549](https://github.com/diplodoc-platform/transform/issues/549)) ([3036e6d](https://github.com/diplodoc-platform/transform/commit/3036e6d36183398fa6db4fce1556cab07b930cf7))
+
+
+### Bug Fixes
+
+* **code:** Add ability to disable SEO optimization for titles ([4f3f098](https://github.com/diplodoc-platform/transform/commit/4f3f098aeb5f14dbad62c99c440efaffe3977e3e))
+* **code:** Add ability to disable SEO optimization for titles ([c808d20](https://github.com/diplodoc-platform/transform/commit/c808d205fbacaf0f08d97cc9e0928e7168f7255e))
+* **code:** Add ability to disable SEO optimization for titles ([2682b6b](https://github.com/diplodoc-platform/transform/commit/2682b6bc412d3fd00e5784dbfc221e7b1544e144))
+* **code:** Fix Display Issues with Untitled Notes ([d8ad8a5](https://github.com/diplodoc-platform/transform/commit/d8ad8a5ec0084097ec4d86a11a7db141c092a0a7))
+* **code:** Fix Display Issues with Untitled Notes ([a053f4c](https://github.com/diplodoc-platform/transform/commit/a053f4ca90545fa16fa6f465e8a9d92b85d8fdb1))
+
 ## [4.35.0](https://github.com/diplodoc-platform/transform/compare/v4.34.0...v4.35.0) (2024-11-06)
 
 
