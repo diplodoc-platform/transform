@@ -254,8 +254,8 @@ exports[`Anchors should include content by anchor in sharped path file 1`] = `
 `;
 
 exports[`Anchors should remove quotes from id 1`] = `
-<h2 id="«heading»-with-quotes">
-  <a href="link.html#«heading»-with-quotes"
+<h2 id="heading-with-quotes">
+  <a href="link.html#heading-with-quotes"
      class="yfm-anchor"
      aria-hidden="true"
   >

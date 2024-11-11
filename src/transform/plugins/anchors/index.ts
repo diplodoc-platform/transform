@@ -3,13 +3,12 @@ import GithubSlugger from 'github-slugger';
 import StateCore from 'markdown-it/lib/rules_core/state_core';
 import Token from 'markdown-it/lib/token';
 import {escapeHtml} from 'markdown-it/lib/common/utils';
+import slugify from 'slugify';
 
 import {headingInfo} from '../../utils';
 import {MarkdownItPluginCb} from '../typings';
 
 import {CUSTOM_ID_EXCEPTION, CUSTOM_ID_REGEXP} from './constants';
-
-const slugify: (str: string, opts: {}) => string = require('slugify');
 
 function createLinkTokens(
     state: StateCore,
@@ -127,7 +126,7 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
                 } else {
                     id = slugify(title, {
                         lower: true,
-                        remove: /[*+~.()'"!:@`ь?]/g,
+                        remove: /[^\w\s$_\-,;=/]+/g,
                     });
                     ghId = slugger.slug(title);
                 }
