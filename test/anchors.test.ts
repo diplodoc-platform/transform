@@ -121,6 +121,28 @@ describe('Anchors', () => {
         ).toMatchSnapshot();
     });
 
+    it('should add id for heading with allowed chars in fragment (RFC 3986) ', () => {
+        expect(
+            // heading contains all allowed chars in fragment (hash) in accordance with RFC 3986
+            html(dedent`
+                ## A-c~5%!$&(abc)*_+;xx,@=3/':b?b.b'
+
+                Content
+                `),
+        ).toMatchSnapshot();
+    });
+
+    it('should remove quotes from id', () => {
+        expect(
+            // heading contains all allowed chars in fragment (hash) in accordance with RFC 3986
+            html(dedent`
+                ## «Heading» “with” "quotes'
+
+                Content
+                `),
+        ).toMatchSnapshot();
+    });
+
     describe('with extract title', () => {
         const transformWithTitle = (text: string) => {
             const {
