@@ -29,6 +29,25 @@ exports[`Anchors should add anchor with auto naming, using entire heading text 1
 </p>
 `;
 
+exports[`Anchors should add id for heading with allowed chars in fragment (RFC 3986)  1`] = `
+<h2 id="a-c5percentdollarandabc_;xx,=3/bbb">
+  <a href="link.html#a-c5percentdollarandabc_;xx,=3/bbb"
+     class="yfm-anchor"
+     aria-hidden="true"
+  >
+    <span class="visually-hidden"
+          data-no-index="true"
+    >
+      A-c~5%!$&amp;(abc)*_+;xx,@=3/':b?b.b'
+    </span>
+  </a>
+  A-c~5%!$&amp;(abc)*_+;xx,@=3/':b?b.b'
+</h2>
+<p>
+  Content
+</p>
+`;
+
 exports[`Anchors should add multiple anchors 1`] = `
 <pre>
   <code>
@@ -231,6 +250,25 @@ exports[`Anchors should include content by anchor in sharped path file 1`] = `
 </p>
 <p>
   After include
+</p>
+`;
+
+exports[`Anchors should remove quotes from id 1`] = `
+<h2 id="«heading»-with-quotes">
+  <a href="link.html#«heading»-with-quotes"
+     class="yfm-anchor"
+     aria-hidden="true"
+  >
+    <span class="visually-hidden"
+          data-no-index="true"
+    >
+      «Heading» “with” "quotes'
+    </span>
+  </a>
+  «Heading» “with” "quotes'
+</h2>
+<p>
+  Content
 </p>
 `;
 
