@@ -74,3 +74,64 @@ const {
 ## License
 
 MIT
+
+## CSS public variables
+
+**common**
+
+- `--yfm-color-text`
+- `--yfm-color-link`
+- `--yfm-color-base`
+- `--yfm-color-link-hover`
+- `--yfm-color-table`
+- `--yfm-color-table-row-background`
+- `--yfm-color-border`
+- `--yfm-color-accent`
+
+**code**
+
+- `--yfm-color-inline-code`
+- `--yfm-color-inline-code-background`
+- `--yfm-color-code-background`
+
+**hightlight**
+
+- `--yfm-color-hljs-background`
+- `--yfm-color-hljs-subst`
+- `--yfm-color-hljs-comment`
+- `--yfm-color-hljs-deletion`
+- `--yfm-color-hljs-section`
+- `--yfm-color-hljs-pseudo`
+- `--yfm-color-hljs-literal`
+- `--yfm-color-hljs-addition`
+- `--yfm-color-hljs-meta`
+- `--yfm-color-hljs-meta-string`
+
+**note**
+
+- `--yfm-color-note-tip`
+- `--yfm-color-note-tip-background`
+- `--yfm-color-note-warning`
+- `--yfm-color-note-warning-background`
+- `--yfm-color-note-important-background`
+- `--yfm-color-note-info-background`
+
+**term**
+
+- `--yfm-color-term-title`
+- `--yfm-color-term-title-hover`
+- `--yfm-color-term-dfn-background`
+- `--yfm-color-term-dfn-shadow`
+- `--yfm-color-term-dfn-pseudo-shadow`
+
+**modal**
+
+- `--yfm-color-modal-content`
+- `--yfm-color-modal-actions-hover`
+- `--yfm-color-modal-wide-content`
+- `--yfm-color-modal-wide-content-overlay`
+
+**file**
+
+- `--yfm-file-icon`
+- `--yfm-file-icon-color`
