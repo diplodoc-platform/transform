@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.37.0](https://github.com/diplodoc-platform/transform/compare/v4.36.0...v4.37.0) (2024-11-13)
+
+
+### Features
+
+* replace relative path to path trace logic for included ([#556](https://github.com/diplodoc-platform/transform/issues/556)) ([a3d8f52](https://github.com/diplodoc-platform/transform/commit/a3d8f526f8acbbfcbb74cfa1021a538235f07524))
+
 ## [4.36.0](https://github.com/diplodoc-platform/transform/compare/v4.35.0...v4.36.0) (2024-11-08)
 
 
