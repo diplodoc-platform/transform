@@ -16,6 +16,7 @@ import {
 import {getFileTokens, isFileExists} from '../../utilsFS';
 import {CacheContext, StateCore} from '../../typings';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
+import {MarkdownItIncluded} from '../includes/types';
 
 function getTitleFromTokens(tokens: Token[]) {
     let title = '';
@@ -51,27 +52,35 @@ type Options = {
     cache?: CacheContext;
 };
 
-const getTitle = (id: string | null, options: Options) => {
+const getTitle = (md: MarkdownItIncluded, id: string | null, options: Options) => {
     const {file, state, opts} = options;
 
-    const fileTokens = getFileTokens(file, state, {
-        ...opts,
-        disableLint: true,
-        disableTitleRefSubstitution: true,
-        disableCircularError: true,
-        inheritVars: false,
-    });
+    // Check the existed included store and extract it
+    const included = md.included?.[file];
+
+    const fileTokens = getFileTokens(
+        file,
+        state,
+        {
+            ...opts,
+            disableLint: true,
+            disableTitleRefSubstitution: true,
+            disableCircularError: true,
+            inheritVars: false,
+        },
+        included,
+    );
     const sourceTokens = id ? findBlockTokens(fileTokens, id) : fileTokens;
     return getTitleFromTokens(sourceTokens);
 };
 
-const addTitle = (options: Options) => {
+const addTitle = (md: MarkdownItIncluded, options: Options) => {
     const {hash, state, isEmptyLink, tokens, idx, nextToken, href, currentPath, log, cache} =
         options;
 
     const id = hash && hash.slice(1);
     const key = [id, path].join('::');
-    const title = cache?.get(key) ?? getTitle(id, options);
+    const title = cache?.get(key) ?? getTitle(md, id, options);
     cache?.set(key, title);
 
     if (title) {
@@ -111,7 +120,13 @@ function getDefaultPublicPath(
 }
 
 // eslint-disable-next-line complexity
-function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcOpts) {
+function processLink(
+    md: MarkdownItIncluded,
+    state: StateCore,
+    tokens: Token[],
+    idx: number,
+    opts: ProcOpts,
+) {
     const {
         path: startPath,
         root,
@@ -180,7 +195,7 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
         isPageFile &&
         !state.env.disableTitleRefSubstitution
     ) {
-        addTitle({
+        addTitle(md, {
             hash,
             file,
             state,
@@ -213,7 +228,7 @@ function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcO
     }
 }
 
-const index: MarkdownItPluginCb<ProcOpts & Options> = (md, opts) => {
+const index: MarkdownItPluginCb<ProcOpts & Options> = (md: MarkdownItIncluded, opts) => {
     const plugin = (state: StateCore) => {
         const tokens = state.tokens;
         let i = 0;
@@ -231,7 +246,7 @@ const index: MarkdownItPluginCb<ProcOpts & Options> = (md, opts) => {
                     const isYfmAnchor = tokenClass ? tokenClass.includes('yfm-anchor') : false;
 
                     if (isLinkOpenToken && !isYfmAnchor) {
-                        processLink(state, childrenTokens, j, opts);
+                        processLink(md, state, childrenTokens, j, opts);
                     }
 
                     j++;

@@ -5,7 +5,7 @@ import DefaultMarkdownIt from 'markdown-it';
 import attrs from 'markdown-it-attrs';
 
 import DefaultPlugins from './plugins';
-import DefaultPreprocessors from './preprocessors';
+import {preprocess} from './preprocessors';
 import {log} from './log';
 import makeHighlight from './highlight';
 import extractTitle from './title';
@@ -118,13 +118,10 @@ function initParser(
             needTitle,
             needFlatListHeadings = false,
             getPublicPath,
-            preprocessors = DefaultPreprocessors,
         } = options;
 
-        // Run input preprocessor
-        for (const preprocessor of preprocessors) {
-            input = preprocessor(input, pluginOptions, md);
-        }
+        // Run preprocessor
+        input = preprocess(input, pluginOptions, options, md);
 
         // Generate global href link
         const href = getPublicPath ? getPublicPath(options) : '';

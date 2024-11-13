@@ -12,7 +12,7 @@ export type IncludeCollectOpts = MarkdownItPluginOpts & {
     copyFile(path: string, dest: string, opts: IncludeCollectOpts): string | null | undefined;
     singlePage: Boolean;
     included: Boolean;
-    includedParentPath?: string;
+    includedParentPath?: string[];
     additionalIncludedList?: string[];
     appendix?: Map<string, string>;
 };
