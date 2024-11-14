@@ -2,7 +2,13 @@ import {bold} from 'chalk';
 import Token from 'markdown-it/lib/token';
 
 import {StateCore} from '../../typings';
-import {GetFileTokensOpts, getFileTokens, getFullIncludePath, isFileExists} from '../../utilsFS';
+import {
+    GetFileTokensOpts,
+    getFileTokens,
+    getFullIncludePath,
+    getRealPath,
+    isFileExists,
+} from '../../utilsFS';
 import {findBlockTokens} from '../../utils';
 import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
 
@@ -44,18 +50,20 @@ function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, 
 
                 const fullIncludePath = getFullIncludePath(includePath, root, path);
 
-                let pathname = fullIncludePath;
-                let hash = '';
-                const hashIndex = fullIncludePath.lastIndexOf('#');
-                if (hashIndex > -1 && !isFileExists(pathname)) {
-                    pathname = fullIncludePath.slice(0, hashIndex);
-                    hash = fullIncludePath.slice(hashIndex + 1);
-                }
+                // Check the real path of the file in case of a symlink
+                let pathname = getRealPath(fullIncludePath);
 
                 if (!pathname.startsWith(root)) {
                     i++;
 
                     continue;
+                }
+
+                let hash = '';
+                const hashIndex = fullIncludePath.lastIndexOf('#');
+                if (hashIndex > -1 && !isFileExists(pathname)) {
+                    pathname = fullIncludePath.slice(0, hashIndex);
+                    hash = fullIncludePath.slice(hashIndex + 1);
                 }
 
                 // Check the existed included store and extract it
