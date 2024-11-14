@@ -1,5 +1,8 @@
-import {dirname} from 'path';
+import {readFile, symlink, unlink} from 'node:fs/promises';
+import {dirname, resolve} from 'path';
+import dedent from 'ts-dedent';
 
+import transform from '../src/transform';
 import includes from '../src/transform/plugins/includes';
 import yfmlint from '../src/transform/yfmlint';
 import {log} from '../src/transform/log';
@@ -7,9 +10,75 @@ import {log} from '../src/transform/log';
 import {callPlugin, tokenize} from './utils';
 import {codeInBackQuote, notitle, sharpedFile, title} from './data/includes';
 
+const mocksPath = require.resolve('./mocks/link.md');
+const symLinkPath = resolve(__dirname, './mocks/symlink.md');
+const transformYfm = (text: string) => {
+    const {
+        result: {html},
+    } = transform(text, {
+        plugins: [includes],
+        path: mocksPath,
+        root: dirname(mocksPath),
+    });
+    return html;
+};
+
 describe('Includes', () => {
     beforeEach(() => {
         log.clear();
+    });
+
+    test('Simple include', async () => {
+        const expectPath = resolve(__dirname, './mocks/include.expect.html');
+        const expectContent = await readFile(expectPath, 'utf8');
+
+        const html = transformYfm(dedent`
+            start main
+
+            {% include [test](./include.md) %}
+
+            end main
+        `);
+
+        expect(html).toBe(expectContent);
+    });
+
+    test('Symlink include', async () => {
+        const expectPath = resolve(__dirname, './mocks/include.expect.html');
+        const expectContent = await readFile(expectPath, 'utf8');
+
+        await symlink(resolve(__dirname, './mocks/include.md'), symLinkPath);
+
+        const html = transformYfm(dedent`
+            start main
+
+            {% include [test](./symlink.md) %}
+
+            end main
+        `);
+
+        expect(html).toBe(expectContent);
+
+        await unlink(symLinkPath);
+    });
+
+    test('Include symlink outside root', async () => {
+        const expectPath = resolve(__dirname, './mocks/include-outside-symlink.expect.html');
+        const expectContent = await readFile(expectPath, 'utf8');
+
+        await symlink(resolve(__dirname, 'includes.test.ts'), symLinkPath);
+
+        const html = transformYfm(dedent`
+            start main
+
+            {% include [test](./symlink.md) %}
+
+            end main
+        `);
+
+        expect(html).toBe(expectContent);
+
+        await unlink(symLinkPath);
     });
 
     test('Should include with title', () => {
