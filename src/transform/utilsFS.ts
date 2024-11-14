@@ -1,6 +1,6 @@
 import type {Dictionary} from 'lodash';
 
-import {readFileSync, statSync} from 'fs';
+import {readFileSync, realpathSync, statSync} from 'fs';
 import escapeRegExp from 'lodash/escapeRegExp';
 import {join, parse, relative, resolve, sep} from 'path';
 
@@ -167,4 +167,12 @@ export function getRelativePath(path: string, toPath: string) {
     pathDirs.pop();
     const parentPath = pathDirs.join(sep);
     return relative(parentPath, toPath);
+}
+
+export function getRealPath(symlinkPath: string): string {
+    try {
+        return realpathSync(symlinkPath);
+    } catch (err) {
+        return symlinkPath;
+    }
 }
