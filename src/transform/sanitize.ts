@@ -5,6 +5,7 @@ import * as cheerio from 'cheerio';
 import css from 'css';
 
 import {CssWhiteList} from './typings';
+import log from './log';
 
 const htmlTags = [
     'a',
@@ -560,8 +561,11 @@ function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) 
             });
 
             dom(element).text(css.stringify(parsedCSS));
-        } catch {
+        } catch (error) {
             dom(element).remove();
+
+            const errorMessage = error instanceof Error ? error.message : `${error}`;
+            log.info(errorMessage);
         }
     });
 }
