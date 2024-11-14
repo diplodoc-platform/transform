@@ -6,6 +6,7 @@ import {
     GetFileTokensOpts,
     getFileTokens,
     getFullIncludePath,
+    getRealPath,
     isFileExists,
     resolveRelativePath,
 } from '../../utilsFS';
@@ -54,18 +55,20 @@ function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, 
                 // Check the existed included store and extract it
                 const included = md.included?.[relativeIncludePath];
 
-                let pathname = fullIncludePath;
-                let hash = '';
-                const hashIndex = fullIncludePath.lastIndexOf('#');
-                if (hashIndex > -1 && !isFileExists(pathname)) {
-                    pathname = fullIncludePath.slice(0, hashIndex);
-                    hash = fullIncludePath.slice(hashIndex + 1);
-                }
+                // Check the real path of the file in case of a symlink
+                let pathname = getRealPath(fullIncludePath);
 
                 if (!pathname.startsWith(root)) {
                     i++;
 
                     continue;
+                }
+
+                let hash = '';
+                const hashIndex = fullIncludePath.lastIndexOf('#');
+                if (hashIndex > -1 && !isFileExists(pathname)) {
+                    pathname = fullIncludePath.slice(0, hashIndex);
+                    hash = fullIncludePath.slice(hashIndex + 1);
                 }
 
                 const fileTokens = getFileTokens(pathname, state, {
