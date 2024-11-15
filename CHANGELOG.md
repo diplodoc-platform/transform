@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.37.1](https://github.com/diplodoc-platform/transform/compare/v4.37.0...v4.37.1) (2024-11-15)
+
+
+### Bug Fixes
+
+* check real path for included file in case of symlink ([7096441](https://github.com/diplodoc-platform/transform/commit/70964418fb6387f6094ead328cc01900c0d4a80d))
+
 ## [4.37.0](https://github.com/diplodoc-platform/transform/compare/v4.36.0...v4.37.0) (2024-11-13)
 
 
