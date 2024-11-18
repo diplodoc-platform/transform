@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.38.1](https://github.com/diplodoc-platform/transform/compare/v4.38.0...v4.38.1) (2024-11-18)
+
+
+### Bug Fixes
+
+* looking for a title by all tokens and not just even ([a69f5e0](https://github.com/diplodoc-platform/transform/commit/a69f5e0f486a1e754ba3ce14b8694cacde1a850b))
+
 ## [4.38.0](https://github.com/diplodoc-platform/transform/compare/v4.37.1...v4.38.0) (2024-11-15)
 
 
