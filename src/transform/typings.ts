@@ -56,11 +56,6 @@ export interface RevisionMeta {
     };
 }
 
-export interface RevisionContext {
-    files: string[];
-    meta: RevisionMeta;
-}
-
 export interface OptionsType {
     vars?: Record<string, string>;
     path?: string;
@@ -90,7 +85,6 @@ export interface OptionsType {
     getPublicPath?: (options: OptionsType, href?: string) => string;
     renderInline?: boolean;
     cache?: CacheContext;
-    context?: RevisionContext;
     fs?: FsContext;
     deps?: DependencyContext;
     [x: string]: unknown;
@@ -119,7 +113,6 @@ export interface MarkdownItPluginOpts {
     rootPublicPath: string;
     isLintRun: boolean;
     cache?: CacheContext;
-    context?: RevisionContext;
     fs?: FsContext;
     deps?: DependencyContext;
     conditionsInCode?: boolean;
