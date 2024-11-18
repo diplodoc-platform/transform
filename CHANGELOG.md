@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.38.0](https://github.com/diplodoc-platform/transform/compare/v4.37.1...v4.38.0) (2024-11-15)
+
+
+### Features
+
+* **anchors:** remove unsupported chars from heading ids ([34c3f1b](https://github.com/diplodoc-platform/transform/commit/34c3f1b85f7577bf63c9a8ff2830673382643eb4))
+
+
+### Bug Fixes
+
+* **sanitize:** added error output ([c7870d9](https://github.com/diplodoc-platform/transform/commit/c7870d90e7054d13676245a97b805da4437dc71e))
+
 ## [4.37.1](https://github.com/diplodoc-platform/transform/compare/v4.37.0...v4.37.1) (2024-11-15)
 
 
