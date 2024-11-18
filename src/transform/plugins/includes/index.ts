@@ -17,7 +17,9 @@ import {MarkdownItIncluded} from './types';
 const INCLUDE_REGEXP = /^{%\s*include\s*(notitle)?\s*\[(.+?)]\((.+?)\)\s*%}$/;
 
 function stripTitleTokens(tokens: Token[]) {
-    if (tokens[0].type === 'heading_open' && tokens[2].type === 'heading_close') {
+    const [open, _, close] = tokens;
+
+    if (open?.type === 'heading_open' && close?.type === 'heading_close') {
         tokens.splice(0, 3);
     }
 }
@@ -73,6 +75,7 @@ function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, 
 
                 let includedTokens;
                 if (hash) {
+                    // TODO: add warning about missed block
                     includedTokens = findBlockTokens(fileTokens, hash);
                 } else {
                     includedTokens = fileTokens;
