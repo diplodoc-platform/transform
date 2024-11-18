@@ -25,13 +25,14 @@ function getTitleFromTokens(tokens: Token[]) {
     while (i < tokens.length) {
         const token = tokens[i];
 
-        if (token.type === 'heading_open') {
-            ({title = ''} = headingInfo(tokens, i));
+        if (token?.type === 'heading_open') {
+            const info = headingInfo(tokens, i);
+            title = info?.title ?? '';
 
             break;
         }
 
-        i += 2;
+        i += 1;
     }
 
     return title;
