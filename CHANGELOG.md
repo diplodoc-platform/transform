@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.38.2](https://github.com/diplodoc-platform/transform/compare/v4.38.1...v4.38.2) (2024-11-18)
+
+
+### Bug Fixes
+
+* Fix notitle includef for empty files ([39be5e4](https://github.com/diplodoc-platform/transform/commit/39be5e4ee096082dc45d46d02b5d1218e8bf5efd))
+
 ## [4.38.1](https://github.com/diplodoc-platform/transform/compare/v4.38.0...v4.38.1) (2024-11-18)
 
 
