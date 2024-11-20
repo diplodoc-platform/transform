@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.39.0](https://github.com/diplodoc-platform/transform/compare/v4.38.2...v4.39.0) (2024-11-20)
+
+
+### Features
+
+* bump cut-extension to v0.4.0 ([#575](https://github.com/diplodoc-platform/transform/issues/575)) ([9e2c732](https://github.com/diplodoc-platform/transform/commit/9e2c7321c0f95a13f4d0f14752d37816764a72af))
+* **file:** replaced own plugin with file-extension ([#572](https://github.com/diplodoc-platform/transform/issues/572)) ([9f209d6](https://github.com/diplodoc-platform/transform/commit/9f209d69a1bb551bd0755dd6b48f260ba6fdd540))
+
 ## [4.38.2](https://github.com/diplodoc-platform/transform/compare/v4.38.1...v4.38.2) (2024-11-18)
 
 
