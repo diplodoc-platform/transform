@@ -1,3 +1,3 @@
 import {transform} from '@diplodoc/file-extension';
 
-export = transform({bundle: false});
+export = transform({bundle: false, directiveSyntax: 'disabled'});
