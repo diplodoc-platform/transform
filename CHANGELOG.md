@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.40.0](https://github.com/diplodoc-platform/transform/compare/v4.39.0...v4.40.0) (2024-11-27)
+
+
+### Features
+
+* **deps:** update cut and file extensions ([#576](https://github.com/diplodoc-platform/transform/issues/576)) ([32dc5fb](https://github.com/diplodoc-platform/transform/commit/32dc5fbbd03a41694ef12203136daa03cb535a11))
+
 ## [4.39.0](https://github.com/diplodoc-platform/transform/compare/v4.38.2...v4.39.0) (2024-11-20)
 
 
