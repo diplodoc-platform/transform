@@ -17,13 +17,9 @@ body:
       label: Node version
       description: |
         Output of `node -v`.
-  - type: textarea
+  - type: input
     attributes:
       label: Platform
-      render: text
-      description: |
-        UNIX: output of `uname -a`
-        Windows: output of `"$([Environment]::OSVersion.VersionString) $(('x86', 'x64')[[Environment]::Is64BitOperatingSystem])"` in PowerShell console
   - type: textarea
     attributes:
       label: What steps will reproduce the bug?
