@@ -1,5 +1,5 @@
 import {LanguageFn} from 'highlight.js';
-import DefaultMarkdownIt from 'markdown-it';
+import DefaultMarkdownIt, {Token} from 'markdown-it';
 import DefaultStateCore from 'markdown-it/lib/rules_core/state_core';
 
 import {SanitizeOptions} from './sanitize';
@@ -47,7 +47,7 @@ export interface OptionsType {
     sanitizeOptions?: SanitizeOptions;
     needFlatListHeadings?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    plugins?: MarkdownItPluginCb<any>[];
+    plugins?: ExtendedPluginWithCollect<any, any>[];
     preprocessors?: MarkdownItPreprocessorCb[]; // Preprocessors should modify the input before passing it to MD
     highlightLangs?: HighlightLangMap;
     disableRules?: string[];
@@ -94,6 +94,27 @@ export interface MarkdownItPluginOpts {
 export type MarkdownItPluginCb<T extends {} = {}> = {
     // TODO: use "T extends unknown = {}"
     (md: MarkdownIt, opts: T & MarkdownItPluginOpts): void;
+};
+
+export type IntrinsicCollectOptions = {
+    tokenStream: Token[];
+};
+
+export type ExtendedPluginWithCollect<
+    PluginRegularOptions extends {} = {},
+    PluginCollectOptions = {},
+> = MarkdownItPluginCb<PluginRegularOptions> & {
+    collect?: (
+        input: string,
+        options: PluginCollectOptions & IntrinsicCollectOptions,
+    ) => string | void;
+};
+
+export type RootCollectorOptions<PluginCollectOptions> = {
+    mdItInitOptions: OptionsType;
+    pluginCollectOptions: PluginCollectOptions;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parserPluginsOverride?: ExtendedPluginWithCollect<any, any>[];
 };
 
 export type MarkdownItPreprocessorCb<T extends unknown = {}> = {
