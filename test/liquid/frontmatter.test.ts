@@ -1,6 +1,6 @@
 import dedent from 'ts-dedent';
 
-import {emplaceFrontMatter, separateAndExtractFrontMatter} from '../../src/transform/frontmatter';
+import {composeFrontMatter, extractFrontMatter} from '../../src/transform/frontmatter';
 import liquidDocument from '../../src/transform/liquid';
 
 describe('front matter extract/emplace utility function pair', () => {
@@ -36,14 +36,14 @@ describe('front matter extract/emplace utility function pair', () => {
 
 
 
-        
+
         # Content.
         `,
     ])(
         `preserves the same amount of linebreaks between front matter block and content %#`,
         (input) => {
-            const {frontMatter, frontMatterStrippedContent} = separateAndExtractFrontMatter(input);
-            const emplaced = emplaceFrontMatter(frontMatterStrippedContent, frontMatter);
+            const [frontMatter, strippedContent] = extractFrontMatter(input);
+            const emplaced = composeFrontMatter(frontMatter, strippedContent);
 
             expect(emplaced).toEqual(input);
         },
@@ -59,7 +59,7 @@ describe('front matter extract/emplace utility function pair', () => {
         Test.
         `;
 
-        const {frontMatter} = separateAndExtractFrontMatter(content);
+        const [frontMatter] = extractFrontMatter(content);
 
         expect(frontMatter).toMatchObject({prop: '{{ wouldbreak }}'});
     });
@@ -79,7 +79,7 @@ describe('Liquid substitutions in front matter (formerly metadata)', () => {
 
         const liquidProcessed = liquidDocument(content, {var: ''}, 'frontmatter.test.ts.md');
 
-        const {frontMatter} = separateAndExtractFrontMatter(liquidProcessed);
+        const [frontMatter] = extractFrontMatter(liquidProcessed);
 
         expect(frontMatter).toEqual({
             verbatim: '',
