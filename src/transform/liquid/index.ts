@@ -1,12 +1,8 @@
 import type {Dictionary} from 'lodash';
 
-import {
-    countLineAmount,
-    emplaceSerializedFrontMatter,
-    separateAndExtractFrontMatter,
-    serializeFrontMatter,
-    transformFrontMatterValues,
-} from '../frontmatter';
+import {cloneDeepWith} from 'lodash';
+
+import {composeFrontMatter, extractFrontMatter} from '../frontmatter';
 
 import applySubstitutions from './substitutions';
 import {prepareSourceMap} from './sourceMap';
@@ -149,65 +145,68 @@ function liquidSnippet<
     return output as unknown as C;
 }
 
-type TransformSourceMapOptions = {
-    emplacedResultOffset: number;
-    emplacedSourceOffset: number;
-};
+function linesCount(content: string) {
+    let count = 1,
+        index = -1;
+    while ((index = content.indexOf('\n', index + 1)) > -1) {
+        count++;
+    }
 
-function transformSourceMap(
-    sourceMap: Dictionary<string>,
-    {emplacedResultOffset, emplacedSourceOffset}: TransformSourceMapOptions,
-) {
-    return Object.fromEntries(
-        Object.entries(sourceMap).map(([lineInResult, lineInSource]) => [
-            (Number(lineInResult) + emplacedResultOffset).toString(),
-            (Number(lineInSource) + emplacedSourceOffset).toString(),
-        ]),
-    );
+    return count;
 }
 
 function liquidDocument<
     B extends boolean = false,
     C = B extends false ? string : {output: string; sourceMap: Dictionary<string>},
 >(
-    originInput: string,
+    input: string,
     vars: Record<string, unknown>,
     path?: string,
     settings?: ArgvSettings & {withSourceMap?: B},
 ): C {
-    const {frontMatter, frontMatterStrippedContent, frontMatterLineCount} =
-        separateAndExtractFrontMatter(originInput, path);
+    const [frontMatter, strippedContent] = extractFrontMatter(input, path);
 
-    const transformedFrontMatter = transformFrontMatterValues(frontMatter, (v) =>
-        typeof v === 'string'
-            ? liquidSnippet(v, vars, path, {...settings, withSourceMap: false})
-            : v,
+    const liquidedFrontMatter = cloneDeepWith(frontMatter, (value: unknown) =>
+        typeof value === 'string'
+            ? liquidSnippet(value, vars, path, {...settings, withSourceMap: false})
+            : undefined,
     );
-    const transformedAndSerialized = serializeFrontMatter(transformedFrontMatter);
 
-    // -1 comes from the fact that the last line in serialized FM is the same as the first line in stripped content
-    const resultFrontMatterOffset = Math.max(0, countLineAmount(transformedAndSerialized) - 1);
-    const sourceFrontMatterOffset = Math.max(0, frontMatterLineCount - 1);
+    const liquidedResult = liquidSnippet(strippedContent, vars, path, settings);
+    const liquidedContent =
+        typeof liquidedResult === 'object' ? liquidedResult.output : liquidedResult;
 
-    const liquidProcessedContent = liquidSnippet(frontMatterStrippedContent, vars, path, settings);
+    const output = composeFrontMatter(liquidedFrontMatter, liquidedContent);
+
+    if (typeof liquidedResult === 'object') {
+        const inputLinesCount = linesCount(input);
+        const outputLinesCount = linesCount(output);
+        const contentLinesCount = linesCount(strippedContent);
+        const contentLinesDiff = linesCount(liquidedContent) - contentLinesCount;
+
+        const fullLinesDiff = outputLinesCount - inputLinesCount;
+
+        // Always >= 0
+        const sourceOffset = inputLinesCount - contentLinesCount;
+        // Content lines diff already counted in source map
+        const resultOffset = fullLinesDiff - contentLinesDiff;
+
+        liquidedResult.sourceMap = Object.fromEntries(
+            Object.entries(liquidedResult.sourceMap).map(([lineInResult, lineInSource]) => [
+                (Number(lineInResult) + resultOffset).toString(),
+                (Number(lineInSource) + sourceOffset).toString(),
+            ]),
+        );
+    }
 
     // typeof check for better inference; the catch is that return of liquidSnippet can be an
     // object even with source maps off, see `substitutions.test.ts`
-    return (settings?.withSourceMap && typeof liquidProcessedContent === 'object'
+    return (settings?.withSourceMap && typeof liquidedResult === 'object'
         ? {
-              output: emplaceSerializedFrontMatter(
-                  liquidProcessedContent.output,
-                  transformedAndSerialized,
-              ),
-              sourceMap: transformSourceMap(liquidProcessedContent.sourceMap, {
-                  emplacedResultOffset: resultFrontMatterOffset,
-                  emplacedSourceOffset: sourceFrontMatterOffset,
-              }),
+              output,
+              sourceMap: liquidedResult.sourceMap,
           }
-        : emplaceSerializedFrontMatter(
-              liquidProcessedContent as string,
-              transformedAndSerialized,
-          )) as unknown as C;
+        : output) as unknown as C;
 }
 
 // both default and named exports for convenience
