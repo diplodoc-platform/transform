@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.40.1](https://github.com/diplodoc-platform/transform/compare/v4.40.0...v4.40.1) (2024-12-18)
+
+
+### Bug Fixes
+
+* **BREAKING** refactor frontmatter API ([3cdecd9](https://github.com/diplodoc-platform/transform/commit/3cdecd94df2f16eb64519922579b8ad25962c6ad))
+
 ## [4.40.0](https://github.com/diplodoc-platform/transform/compare/v4.39.0...v4.40.0) (2024-11-27)
 
 
