@@ -27,7 +27,7 @@ const collect = (input: string, options: Options) => {
         const children = token.children || [];
 
         children.forEach((childToken) => {
-            if (childToken.type !== 'image' && childToken.type !== 'image_with_caption') {
+            if (childToken.type !== 'image') {
                 return;
             }
 

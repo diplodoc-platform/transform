@@ -87,56 +87,66 @@ function convertSvg(
     }
 }
 
+function imageCaption(state: StateCore) {
+    const tokens = state.tokens;
+
+    for (let i = 0; i < tokens.length; i++) {
+        if (tokens[i].type !== 'inline') {
+            continue;
+        }
+
+        const childrenTokens = tokens[i].children || [];
+        const newTokens: Token[] = [];
+
+        for (let j = 0; j < childrenTokens.length; j++) {
+            const token = childrenTokens[j];
+
+            if (token.type === 'image') {
+                const attrs = token.attrs || [];
+                const hasCaptionAttr = attrs.some(([key]) => key === 'caption');
+
+                if (hasCaptionAttr) {
+                    const captionAttr = attrs.find(([key]) => key === 'caption');
+                    const explicitCaption = captionAttr ? captionAttr[1] : '';
+                    const title = attrs.find(([key]) => key === 'title');
+                    const captionText = explicitCaption || (title ? title[1] : '');
+
+                    const figureOpen = new state.Token('figure_open', 'figure', 1);
+                    const figureClose = new state.Token('figure_close', 'figure', -1);
+
+                    if (captionText) {
+                        const captionOpen = new state.Token('figcaption_open', 'figcaption', 1);
+                        const captionContent = new state.Token('text', '', 0);
+                        captionContent.content = captionText;
+                        const captionClose = new state.Token('figcaption_close', 'figcaption', -1);
+
+                        newTokens.push(
+                            figureOpen,
+                            token,
+                            captionOpen,
+                            captionContent,
+                            captionClose,
+                            figureClose,
+                        );
+                    } else {
+                        newTokens.push(figureOpen, token, figureClose);
+                    }
+                } else {
+                    newTokens.push(token);
+                }
+            } else {
+                newTokens.push(token);
+            }
+        }
+
+        tokens[i].children = newTokens;
+    }
+}
+
 type Opts = SVGOpts & ImageOpts;
 
 const index: MarkdownItPluginCb<Opts> = (md, opts) => {
     md.assets = [];
-
-    md.inline.ruler.after('image', 'image_caption', (state, silent) => {
-        const pos = state.pos;
-        const max = state.posMax;
-
-        if (state.tokens.length === 0 || state.tokens[state.tokens.length - 1].type !== 'image') {
-            return false;
-        }
-        if (state.src.charCodeAt(pos) !== 0x7b /* { */) {
-            return false;
-        }
-
-        let found = false;
-        let curPos = pos + 1;
-        let captionText = '';
-
-        while (curPos < max) {
-            if (state.src.charCodeAt(curPos) === 0x7d /* } */) {
-                const content = state.src.slice(pos + 1, curPos).trim();
-                const captionMatch = content.match(/^caption(?:="([^"]*)")?$/);
-                if (captionMatch) {
-                    found = true;
-                    captionText = captionMatch[1] || '';
-                    break;
-                }
-            }
-            curPos++;
-        }
-
-        if (!found) {
-            return false;
-        }
-
-        if (!silent) {
-            const token = state.tokens[state.tokens.length - 1];
-            token.type = 'image_with_caption';
-            if (captionText) {
-                token.attrSet('caption', captionText);
-            }
-            state.pos = curPos + 1;
-            return true;
-        }
-
-        state.pos = curPos + 1;
-        return true;
-    });
 
     const plugin = (state: StateCore) => {
         const tokens = state.tokens;
@@ -152,10 +162,7 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
             let j = 0;
 
             while (j < childrenTokens.length) {
-                if (
-                    childrenTokens[j].type === 'image' ||
-                    childrenTokens[j].type === 'image_with_caption'
-                ) {
+                if (childrenTokens[j].type === 'image') {
                     const didPatch = childrenTokens[j].attrGet('yfm_patched') || false;
 
                     if (didPatch) {
@@ -177,44 +184,6 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                 j++;
             }
 
-            j = 0;
-            const newTokens: Token[] = [];
-
-            while (j < childrenTokens.length) {
-                if (childrenTokens[j].type === 'image_with_caption') {
-                    const explicitCaption = childrenTokens[j].attrGet('caption');
-                    const title = childrenTokens[j].attrGet('title');
-                    const captionText = explicitCaption || title || '';
-
-                    const figureOpen = new state.Token('figure_open', 'figure', 1);
-                    const figureClose = new state.Token('figure_close', 'figure', -1);
-
-                    childrenTokens[j].type = 'image';
-
-                    if (captionText) {
-                        const captionOpen = new state.Token('figcaption_open', 'figcaption', 1);
-                        const captionContent = new state.Token('text', '', 0);
-                        captionContent.content = captionText;
-                        const captionClose = new state.Token('figcaption_close', 'figcaption', -1);
-
-                        newTokens.push(
-                            figureOpen,
-                            childrenTokens[j],
-                            captionOpen,
-                            captionContent,
-                            captionClose,
-                            figureClose,
-                        );
-                    } else {
-                        newTokens.push(figureOpen, childrenTokens[j], figureClose);
-                    }
-                } else {
-                    newTokens.push(childrenTokens[j]);
-                }
-                j++;
-            }
-
-            tokens[i].children = newTokens;
             i++;
         }
     };
@@ -225,6 +194,7 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
         md.core.ruler.push('images', plugin);
     }
 
+    md.core.ruler.push('image_caption', imageCaption);
     md.renderer.rules.image_svg = (tokens, index) => {
         const token = tokens[index];
 
