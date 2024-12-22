@@ -200,11 +200,6 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
 
         return token.attrGet('content') || '';
     };
-
-    md.renderer.rules.figure_open = () => '<figure>';
-    md.renderer.rules.figure_close = () => '</figure>';
-    md.renderer.rules.figcaption_open = () => '<figcaption>';
-    md.renderer.rules.figcaption_close = () => '</figcaption>';
 };
 
 export = index;
