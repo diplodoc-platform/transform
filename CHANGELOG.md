@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.41.1](https://github.com/diplodoc-platform/transform/compare/v4.41.0...v4.41.1) (2024-12-25)
+
+
+### Bug Fixes
+
+* move ts-dedent to normal deps ([#593](https://github.com/diplodoc-platform/transform/issues/593)) ([5f277a1](https://github.com/diplodoc-platform/transform/commit/5f277a1f4164153a3d1008c91257bd5bd447286b))
+
 ## [4.41.0](https://github.com/diplodoc-platform/transform/compare/v4.40.1...v4.41.0) (2024-12-18)
 
 
