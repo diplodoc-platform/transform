@@ -74,7 +74,7 @@ transform.collect = (
             });
 
             return collectOutput ?? collected;
-        }, input);
+        }, maybeLiquidedInput);
     } catch (error) {
         handleError(error, mdItInitOptions.path);
     }
