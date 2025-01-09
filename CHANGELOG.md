@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.42.0](https://github.com/diplodoc-platform/transform/compare/v4.41.1...v4.42.0) (2025-01-09)
+
+
+### Features
+
+* implement tests for collect.transform ([f1247b4](https://github.com/diplodoc-platform/transform/commit/f1247b49e8d0481079608e19ac688aeb2da55e2d))
+* implement ways to interact with collect via transform API ([f3d1a3a](https://github.com/diplodoc-platform/transform/commit/f3d1a3aefaea2453465010366f03eb237503643b))
+
 ## [4.41.1](https://github.com/diplodoc-platform/transform/compare/v4.41.0...v4.41.1) (2024-12-25)
 
 
