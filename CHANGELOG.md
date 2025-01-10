@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.42.1](https://github.com/diplodoc-platform/transform/compare/v4.42.0...v4.42.1) (2025-01-10)
+
+
+### Bug Fixes
+
+* incorrect focus setting when opening multiple terms sequentially ([#596](https://github.com/diplodoc-platform/transform/issues/596)) ([1630254](https://github.com/diplodoc-platform/transform/commit/1630254ae68acb3e4dbbfb10e8462a111a635167))
+
 ## [4.42.0](https://github.com/diplodoc-platform/transform/compare/v4.41.1...v4.42.0) (2025-01-09)
 
 
