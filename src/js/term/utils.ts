@@ -173,7 +173,7 @@ export function openDefinition(target: HTMLElement) {
 
     definitionElement.classList.toggle(openClass);
 
-    trapFocus(definitionElement);
+    trapFocus(definitionElement, target);
 }
 
 export function closeDefinition(definition: HTMLElement) {
@@ -210,12 +210,18 @@ function getCoords(elem: HTMLElement) {
     return {top: Math.round(top), left: Math.round(left)};
 }
 
-export function trapFocus(element: HTMLElement) {
+export function trapFocus(element: HTMLElement, termButton: HTMLElement) {
     const focusableElements = element.querySelectorAll(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
     const firstFocusableElement = focusableElements[0] as HTMLElement;
     const lastFocusableElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+    // if another term was previously closed, the focus may still be on it
+    if (!firstFocusableElement && document.activeElement !== termButton) {
+        termButton.focus();
+        return;
+    }
 
     if (firstFocusableElement) {
         firstFocusableElement.focus();
