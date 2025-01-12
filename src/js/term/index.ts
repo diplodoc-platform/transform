@@ -25,7 +25,7 @@ if (typeof document !== 'undefined') {
         }
 
         if (event.key === 'Escape' && openedDefinition) {
-            closeDefinition(openedDefinition);
+            closeDefinition(openedDefinition, true);
         }
     });
 
