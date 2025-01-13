@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.42.2](https://github.com/diplodoc-platform/transform/compare/v4.42.1...v4.42.2) (2025-01-13)
+
+
+### Bug Fixes
+
+* force focus on closing term prevents switching to other elements on a click ([#599](https://github.com/diplodoc-platform/transform/issues/599)) ([e8caa68](https://github.com/diplodoc-platform/transform/commit/e8caa68384b2cfa52327c40ad0799dc82514d742))
+
 ## [4.42.1](https://github.com/diplodoc-platform/transform/compare/v4.42.0...v4.42.1) (2025-01-10)
 
 
