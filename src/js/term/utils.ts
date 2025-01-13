@@ -176,10 +176,9 @@ export function openDefinition(target: HTMLElement) {
     trapFocus(definitionElement);
 }
 
-export function closeDefinition(definition: HTMLElement, forceFocus?: boolean) {
+export function closeDefinition(definition: HTMLElement) {
     definition.classList.remove(openClass);
-    const termId = definition.getAttribute('term-id') || '';
-    const term = document.getElementById(termId);
+    const term = getTermByDefinition(definition);
     const termParent = termParentElement(term);
 
     if (!termParent) {
@@ -187,11 +186,6 @@ export function closeDefinition(definition: HTMLElement, forceFocus?: boolean) {
     }
 
     termParent.removeEventListener('scroll', termOnResize);
-
-    if (forceFocus) {
-        term?.focus(); // Set focus back to open button after closing popup
-    }
-
     isListenerNeeded = true;
 }
 
@@ -240,4 +234,10 @@ export function trapFocus(element: HTMLElement) {
             e.preventDefault();
         }
     });
+}
+
+export function getTermByDefinition(definition: HTMLElement) {
+    const termId = definition.getAttribute('term-id');
+
+    return termId ? document.getElementById(termId) : null;
 }

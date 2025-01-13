@@ -2,6 +2,7 @@ import {getEventTarget, isCustom} from '../utils';
 
 import {
     closeDefinition,
+    getTermByDefinition,
     openClass,
     openDefinition,
     openDefinitionClass,
@@ -25,7 +26,8 @@ if (typeof document !== 'undefined') {
         }
 
         if (event.key === 'Escape' && openedDefinition) {
-            closeDefinition(openedDefinition, true);
+            closeDefinition(openedDefinition);
+            getTermByDefinition(openedDefinition)?.focus(); // Set focus back to open button after closing popup
         }
     });
 
