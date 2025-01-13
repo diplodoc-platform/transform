@@ -173,10 +173,10 @@ export function openDefinition(target: HTMLElement) {
 
     definitionElement.classList.toggle(openClass);
 
-    trapFocus(definitionElement, target);
+    trapFocus(definitionElement);
 }
 
-export function closeDefinition(definition: HTMLElement, focus?: boolean) {
+export function closeDefinition(definition: HTMLElement, forceFocus?: boolean) {
     definition.classList.remove(openClass);
     const termId = definition.getAttribute('term-id') || '';
     const term = document.getElementById(termId);
@@ -188,7 +188,7 @@ export function closeDefinition(definition: HTMLElement, focus?: boolean) {
 
     termParent.removeEventListener('scroll', termOnResize);
 
-    if (focus) {
+    if (forceFocus) {
         term?.focus(); // Set focus back to open button after closing popup
     }
 
@@ -213,7 +213,7 @@ function getCoords(elem: HTMLElement) {
     return {top: Math.round(top), left: Math.round(left)};
 }
 
-export function trapFocus(element: HTMLElement, termButton: HTMLElement) {
+export function trapFocus(element: HTMLElement) {
     const focusableElements = element.querySelectorAll(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
