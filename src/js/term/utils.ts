@@ -173,13 +173,12 @@ export function openDefinition(target: HTMLElement) {
 
     definitionElement.classList.toggle(openClass);
 
-    trapFocus(definitionElement, target);
+    trapFocus(definitionElement);
 }
 
 export function closeDefinition(definition: HTMLElement) {
     definition.classList.remove(openClass);
-    const termId = definition.getAttribute('term-id') || '';
-    const term = document.getElementById(termId);
+    const term = getTermByDefinition(definition);
     const termParent = termParentElement(term);
 
     if (!termParent) {
@@ -187,8 +186,6 @@ export function closeDefinition(definition: HTMLElement) {
     }
 
     termParent.removeEventListener('scroll', termOnResize);
-    term?.focus(); // Set focus back to open button after closing popup
-
     isListenerNeeded = true;
 }
 
@@ -210,18 +207,12 @@ function getCoords(elem: HTMLElement) {
     return {top: Math.round(top), left: Math.round(left)};
 }
 
-export function trapFocus(element: HTMLElement, termButton: HTMLElement) {
+export function trapFocus(element: HTMLElement) {
     const focusableElements = element.querySelectorAll(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
     const firstFocusableElement = focusableElements[0] as HTMLElement;
     const lastFocusableElement = focusableElements[focusableElements.length - 1] as HTMLElement;
-
-    // if another term was previously closed, the focus may still be on it
-    if (!firstFocusableElement && document.activeElement !== termButton) {
-        termButton.focus();
-        return;
-    }
 
     if (firstFocusableElement) {
         firstFocusableElement.focus();
@@ -243,4 +234,10 @@ export function trapFocus(element: HTMLElement, termButton: HTMLElement) {
             e.preventDefault();
         }
     });
+}
+
+export function getTermByDefinition(definition: HTMLElement) {
+    const termId = definition.getAttribute('term-id');
+
+    return termId ? document.getElementById(termId) : null;
 }
