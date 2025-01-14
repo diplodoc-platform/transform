@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.42.3](https://github.com/diplodoc-platform/transform/compare/v4.42.2...v4.42.3) (2025-01-14)
+
+
+### Bug Fixes
+
+* lodash import ([93f3687](https://github.com/diplodoc-platform/transform/commit/93f368700b96dd1977b52b13129a8738325cb860))
+
 ## [4.42.2](https://github.com/diplodoc-platform/transform/compare/v4.42.1...v4.42.2) (2025-01-13)
 
 
