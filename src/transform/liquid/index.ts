@@ -1,6 +1,6 @@
 import type {Dictionary} from 'lodash';
 
-import {cloneDeepWith} from 'lodash';
+import cloneDeepWith from 'lodash/cloneDeepWith';
 
 import {composeFrontMatter, extractFrontMatter} from '../frontmatter';
 
