@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.42.4](https://github.com/diplodoc-platform/transform/compare/v4.42.3...v4.42.4) (2025-01-22)
+
+
+### Bug Fixes
+
+* Extend csp rules for vk video plugin ([e9cc80f](https://github.com/diplodoc-platform/transform/commit/e9cc80f25d837854e70d65501e10297059f9915a))
+* Update release infrastructure ([dbf0ad6](https://github.com/diplodoc-platform/transform/commit/dbf0ad603b751ad33b886125a6cc34adc9ef2a49))
+
+
+### Dependency update
+
+* Updage cut-extension ([b955994](https://github.com/diplodoc-platform/transform/commit/b9559941aa7cef6900f08e57e4239596c8b9f975))
+
 ## [4.42.3](https://github.com/diplodoc-platform/transform/compare/v4.42.2...v4.42.3) (2025-01-14)
 
 
