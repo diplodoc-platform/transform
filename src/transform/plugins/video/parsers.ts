@@ -76,7 +76,7 @@ const supportedServices = {
     vk: {
         extract: vkParser,
         csp: {
-            'frame-src': ['https://vk.com/'],
+            'frame-src': ['https://vk.com/', 'https://login.vk.com/'],
         },
     },
     rutube: {
