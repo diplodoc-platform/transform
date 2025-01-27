@@ -79,7 +79,7 @@ const index: MarkdownItPreprocessorCb<{
     const {included, path, root} = options;
 
     // To reduce file reading we can include the file content into the generated content
-    if (included) {
+    if (included !== false) {
         const lines = input?.split('\n') || [];
 
         // The finction reads the files from bottom to top(!). It stops the loop if it does not have anything to swap.

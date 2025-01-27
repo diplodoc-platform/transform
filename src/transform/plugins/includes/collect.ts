@@ -27,7 +27,7 @@ function processRecursive(
         const contentProcessed = copyFile(includePath, targetDestPath, includeOptions);
 
         // To reduce file reading we can include the file content into the generated content
-        if (included) {
+        if (included !== false) {
             const content = contentProcessed ?? readFileSync(targetDestPath, 'utf8');
 
             if (content) {
