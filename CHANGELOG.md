@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.43.0](https://github.com/diplodoc-platform/transform/compare/v4.42.4...v4.43.0) (2025-01-27)
+
+
+### Features
+
+* make included option by default ([#609](https://github.com/diplodoc-platform/transform/issues/609)) ([fc23b65](https://github.com/diplodoc-platform/transform/commit/fc23b6559b3ae43a637a3bd3eaed39336a631b1d))
+
 ## [4.42.4](https://github.com/diplodoc-platform/transform/compare/v4.42.3...v4.42.4) (2025-01-22)
 
 
