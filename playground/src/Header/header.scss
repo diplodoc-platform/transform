@@ -1,0 +1,44 @@
+.header {
+  display: flex;
+  align-content: center;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  height: 64px;
+  width: 100%;
+
+  padding: 0 15px;
+
+  &__tab {
+    height: 100%;
+
+    font-size: var(--g-text-body-2-font-size);
+  }
+
+  &__tabs {
+    height: 100%;
+  }
+}
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  height: 100%;
+
+  > .g-tabs_direction_horizontal {
+    box-shadow: none;
+  }
+}
+
+.link {
+  outline: none;
+}
+
+.text {
+  font-size: var(--g-text-body-2-font-size);
+}
+
+.documentation {
+  margin-left: auto;
+}

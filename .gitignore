@@ -16,3 +16,10 @@ lib
 /build
 /cache
 /coverage
+/pages-build
+
+node_modules/
+www/
+bundle/
+
+tsconfig.tsbuildinfo

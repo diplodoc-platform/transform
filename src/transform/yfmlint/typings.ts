@@ -1,5 +1,6 @@
 import type {Dictionary} from 'lodash';
 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 import {Plugin, Rule} from 'markdownlint';
 
 import {MarkdownItPreprocessorCb} from '../typings';

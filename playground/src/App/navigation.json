@@ -1,0 +1,21 @@
+{
+  "header": {
+    "leftItems": [
+      {
+        "type": "controls"
+      }
+    ],
+    "rightItems": [
+      {
+        "type": "link",
+        "text": "Документация",
+        "url": "https://diplodoc.com/docs/ru/",
+        "target": "_self"
+      }
+    ],
+    "withBorder": true
+  },
+  "logo": {
+    "icon": "https://storage.yandexcloud.net/diplodoc-www-assets/navigation/diplodoc-logo.svg"
+  }
+}

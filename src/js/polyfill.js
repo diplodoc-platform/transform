@@ -23,5 +23,6 @@ if (typeof document !== 'undefined') {
                 });
             };
         }
+        // eslint-disable-next-line no-undef
     })(Element.prototype);
 }
