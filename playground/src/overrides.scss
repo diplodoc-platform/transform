@@ -1,0 +1,60 @@
+.g-root {
+  .pc-control-panel.pc-control-panel {
+    border-top: none;
+  }
+
+  .pc-editor-layout__left, .pc-editor-layout__right {
+    height: calc(100vh - 230px);
+    max-height: calc(100vh - 230px);
+  }
+
+  .pc-device-emulation-mobile__frame_device_tablet {
+    height: 100%;
+  }
+
+  .pc-device-emulation-mobile__frame_device_mobile {
+    height: 100%;
+  }
+
+  --g-tabs-item-height: 100%;
+
+  .g-tabs__item-title {
+    font-size: var(--g-text-body-2-font-size);
+  }
+
+  .pc-page-constructor {
+    width: 100%;
+  }
+
+  .editor {
+    .pc-Grid {
+      padding-right: 40px;
+      padding-left: 40px;
+
+      &.pc-navigation {
+        padding: 0;
+      }
+
+      @media (max-width: 768px) {
+        padding-right: 20px;
+        padding-left: 20px;
+
+        max-width: 100%;
+      }
+
+      .container-fluid {
+        padding-right: 0;
+        padding-left: 0;
+      }
+    }
+
+    .pc-layout__navigation > .container-fluid {
+      max-width: 1440px;
+    }
+  }
+
+  .container-fluid {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+}

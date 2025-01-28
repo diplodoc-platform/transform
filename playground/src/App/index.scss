@@ -1,0 +1,24 @@
+.app {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+}
+
+.playground {
+  @media (max-width: 1328px) {
+    width: 100%
+  }
+
+  margin-top: 20px;
+}
+
+.tabs {
+  width: fit-content;
+}
+
+.editor:has(.ye-editor-component) {
+  margin-top: 30px;
+}

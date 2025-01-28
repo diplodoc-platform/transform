@@ -1,0 +1,33 @@
+.g-root {
+    --diplodoc-playground-height: 400px;
+
+    @media (min-width: 768px) {
+        --diplodoc-playground-height: calc(100vh - 230px);
+    }
+
+    @media (min-width: 1080px) {
+        --diplodoc-playground-height: calc(100vh - 300px);
+    }
+}
+
+.g-text-area__control {
+    height: calc(var(--diplodoc-playground-height) + 26px) !important;
+    min-height: calc(var(--diplodoc-playground-height) + 26px) !important;
+    max-height: calc(var(--diplodoc-playground-height) + 26px) !important;
+
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.g-text-area__content {
+    border-radius: 2px !important;
+}
+
+.monaco-scrollable-element {
+    left: 0 !important;
+    min-width: 100% !important;
+}
+
+.margin {
+    display: none !important;
+}
