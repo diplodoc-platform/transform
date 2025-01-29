@@ -1,13 +1,24 @@
 import {
     Checkbox,
-    CheckboxOptions, ExtensionAuto, ImgSize,
-    ImgSizeOptions, Monospace, Video, VideoOptions,
+    CheckboxOptions,
+    ExtensionAuto,
+    ImgSize,
+    ImgSizeOptions,
+    Monospace,
+    Video,
+    VideoOptions,
     YfmCut,
-    YfmCutOptions, YfmDist,
-    YfmFile, YfmHeading, YfmHeadingOptions,
-    YfmNote, YfmNoteOptions, YfmTable,
-    YfmTableOptions, YfmTabs
-} from "@doc-tools/yfm-editor";
+    YfmCutOptions,
+    YfmDist,
+    YfmFile,
+    YfmHeading,
+    YfmHeadingOptions,
+    YfmNote,
+    YfmNoteOptions,
+    YfmTable,
+    YfmTableOptions,
+    YfmTabs,
+} from '@doc-tools/yfm-editor';
 
 export type YfmPresetOptions = {
     checkbox?: CheckboxOptions;

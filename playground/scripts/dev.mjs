@@ -2,7 +2,7 @@ import {mkdir, rm, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {context} from 'esbuild';
 
-import {generateHTML} from '../src/index.html.js';
+import {generateHTML} from '../src/index.html.mjs';
 
 import {ts} from './configs.mjs';
 import {resolveFromPlaygroundRoot} from './utils.mjs';

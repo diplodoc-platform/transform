@@ -54,7 +54,9 @@ export const isSupportedMethod = (exp: string) => {
 export const getParsedMethod = (exp: String) => {
     const match = exp.match(supportedMethodsRE);
 
-    if (!match) return null;
+    if (!match) {
+        return null;
+    }
 
     const name = match[1];
     const args = match[2].split(/[\s,]+/);

@@ -9,3 +9,5 @@ node_modules
 /build
 /cache
 /coverage
+/pages-build
+/playground/www
