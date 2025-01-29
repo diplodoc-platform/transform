@@ -1,4 +1,4 @@
-function generateHTML({env, jspath, csspath} = {}) {
+export function generateHTML({env, jspath, csspath} = {}) {
     if (!env) {
         env = 'development';
     }
@@ -48,5 +48,3 @@ function generateHTML({env, jspath, csspath} = {}) {
 </html>
 `;
 }
-
-module.exports = {generateHTML};

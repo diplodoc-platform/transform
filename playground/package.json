@@ -38,7 +38,7 @@
     "bundle": "node scripts/bundle.js",
     "pages": "node scripts/pages.js",
     "dev": "node scripts/dev.js",
-    "typecheck": "tsc -p .",
+    "typecheck": "tsc --noEmit -p .",
     "prepublishOnly": "npm run bundle"
   },
   "license": "MIT",

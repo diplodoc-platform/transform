@@ -18,62 +18,62 @@ import initMarkdownIt from '~transform/md';
 import transform from '~transform/index';
 
 const diplodocOptions = {
-  lang: 'en',
-  path: '',
+    lang: 'en',
+    path: '',
 };
 
 function generateMD(input: string) {
-  const md = new MarkdownIt({html: true});
+    const md = new MarkdownIt({html: true});
 
-  md.use(meta);
-  md.use(notes, diplodocOptions);
-  md.use(cut, diplodocOptions);
-  md.use(sup, diplodocOptions);
-  md.use(checkbox, diplodocOptions);
-  md.use(anchors, diplodocOptions);
-  md.use(monospace, diplodocOptions);
-  md.use(imsize, diplodocOptions);
-  md.use(file, diplodocOptions);
-  md.use(includes, diplodocOptions);
-  md.use(tabs, diplodocOptions);
-  md.use(video, diplodocOptions);
-  md.use(table, diplodocOptions);
-  md.use(mdRenderer);
+    md.use(meta);
+    md.use(notes, diplodocOptions);
+    md.use(cut, diplodocOptions);
+    md.use(sup, diplodocOptions);
+    md.use(checkbox, diplodocOptions);
+    md.use(anchors, diplodocOptions);
+    md.use(monospace, diplodocOptions);
+    md.use(imsize, diplodocOptions);
+    md.use(file, diplodocOptions);
+    md.use(includes, diplodocOptions);
+    md.use(tabs, diplodocOptions);
+    md.use(video, diplodocOptions);
+    md.use(table, diplodocOptions);
+    md.use(mdRenderer);
 
-  try {
-    return md.render(input, {source: input.split('\n')});
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    try {
+        return md.render(input, {source: input.split('\n')});
+    } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e);
 
-    return '';
-  }
+        return '';
+    }
 }
 
 function generateHTML(input: string) {
-  try {
-    return transform(input).result.html;
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+    try {
+        return transform(input).result.html;
+    } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e);
 
-    return '';
-  }
+        return '';
+    }
 }
 
 function generateTokens(input: string) {
-  const {parse} = initMarkdownIt({});
+    const {parse} = initMarkdownIt({});
 
-  try {
-    const tokens = parse(input);
+    try {
+        const tokens = parse(input);
 
-    return tokens?.length ? JSON.stringify(tokens, null, 4) : '';
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(e);
+        return tokens?.length ? JSON.stringify(tokens, null, 4) : '';
+    } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e);
 
-    return '';
-  }
+        return '';
+    }
 }
 
 export {generateHTML, generateMD, generateTokens};

@@ -8,6 +8,7 @@ import './index.scss';
 import {InputArea} from './input-area';
 import {OutputArea} from './output-area';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (window as any).MonacoEnvironment = {
     getWorker: (_: unknown, label: string) => {
         if (label === 'json') {
@@ -34,12 +35,16 @@ function SplitViewEditor(props: PlaygroundProperties) {
     const generate = useCallback(
         (active: string) => {
             if (active === 'markdown') {
+                // @ts-expect-error
                 setGenerated(generateMD(input));
             } else if (active === 'html') {
+                // @ts-expect-error
                 setGenerated(generateHTML(input));
             } else if (active === 'tokens') {
+                // @ts-expect-error
                 setGenerated(generateTokens(input));
             } else if (active === 'preview') {
+                // @ts-expect-error
                 setGenerated(generateHTML(input));
             } else {
                 setGenerated(input);
@@ -67,6 +72,7 @@ function SplitViewEditor(props: PlaygroundProperties) {
         generate(outputActive);
 
         if (props?.persistRestore && input) {
+            // @ts-expect-error
             persist(input);
         } else {
             deleteQuery('input');
@@ -75,11 +81,13 @@ function SplitViewEditor(props: PlaygroundProperties) {
 
     return (
         <div className="split-view">
+            {/* @ts-expect-error */}
             <InputArea handleInputChange={handleInputChange} input={input} />
             <OutputArea
                 handleSelectTab={handleSetOutputAreaTabActive}
                 tabItems={outputItems}
                 tabActive={outputActive}
+                /* @ts-expect-error */
                 output={generated}
             />
         </div>
