@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.44.0](https://github.com/diplodoc-platform/transform/compare/v4.43.0...v4.44.0) (2025-01-29)
+
+
+### Features
+
+* bump cut plagin version ([228796e](https://github.com/diplodoc-platform/transform/commit/228796e96cc1757cc905ca1c029571bc74db9a14))
+
 ## [4.43.0](https://github.com/diplodoc-platform/transform/compare/v4.42.4...v4.43.0) (2025-01-27)
 
 
