@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.44.1](https://github.com/diplodoc-platform/transform/compare/v4.44.0...v4.44.1) (2025-01-30)
+
+
+### Bug Fixes
+
+* open cuts in pdf ([0f30e99](https://github.com/diplodoc-platform/transform/commit/0f30e99d49381516f09489481efc5b4a8fb002fe))
+
 ## [4.44.0](https://github.com/diplodoc-platform/transform/compare/v4.43.0...v4.44.0) (2025-01-29)
 
 
