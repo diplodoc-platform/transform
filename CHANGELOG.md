@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.45.2](https://github.com/diplodoc-platform/transform/compare/v4.45.1...v4.45.2) (2025-02-03)
+
+
+### Bug Fixes
+
+* ignore postinstall exit code ([95c28b1](https://github.com/diplodoc-platform/transform/commit/95c28b19525ece77141956cd1a7c051be2c28395))
+
 ## [4.45.1](https://github.com/diplodoc-platform/transform/compare/v4.45.0...v4.45.1) (2025-02-03)
 
 
