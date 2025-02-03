@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.45.1](https://github.com/diplodoc-platform/transform/compare/v4.45.0...v4.45.1) (2025-02-03)
+
+
+### Bug Fixes
+
+* change local resolution alias to something that works with scss loader ([46ced41](https://github.com/diplodoc-platform/transform/commit/46ced419f6dc3da357c8cf57eac6d72ac64dd105))
+
 ## [4.45.0](https://github.com/diplodoc-platform/transform/compare/v4.44.1...v4.45.0) (2025-02-03)
 
 
