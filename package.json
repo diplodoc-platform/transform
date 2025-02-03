@@ -44,7 +44,7 @@
     "lint:fix": "lint update && lint fix",
     "pre-commit": "lint update && lint-staged",
     "prepare": "husky",
-    "postinstall": "cd playground && npm ci --ignore-scripts"
+    "postinstall": "cd playground && npm ci --ignore-scripts || true"
   },
   "dependencies": {
     "@diplodoc/cut-extension": "^0.7.1",
