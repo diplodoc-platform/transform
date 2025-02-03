@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.45.0](https://github.com/diplodoc-platform/transform/compare/v4.44.1...v4.45.0) (2025-02-03)
+
+
+### Features
+
+* playground integration ([b3f3235](https://github.com/diplodoc-platform/transform/commit/b3f32354c25cd911d053f8d4b683ae9456ccf04a))
+
+
+### Bug Fixes
+
+* lint touch-ups ([2adab05](https://github.com/diplodoc-platform/transform/commit/2adab059ad183ba89c7d21d4e760f5ca90e2bf93))
+
 ## [4.44.1](https://github.com/diplodoc-platform/transform/compare/v4.44.0...v4.44.1) (2025-01-30)
 
 
