@@ -71,7 +71,7 @@
     "typescript": "^5.1.3"
   },
   "dependencies": {
-    "@diplodoc/markdown-it-markdown-renderer": "^0.14.4",
+    "@diplodoc/markdown-it-markdown-renderer": "^0.16.0",
     "@doc-tools/yfm-editor": "^12.2.1",
     "@gravity-ui/page-constructor": "^5.12.0",
     "@monaco-editor/react": "^4.5.2",
