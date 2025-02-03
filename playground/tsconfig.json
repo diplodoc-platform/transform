@@ -14,8 +14,8 @@
     "skipLibCheck": true,
     "noImplicitAny": false,
     "paths": {
-      "~transform/*": ["../lib/*"],
-      "~transform-dist/*": ["../dist/*"]
+      "@local/transform/*": ["../lib/*"],
+      "@local/transform-dist/*": ["../dist/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
