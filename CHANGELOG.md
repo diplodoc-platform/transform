@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.45.3](https://github.com/diplodoc-platform/transform/compare/v4.45.2...v4.45.3) (2025-02-04)
+
+
+### Bug Fixes
+
+* improve display styles for ordered lists ([6f817c7](https://github.com/diplodoc-platform/transform/commit/6f817c7e075aaec110d61cbc1584699ebebd523a))
+* make image plugin aware of the token stream ([ee690da](https://github.com/diplodoc-platform/transform/commit/ee690dadc5c66e241e846e416f9df80a21c2e002))
+
 ## [4.45.2](https://github.com/diplodoc-platform/transform/compare/v4.45.1...v4.45.2) (2025-02-03)
 
 
