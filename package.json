@@ -47,7 +47,7 @@
     "postinstall": "cd playground && npm ci --ignore-scripts || true"
   },
   "dependencies": {
-    "@diplodoc/cut-extension": "^0.7.1",
+    "@diplodoc/cut-extension": "^0.7.2",
     "@diplodoc/file-extension": "^0.2.0",
     "@diplodoc/tabs-extension": "^3.5.0",
     "chalk": "^4.1.2",
