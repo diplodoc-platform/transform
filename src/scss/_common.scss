@@ -286,12 +286,6 @@
 
     dd {
         margin-left: 0;
-
-        & > ol:first-child,
-        & > ul:first-child,
-        & > dd:first-child {
-            padding-left: 0;
-        }
     }
 
     ul,
@@ -324,9 +318,13 @@
         content: counter(list) '. ';
     }
 
-    // No direct ancestor (>) combinator to preserve legacy behavior
-    ol.yfm_no-list-reset li::marker {
-        content: unset;
+    ol.yfm_no-list-reset {
+        counter-reset: unset;
+
+        // No direct ancestor (>) combinator to preserve legacy behavior
+        & li::marker {
+            content: unset;
+        }
     }
 
     li {
