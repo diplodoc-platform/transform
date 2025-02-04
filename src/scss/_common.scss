@@ -22,6 +22,7 @@
     line-height: 20px;
     word-wrap: break-word;
     color: var(--yfm-color-text);
+    tab-size: var(--yfm-tab-size, inherit);
 
     * {
         box-sizing: border-box;
@@ -349,6 +350,7 @@
         font-size: 0.875em;
         white-space: pre-wrap;
         color: var(--yfm-color-inline-code);
+        tab-size: var(--yfm-tab-size-code, inherit);
     }
 
     pre {
