@@ -1,23 +1,25 @@
-import {Token} from 'markdown-it';
+import MarkdownIt from 'markdown-it';
 import {relative} from 'path';
 
 import {isLocalUrl} from '../../utils';
 import {resolveRelativePath} from '../../utilsFS';
+import imsize from '../imsize';
 import {MarkdownItPluginOpts} from '../typings';
 
 type Options = MarkdownItPluginOpts & {
     destPath: string;
     copyFile: (path: string, dest: string) => void;
     singlePage: boolean;
-    tokenStream: Token[];
 };
 
 const collect = (input: string, options: Options) => {
-    const {root, path, destPath = '', copyFile, singlePage, tokenStream} = options;
+    const md = new MarkdownIt().use(imsize);
 
+    const {root, path, destPath = '', copyFile, singlePage} = options;
+    const tokens = md.parse(input, {});
     let result = input;
 
-    tokenStream.forEach((token) => {
+    tokens.forEach((token) => {
         if (token.type !== 'inline') {
             return;
         }
