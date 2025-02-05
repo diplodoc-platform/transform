@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.45.4](https://github.com/diplodoc-platform/transform/compare/v4.45.3...v4.45.4) (2025-02-05)
+
+
+### Bug Fixes
+
+* added tab-size support for top-level content and code elements ([#632](https://github.com/diplodoc-platform/transform/issues/632)) ([892c8a6](https://github.com/diplodoc-platform/transform/commit/892c8a61b9b48da760b214eb7f0d6bc193fda25b))
+* restore list margins when nested within certain elements ([bb883c4](https://github.com/diplodoc-platform/transform/commit/bb883c4b51c8c97ecc9eb9524c06ab0a724b3740))
+
 ## [4.45.3](https://github.com/diplodoc-platform/transform/compare/v4.45.2...v4.45.3) (2025-02-04)
 
 
