@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.45.5](https://github.com/diplodoc-platform/transform/compare/v4.45.4...v4.45.5) (2025-02-05)
+
+
+### Bug Fixes
+
+* Revert "fix: make image plugin aware of the token stream" ([31e8e69](https://github.com/diplodoc-platform/transform/commit/31e8e6922a3517ac172ef6ce27b779d8d2d2f294))
+
 ## [4.45.4](https://github.com/diplodoc-platform/transform/compare/v4.45.3...v4.45.4) (2025-02-05)
 
 
