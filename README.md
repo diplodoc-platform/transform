@@ -87,12 +87,14 @@ MIT
 - `--yfm-color-table-row-background`
 - `--yfm-color-border`
 - `--yfm-color-accent`
+- `--yfm-tab-size`
 
 **code**
 
 - `--yfm-color-inline-code`
 - `--yfm-color-inline-code-background`
 - `--yfm-color-code-background`
+- `--yfm-tab-size-code`
 
 **hightlight**
 
