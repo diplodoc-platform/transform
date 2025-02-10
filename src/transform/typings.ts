@@ -89,6 +89,7 @@ export interface MarkdownItPluginOpts {
     vars?: Record<string, string>;
     extractTitle?: boolean;
     disableLiquid?: boolean;
+    skipLinkFileCheck?: boolean;
 }
 
 export type MarkdownItPluginCb<T extends {} = {}> = {

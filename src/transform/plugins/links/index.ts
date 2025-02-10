@@ -137,6 +137,7 @@ function processLink(
         log,
         getPublicPath = getDefaultPublicPath,
         cache,
+        skipLinkFileCheck = false,
     } = opts;
 
     const currentPath = state.env.path || startPath;
@@ -163,7 +164,7 @@ function processLink(
 
     if (pathname) {
         file = resolve(path.parse(currentPath).dir, pathname);
-        fileExists = isFileExists(file);
+        fileExists = skipLinkFileCheck || isFileExists(file);
         isPageFile = PAGE_LINK_REGEXP.test(pathname);
 
         if (isPageFile && !fileExists) {
