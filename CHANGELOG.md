@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.46.0](https://github.com/diplodoc-platform/transform/compare/v4.45.5...v4.46.0) (2025-02-11)
+
+
+### Features
+
+* add skipLinkFileCheck option ([2b694a7](https://github.com/diplodoc-platform/transform/commit/2b694a730b1b0f8ffdbf812a7a5ae6156da97b91))
+
 ## [4.45.5](https://github.com/diplodoc-platform/transform/compare/v4.45.4...v4.45.5) (2025-02-05)
 
 
