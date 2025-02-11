@@ -84,7 +84,7 @@
     "@types/node": "17.0.10",
     "@types/sanitize-html": "^2.9.3",
     "autoprefixer": "^10.4.15",
-    "esbuild": "^0.23.1",
+    "esbuild": "^0.25.0",
     "esbuild-sass-plugin": "^3.3.1",
     "highlight.js": "^11.8.0",
     "jest": "28.1.3",
