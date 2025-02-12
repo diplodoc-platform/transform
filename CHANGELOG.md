@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.47.0](https://github.com/diplodoc-platform/transform/compare/v4.46.0...v4.47.0) (2025-02-12)
+
+
+### Features
+
+* add css-var: info-color ([#564](https://github.com/diplodoc-platform/transform/issues/564)) ([30150b1](https://github.com/diplodoc-platform/transform/commit/30150b10e23ec122077d7de829465884c5961311))
+
+
+### Dependency update
+
+* Update plugins ([a7f0f6b](https://github.com/diplodoc-platform/transform/commit/a7f0f6bcf15f95f3eb8a0b8cb338a926b15eabb8))
+
 ## [4.46.0](https://github.com/diplodoc-platform/transform/compare/v4.45.5...v4.46.0) (2025-02-11)
 
 
