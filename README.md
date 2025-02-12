@@ -116,6 +116,7 @@ MIT
 - `--yfm-color-note-warning`
 - `--yfm-color-note-warning-background`
 - `--yfm-color-note-important-background`
+- `--yfm-color-note-info`
 - `--yfm-color-note-info-background`
 
 **term**
