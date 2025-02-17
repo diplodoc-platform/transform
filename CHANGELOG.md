@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.47.1](https://github.com/diplodoc-platform/transform/compare/v4.47.0...v4.47.1) (2025-02-17)
+
+
+### Bug Fixes
+
+* use deflist plugin in img-plugin's collect ([40c8b86](https://github.com/diplodoc-platform/transform/commit/40c8b86113895872cdca0dad1f4d5bd17ef04dfa))
+
 ## [4.47.0](https://github.com/diplodoc-platform/transform/compare/v4.46.0...v4.47.0) (2025-02-12)
 
 
