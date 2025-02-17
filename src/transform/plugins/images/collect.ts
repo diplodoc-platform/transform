@@ -3,6 +3,7 @@ import {relative} from 'path';
 
 import {isLocalUrl} from '../../utils';
 import {resolveRelativePath} from '../../utilsFS';
+import deflist from '../deflist';
 import imsize from '../imsize';
 import {MarkdownItPluginOpts} from '../typings';
 
@@ -13,7 +14,7 @@ type Options = MarkdownItPluginOpts & {
 };
 
 const collect = (input: string, options: Options) => {
-    const md = new MarkdownIt().use(imsize);
+    const md = new MarkdownIt().use(imsize).use(deflist);
 
     const {root, path, destPath = '', copyFile, singlePage} = options;
     const tokens = md.parse(input, {});
