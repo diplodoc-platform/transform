@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.47.3](https://github.com/diplodoc-platform/transform/compare/v4.47.2...v4.47.3) (2025-02-19)
+
+
+### Bug Fixes
+
+* hide iframes in print mode ([2a3c19a](https://github.com/diplodoc-platform/transform/commit/2a3c19a775c4d49ec169e167a119274592dd8cb3))
+
 ## [4.47.2](https://github.com/diplodoc-platform/transform/compare/v4.47.1...v4.47.2) (2025-02-19)
 
 
