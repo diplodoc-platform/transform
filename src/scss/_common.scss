@@ -319,7 +319,7 @@
         content: counter(list) '. ';
     }
 
-    ol.yfm_no-list-reset {
+    &.yfm_no-list-reset ol {
         counter-reset: unset;
 
         // No direct ancestor (>) combinator to preserve legacy behavior
