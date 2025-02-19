@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.47.2](https://github.com/diplodoc-platform/transform/compare/v4.47.1...v4.47.2) (2025-02-19)
+
+
+### Bug Fixes
+
+* restore correct behavior of `yfm_no-list-reset` modifier ([8ebe6fd](https://github.com/diplodoc-platform/transform/commit/8ebe6fd016c3fd5d4a03e7bed23a72d0ce826d3a))
+
 ## [4.47.1](https://github.com/diplodoc-platform/transform/compare/v4.47.0...v4.47.1) (2025-02-17)
 
 
