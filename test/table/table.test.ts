@@ -7,6 +7,7 @@ const transformYfm = (text: string) => {
         result: {html},
     } = transform(text, {
         plugins: [table],
+        enableMarkdownAttrs: false,
     });
     return html;
 };
@@ -1312,6 +1313,7 @@ const transformWithIncludes = (text: string) => {
     } = transform(text, {
         plugins: [table, includes],
         path: mocksPath,
+        enableMarkdownAttrs: false,
     });
     return html;
 };

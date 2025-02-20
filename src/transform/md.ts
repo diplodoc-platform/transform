@@ -95,10 +95,15 @@ function initPlugins(md: MarkdownIt, options: OptionsType, pluginOptions: Markdo
         leftDelimiter = '{',
         rightDelimiter = '}',
         plugins = DefaultPlugins,
+        enableMarkdownAttrs,
     } = options;
 
-    // Need for ids of headers
-    md.use(attrs, {leftDelimiter, rightDelimiter});
+    // TODO: set enableMarkdownAttrs to false by default in next major
+    if (enableMarkdownAttrs !== false) {
+        // Need for ids of headers
+        md.use(attrs, {leftDelimiter, rightDelimiter});
+    }
+
     md.use(olAttrConversion);
 
     plugins.forEach((plugin) => md.use(plugin, pluginOptions));

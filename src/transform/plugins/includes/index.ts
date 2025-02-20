@@ -76,6 +76,7 @@ function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, 
                 let includedTokens;
                 if (hash) {
                     // TODO: add warning about missed block
+                    // TODO: findBlockTokens requires markdown-it-attrs plugin for find block with id=hash
                     includedTokens = findBlockTokens(fileTokens, hash);
                 } else {
                     includedTokens = fileTokens;
