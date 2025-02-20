@@ -161,10 +161,13 @@ const ckecks = [
     ['PHP', `<? echo('<SCR)';\necho('IPT>alert("XSS")</SCRIPT>'); ?>`],
 ];
 
-describe('', () => {
+describe.each([
+    ['enabled', true],
+    ['disabled', false],
+])('XSS checks with %s markdown-it-attrs', (_0, enableMarkdownAttrs) => {
     ckecks.forEach(([name, input]) => {
         it(name, () => {
-            expect(html(input)).toMatchSnapshot();
+            expect(html(input, {enableMarkdownAttrs})).toMatchSnapshot();
         });
     });
 });
