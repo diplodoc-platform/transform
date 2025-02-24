@@ -13,6 +13,13 @@
     }
 }
 
+$text-block-margin: 0 0 15px;
+$list-item-margin-top: 0.33em;
+$list-item-text-margin-top: 15px;
+$list-item-text-margin-bottom: 0;
+$list-item-last-text-margin-top: 15px;
+$list-item-last-text-margin-bottom: 0;
+
 .yfm {
     @include private-brand();
     @include brand();
@@ -135,7 +142,7 @@
     dl,
     table,
     pre {
-        margin: 0 0 15px;
+        margin: var(--yfm-text-block-margin, #{$text-block-margin});
     }
 
     ul,
@@ -333,12 +340,22 @@
     }
 
     li + li {
-        margin-top: 0.33em;
+        margin-top: var(--yfm-list-item-margin-top, #{$list-item-margin-top});
     }
 
     li p,
     li blockquote {
-        margin-top: 15px;
+        margin-top: var(--yfm-list-item-text-margin-top, #{$list-item-text-margin-top});
+        margin-bottom: var(--yfm-list-item-text-margin-bottom, #{$list-item-text-margin-bottom});
+    }
+
+    li > p:last-child,
+    li > blockquote:last-child {
+        margin-top: var(--yfm-list-item-last-text-margin-top, #{$list-item-last-text-margin-top});
+        margin-bottom: var(
+            --yfm-list-item-last-text-margin-bottom,
+            #{$list-item-last-text-margin-bottom}
+        );
     }
 
     code {
