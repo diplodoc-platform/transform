@@ -14,11 +14,9 @@
 }
 
 $text-block-margin: 0 0 15px;
-$list-item-margin-top: 0.33em;
-$list-item-text-margin-top: 15px;
-$list-item-text-margin-bottom: 0;
-$list-item-last-text-margin-top: 15px;
-$list-item-last-text-margin-bottom: 0;
+$list-margin: 0.33em 0 0 0;
+$list-text-margin: 15px 0 0 0;
+$list-last-text-margin: 15px 0 0 0;
 
 .yfm {
     @include private-brand();
@@ -340,22 +338,17 @@ $list-item-last-text-margin-bottom: 0;
     }
 
     li + li {
-        margin-top: var(--yfm-list-item-margin-top, #{$list-item-margin-top});
+        margin: var(--yfm-list-margin, #{$list-margin});
     }
 
     li p,
     li blockquote {
-        margin-top: var(--yfm-list-item-text-margin-top, #{$list-item-text-margin-top});
-        margin-bottom: var(--yfm-list-item-text-margin-bottom, #{$list-item-text-margin-bottom});
+        margin: var(--yfm-list-text-margin, #{$list-text-margin});
     }
 
     li > p:last-child,
     li > blockquote:last-child {
-        margin-top: var(--yfm-list-item-last-text-margin-top, #{$list-item-last-text-margin-top});
-        margin-bottom: var(
-            --yfm-list-item-last-text-margin-bottom,
-            #{$list-item-last-text-margin-bottom}
-        );
+        margin: var(--yfm-list-last-text-margin, #{$list-last-text-margin});
     }
 
     code {
