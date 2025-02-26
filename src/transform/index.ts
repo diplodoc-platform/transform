@@ -1,4 +1,4 @@
-import type {EnvType, OptionsType, OutputType, RootCollectorOptions} from './typings';
+import type {EnvType, OptionsType, OutputType} from './typings';
 
 import {bold} from 'chalk';
 
@@ -35,8 +35,6 @@ function emitResult(html: string, env: EnvType): OutputType {
 
 type TransformFunction = {
     (originInput: string, options?: OptionsType): OutputType;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    collect: (input: string, options: RootCollectorOptions<any>) => string;
 };
 
 // eslint-disable-next-line consistent-return
@@ -48,35 +46,6 @@ const transform: TransformFunction = (originInput: string, options: OptionsType 
         return emitResult(compile(parse(input)), env);
     } catch (error) {
         handleError(error, options.path);
-    }
-};
-
-transform.collect = (
-    input: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    {mdItInitOptions, pluginCollectOptions, parserPluginsOverride}: RootCollectorOptions<any>,
-) => {
-    const maybeLiquidedInput = applyLiquid(input, mdItInitOptions);
-    const {parse} = initMarkdownIt({
-        ...mdItInitOptions,
-        plugins: parserPluginsOverride ?? mdItInitOptions.plugins,
-    });
-
-    const plugins = mdItInitOptions.plugins ?? [];
-
-    try {
-        const tokenStream = parse(maybeLiquidedInput);
-
-        return plugins.reduce((collected, plugin) => {
-            const collectOutput = plugin.collect?.(collected, {
-                ...pluginCollectOptions,
-                tokenStream,
-            });
-
-            return collectOutput ?? collected;
-        }, maybeLiquidedInput);
-    } catch (error) {
-        handleError(error, mdItInitOptions.path);
     }
 };
 

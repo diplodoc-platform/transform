@@ -111,13 +111,6 @@ export type ExtendedPluginWithCollect<
     ) => string | void;
 };
 
-export type RootCollectorOptions<PluginCollectOptions> = {
-    mdItInitOptions: OptionsType;
-    pluginCollectOptions: PluginCollectOptions;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    parserPluginsOverride?: ExtendedPluginWithCollect<any, any>[];
-};
-
 export type MarkdownItPreprocessorCb<T extends unknown = {}> = {
     (input: string, opts: T & Partial<MarkdownItPluginOpts>, md?: MarkdownIt): string;
 };
