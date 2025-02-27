@@ -88,6 +88,7 @@ MIT
 - `--yfm-color-border`
 - `--yfm-color-accent`
 - `--yfm-tab-size`
+- `--yfm-text-block-margin-block`
 
 **code**
 
@@ -138,3 +139,9 @@ MIT
 
 - `--yfm-file-icon`
 - `--yfm-file-icon-color`
+
+**list**
+
+- `--yfm-list-item-margin-block`
+- `--yfm-list-text-margin-block`
+- `--yfm-list-text-last-margin-block`

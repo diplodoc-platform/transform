@@ -13,11 +13,6 @@
     }
 }
 
-$text-block-margin: 0 0 15px;
-$list-margin: 0.33em 0 0 0;
-$list-text-margin: 15px 0 0 0;
-$list-last-text-margin: 15px 0 0 0;
-
 .yfm {
     @include private-brand();
     @include brand();
@@ -140,7 +135,7 @@ $list-last-text-margin: 15px 0 0 0;
     dl,
     table,
     pre {
-        margin: var(--yfm-text-block-margin, #{$text-block-margin});
+        margin-block: var(--yfm-text-block-margin-block, 0 15px);
     }
 
     ul,
@@ -338,17 +333,17 @@ $list-last-text-margin: 15px 0 0 0;
     }
 
     li + li {
-        margin: var(--yfm-list-margin, #{$list-margin});
+        margin-block: var(--yfm-list-item-margin-block, 0.33em 0);
     }
 
     li p,
     li blockquote {
-        margin: var(--yfm-list-text-margin, #{$list-text-margin});
+        margin-block: var(--yfm-list-text-margin-block, 15px);
     }
 
     li > p:last-child,
     li > blockquote:last-child {
-        margin: var(--yfm-list-last-text-margin, #{$list-last-text-margin});
+        margin-block: var(--yfm-list-text-last-margin-block, 15px);
     }
 
     code {
