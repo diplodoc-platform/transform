@@ -602,7 +602,7 @@ function sanitizeStyles(html: string, options: SanitizeOptions) {
     return styles + content;
 }
 
-export default function sanitize(
+export function sanitize(
     html: string,
     options?: SanitizeOptions,
     additionalOptions?: SanitizeOptions,
@@ -622,3 +622,5 @@ export default function sanitize(
 
     return sanitizeHtml(modifiedHtml, sanitizeOptions);
 }
+
+export default sanitize;
