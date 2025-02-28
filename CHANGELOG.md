@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.47.4](https://github.com/diplodoc-platform/transform/compare/v4.47.3...v4.47.4) (2025-02-28)
+
+
+### Bug Fixes
+
+* added export for sanitize ([#650](https://github.com/diplodoc-platform/transform/issues/650)) ([f811b51](https://github.com/diplodoc-platform/transform/commit/f811b51fd30b3622910a68abe2e6f9e28e44fd9f))
+
 ## [4.47.3](https://github.com/diplodoc-platform/transform/compare/v4.47.2...v4.47.3) (2025-02-19)
 
 
