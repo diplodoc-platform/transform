@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.48.0](https://github.com/diplodoc-platform/transform/compare/v4.47.4...v4.48.0) (2025-03-03)
+
+
+### Features
+
+* **styles:** added flexible customization of indents in lists ([#648](https://github.com/diplodoc-platform/transform/issues/648)) ([dd4d488](https://github.com/diplodoc-platform/transform/commit/dd4d4881f186866a89aeca72a3eac9b6e9c83a98))
+
 ## [4.47.4](https://github.com/diplodoc-platform/transform/compare/v4.47.3...v4.47.4) (2025-02-28)
 
 
