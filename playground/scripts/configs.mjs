@@ -24,7 +24,12 @@ const configuredSassPlugin = sassPlugin({
 
         const res = await postcss([
             autoprefixer({cascade: false}),
-            postcssPresetEnv({stage: 0}),
+            postcssPresetEnv({
+                stage: 0,
+                features: {
+                    'logical-properties-and-values': false,
+                },
+            }),
         ]).process(source, config);
 
         return res.css;
