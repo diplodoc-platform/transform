@@ -28,7 +28,6 @@ const configuredSassPlugin = sassPlugin({
                 stage: 0,
                 features: {
                     'logical-properties-and-values': false,
-                    'custom-properties': false,
                 },
             }),
         ]).process(source, config);

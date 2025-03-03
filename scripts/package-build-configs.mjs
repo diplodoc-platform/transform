@@ -35,7 +35,6 @@ const plugins = [
                     stage: 0,
                     features: {
                         'logical-properties-and-values': false,
-                        'custom-properties': false,
                     },
                 }),
             ]).process(source, {from: undefined});
