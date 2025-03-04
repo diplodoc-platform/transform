@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.48.1](https://github.com/diplodoc-platform/transform/compare/v4.48.0...v4.48.1) (2025-03-04)
+
+
+### Bug Fixes
+
+* Fix empty notes parsing ([e6caa7d](https://github.com/diplodoc-platform/transform/commit/e6caa7dc0c6283cf8fe5b5f386a91e53e367f542))
+
 ## [4.48.0](https://github.com/diplodoc-platform/transform/compare/v4.47.4...v4.48.0) (2025-03-03)
 
 
