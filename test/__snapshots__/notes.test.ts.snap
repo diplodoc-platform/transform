@@ -1,5 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Alerts should render empty note 1`] = `
+<div class="yfm-note yfm-accent-info"
+     note-type="info"
+>
+  <div class="yfm-note-content">
+  </div>
+</div>
+`;
+
 exports[`Alerts should render nested notes 1`] = `
 <div class="yfm-note yfm-accent-info"
      note-type="info"

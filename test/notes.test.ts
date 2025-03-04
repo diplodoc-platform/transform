@@ -190,4 +190,14 @@ describe('Alerts', () => {
             `),
         ).toMatchSnapshot();
     });
+
+    test('should render empty note', () => {
+        expect(
+            html(dedent`
+                {% note info "" %}
+
+                {% endnote %}
+            `),
+        ).toMatchSnapshot();
+    });
 });
