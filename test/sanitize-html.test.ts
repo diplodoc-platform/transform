@@ -6,6 +6,7 @@ const html = (text: string, options?: Parameters<typeof transform>[1]) => {
         result: {html},
     } = transform(text, {
         allowHTML: true,
+        enableMarkdownAttrs: false,
         ...options,
     });
     return html;
@@ -39,17 +40,24 @@ describe('Sanitize HTML utility', () => {
 
         describe('plugin markdown-it-attrs', () => {
             it('should sanitize danger attributes', () => {
-                expect(html('Click {onfocus="alert(1)" onclick="alert(1)"}')).toMatchSnapshot();
+                expect(
+                    html('Click {onfocus="alert(1)" onclick="alert(1)"}', {
+                        enableMarkdownAttrs: true,
+                    }),
+                ).toMatchSnapshot();
             });
 
             it('should not sanitize safe attributes', () => {
-                expect(html('Click {.style-me data-toggle=modal}')).toMatchSnapshot();
+                expect(
+                    html('Click {.style-me data-toggle=modal}', {enableMarkdownAttrs: true}),
+                ).toMatchSnapshot();
             });
 
             it('should sanitize danger style attributes', () => {
                 expect(
                     html(
                         '[example.com](https://example.com){style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: red; opacity: 0.5"}',
+                        {enableMarkdownAttrs: true},
                     ),
                 ).toMatchSnapshot();
             });
@@ -82,7 +90,7 @@ describe('Sanitize HTML utility', () => {
                 expect(
                     html(
                         '[example.com](https://example.com){style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: red; opacity: 0.5"}',
-                        {sanitizeOptions},
+                        {sanitizeOptions, enableMarkdownAttrs: true},
                     ),
                 ).toMatchSnapshot();
             });
