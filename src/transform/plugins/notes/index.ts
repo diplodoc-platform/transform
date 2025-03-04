@@ -58,7 +58,9 @@ const index: MarkdownItPluginCb = (md, {lang, notesAutotitle, path: optPath, log
             const match = matchOpenToken(tokens, i);
 
             if (match) {
-                const closeTokenIdx = findCloseTokenIdx(tokens, i + 4, path, log);
+                // Skip paragraph_close for open token (+1) and paragraph_open for close token (+1)
+                // This is minimal useless content length
+                const closeTokenIdx = findCloseTokenIdx(tokens, i + 2, path, log);
 
                 if (!closeTokenIdx) {
                     i += 3;
