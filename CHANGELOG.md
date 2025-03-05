@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.48.3](https://github.com/diplodoc-platform/transform/compare/v4.48.2...v4.48.3) (2025-03-05)
+
+
+### Bug Fixes
+
+* Fix terms escape in code ([d8caa61](https://github.com/diplodoc-platform/transform/commit/d8caa6181010b006a118213bb98023496439e3a5))
+
 ## [4.48.2](https://github.com/diplodoc-platform/transform/compare/v4.48.1...v4.48.2) (2025-03-05)
 
 
