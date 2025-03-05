@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.48.2](https://github.com/diplodoc-platform/transform/compare/v4.48.1...v4.48.2) (2025-03-05)
+
+
+### Bug Fixes
+
+* remedy an issue where list markers would not get properly styled in some scenarios ([a3ff359](https://github.com/diplodoc-platform/transform/commit/a3ff35902962162eb44ea519d12e18d062dd470b))
+
 ## [4.48.1](https://github.com/diplodoc-platform/transform/compare/v4.48.0...v4.48.1) (2025-03-04)
 
 
