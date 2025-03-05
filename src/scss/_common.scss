@@ -302,28 +302,20 @@
         margin-bottom: 0;
     }
 
-    ol {
-        counter-reset: list;
+    ol > li {
+        &::marker {
+            content: counter(list-item) '. ';
+        }
 
-        & > li {
-            position: relative;
-            counter-increment: list;
+        & > ol > li::marker {
+            content: counters(list-item, '.') '. ';
         }
     }
 
-    ol > li > ol > li::marker {
-        content: counters(list, '.') '. ';
-    }
-
-    :not(ol > li) > ol > li::marker {
-        content: counter(list) '. ';
-    }
-
-    &.yfm_no-list-reset ol {
-        counter-reset: unset;
-
+    &.yfm_no-list-reset ol,
+    ol.yfm_no-list-reset {
         // No direct ancestor (>) combinator to preserve legacy behavior
-        & li::marker {
+        & > li::marker {
             content: unset;
         }
     }
