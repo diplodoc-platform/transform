@@ -59,4 +59,12 @@ describe('Terms', () => {
 
         expect(clearRandomId(result)).toMatchSnapshot();
     });
+
+    test('Term should use escape regexp like chars', () => {
+        const inputPath = resolve(__dirname, './mocks/term/rxlike-term.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(clearRandomId(result)).toMatchSnapshot();
+    });
 });

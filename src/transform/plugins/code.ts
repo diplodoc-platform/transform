@@ -51,9 +51,10 @@ interface EnvTerm {
     };
 }
 
-function termReplace(str: string, env: EnvTerm): string {
+function termReplace(str: string, env: EnvTerm, escape: (str: string) => string): string {
     const regTerms = Object.keys(env.terms)
         .map((el) => el.substr(1))
+        .map(escape)
         .join('|');
     const regText = '\\[([^\\[]+)\\](\\(\\*(' + regTerms + ')\\))';
     const reg = new RegExp(regText, 'g');
@@ -72,7 +73,7 @@ const code: MarkdownItPluginCb = (md) => {
     md.renderer.rules.fence = function (tokens, idx, options, env, self) {
         const superCode = superCodeRenderer?.(tokens, idx, options, env, self);
         const superCodeWithTerms =
-            superCode && env?.terms ? termReplace(superCode, env) : superCode;
+            superCode && env?.terms ? termReplace(superCode, env, md.utils.escapeRE) : superCode;
 
         return wrapInClipboard(superCodeWithTerms, idx);
     };
