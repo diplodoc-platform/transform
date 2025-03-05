@@ -32,32 +32,48 @@
     // @todo replace with variables
 
     $colors: (
-        yfm-accent-info: #027bf3,
-        yfm-accent-tip: #56bd67,
-        yfm-accent-warning: #f19518,
-        yfm-accent-alert: #ff4645,
+        yfm-accent-info: --yfm-color-note-info,
+        yfm-accent-tip: --yfm-color-note-tip,
+        yfm-accent-warning: --yfm-color-note-warning,
+        yfm-accent-alert: --yfm-color-note-important,
     );
 
     @each $type, $color in $colors {
         &.#{$type} > :first-child::before {
-            $r: red($color);
-            $g: green($color);
-            $b: blue($color);
-            $rgbColor: 'rgb(' + $r + ',' + $g + ',' + $b + ')';
-            content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8" fill="' + $rgbColor + '"/%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E');
+            content: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Crect width="1" height="5" x="7.5" y="6.5" stroke="%23fff" rx=".5"/%3E%3Ccircle cx="8" cy="4" r="1" fill="%23fff"/%3E%3C/svg%3E');
+            mask: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="8"/%3E%3C/svg%3E');
+            mask-repeat: no-repeat;
+            background-color: var($color);
         }
     }
 
-    $backgroundColors: (
-        yfm-accent-info: var(--yfm-color-note-info-background),
-        yfm-accent-tip: var(--yfm-color-note-tip-background),
-        yfm-accent-alert: var(--yfm-color-note-important-background),
-        yfm-accent-warning: var(--yfm-color-note-warning-background),
+    $accents: (
+        info: (
+            background: var(--yfm-color-note-info-background),
+            border-color: var(--yfm-color-note-info-border),
+            border-thickness: var(--yfm-note-info-border-thickness),
+        ),
+        tip: (
+            background: var(--yfm-color-note-tip-background),
+            border-color: var(--yfm-color-note-tip-border),
+            border-thickness: var(--yfm-note-tip-border-thickness),
+        ),
+        alert: (
+            background: var(--yfm-color-note-important-background),
+            border-color: var(--yfm-color-note-important-border),
+            border-thickness: var(--yfm-note-important-border-thickness),
+        ),
+        warning: (
+            background: var(--yfm-color-note-warning-background),
+            border-color: var(--yfm-color-note-warning-border),
+            border-thickness: var(--yfm-note-warning-border-thickness),
+        ),
     );
 
-    @each $type, $color in $backgroundColors {
-        &.#{$type} {
-            background: $color;
+    @each $type, $params in $accents {
+        &.yfm-accent-#{$type} {
+            background: map-get($params, background);
+            border: map-get($params, border-thickness) solid map-get($params, border-color);
         }
     }
 }
