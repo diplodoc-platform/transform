@@ -89,6 +89,7 @@ MIT
 - `--yfm-color-accent`
 - `--yfm-tab-size`
 - `--yfm-text-block-margin-block`
+- `--yfm-text-block-margin-inline`
 
 **code**
 
