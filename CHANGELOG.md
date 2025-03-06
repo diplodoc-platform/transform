@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.48.4](https://github.com/diplodoc-platform/transform/compare/v4.48.3...v4.48.4) (2025-03-06)
+
+
+### Bug Fixes
+
+* **styles:** fixed inline margins in text blocks ([#661](https://github.com/diplodoc-platform/transform/issues/661)) ([0acf6bb](https://github.com/diplodoc-platform/transform/commit/0acf6bbfe442cbad259cd2cb351d10234b897cda))
+
 ## [4.48.3](https://github.com/diplodoc-platform/transform/compare/v4.48.2...v4.48.3) (2025-03-05)
 
 
