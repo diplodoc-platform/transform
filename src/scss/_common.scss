@@ -136,6 +136,7 @@
     table,
     pre {
         margin-block: var(--yfm-text-block-margin-block, 0 15px);
+        margin-inline: var(--yfm-text-block-margin-inline, 0);
     }
 
     ul,
