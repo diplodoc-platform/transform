@@ -4,13 +4,18 @@
     --yfm-color-link-hover-private: #004080;
     --yfm-color-base-private: #ffffff;
     --yfm-color-table-private: #333;
-    --yfm-color-border-private: rgba(0, 0, 0, 0.07);
+    --yfm-color-table-background-private: rgb(255, 255, 255);
     --yfm-color-table-row-background-private: rgba(0, 0, 0, 0.02);
+    --yfm-color-table-outer-border-private: rgba(0, 0, 0, 0.1);
+    --yfm-color-table-inner-border-private: rgba(0, 0, 0, 0.07);
+
+    --yfm-color-border-private: rgba(0, 0, 0, 0.07);
     --yfm-color-accent-private: #027bf3;
 
     --yfm-color-inline-code-private: rgba(59, 96, 128, 1);
     --yfm-color-inline-code-background-private: rgba(107, 132, 153, 0.12);
     --yfm-color-code-background-private: rgba(107, 132, 153, 0.12);
+    --yfm-color-code-private: #444;
 
     --yfm-color-hljs-background-private: rgba(107, 132, 153, 0.12);
     --yfm-color-hljs-subst-private: #444;
@@ -25,12 +30,20 @@
 
     --yfm-color-note-tip-private: #56bd67;
     --yfm-color-note-tip-background-private: rgba(63, 201, 46, 0.1);
+    --yfm-color-note-tip-border-private: #56bd67;
+    --yfm-note-info-border-thickness-private: 0px;
     --yfm-color-note-warning-private: #f19518;
     --yfm-color-note-warning-background-private: rgba(255, 136, 0, 0.15);
+    --yfm-color-note-warning-border-private: #f19518;
+    --yfm-note-warning-border-thickness-private: 0px;
     --yfm-color-note-important-private: #ff4645;
     --yfm-color-note-important-background-private: rgba(235, 50, 38, 0.08);
+    --yfm-color-note-important-border-private: #ff4645;
+    --yfm-note-important-border-thickness-private: 0px;
     --yfm-color-note-info-private: #027bf3;
     --yfm-color-note-info-background-private: rgba(2, 123, 243, 0.08);
+    --yfm-color-note-info-border-private: #027bf3;
+    --yfm-note-info-border-thickness-private: 0px;
 
     --yfm-color-term-title-private: #027bf3;
     --yfm-color-term-title-hover-private: #004080;
@@ -42,4 +55,10 @@
     --yfm-color-modal-actions-hover-private: rgba(0, 0, 0, 0.05);
     --yfm-color-modal-wide-content-private: rgba(0, 0, 0, 0.85);
     --yfm-color-modal-wide-content-overlay-private: rgb(0, 0, 0);
+
+    --yfm-color-quote-private: rgb(82, 130, 255);
+    --yfm-color-tab-private: rgb(82, 130, 255);
+    --yfm-color-tab-hover-private: rgb(63, 87, 153);
+    --yfm-color-popup-background-private: rgb(255, 255, 255);
+    --yfm-color-popup-border-private: rgb(229, 229, 229);
 }
