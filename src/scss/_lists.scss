@@ -1,0 +1,71 @@
+@use 'sass:list';
+@use 'sass:string';
+
+@function get-counter-ident($depth) {
+    $ident: hier-list-item;
+
+    @for $i from 0 to $depth {
+        $ident: sub-#{$ident};
+    }
+
+    @return $ident;
+}
+
+@function get-selector($depth) {
+    $selector: ol;
+
+    @for $i from 0 to $depth {
+        $selector: '#{$selector} > li > ol';
+    }
+
+    @return $selector;
+}
+
+@function get-marker-content($idents) {
+    $length: list.length($idents);
+    $content: '';
+
+    @for $i from 1 through $length {
+        @if $i > 1 {
+            $content: '#{$content} "."';
+        }
+
+        $content: '#{$content} counter(#{list.nth($idents, $i)})';
+    }
+
+    @return #{$content} '. ';
+}
+
+@mixin hier-list($max-depth) {
+    $ident-path: ();
+
+    @for $i from 0 through $max-depth {
+        $ident: get-counter-ident($i);
+        $ident-path: list.append($ident-path, $ident);
+
+        & #{get-selector($i)} {
+            --hier-list-start: 0;
+            counter-reset: #{$ident} var(--hier-list-start);
+
+            & > li {
+                counter-increment: $ident;
+
+                &::marker {
+                    content: get-marker-content($ident-path);
+                }
+            }
+        }
+    }
+}
+
+.yfm {
+    @include hier-list(5);
+
+    &.yfm_no-list-reset ol,
+    ol.yfm_no-list-reset {
+        // No direct ancestor (>) combinator to preserve legacy behavior
+        & > li::marker {
+            content: unset;
+        }
+    }
+}
