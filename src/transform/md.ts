@@ -11,6 +11,7 @@ import makeHighlight from './highlight';
 import extractTitle from './title';
 import getHeadings from './headings';
 import sanitizeHtml from './sanitize';
+import {olAttrConversion} from './plugins/ol-attr-conversion';
 
 function initMarkdownIt(options: OptionsType) {
     const {
@@ -98,6 +99,7 @@ function initPlugins(md: MarkdownIt, options: OptionsType, pluginOptions: Markdo
 
     // Need for ids of headers
     md.use(attrs, {leftDelimiter, rightDelimiter});
+    md.use(olAttrConversion);
 
     plugins.forEach((plugin) => md.use(plugin, pluginOptions));
 

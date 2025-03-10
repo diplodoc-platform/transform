@@ -2,6 +2,7 @@
 
 @import 'private';
 @import 'brand';
+@import 'lists';
 
 @mixin removeMarginForEdgeChildren {
     & > *:first-child {
@@ -301,24 +302,6 @@
     ol ul {
         margin-top: 0;
         margin-bottom: 0;
-    }
-
-    ol > li {
-        &::marker {
-            content: counter(list-item) '. ';
-        }
-
-        & > ol > li::marker {
-            content: counters(list-item, '.') '. ';
-        }
-    }
-
-    &.yfm_no-list-reset ol,
-    ol.yfm_no-list-reset {
-        // No direct ancestor (>) combinator to preserve legacy behavior
-        & > li::marker {
-            content: unset;
-        }
     }
 
     li {
