@@ -16,4 +16,7 @@ export interface Options {
     lintConfig?: LintConfig;
     customLintRules?: Rule[];
     sourceMap?: Dictionary<string>;
+    // TODO: set false in next major
+    /** @default true */
+    enableMarkdownAttrs?: boolean;
 }

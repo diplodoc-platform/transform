@@ -8,7 +8,7 @@ import transform from '../src/transform';
 import {getPublicPath} from '../src/transform/utilsFS';
 
 const mocksPath = require.resolve('./mocks/link.md');
-const html = (text: string) => {
+const html = (text: string, opts?: transform.Options) => {
     const {
         result: {html},
     } = transform(text, {
@@ -16,6 +16,8 @@ const html = (text: string) => {
         path: mocksPath,
         root: dirname(mocksPath),
         getPublicPath,
+        enableMarkdownAttrs: false,
+        ...opts,
     });
     return html;
 };
@@ -101,13 +103,16 @@ describe('Anchors', () => {
 
     it('should include content by anchor in sharped path file', () => {
         expect(
-            html(dedent`
+            html(
+                dedent`
             Content before include
 
             {% include [file](./folder-with-#-sharp/file-with-#-sharp.md#anchor) %}
 
             After include
-        `),
+        `,
+                {enableMarkdownAttrs: true},
+            ), // TODO: includes requires markdown-it-attrs plugin for find block with id=hash
         ).toMatchSnapshot();
     });
 
@@ -152,6 +157,7 @@ describe('Anchors', () => {
                 path: mocksPath,
                 root: dirname(mocksPath),
                 extractTitle: true,
+                enableMarkdownAttrs: false,
             });
             return [html, title];
         };
@@ -177,6 +183,7 @@ describe('Anchors', () => {
                 root: dirname(mocksPath),
                 getPublicPath,
                 disableCommonAnchors: true,
+                enableMarkdownAttrs: false,
             });
 
             expect(html).toEqual('<h2 id="test-heading">Test heading</h2>\n');
@@ -191,6 +198,7 @@ describe('Anchors', () => {
                 root: dirname(mocksPath),
                 getPublicPath,
                 disableCommonAnchors: true,
+                enableMarkdownAttrs: false,
             });
 
             expect(html).toEqual('<h2 id="custom-id">Test heading</h2>\n');

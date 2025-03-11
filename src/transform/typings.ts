@@ -59,6 +59,13 @@ export interface OptionsType {
     getPublicPath?: (options: OptionsType, href?: string) => string;
     renderInline?: boolean;
     cache?: CacheContext;
+    // TODO: set false by default in next major
+    /**
+     * `markdown-it-attrs` plugin is enabled by default
+     *
+     * Set value to `false` to disable it
+     */
+    enableMarkdownAttrs?: boolean;
     [x: string]: unknown;
 }
 

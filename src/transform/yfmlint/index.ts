@@ -56,7 +56,9 @@ function yfmlint(opts: Options) {
         lintRules = union(lintRules, customLintRules);
     }
 
-    const plugins = customPlugins && [attrs, ...customPlugins];
+    // TODO: set to false in next major
+    const {enableMarkdownAttrs = true} = opts;
+    const plugins = customPlugins && [...(enableMarkdownAttrs ? [attrs] : []), ...customPlugins];
     const preparedPlugins = plugins && plugins.map((plugin) => [plugin, pluginOptions]);
 
     // Run preprocessor
