@@ -1,4 +1,5 @@
-import type {EnvType, OptionsType, OutputType, RootCollectorOptions} from './typings';
+import type Token from 'markdown-it/lib/token';
+import type {EnvType, OptionsType, OutputType} from './typings';
 
 import {bold} from 'chalk';
 
@@ -33,52 +34,25 @@ function emitResult(html: string, env: EnvType): OutputType {
     };
 }
 
-type TransformFunction = {
-    (originInput: string, options?: OptionsType): OutputType;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    collect: (input: string, options: RootCollectorOptions<any>) => string;
-};
+type TokensOptionsType = OptionsType & {tokens: true};
 
-// eslint-disable-next-line consistent-return
-const transform: TransformFunction = (originInput: string, options: OptionsType = {}) => {
+function transform(originInput: string, options: TokensOptionsType): Token[];
+function transform(originInput: string, options?: OptionsType): OutputType;
+function transform(originInput: string, options: OptionsType = {}): OutputType | Token[] {
     const input = applyLiquid(originInput, options);
     const {parse, compile, env} = initMarkdownIt(options);
 
     try {
-        return emitResult(compile(parse(input)), env);
+        const tokens = parse(input);
+        if (options.tokens === true) {
+            return tokens;
+        }
+
+        return emitResult(compile(tokens), env);
     } catch (error) {
         handleError(error, options.path);
     }
-};
-
-transform.collect = (
-    input: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    {mdItInitOptions, pluginCollectOptions, parserPluginsOverride}: RootCollectorOptions<any>,
-) => {
-    const maybeLiquidedInput = applyLiquid(input, mdItInitOptions);
-    const {parse} = initMarkdownIt({
-        ...mdItInitOptions,
-        plugins: parserPluginsOverride ?? mdItInitOptions.plugins,
-    });
-
-    const plugins = mdItInitOptions.plugins ?? [];
-
-    try {
-        const tokenStream = parse(maybeLiquidedInput);
-
-        return plugins.reduce((collected, plugin) => {
-            const collectOutput = plugin.collect?.(collected, {
-                ...pluginCollectOptions,
-                tokenStream,
-            });
-
-            return collectOutput ?? collected;
-        }, maybeLiquidedInput);
-    } catch (error) {
-        handleError(error, mdItInitOptions.path);
-    }
-};
+}
 
 export = transform;
 

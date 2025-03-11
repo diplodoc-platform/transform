@@ -30,6 +30,7 @@ export type Heading = {
 };
 
 export interface OptionsType {
+    tokens?: boolean;
     vars?: Record<string, string>;
     path?: string;
     extractTitle?: boolean;
@@ -109,13 +110,6 @@ export type ExtendedPluginWithCollect<
         input: string,
         options: PluginCollectOptions & IntrinsicCollectOptions,
     ) => string | void;
-};
-
-export type RootCollectorOptions<PluginCollectOptions> = {
-    mdItInitOptions: OptionsType;
-    pluginCollectOptions: PluginCollectOptions;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    parserPluginsOverride?: ExtendedPluginWithCollect<any, any>[];
 };
 
 export type MarkdownItPreprocessorCb<T extends unknown = {}> = {
