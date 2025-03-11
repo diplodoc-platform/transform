@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.49.0](https://github.com/diplodoc-platform/transform/compare/v4.48.4...v4.49.0) (2025-03-11)
+
+
+### Features
+
+* Add tokens transform param ([130d89e](https://github.com/diplodoc-platform/transform/commit/130d89e98718f04cc790227fb5ee4181b7208dd0))
+
 ## [4.48.4](https://github.com/diplodoc-platform/transform/compare/v4.48.3...v4.48.4) (2025-03-06)
 
 
