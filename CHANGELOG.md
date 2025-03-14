@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.50.0](https://github.com/diplodoc-platform/transform/compare/v4.49.0...v4.50.0) (2025-03-14)
+
+
+### Features
+
+* contain counters for lists ([cef4861](https://github.com/diplodoc-platform/transform/commit/cef4861cd7c42c4d98135151fc5992da14c41bad))
+
 ## [4.49.0](https://github.com/diplodoc-platform/transform/compare/v4.48.4...v4.49.0) (2025-03-11)
 
 
