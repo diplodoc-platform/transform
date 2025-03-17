@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.50.1](https://github.com/diplodoc-platform/transform/compare/v4.50.0...v4.50.1) (2025-03-17)
+
+
+### Bug Fixes
+
+* update tabs ([#668](https://github.com/diplodoc-platform/transform/issues/668)) ([7c4550c](https://github.com/diplodoc-platform/transform/commit/7c4550cb59cd1e67c0e2e55094ad66b38a10cf49))
+
 ## [4.50.0](https://github.com/diplodoc-platform/transform/compare/v4.49.0...v4.50.0) (2025-03-14)
 
 
