@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.50.2](https://github.com/diplodoc-platform/transform/compare/v4.50.1...v4.50.2) (2025-03-18)
+
+
+### Bug Fixes
+
+* remedy a case where link's href would get incorrectly patched multiple times ([cd688a1](https://github.com/diplodoc-platform/transform/commit/cd688a1a7b46cf81436f332e2877ab8d3913dd22))
+
 ## [4.50.1](https://github.com/diplodoc-platform/transform/compare/v4.50.0...v4.50.1) (2025-03-17)
 
 
