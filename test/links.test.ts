@@ -6,6 +6,7 @@ import {readFileSync} from 'fs';
 import transform from '../src/transform';
 import links from '../src/transform/plugins/links';
 import includes from '../src/transform/plugins/includes';
+import term from '../src/transform/plugins/term';
 import {getPublicPath} from '../src/transform/utilsFS';
 import {log} from '../src/transform/log';
 
@@ -23,7 +24,7 @@ const transformYfm = (
     const {
         result: {html},
     } = transform(text, {
-        plugins: [includes, links],
+        plugins: [includes, links, term],
         path: path || mocksPath,
         root: dirname(path || mocksPath),
         ...(hasDefaultPath ? {} : {getPublicPath}),
@@ -33,10 +34,10 @@ const transformYfm = (
 };
 
 const expectObject = (a: unknown, b: unknown) => {
-    expect(JSON.parse(JSON.stringify(a))).toEqual(JSON.parse(JSON.stringify(b)));
+    expect(JSON.parse(JSON.stringify(a))).toMatchObject(JSON.parse(JSON.stringify(b)));
 };
 
-describe('Links', () => {
+describe('Links plugin', () => {
     test('Should create link with custom title', () => {
         const result = callPlugin(
             links,
@@ -69,7 +70,7 @@ describe('Links', () => {
             },
         );
 
-        expect(result).toEqual(title);
+        expect(result).toMatchObject(title);
     });
 
     test('Should create link with title from target with include in the middle', () => {
@@ -193,16 +194,8 @@ describe('Links', () => {
             const inputPath = resolve(__dirname, './mocks/external-link.md');
             const input = readFileSync(inputPath, 'utf8');
 
-            let link = '';
+            const html = transformYfm(input, inputPath);
 
-            const html = transformYfm(input, inputPath, {
-                transformLink: (href: string) => {
-                    link = href;
-                    return href;
-                },
-            });
-
-            expect(link).not.toEqual('https://test.com/');
             expect(html).toEqual(
                 '<p><a href="https://test.com/" target="_blank" rel="noreferrer noopener">Absolute link</a></p>\n',
             );
@@ -212,24 +205,51 @@ describe('Links', () => {
             const inputPath = resolve(__dirname, './mocks/external-link.md');
             const input = readFileSync(inputPath, 'utf8');
 
-            let link = '';
+            const html = transformYfm(input, 'mocks/external-link.md', {}, true);
 
-            const html = transformYfm(
-                input,
-                'mocks/external-link.md',
-                {
-                    transformLink: (href: string) => {
-                        link = href;
-                        return href;
-                    },
-                },
-                true,
-            );
-
-            expect(link).not.toEqual('https://test.com/');
             expect(html).toEqual(
                 '<p><a href="https://test.com/" target="_blank" rel="noreferrer noopener">Absolute link</a></p>\n',
             );
         });
+    });
+
+    it('should not overpatch links in term definitions supplied via an include', () => {
+        const inputPath = resolve(__dirname, './mocks/links-complex/file-with-term.md');
+        const input = readFileSync(inputPath, 'utf8');
+
+        const html = transformYfm(
+            input,
+            require.resolve('./mocks/links-complex/file-with-term.md'),
+            {
+                transformLink: (href: string) => {
+                    const patched = href.replace('.md', '');
+
+                    return patched;
+                },
+            },
+            true,
+        );
+
+        expect(html).toEqual(expect.stringContaining(`<a href="../link">`));
+    });
+
+    it('should produce valid links when processing a chain of includes', () => {
+        const inputPath = resolve(__dirname, './mocks/links-complex/chain-of-includes.md');
+        const input = readFileSync(inputPath, 'utf8');
+
+        const html = transformYfm(
+            input,
+            require.resolve('./mocks/links-complex/chain-of-includes.md'),
+            {
+                transformLink: (href: string) => {
+                    const patched = href.replace('.md', '');
+
+                    return patched;
+                },
+            },
+            true,
+        );
+
+        expect(html).toEqual(expect.stringContaining(`<a href="../link">`));
     });
 });
