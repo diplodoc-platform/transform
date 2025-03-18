@@ -144,19 +144,19 @@ function processLink(
     const linkToken = tokens[idx];
     const nextToken = tokens[idx + 1];
 
-    let href = getHrefTokenAttr(linkToken);
+    const originalHref = getHrefTokenAttr(linkToken);
 
-    if (!href) {
+    if (!originalHref) {
         log.error(`Empty link in ${bold(startPath)}`);
         return;
     }
 
-    const {pathname, hash} = url.parse(href);
+    const {pathname, hash} = url.parse(originalHref);
     let file;
     let fileExists;
     let isPageFile;
 
-    if (!isLocalUrl(href)) {
+    if (!isLocalUrl(originalHref)) {
         linkToken.attrSet('target', '_blank');
         linkToken.attrSet('rel', 'noreferrer noopener');
         return;
@@ -170,7 +170,7 @@ function processLink(
         if (isPageFile && !fileExists) {
             let needShowError = true;
             if (needSkipLinkFn) {
-                needShowError = !needSkipLinkFn(href);
+                needShowError = !needSkipLinkFn(originalHref);
             }
 
             if (notFoundCb && needShowError) {
@@ -178,7 +178,7 @@ function processLink(
             }
 
             if (needShowError) {
-                log.error(`Link is unreachable: ${bold(href)} in ${bold(currentPath)}`);
+                log.error(`Link is unreachable: ${bold(originalHref)} in ${bold(currentPath)}`);
             }
         }
     } else if (hash) {
@@ -206,28 +206,23 @@ function processLink(
             tokens,
             idx,
             nextToken,
-            href,
+            href: originalHref,
             currentPath,
             log,
             cache,
         });
     }
 
-    let newPathname = '';
+    const patchedHref =
+        !isAbsolute(originalHref) && !originalHref.includes('//')
+            ? url.format({
+                  ...url.parse(originalHref),
+                  pathname: getPublicPath(opts, file),
+              })
+            : originalHref;
+    const linkHrefTransformer = transformLink || defaultTransformLink;
 
-    if (!isAbsolute(href) && !href.includes('//')) {
-        newPathname = getPublicPath(opts, file);
-
-        href = url.format({
-            ...url.parse(href),
-            pathname: newPathname,
-        });
-    }
-
-    if (pathname || newPathname) {
-        const transformer = transformLink || defaultTransformLink;
-        linkToken.attrSet('href', transformer(href));
-    }
+    linkToken.attrSet('href', linkHrefTransformer(patchedHref));
 }
 
 const index: MarkdownItPluginCb<ProcOpts & Options> = (md: MarkdownItIncluded, opts) => {
@@ -241,14 +236,20 @@ const index: MarkdownItPluginCb<ProcOpts & Options> = (md: MarkdownItIncluded, o
                 let j = 0;
 
                 while (j < childrenTokens.length) {
-                    const isLinkOpenToken = childrenTokens[j].type === 'link_open';
-                    const tokenClass = childrenTokens[j].attrGet('class');
+                    const token = childrenTokens[j];
+
+                    const isLinkOpenToken = token.type === 'link_open';
+                    const tokenClass = token.attrGet('class');
 
                     /*  Don't process anchor links */
                     const isYfmAnchor = tokenClass ? tokenClass.includes('yfm-anchor') : false;
+                    const wasProcessedBefore = Boolean(token.meta?.yfmLinkPluginProcessed);
 
-                    if (isLinkOpenToken && !isYfmAnchor) {
+                    if (isLinkOpenToken && !wasProcessedBefore && !isYfmAnchor) {
                         processLink(md, state, childrenTokens, j, opts);
+
+                        token.meta ??= {};
+                        token.meta.yfmLinkPluginProcessed = true;
                     }
 
                     j++;
