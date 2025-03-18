@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.50.3](https://github.com/diplodoc-platform/transform/compare/v4.50.2...v4.50.3) (2025-03-18)
+
+
+### Bug Fixes
+
+* **styles:** added max-height for img and svg ([#672](https://github.com/diplodoc-platform/transform/issues/672)) ([32679a9](https://github.com/diplodoc-platform/transform/commit/32679a9fb493f3d715be53544a33105658deacfa))
+
 ## [4.50.2](https://github.com/diplodoc-platform/transform/compare/v4.50.1...v4.50.2) (2025-03-18)
 
 
