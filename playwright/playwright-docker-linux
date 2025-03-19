@@ -1,0 +1,29 @@
+#!/bin/sh
+
+set -e
+
+if ! grep -q @diplodoc/transform $(pwd)/package.json 2>/dev/null || false; then
+    >&2 echo "fatal: Current working directory is not the package root. Aborting."
+
+    exit 1
+fi
+
+if [ -z "$(which docker)" ]; then
+    >&2 echo "fatal: Docker CLI is not installed."
+    >&2 echo
+    >&2 echo "Running Playwright tests in a reproducible Linux environment requires a Docker engine and Docker CLI."
+    >&2 echo "Consult README.md for more information."
+
+    exit 1
+fi
+
+if [ -n "$(which limactl)" ]; then
+    _LIMA_INSTANCE="${LIMA_INSTANCE:-docker}" 
+
+    echo "info: Lima (limactl) is installed. Ensuring a \`$_LIMA_INSTANCE\` instance."
+
+    limactl start $_LIMA_INSTANCE --log-level=error
+    export DOCKER_HOST=$(limactl list $_LIMA_INSTANCE --format 'unix://{{.Dir}}/sock/docker.sock')
+fi
+
+docker run --rm -it --ipc=host -v $(pwd):/var/pkg:rw -w /var/pkg mcr.microsoft.com/playwright:v1.51.1-noble /var/pkg/playwright/run $@

@@ -165,3 +165,64 @@ MIT
 - `--yfm-list-text-margin-block`
 - `--yfm-list-text-only-margin-block`
 
+## Contributing
+
+### Tests
+
+This package features unit tests run by Jest and visual tests run by Playwright.
+
+#### Playwright: prerequisites
+
+To ensure maximum reproducibility and to avoid unwanted variance introduced by using different platforms
+between CI environments and contributors' dev environments, it is recommended to run Playwright tests locally using
+the `playwright:docker` package script, which sets up a testing environment in a Docker container.
+
+```sh
+$ npm run playwright:docker
+```
+
+This assumes you have Docker CLI and Docker Engine installed.
+
+##### macOS users: unable/unwilling to use Docker Desktop?
+
+Due to somewhat recent licensing changes, using Docker Desktop in enterprise settings is not free anymore.
+Consider using [Lima](https://github.com/lima-vm/lima) or some of its wrappers, such as [Colima](https://github.com/abiosoft/colima) or [Rancher Desktop](https://rancherdesktop.io/).
+
+A minimal macOS Lima setup guide:
+
+1. Install the necessary formulae using Homebrew:
+
+   ```sh
+   $ brew install lima docker docker-credential-helper
+   ```
+
+2. Initialize a `docker` template with Lima
+
+   ```sh
+   $ limactl start template://docker
+   ```
+
+3. Lima mounts the home directory in read-only mode by default. This is an important caveat and it **will** stop Playwright within Docker from being able to write out test results/snapshot updates. Consider making the following modification to `~/.lima/<instance-name>/lima.yaml` (if you followed these steps, `<instance-name>` should be `docker`):
+
+   ```diff
+       mounts:
+       - location: "~"
+   +     writable: true
+       - location: "/tmp/lima"
+       writable: true
+   ```
+
+   You should restart your instance after making these changes:
+
+   ```sh
+   $ limactl stop <instance-name>
+   $ limactl start <instance-name>
+   ```
+
+You're all set! If you used a different instance name than `docker`, you could pass a `LIMA_INSTANCE` environment variable to `playwright:docker`:
+
+```sh
+$ LIMA_INSTANCE=instancename npm run playwright:docker
+```
+
+This ensures the `DOCKER_HOST` is set as necessary.
