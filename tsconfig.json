@@ -9,5 +9,5 @@
     "target": "ES6",
     "types": ["node", "jest"]
   },
-  "include": ["src/**/*", "test/**/*"]
+  "include": ["src/**/*", "test/**/*", "playwright/playwright.config.ts"]
 }
