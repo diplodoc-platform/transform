@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.50.4](https://github.com/diplodoc-platform/transform/compare/v4.50.3...v4.50.4) (2025-03-19)
+
+
+### Bug Fixes
+
+* **styles:** updated list margins ([#675](https://github.com/diplodoc-platform/transform/issues/675)) ([02fe6c6](https://github.com/diplodoc-platform/transform/commit/02fe6c6ad850a785d8ca47c363bd0872798a89bd))
+
 ## [4.50.3](https://github.com/diplodoc-platform/transform/compare/v4.50.2...v4.50.3) (2025-03-18)
 
 
