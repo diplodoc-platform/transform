@@ -1,3 +1,9 @@
 #!/bin/sh
 
+set -e
+
+if [ ${NPMCI:-0} -eq 1 ] || [ -z "$(ls -A node_modules)" ]; then
+    npm ci
+fi
+
 npm run test:playwright -- $@

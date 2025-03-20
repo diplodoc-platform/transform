@@ -26,4 +26,13 @@ if [ -n "$(which limactl)" ]; then
     export DOCKER_HOST=$(limactl list $_LIMA_INSTANCE --format 'unix://{{.Dir}}/sock/docker.sock')
 fi
 
-docker run --rm -it --ipc=host -v $(pwd):/var/pkg:rw -w /var/pkg mcr.microsoft.com/playwright:v1.51.1-noble /var/pkg/playwright/run $@
+docker run \
+    --rm \
+    -it \
+    --ipc=host \
+    -v $(pwd):/var/pkg:rw \
+    -v $(pwd)/node_modules_containerized:/var/pkg/node_modules \
+    -w /var/pkg \
+    -e NPMCI=${NPMCI:-0} \
+    mcr.microsoft.com/playwright:v1.51.1-noble \
+    /var/pkg/playwright/run $@
