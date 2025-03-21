@@ -9,5 +9,11 @@
     "target": "ES6",
     "types": ["node", "jest"]
   },
-  "include": ["src/**/*", "test/**/*"]
+  "include": [
+    "tests/**/*",
+    "fixtures/**/*",
+    "stories/**/*",
+    ".storybook/**/*",
+    "playwright/playwright.config.ts"
+  ]
 }
