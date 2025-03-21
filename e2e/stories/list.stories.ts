@@ -1,6 +1,6 @@
 import dedent from 'ts-dedent';
 
-import {MarkdownSnippetStory, getSnippetMeta} from '../utils';
+import {MarkdownSnippetStory, getSnippetMeta} from '../fixtures/utils';
 
 export default {...getSnippetMeta(), title: 'Builtins/List'};
 

@@ -1,7 +1,6 @@
 import {Meta, StoryObj} from '@storybook/html';
-
-import transform from '../../lib';
-import '../../dist/css/yfm.min.css';
+import transform from '@diplodoc/transform';
+import '@diplodoc/transform/dist/css/yfm.min.css';
 
 export type MarkdownSnippetProps = {
     snippet: string;

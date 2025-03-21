@@ -2,7 +2,7 @@
 
 set -e
 
-if ! grep -q @diplodoc/transform $(pwd)/package.json 2>/dev/null || false; then
+if ! grep -q @diplodoc/transform-e2e-tests $(pwd)/package.json 2>/dev/null || false; then
     >&2 echo "fatal: Current working directory is not the package root. Aborting."
 
     exit 1
@@ -30,9 +30,9 @@ docker run \
     --rm \
     -it \
     --ipc=host \
-    -v $(pwd):/var/pkg:rw \
-    -v $(pwd)/node_modules_containerized:/var/pkg/node_modules \
-    -w /var/pkg \
+    -v $(pwd)/..:/var/pkg:rw \
+    -v $(pwd)/node_modules_containerized:/var/pkg/e2e/node_modules \
+    -w /var/pkg/e2e \
     -e NPMCI=${NPMCI:-0} \
     mcr.microsoft.com/playwright:v1.51.1-noble \
-    /var/pkg/playwright/run $@
+    /var/pkg/e2e/playwright/run $@

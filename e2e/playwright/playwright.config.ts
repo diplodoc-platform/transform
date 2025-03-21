@@ -2,7 +2,7 @@ import {defineConfig, devices} from '@playwright/test';
 import {resolve} from 'node:path';
 
 export default defineConfig({
-    testDir: resolve(__dirname, '../test/e2e'),
+    testDir: resolve(__dirname, '../tests/'),
     updateSnapshots: 'missing',
     snapshotPathTemplate:
         '{testDir}/__screenshots__/{testFilePath}/{arg}-{projectName}-{platform}{ext}',
