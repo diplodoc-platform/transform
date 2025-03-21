@@ -39,6 +39,7 @@
     "artifact:pages": "npm run build && npm run artifact:playground",
     "prepublishOnly": "npm run lint && npm run test && npm run build",
     "test": "jest --coverage",
+    "test:playwright": "npm run build && cd e2e && npm run playwright:docker",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "lint update && lint",
     "lint:fix": "lint update && lint fix",
