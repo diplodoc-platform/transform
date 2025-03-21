@@ -26,3 +26,6 @@ bundle/
 tsconfig.tsbuildinfo
 
 *storybook.log
+
+test-results/
+playwright-report/
