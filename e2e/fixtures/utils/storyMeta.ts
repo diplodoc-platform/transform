@@ -1,20 +1,22 @@
 import {Meta, StoryObj} from '@storybook/html';
-import transform from '@diplodoc/transform';
 import '@diplodoc/transform/dist/css/yfm.min.css';
+
+import {transformMd} from './transformPreset';
 
 export type MarkdownSnippetProps = {
     snippet: string;
+    additionalRootClassnames?: string[];
 };
 
 export type MarkdownSnippetStory = StoryObj<MarkdownSnippetProps>;
 
 export const getSnippetMeta = (): Meta<MarkdownSnippetProps> => ({
-    render: ({snippet}) => {
+    render: ({snippet, additionalRootClassnames = []}) => {
         const div = document.createElement('div');
 
-        div.classList.add('yfm');
+        div.classList.add('yfm', ...additionalRootClassnames);
         div.id = 'yfm-root';
-        div.innerHTML = transform(snippet).result.html;
+        div.innerHTML = transformMd(snippet);
 
         return div;
     },

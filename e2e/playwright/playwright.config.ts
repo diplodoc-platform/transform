@@ -1,11 +1,16 @@
 import {defineConfig, devices} from '@playwright/test';
 import {resolve} from 'node:path';
 
+const narrowerViewport = {
+    width: 600,
+    height: 900,
+};
+
 export default defineConfig({
     testDir: resolve(__dirname, '../tests/'),
     updateSnapshots: 'missing',
     snapshotPathTemplate:
-        '{testDir}/__screenshots__/{testFilePath}/{arg}-{projectName}-{platform}{ext}',
+        '{testDir}/__screenshots__/{testFilePath}/{projectName}/{arg}-{platform}{ext}',
     fullyParallel: false,
     forbidOnly: true,
     retries: 2,
@@ -24,17 +29,22 @@ export default defineConfig({
     projects: [
         {
             name: 'chromium',
-            use: devices['Desktop Chrome'],
+            use: {...devices['Desktop Chrome'], viewport: narrowerViewport},
         },
 
         {
             name: 'firefox',
-            use: devices['Desktop Firefox'],
+            use: {...devices['Desktop Firefox'], viewport: narrowerViewport},
         },
 
         {
             name: 'webkit',
-            use: devices['Desktop Safari'],
+            use: {...devices['Desktop Safari'], viewport: narrowerViewport},
         },
     ],
+    expect: {
+        toHaveScreenshot: {
+            maxDiffPixels: 0,
+        },
+    },
 });
