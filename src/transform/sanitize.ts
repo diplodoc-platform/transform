@@ -170,7 +170,7 @@ const svgTags = [
     'view',
     'vkern',
     'animate',
-    'use'
+    'use',
 ];
 
 const htmlAttrs = [
@@ -496,7 +496,6 @@ const allowedTags = Array.from(
 );
 const allowedAttributes = Array.from(new Set([...htmlAttrs, ...svgAttrs, ...yfmHtmlAttrs]));
 
-
 // For hrefs within "use" only allow local links to ids that start with "#"
 const useTagTransformer = (tagName: string, attribs: Attributes): Tag => {
     const cleanHref = (href: string) => {
@@ -505,25 +504,25 @@ const useTagTransformer = (tagName: string, attribs: Attributes): Tag => {
         } else {
             return null;
         }
-    }
+    };
     const cleanAttrs = (attrs: Attributes): Attributes => {
         const HREF_ATTRIBUTES = ['xlink:href', 'href'];
         return Object.fromEntries(
             Object.entries(attrs)
                 .map(([key, value]) => {
                     if (HREF_ATTRIBUTES.includes(key)) {
-                        return [key, cleanHref(value)]
+                        return [key, cleanHref(value)];
                     }
                     return [key, value];
                 })
-                .filter(([_, value]) => value !== null)
+                .filter(([_, value]) => value !== null),
         );
-    }
+    };
     return {
         tagName,
         attribs: cleanAttrs(attribs),
-    }
-}
+    };
+};
 
 export interface SanitizeOptions extends sanitizeHtml.IOptions {
     cssWhiteList?: CssWhiteList;
@@ -545,8 +544,8 @@ export const defaultOptions: SanitizeOptions = {
     parser: defaultParseOptions,
     cssWhiteList: defaultCssWhitelist,
     transformTags: {
-        'use': useTagTransformer
-    }
+        use: useTagTransformer,
+    },
 };
 
 function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) {

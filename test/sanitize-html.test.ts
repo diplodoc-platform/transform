@@ -151,13 +151,13 @@ describe('Sanitize HTML utility', () => {
         expect(html('<img src=a onerror=alert(1)>', {needToSanitizeHtml: false})).toMatchSnapshot();
     });
 
-    describe('svg use' ,() => {
+    describe('svg use', () => {
         it('should allow svg use with a local href', () => {
             const content = `<div>
                 <svg>
                     <use xlink:href="#pattern-id"></use>
                 </svg>
-            </div>`
+            </div>`;
             expect(html(content)).toContain('<use xlink:href="#pattern-id"></use>');
         });
 
@@ -166,9 +166,9 @@ describe('Sanitize HTML utility', () => {
                 <svg>
                     <use xlink:href="https://example.com"></use>
                 </svg>
-            </div>`
+            </div>`;
             expect(html(content)).not.toContain('<use xlink:href="https://example.com"></use>');
-        })
+        });
 
         it('should work for href as well', () => {
             const content = `<div>
@@ -178,11 +178,9 @@ describe('Sanitize HTML utility', () => {
                 <svg>
                     <use href="https://example.com"></use>
                 </svg>
-            </div>`
+            </div>`;
             expect(html(content)).toContain('<use href="#pattern-id"></use>');
             expect(html(content)).not.toContain('<use href="https://example.com"></use>');
         });
     });
-
-
 });
