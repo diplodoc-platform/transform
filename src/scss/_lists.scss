@@ -62,10 +62,16 @@
     @include hier-list(5);
 
     &.yfm_no-list-reset ol,
-    ol.yfm_no-list-reset {
-        // No direct ancestor (>) combinator to preserve legacy behavior
-        & > li::marker {
-            content: unset;
+    ol.yfm_no-list-reset,
+    .yfm_no-list-reset ol {
+        counter-reset: list-item;
+
+        & li {
+            counter-increment: unset;
+
+            &::marker {
+                content: unset;
+            }
         }
     }
 }

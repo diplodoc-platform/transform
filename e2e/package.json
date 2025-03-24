@@ -4,6 +4,7 @@
   "scripts": {
     "test": "npx playwright test --config playwright/playwright.config.ts",
     "playwright:docker": "./playwright/playwright-docker-linux",
+    "playwright:docker:ui": "npm run playwright:docker -- --ui-port 8082 --ui-host 0.0.0.0",
     "build-storybook": "storybook build",
     "storybook": "storybook dev -p 6006"
   },
