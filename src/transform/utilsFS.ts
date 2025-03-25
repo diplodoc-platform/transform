@@ -3,13 +3,14 @@ import type {Dictionary} from 'lodash';
 import {readFileSync, realpathSync, statSync} from 'fs';
 import escapeRegExp from 'lodash/escapeRegExp';
 import {join, parse, relative, resolve, sep} from 'path';
+import QuickLRU from 'quick-lru';
 
 import liquidSnippet from './liquid';
 import {StateCore} from './typings';
 import {defaultTransformLink} from './utils';
 import {preprocess} from './preprocessors';
 
-const filesCache: Record<string, string> = {};
+const filesCache = new QuickLRU<string, string>({maxSize: 1000});
 
 export function isFileExists(file: string) {
     try {
@@ -62,11 +63,11 @@ export function getFileTokens(
 
     // Read the content only if we dont have one in the args
     if (!content) {
-        if (filesCache[path]) {
-            content = filesCache[path];
+        if (filesCache.has(path)) {
+            content = filesCache.get(path) as string;
         } else {
             content = readFileSync(path, 'utf8');
-            filesCache[path] = content;
+            filesCache.set(path, content);
         }
     }
 
