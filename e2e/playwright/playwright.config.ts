@@ -11,16 +11,18 @@ export default defineConfig({
     updateSnapshots: 'missing',
     snapshotPathTemplate:
         '{testDir}/__screenshots__/{testFilePath}/{projectName}/{arg}-{platform}{ext}',
-    fullyParallel: false,
     forbidOnly: true,
     retries: 2,
-    workers: 1,
-    reporter: [['html', {open: 'never'}]],
+    workers: 4,
+    fullyParallel: true,
+    reporter: [['html', {open: 'never'}], ['list'], ['playwright-ctrf-json-reporter', {}]],
     webServer: {
         reuseExistingServer: true,
         command: 'npm run storybook -- --ci',
         url: 'http://localhost:6006',
         timeout: 120 * 1000,
+        stderr: 'pipe',
+        stdout: 'pipe',
     },
     use: {
         baseURL: 'http://localhost:6006',

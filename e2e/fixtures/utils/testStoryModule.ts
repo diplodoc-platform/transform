@@ -9,6 +9,20 @@ type CSFModule = {
     [key: string]: MarkdownSnippetStory;
 };
 
+export const describeStory = async <T extends CSFModule>(
+    storyModule: T,
+    storyName: Exclude<keyof T, 'default'>,
+    block: () => void,
+) => {
+    const {default: meta, ...stories} = storyModule;
+
+    test.describe(`CSF File: ${meta.title}, Story: ${stories[storyName].name}`, () => {
+        test.use({metaTitle: meta.title, storyName: String(storyName)});
+
+        block();
+    });
+};
+
 export const visualTestStoryModule = async (storyModule: CSFModule) => {
     const {default: meta, ...stories} = storyModule;
 
