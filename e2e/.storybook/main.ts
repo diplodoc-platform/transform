@@ -17,5 +17,17 @@ const config: StorybookConfig = {
         name: '@storybook/html-webpack5',
         options: {},
     },
+    webpackFinal: (config) => {
+        config.resolve = {
+            ...config.resolve,
+            fallback: {
+                ...config.resolve?.fallback,
+                process: require.resolve('process/browser'),
+                url: require.resolve('url/'),
+            },
+        };
+
+        return config;
+    },
 };
 export default config;

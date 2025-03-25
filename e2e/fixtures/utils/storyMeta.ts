@@ -1,5 +1,7 @@
 import {Meta, StoryObj} from '@storybook/html';
 import '@diplodoc/transform/dist/css/yfm.min.css';
+import '@diplodoc/transform/dist/css/print.css';
+import '@diplodoc/transform/dist/js/yfm.js';
 
 import {transformMd} from './transformPreset';
 

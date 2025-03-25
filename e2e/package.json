@@ -19,8 +19,11 @@
     "@storybook/html-webpack5": "^8.6.7",
     "@storybook/test": "^8.6.7",
     "eslint-plugin-storybook": "^0.11.6",
+    "playwright-ctrf-json-reporter": "^0.0.19",
+    "process": "^0.11.10",
     "storybook": "^8.6.7",
-    "typescript": "4.7.4"
+    "typescript": "4.7.4",
+    "url": "^0.11.4"
   },
   "dependencies": {
     "@diplodoc/transform": "file:..",
