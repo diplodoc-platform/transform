@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.51.0](https://github.com/diplodoc-platform/transform/compare/v4.50.4...v4.51.0) (2025-03-25)
+
+
+### Features
+
+* added option to disable markdown-it-attrs ([#647](https://github.com/diplodoc-platform/transform/issues/647)) ([b8d04b9](https://github.com/diplodoc-platform/transform/commit/b8d04b9426fb587accb3e33b6daf2b2a5d9ccdc0))
+
+
+### Bug Fixes
+
+* **transform:** use lru for filesCache ([#680](https://github.com/diplodoc-platform/transform/issues/680)) ([5438ef1](https://github.com/diplodoc-platform/transform/commit/5438ef1546db50f8146151b24075ac7f57045eda))
+
 ## [4.50.4](https://github.com/diplodoc-platform/transform/compare/v4.50.3...v4.50.4) (2025-03-19)
 
 
