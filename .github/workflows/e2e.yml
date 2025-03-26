@@ -44,6 +44,8 @@ jobs:
         uses: ctrf-io/github-test-reporter@v1
         with:
           report-path: './e2e/ctrf/*.json'
+          summary-report: true
+          failed-report: true
           pull-request: true
         env:
           GITHUB_TOKEN: ${{ secrets.YC_UI_BOT_GITHUB_TOKEN }}
