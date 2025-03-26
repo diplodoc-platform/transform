@@ -164,3 +164,72 @@ MIT
 - `--yfm-list-item-margin-block`
 - `--yfm-list-text-margin-block`
 - `--yfm-list-text-only-margin-block`
+
+## Контрибуции
+
+### Тесты
+
+В пакете представлены unit-тесты на базе Jest и визуальные e2e-тесты на базе Playwright. Playwright-тесты
+расположены в подпакете `e2e`.
+
+#### Playwright: prerequisites
+
+Для того, чтобы обеспечить минимальное количество внешних факторов, которые могут повлиять на выполнение e2e-тестов, рекомендуется запускать локально Playwright-тесты в Docker-контейнере с помощью скрипта пакета `test:playwright`.
+Этот скрипт настроит необходимое окружение в Docker и установит все зависимости для него.
+
+```sh
+$ npm run test:playwright
+```
+
+Подразумевается, что у вас установлен Docker CLI и Docker Engine.
+
+Для того, чтобы использовать UI-режим Playwright, используйте скрипт `playwright:docker:ui` (в подпакете e2e):
+
+```sh
+$ cd e2e
+$ npm run playwright:docker:ui
+```
+
+##### Пользователям macOS: не хотите/не имеете возможность использовать Docker Desktop?
+
+Благодаря относительно недавним изменениям лицензии, использование Docker Desktop в коммерческих условиях
+больше не является бесплатным. Используйте [Lima](https://github.com/lima-vm/lima) или одну из обёрток, таких как [Colima](https://github.com/abiosoft/colima) или [Rancher Desktop](https://rancherdesktop.io/).
+
+Руководство по настройке минимального окружения, использующего Lima:
+
+1. Установите необходимые формулы с помощью Homebrew:
+
+   ```sh
+   $ brew install lima docker docker-credential-helper
+   ```
+
+2. Инициализируйте шаблон `docker` в Lima:
+
+   ```sh
+   $ limactl start template://docker
+   ```
+
+3. Lima по умолчанию монтирует домашнюю директорию в режиме только для чтения. Это помешает Playwright записать результаты тестов и обновления снапшотов/скриншотов в папку проекта. Рекомендуется сделать следующие изменения в файле `~/.lima/<instance-name>/lima.yaml` (если вы следовали этому руководству, вместо `<instance-name>` нужнео использовать `docker`):
+
+   ```diff
+       mounts:
+       - location: "~"
+   +     writable: true
+       - location: "/tmp/lima"
+       writable: true
+   ```
+
+   После этого инстанс Lima нужно перезапустить.
+
+   ```sh
+   $ limactl stop <instance-name>
+   $ limactl start <instance-name>
+   ```
+
+Теперь вы можете использовать Docker CLI на macOS. Если при настройке вы выбрали имя инстанса не `docker`, можете передать нужное с помощью переменной `LIMA_INSTANCE` при обращении к скрипту `playwright:docker`/`test:playwright`:
+
+```sh
+$ LIMA_INSTANCE=instancename npm run test:playwright
+```
+
+Эта информация необходима скрипту, чтобы корректно настроить переменную окружения `DOCKER_HOST`.
