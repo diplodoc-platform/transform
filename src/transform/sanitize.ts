@@ -511,6 +511,12 @@ export const defaultOptions: SanitizeOptions = {
         ...sanitizeHtml.defaults.allowedAttributes,
         '*': allowedAttributes,
     },
+    allowedSchemesAppliedToAttributes: [
+        ...sanitizeHtml.defaults.allowedSchemesAppliedToAttributes,
+        'xlink:href',
+        'from',
+        'to',
+    ],
     allowVulnerableTags: true,
     parser: defaultParseOptions,
     cssWhiteList: defaultCssWhitelist,
@@ -593,7 +599,6 @@ function sanitizeStyles(html: string, options: SanitizeOptions) {
     const $ = cheerio.load(html);
 
     sanitizeStyleTags($, cssWhiteList);
-
     sanitizeStyleAttrs($, cssWhiteList);
 
     const styles = $('head').html() || '';
