@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.51.1](https://github.com/diplodoc-platform/transform/compare/v4.51.0...v4.51.1) (2025-03-27)
+
+
+### Bug Fixes
+
+* allowedSchemesAppliedToAttributes xlink:href ([#681](https://github.com/diplodoc-platform/transform/issues/681)) ([1cce543](https://github.com/diplodoc-platform/transform/commit/1cce5435378dcf27d78a7507c8accf853b98b375))
+
 ## [4.51.0](https://github.com/diplodoc-platform/transform/compare/v4.50.4...v4.51.0) (2025-03-25)
 
 
