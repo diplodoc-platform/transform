@@ -244,6 +244,22 @@ exports[`XSS checks with disabled markdown-it-attrs frame 1`] = `""`;
 
 exports[`XSS checks with disabled markdown-it-attrs fromCharCode 1`] = `<img>`;
 
+exports[`XSS checks with disabled markdown-it-attrs href animate from 1`] = `
+<div id="test">
+  <svg>
+    <a>
+      <circle r="400">
+      </circle>
+      <animate attributename="href"
+               begin="0"
+               to="&amp;"
+      >
+      </animate>
+    </a>
+  </svg>
+</div>
+`;
+
 exports[`XSS checks with disabled markdown-it-attrs iframe 1`] = `
 <iframe>
 </iframe>
@@ -315,6 +331,22 @@ exports[`XSS checks with disabled markdown-it-attrs svg with style tag and forei
     </style>
   </svg>
 </p>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs xlink:href 1`] = `
+<div id="test">
+  <svg>
+    <a>
+      <circle r="400">
+      </circle>
+      <animate attributename="xlink:href"
+               begin="0"
+               to="&amp;"
+      >
+      </animate>
+    </a>
+  </svg>
+</div>
 `;
 
 exports[`XSS checks with enabled markdown-it-attrs & JavaScript includes 1`] = `<br size="&amp;{alert('XSS')}">`;
@@ -561,6 +593,22 @@ exports[`XSS checks with enabled markdown-it-attrs frame 1`] = `""`;
 
 exports[`XSS checks with enabled markdown-it-attrs fromCharCode 1`] = `<img>`;
 
+exports[`XSS checks with enabled markdown-it-attrs href animate from 1`] = `
+<div id="test">
+  <svg>
+    <a>
+      <circle r="400">
+      </circle>
+      <animate attributename="href"
+               begin="0"
+               to="&amp;"
+      >
+      </animate>
+    </a>
+  </svg>
+</div>
+`;
+
 exports[`XSS checks with enabled markdown-it-attrs iframe 1`] = `
 <iframe>
 </iframe>
@@ -632,4 +680,20 @@ exports[`XSS checks with enabled markdown-it-attrs svg with style tag and foreig
     </style>
   </svg>
 </p>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs xlink:href 1`] = `
+<div id="test">
+  <svg>
+    <a>
+      <circle r="400">
+      </circle>
+      <animate attributename="xlink:href"
+               begin="0"
+               to="&amp;"
+      >
+      </animate>
+    </a>
+  </svg>
+</div>
 `;

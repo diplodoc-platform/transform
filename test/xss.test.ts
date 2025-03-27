@@ -159,6 +159,14 @@ const ckecks = [
         `<!--#exec cmd="/bin/echo '<scr'"--><!--#exec cmd="/bin/echo 'IPT src=http://ha.ckers.org/xss.js></script>'"-->`,
     ],
     ['PHP', `<? echo('<SCR)';\necho('IPT>alert("XSS")</SCRIPT>'); ?>`],
+    [
+        'xlink:href',
+        `<div id="test"><svg><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="javascript:alert(document.domain)"><circle r="400"></circle><animate attributeName="xlink:href" begin="0" from="javascript:alert(document.domain)" to="&" /></a></div>`,
+    ],
+    [
+        'href animate from',
+        `<div id="test"><svg><a xmlns:xlink="http://www.w3.org/1999/xlink" href="javascript:alert(document.domain)"><circle r="400"></circle><animate attributeName="href" begin="0" from="javascript:alert(document.domain)" to="&" /></a></div>`,
+    ],
 ];
 
 describe.each([
