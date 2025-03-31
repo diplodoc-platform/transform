@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.52.0](https://github.com/diplodoc-platform/transform/compare/v4.51.1...v4.52.0) (2025-03-31)
+
+
+### Features
+
+* allow to change sanitize fn through options ([#684](https://github.com/diplodoc-platform/transform/issues/684)) ([dc4c043](https://github.com/diplodoc-platform/transform/commit/dc4c04358ce6e16bf1d0aee2837aea9b2f3bfec5))
+
 ## [4.51.1](https://github.com/diplodoc-platform/transform/compare/v4.51.0...v4.51.1) (2025-03-27)
 
 
