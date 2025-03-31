@@ -2,7 +2,7 @@ import {LanguageFn} from 'highlight.js';
 import DefaultMarkdownIt, {Token} from 'markdown-it';
 import DefaultStateCore from 'markdown-it/lib/rules_core/state_core';
 
-import {SanitizeOptions} from './sanitize';
+import {SanitizeOptions, SanitizerFunction} from './sanitize';
 import {LogLevels, Logger} from './log';
 import {ChangelogItem} from './plugins/changelog/types';
 
@@ -46,6 +46,7 @@ export interface OptionsType {
     isLiquided?: boolean;
     needToSanitizeHtml?: boolean;
     sanitizeOptions?: SanitizeOptions;
+    sanitizer?: SanitizerFunction;
     needFlatListHeadings?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     plugins?: ExtendedPluginWithCollect<any, any>[];

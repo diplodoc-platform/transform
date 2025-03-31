@@ -71,6 +71,23 @@ const {
 } = transform(content, {vars});
 ```
 
+### Custom HTML Sanitizer
+
+You can replace the default HTML sanitizer with your own implementation by providing a `sanitizer` function in the options:
+
+```javascript
+const customSanitizer = (html, options) => {
+  // Your custom sanitization logic here
+  return sanitizedHtml;
+};
+
+const { result } = transform(content, {
+  sanitizer: customSanitizer,
+  // Other options...
+});
+
+This is useful when you need to implement specific sanitization rules or integrate with a different sanitization library. The sanitizer function should accept HTML string as input and return sanitized HTML.
+
 ## License
 
 MIT
@@ -146,3 +163,4 @@ MIT
 - `--yfm-list-item-margin-block`
 - `--yfm-list-text-margin-block`
 - `--yfm-list-text-only-margin-block`
+```
