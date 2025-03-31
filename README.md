@@ -85,6 +85,7 @@ const { result } = transform(content, {
   sanitize: customSanitizer,
   // Other options...
 });
+```
 
 This is useful when you need to implement specific sanitization rules or integrate with a different sanitization library. The sanitizer function should accept HTML string as input and return sanitized HTML.
 
@@ -163,4 +164,4 @@ MIT
 - `--yfm-list-item-margin-block`
 - `--yfm-list-text-margin-block`
 - `--yfm-list-text-only-margin-block`
-```
+
