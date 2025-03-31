@@ -7,6 +7,12 @@ import css from 'css';
 import {CssWhiteList} from './typings';
 import log from './log';
 
+export type SanitizeFunction = (
+    html: string,
+    options?: SanitizeOptions,
+    additionalOptions?: SanitizeOptions,
+) => string;
+
 const htmlTags = [
     'a',
     'abbr',

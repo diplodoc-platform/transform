@@ -160,7 +160,7 @@ function initParser(
 }
 
 function initCompiler(md: MarkdownIt, options: OptionsType, env: EnvType) {
-    const {needToSanitizeHtml = true, renderInline = false, sanitizeOptions} = options;
+    const {needToSanitizeHtml = true, renderInline = false, sanitizeOptions, sanitize} = options;
 
     return (tokens: Token[]) => {
         // Remove inline tokens if inline mode is activated
@@ -171,10 +171,16 @@ function initCompiler(md: MarkdownIt, options: OptionsType, env: EnvType) {
         // Generate HTML
         const html = md.renderer.render(tokens, md.options, env);
 
+        if (!needToSanitizeHtml) {
+            return html;
+        }
+
         // Sanitize the page
-        return needToSanitizeHtml
-            ? sanitizeHtml(html, sanitizeOptions, {cssWhiteList: env.additionalOptionsCssWhiteList})
-            : html;
+        return sanitize
+            ? sanitize(html, sanitizeOptions)
+            : sanitizeHtml(html, sanitizeOptions, {
+                  cssWhiteList: env.additionalOptionsCssWhiteList,
+              });
     };
 }
 
