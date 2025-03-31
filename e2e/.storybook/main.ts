@@ -1,9 +1,8 @@
-import type {StorybookConfig} from '@storybook/html-webpack5';
+import type {StorybookConfig} from 'storybook-html-rsbuild';
 
 const config: StorybookConfig = {
     stories: ['../stories/**/*.mdx', '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
     addons: [
-        '@storybook/addon-webpack5-compiler-swc',
         {
             name: '@storybook/addon-essentials',
             options: {
@@ -14,14 +13,14 @@ const config: StorybookConfig = {
         '@storybook/addon-interactions',
     ],
     framework: {
-        name: '@storybook/html-webpack5',
+        name: 'storybook-html-rsbuild',
         options: {},
     },
-    webpackFinal: (config) => {
+    rsbuildFinal: (config) => {
         config.resolve = {
             ...config.resolve,
-            fallback: {
-                ...config.resolve?.fallback,
+            alias: {
+                ...config.resolve?.alias,
                 process: require.resolve('process/browser'),
                 url: require.resolve('url/'),
             },

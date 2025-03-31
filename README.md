@@ -196,38 +196,7 @@ $ npm run playwright:docker:ui
 Due to somewhat recent licensing changes, using Docker Desktop in enterprise setting is not free anymore.
 Consider using [Lima](https://github.com/lima-vm/lima) or some of its wrappers, such as [Colima](https://github.com/abiosoft/colima) or [Rancher Desktop](https://rancherdesktop.io/).
 
-A minimal macOS Lima setup guide:
-
-1. Install the necessary formulae using Homebrew:
-
-   ```sh
-   $ brew install lima docker docker-credential-helper
-   ```
-
-2. Initialize a `docker` template with Lima
-
-   ```sh
-   $ limactl start template://docker
-   ```
-
-3. Lima mounts the home directory in read-only mode by default. This is an important caveat and it **will** stop Playwright within Docker from being able to write out test results/snapshot updates. Consider making the following modification to `~/.lima/<instance-name>/lima.yaml` (if you followed these steps, `<instance-name>` should be `docker`):
-
-   ```diff
-       mounts:
-       - location: "~"
-   +     writable: true
-       - location: "/tmp/lima"
-       writable: true
-   ```
-
-   You should restart your instance after making these changes:
-
-   ```sh
-   $ limactl stop <instance-name>
-   $ limactl start <instance-name>
-   ```
-
-You're all set! If you used a different instance name than `docker`, you could pass a `LIMA_INSTANCE` environment variable to `playwright:docker`/`test:playwright`:
+You can pass a `LIMA_INSTANCE` environment variable to `playwright:docker`/`test:playwright`:
 
 ```sh
 $ LIMA_INSTANCE=instancename npm run test:playwright

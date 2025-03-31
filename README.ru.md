@@ -195,38 +195,7 @@ $ npm run playwright:docker:ui
 Благодаря относительно недавним изменениям лицензии, использование Docker Desktop в коммерческих условиях
 больше не является бесплатным. Используйте [Lima](https://github.com/lima-vm/lima) или одну из обёрток, таких как [Colima](https://github.com/abiosoft/colima) или [Rancher Desktop](https://rancherdesktop.io/).
 
-Руководство по настройке минимального окружения, использующего Lima:
-
-1. Установите необходимые формулы с помощью Homebrew:
-
-   ```sh
-   $ brew install lima docker docker-credential-helper
-   ```
-
-2. Инициализируйте шаблон `docker` в Lima:
-
-   ```sh
-   $ limactl start template://docker
-   ```
-
-3. Lima по умолчанию монтирует домашнюю директорию в режиме только для чтения. Это помешает Playwright записать результаты тестов и обновления снапшотов/скриншотов в папку проекта. Рекомендуется сделать следующие изменения в файле `~/.lima/<instance-name>/lima.yaml` (если вы следовали этому руководству, вместо `<instance-name>` нужнео использовать `docker`):
-
-   ```diff
-       mounts:
-       - location: "~"
-   +     writable: true
-       - location: "/tmp/lima"
-       writable: true
-   ```
-
-   После этого инстанс Lima нужно перезапустить.
-
-   ```sh
-   $ limactl stop <instance-name>
-   $ limactl start <instance-name>
-   ```
-
-Теперь вы можете использовать Docker CLI на macOS. Если при настройке вы выбрали имя инстанса не `docker`, можете передать нужное с помощью переменной `LIMA_INSTANCE` при обращении к скрипту `playwright:docker`/`test:playwright`:
+Если при настройке вы выбрали имя инстанса не `docker`, можете передать нужное с помощью переменной `LIMA_INSTANCE` при обращении к скрипту `playwright:docker`/`test:playwright`:
 
 ```sh
 $ LIMA_INSTANCE=instancename npm run test:playwright
