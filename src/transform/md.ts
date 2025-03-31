@@ -160,7 +160,7 @@ function initParser(
 }
 
 function initCompiler(md: MarkdownIt, options: OptionsType, env: EnvType) {
-    const {needToSanitizeHtml = true, renderInline = false, sanitizeOptions, sanitizer} = options;
+    const {needToSanitizeHtml = true, renderInline = false, sanitizeOptions, sanitize} = options;
 
     return (tokens: Token[]) => {
         // Remove inline tokens if inline mode is activated
@@ -176,8 +176,8 @@ function initCompiler(md: MarkdownIt, options: OptionsType, env: EnvType) {
         }
 
         // Sanitize the page
-        return sanitizer
-            ? sanitizer(html, sanitizeOptions)
+        return sanitize
+            ? sanitize(html, sanitizeOptions)
             : sanitizeHtml(html, sanitizeOptions, {
                   cssWhiteList: env.additionalOptionsCssWhiteList,
               });

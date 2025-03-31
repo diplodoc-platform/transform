@@ -73,7 +73,7 @@ const {
 
 ### Custom HTML Sanitizer
 
-You can replace the default HTML sanitizer with your own implementation by providing a `sanitizer` function in the options:
+You can replace the default HTML sanitizer with your own implementation by providing a `sanitize` function in the options:
 
 ```javascript
 const customSanitizer = (html, options) => {
@@ -82,7 +82,7 @@ const customSanitizer = (html, options) => {
 };
 
 const { result } = transform(content, {
-  sanitizer: customSanitizer,
+  sanitize: customSanitizer,
   // Other options...
 });
 

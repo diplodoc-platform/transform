@@ -73,7 +73,7 @@ const {
 
 ### Пользовательский HTML-санитайзер
 
-Вы можете заменить стандартный HTML-санитайзер своей собственной реализацией, передав функцию `sanitizer` в опциях:
+Вы можете заменить стандартный HTML-санитайзер своей собственной реализацией, передав функцию `sanitize` в опциях:
 
 ```javascript
 const customSanitizer = (html, options) => {
@@ -82,7 +82,7 @@ const customSanitizer = (html, options) => {
 };
 
 const {result} = transform(content, {
-  sanitizer: customSanitizer,
+  sanitize: customSanitizer,
   // Другие опции...
 });
 ```

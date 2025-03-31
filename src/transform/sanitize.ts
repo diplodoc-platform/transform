@@ -7,7 +7,7 @@ import css from 'css';
 import {CssWhiteList} from './typings';
 import log from './log';
 
-export type SanitizerFunction = (
+export type SanitizeFunction = (
     html: string,
     options?: SanitizeOptions,
     additionalOptions?: SanitizeOptions,
