@@ -165,3 +165,41 @@ MIT
 - `--yfm-list-text-margin-block`
 - `--yfm-list-text-only-margin-block`
 
+## Contributing
+
+### Tests
+
+This package features unit tests run by Jest and e2e & visual tests run by Playwright. Playwright tests are located in
+`e2e` sub-package.
+
+#### Playwright: prerequisites
+
+To ensure maximum reproducibility and to avoid unwanted variance introduced by using different platforms
+between CI environments and contributors' dev environments, it is recommended to run Playwright tests locally using
+the `test:playwright` package script, which sets up a testing environment in a Docker container.
+
+```sh
+$ npm run test:playwright
+```
+
+This assumes you have Docker CLI and Docker Engine installed.
+
+To use Playwright in UI mode, instead use the `playwright:docker:ui` script:
+
+```sh
+$ cd e2e
+$ npm run playwright:docker:ui
+```
+
+##### macOS users: unable/unwilling to use Docker Desktop?
+
+Due to somewhat recent licensing changes, using Docker Desktop in enterprise setting is not free anymore.
+Consider using [Lima](https://github.com/lima-vm/lima) or some of its wrappers, such as [Colima](https://github.com/abiosoft/colima) or [Rancher Desktop](https://rancherdesktop.io/).
+
+You can pass a `LIMA_INSTANCE` environment variable to `playwright:docker`/`test:playwright`:
+
+```sh
+$ LIMA_INSTANCE=instancename npm run test:playwright
+```
+
+This ensures the `DOCKER_HOST` is set as necessary.

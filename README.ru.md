@@ -164,3 +164,41 @@ MIT
 - `--yfm-list-item-margin-block`
 - `--yfm-list-text-margin-block`
 - `--yfm-list-text-only-margin-block`
+
+## Контрибуции
+
+### Тесты
+
+В пакете представлены unit-тесты на базе Jest и визуальные e2e-тесты на базе Playwright. Playwright-тесты
+расположены в подпакете `e2e`.
+
+#### Playwright: prerequisites
+
+Для того, чтобы обеспечить минимальное количество внешних факторов, которые могут повлиять на выполнение e2e-тестов, рекомендуется запускать локально Playwright-тесты в Docker-контейнере с помощью скрипта пакета `test:playwright`.
+Этот скрипт настроит необходимое окружение в Docker и установит все зависимости для него.
+
+```sh
+$ npm run test:playwright
+```
+
+Подразумевается, что у вас установлен Docker CLI и Docker Engine.
+
+Для того, чтобы использовать UI-режим Playwright, используйте скрипт `playwright:docker:ui` (в подпакете e2e):
+
+```sh
+$ cd e2e
+$ npm run playwright:docker:ui
+```
+
+##### Пользователям macOS: не хотите/не имеете возможность использовать Docker Desktop?
+
+Благодаря относительно недавним изменениям лицензии, использование Docker Desktop в коммерческих условиях
+больше не является бесплатным. Используйте [Lima](https://github.com/lima-vm/lima) или одну из обёрток, таких как [Colima](https://github.com/abiosoft/colima) или [Rancher Desktop](https://rancherdesktop.io/).
+
+Если при настройке вы выбрали имя инстанса не `docker`, можете передать нужное с помощью переменной `LIMA_INSTANCE` при обращении к скрипту `playwright:docker`/`test:playwright`:
+
+```sh
+$ LIMA_INSTANCE=instancename npm run test:playwright
+```
+
+Эта информация необходима скрипту, чтобы корректно настроить переменную окружения `DOCKER_HOST`.

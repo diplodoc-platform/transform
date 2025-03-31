@@ -3,6 +3,7 @@
 .vscode
 
 node_modules
+node_modules_containerized
 tmp
 coverage
 /debug.js
@@ -23,3 +24,9 @@ www/
 bundle/
 
 tsconfig.tsbuildinfo
+
+*storybook.log
+
+test-results/
+playwright-report/
+ctrf/

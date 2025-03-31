@@ -1,0 +1,19 @@
+{
+  "extends": "@diplodoc/tsconfig",
+  "compilerOptions": {
+    "lib": ["DOM", "ES6"],
+    "outDir": "lib",
+    "module": "commonjs",
+    "baseUrl": ".",
+    "declaration": true,
+    "target": "ES6",
+    "types": ["node", "jest"]
+  },
+  "include": [
+    "tests/**/*",
+    "fixtures/**/*",
+    "stories/**/*",
+    ".storybook/**/*",
+    "playwright/playwright.config.ts"
+  ]
+}
