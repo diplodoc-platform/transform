@@ -1,22 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Terms Should create term in code with definition template 1`] = `
-<template id=":html_template"
-          label="html"
+<dfn class="yfm yfm-term_dfn"
+     id=":html_element"
+     role="dialog"
 >
-  <dfn class="yfm yfm-term_dfn"
-       id=":html_element"
-       role="dialog"
-  >
-    <p>
-      The HyperText Markup Language or
-      <strong>
-        HTML
-      </strong>
-      is the standard markup language for documents designed to be displayed in a web browser.
-    </p>
-  </dfn>
-</template>
+  <p>
+    The HyperText Markup Language or
+    <strong>
+      HTML
+    </strong>
+    is the standard markup language for documents designed to be displayed in a web browser.
+  </p>
+</dfn>
 <h1>
   Web
 </h1>
@@ -37,7 +33,7 @@ exports[`Terms Should create term in code with definition template 1`] = `
          height="16"
          viewbox="0 0 24 24"
          class="yfm-clipboard-icon"
-         data-animation="10"
+         data-animation="8"
     >
       <path fill="currentColor"
             d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"
@@ -49,7 +45,7 @@ exports[`Terms Should create term in code with definition template 1`] = `
             d="M9.5 13l3 3l5 -5"
             visibility="hidden"
       >
-        <animate id="visibileAnimation-10"
+        <animate id="visibileAnimation-8"
                  attributename="visibility"
                  from="hidden"
                  to="visible"
@@ -58,12 +54,12 @@ exports[`Terms Should create term in code with definition template 1`] = `
                  begin
         >
         </animate>
-        <animate id="hideAnimation-10"
+        <animate id="hideAnimation-8"
                  attributename="visibility"
                  from="visible"
                  to="hidden"
                  dur="1s"
-                 begin="visibileAnimation-10.end+1"
+                 begin="visibileAnimation-8.end+1"
                  fill="freeze"
         >
         </animate>
@@ -74,22 +70,18 @@ exports[`Terms Should create term in code with definition template 1`] = `
 `;
 
 exports[`Terms Should create term in table with definition template 1`] = `
-<template id=":html_template"
-          label="html"
+<dfn class="yfm yfm-term_dfn"
+     id=":html_element"
+     role="dialog"
 >
-  <dfn class="yfm yfm-term_dfn"
-       id=":html_element"
-       role="dialog"
-  >
-    <p>
-      The HyperText Markup Language or
-      <strong>
-        HTML
-      </strong>
-      is the standard markup language for documents designed to be displayed in a web browser.
-    </p>
-  </dfn>
-</template>
+  <p>
+    The HyperText Markup Language or
+    <strong>
+      HTML
+    </strong>
+    is the standard markup language for documents designed to be displayed in a web browser.
+  </p>
+</dfn>
 <h1>
   Web
 </h1>
@@ -126,22 +118,18 @@ exports[`Terms Should create term in table with definition template 1`] = `
 `;
 
 exports[`Terms Should create term in text with definition template 1`] = `
-<template id=":html_template"
-          label="html"
+<dfn class="yfm yfm-term_dfn"
+     id=":html_element"
+     role="dialog"
 >
-  <dfn class="yfm yfm-term_dfn"
-       id=":html_element"
-       role="dialog"
-  >
-    <p>
-      The HyperText Markup Language or
-      <strong>
-        HTML
-      </strong>
-      is the standard markup language for documents designed to be displayed in a web browser.
-    </p>
-  </dfn>
-</template>
+  <p>
+    The HyperText Markup Language or
+    <strong>
+      HTML
+    </strong>
+    is the standard markup language for documents designed to be displayed in a web browser.
+  </p>
+</dfn>
 <h1>
   Web
 </h1>
@@ -161,22 +149,18 @@ exports[`Terms Should create term in text with definition template 1`] = `
 `;
 
 exports[`Terms Term should use content from include 1`] = `
-<template id=":html_template"
-          label="html"
+<dfn class="yfm yfm-term_dfn"
+     id=":html_element"
+     role="dialog"
 >
-  <dfn class="yfm yfm-term_dfn"
-       id=":html_element"
-       role="dialog"
-  >
-    <p>
-      The HyperText Markup Language or
-      <strong>
-        HTML
-      </strong>
-      is the standard markup language for documents designed to be displayed in a web browser.
-    </p>
-  </dfn>
-</template>
+  <p>
+    The HyperText Markup Language or
+    <strong>
+      HTML
+    </strong>
+    is the standard markup language for documents designed to be displayed in a web browser.
+  </p>
+</dfn>
 <h1>
   Web
 </h1>
@@ -252,17 +236,13 @@ exports[`Terms Term should use escape regexp like chars 1`] = `
     *
   </i>
 </p>
-<template id=":*_template"
-          label="*"
+<dfn class="yfm yfm-term_dfn"
+     id=":*_element"
+     role="dialog"
 >
-  <dfn class="yfm yfm-term_dfn"
-       id=":*_element"
-       role="dialog"
-  >
-    <ul>
-      <li>
-      </li>
-    </ul>
-  </dfn>
-</template>
+  <ul>
+    <li>
+    </li>
+  </ul>
+</dfn>
 `;
