@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.53.0](https://github.com/diplodoc-platform/transform/compare/v4.52.0...v4.53.0) (2025-04-01)
+
+
+### Features
+
+* generate terms without template tag ([092df63](https://github.com/diplodoc-platform/transform/commit/092df6301755f16cc7df4a84e70915a8f0651681))
+* implement playwright setup & e2e tests ([24be221](https://github.com/diplodoc-platform/transform/commit/24be22148b8c27fd24e65b9446c19762cf7b3165))
+
 ## [4.52.0](https://github.com/diplodoc-platform/transform/compare/v4.51.1...v4.52.0) (2025-03-31)
 
 
