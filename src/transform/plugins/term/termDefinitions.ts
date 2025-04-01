@@ -132,13 +132,6 @@ function processTermDefinition(
         state.env.terms[':' + label] = title;
     }
 
-    token = new state.Token('template_open', 'template', 1);
-    token.map = [startLine, currentLine + 1];
-    token.attrSet('id', ':' + label + '_template');
-    token.attrSet('label', label);
-
-    state.tokens.push(token);
-
     token = new state.Token('dfn_open', 'dfn', 1);
     token.attrSet('class', 'yfm yfm-term_dfn');
     token.attrSet('id', ':' + label + '_element');
@@ -167,10 +160,6 @@ function processTermDefinition(
     }
 
     token = new state.Token('dfn_close', 'dfn', -1);
-
-    state.tokens.push(token);
-
-    token = new state.Token('template_close', 'template', -1);
 
     state.tokens.push(token);
 

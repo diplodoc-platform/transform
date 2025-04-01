@@ -14,11 +14,11 @@ export const yfm009: Rule = {
         const size = params.tokens.length;
 
         for (let i = 0; i < size; i++) {
-            if (params.tokens[i].type === 'template_close') {
+            if (params.tokens[i].type === 'dfn_close') {
                 lastCloseIndex = i;
             }
 
-            if (params.tokens[i].type !== 'template_close') {
+            if (params.tokens[i].type !== 'dfn_close') {
                 continue;
             }
 
@@ -26,11 +26,11 @@ export const yfm009: Rule = {
                 continue;
             }
 
-            if (params.tokens[i + 1].type === 'template_open') {
+            if (params.tokens[i + 1].type === 'dfn_open') {
                 continue;
             }
 
-            if (i < size - 2 && params.tokens[i + 2].type === 'template_open') {
+            if (i < size - 2 && params.tokens[i + 2].type === 'dfn_open') {
                 continue;
             }
 

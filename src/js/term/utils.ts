@@ -6,19 +6,6 @@ export const openClass = 'open';
 export const openDefinitionClass = Selector.CONTENT.replace(/\./g, '') + ' ' + openClass;
 let isListenerNeeded = true;
 
-export function createDefinitionElement(termElement: HTMLElement) {
-    const termKey = termElement.getAttribute('term-key');
-    const definitionTemplate = document.getElementById(
-        `${termKey}_template`,
-    ) as HTMLTemplateElement;
-    const definitionElement = definitionTemplate?.content.cloneNode(true).firstChild as HTMLElement;
-
-    definitionTemplate?.parentElement?.appendChild(definitionElement);
-    definitionTemplate.remove();
-
-    return definitionElement;
-}
-
 export function setDefinitionId(definitionElement: HTMLElement, termElement: HTMLElement): void {
     const termId = termElement.getAttribute('id') || Math.random().toString(36).substr(2, 8);
     definitionElement?.setAttribute('term-id', termId);
@@ -143,11 +130,7 @@ export function openDefinition(target: HTMLElement) {
 
     const termId = target.getAttribute('id');
     const termKey = target.getAttribute('term-key');
-    let definitionElement = document.getElementById(termKey + '_element');
-
-    if (termKey && !definitionElement) {
-        definitionElement = createDefinitionElement(target);
-    }
+    const definitionElement = document.getElementById(termKey + '_element');
 
     const isSameTerm = openedDefinition && termId === openedDefinition.getAttribute('term-id');
     if (isSameTerm) {
