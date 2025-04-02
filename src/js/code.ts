@@ -58,7 +58,19 @@ if (typeof document !== 'undefined') {
             return;
         }
 
-        copyToClipboard(code.innerText).then(() => {
+        // Get all text nodes and filter out line numbers
+        const textContent = Array.from(code.childNodes)
+            .filter((node) => {
+                // Skip line number spans
+                if (node instanceof HTMLElement && node.classList.contains('yfm-line-number')) {
+                    return false;
+                }
+                return true;
+            })
+            .map((node) => node.textContent)
+            .join('');
+
+        copyToClipboard(textContent).then(() => {
             notifySuccess(parent.querySelector('.yfm-clipboard-icon'));
         });
     });

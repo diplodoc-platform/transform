@@ -370,6 +370,13 @@
         color: var(--yfm-color-text);
 
         white-space: pre;
+
+        .yfm-line-number {
+            display: inline-block;
+            padding-right: 1em;
+            color: var(--yfm-color-line-numbers, #666);
+            user-select: none;
+        }
     }
 
     sup,
