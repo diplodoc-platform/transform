@@ -10,7 +10,7 @@ import {log} from './log';
 import makeHighlight from './highlight';
 import extractTitle from './title';
 import getHeadings from './headings';
-import sanitizeHtml from './sanitize';
+import sanitizeHtml, {defaultOptions, sanitizeStyles} from './sanitize';
 import {olAttrConversion} from './plugins/ol-attr-conversion';
 
 function initMarkdownIt(options: OptionsType) {
@@ -169,18 +169,36 @@ function initCompiler(md: MarkdownIt, options: OptionsType, env: EnvType) {
         }
 
         // Generate HTML
-        const html = md.renderer.render(tokens, md.options, env);
+        let html = md.renderer.render(tokens, md.options, env);
 
         if (!needToSanitizeHtml) {
             return html;
         }
 
-        // Sanitize the page
-        return sanitize
+        // If a custom sanitizer was used, we need to ensure styles are sanitized
+        // unless explicitly disabled via disableStyleSanitizer option
+        if (sanitize && !(sanitizeOptions?.disableStyleSanitizer ?? false)) {
+            const baseOptions = sanitizeOptions || defaultOptions;
+
+            const mergedOptions = {
+                ...baseOptions,
+                cssWhiteList: {
+                    ...(defaultOptions.cssWhiteList || {}),
+                    ...(baseOptions.cssWhiteList || {}),
+                    ...(env.additionalOptionsCssWhiteList || {}),
+                },
+            };
+
+            html = sanitizeStyles(html, mergedOptions);
+        }
+
+        const sanitizedHtml = sanitize
             ? sanitize(html, sanitizeOptions)
             : sanitizeHtml(html, sanitizeOptions, {
                   cssWhiteList: env.additionalOptionsCssWhiteList,
               });
+
+        return sanitizedHtml;
     };
 }
 

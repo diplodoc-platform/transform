@@ -599,7 +599,7 @@ function sanitizeStyleAttrs(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList)
     });
 }
 
-function sanitizeStyles(html: string, options: SanitizeOptions) {
+export function sanitizeStyles(html: string, options: SanitizeOptions) {
     const cssWhiteList = options.cssWhiteList || {};
 
     const $ = cheerio.load(html);
