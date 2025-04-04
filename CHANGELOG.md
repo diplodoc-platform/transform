@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.54.0](https://github.com/diplodoc-platform/transform/compare/v4.53.0...v4.54.0) (2025-04-04)
+
+
+### Features
+
+* sanitize styles by default even with custom sanitizer ([#690](https://github.com/diplodoc-platform/transform/issues/690)) ([800fa76](https://github.com/diplodoc-platform/transform/commit/800fa76bd31b754975cd43e3b71c6e7d47b5d40e))
+
 ## [4.53.0](https://github.com/diplodoc-platform/transform/compare/v4.52.0...v4.53.0) (2025-04-01)
 
 
