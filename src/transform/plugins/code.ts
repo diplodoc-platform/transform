@@ -68,11 +68,6 @@ function termReplace(str: string, env: EnvTerm, escape: (str: string) => string)
     return termCode || str;
 }
 
-function padNumber(num: number, width: number): string {
-    const numStr = String(num);
-    return ' '.repeat(Math.max(0, width - numStr.length)) + numStr;
-}
-
 function addLineNumbers(code: string): string {
     const lines = code.split('\n');
     const lineCount = lines.length;
@@ -85,7 +80,7 @@ function addLineNumbers(code: string): string {
     return (
         linesToProcess
             .map((line, index) => {
-                const lineNumber = padNumber(index + 1, maxDigits);
+                const lineNumber = String(index + 1).padStart(maxDigits, ' ');
                 return `<span class="yfm-line-number">${lineNumber}</span>${line}`;
             })
             .join('\n') + (hasTrailingNewline ? '\n' : '')
