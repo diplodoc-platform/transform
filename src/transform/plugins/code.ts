@@ -68,10 +68,43 @@ function termReplace(str: string, env: EnvTerm, escape: (str: string) => string)
     return termCode || str;
 }
 
+function addLineNumbers(code: string): string {
+    const lines = code.split('\n');
+    const lineCount = lines.length;
+    const maxDigits = String(lineCount).length;
+
+    // Remove trailing empty line if it exists
+    const hasTrailingNewline = code.endsWith('\n');
+    const linesToProcess = hasTrailingNewline ? lines.slice(0, -1) : lines;
+
+    return (
+        linesToProcess
+            .map((line, index) => {
+                const lineNumber = String(index + 1).padStart(maxDigits, ' ');
+                return `<span class="yfm-line-number">${lineNumber}</span>${line}`;
+            })
+            .join('\n') + (hasTrailingNewline ? '\n' : '')
+    );
+}
+
 const code: MarkdownItPluginCb = (md) => {
     const superCodeRenderer = md.renderer.rules.fence;
     md.renderer.rules.fence = function (tokens, idx, options, env, self) {
-        const superCode = superCodeRenderer?.(tokens, idx, options, env, self);
+        const token = tokens[idx];
+        const showLineNumbers = token.info.includes('showLineNumbers');
+
+        let superCode = superCodeRenderer?.(tokens, idx, options, env, self);
+
+        if (superCode && showLineNumbers) {
+            // Extract the code content from the pre/code tags
+            const codeMatch = superCode.match(/<pre[^>]*><code[^>]*>([\s\S]*?)<\/code><\/pre>/);
+            if (codeMatch) {
+                const codeContent = codeMatch[1];
+                const codeWithLineNumbers = addLineNumbers(codeContent);
+                superCode = superCode.replace(codeContent, codeWithLineNumbers);
+            }
+        }
+
         const superCodeWithTerms =
             superCode && env?.terms ? termReplace(superCode, env, md.utils.escapeRE) : superCode;
 
