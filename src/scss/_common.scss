@@ -342,6 +342,10 @@
         tab-size: var(--yfm-tab-size-code, inherit);
     }
 
+    a code {
+        text-decoration: underline;
+    }
+
     pre {
         word-wrap: normal;
     }
