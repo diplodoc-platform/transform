@@ -5,7 +5,7 @@ import {generateID} from './utils';
 
 const wrapInClipboard = (element: string | undefined, id: number) => {
     return `
-    <div class="yfm-clipboard">
+    <div class="code-block-container yfm-clipboard">
         ${element}
         <button class="yfm-clipboard-button" aria-label="Copy">
             <svg width="16" height="16" viewBox="0 0 24 24" class="yfm-clipboard-icon" data-animation="${id}">
