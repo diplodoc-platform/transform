@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.55.0](https://github.com/diplodoc-platform/transform/compare/v4.54.0...v4.55.0) (2025-04-11)
+
+
+### Features
+
+* add line numbers to code blocks and improve clipboard copy functionality ([#683](https://github.com/diplodoc-platform/transform/issues/683)) ([18b42ca](https://github.com/diplodoc-platform/transform/commit/18b42ca6994c686d7c7d9269fed6229fe9d8f4c3))
+* highlight inline code with a link ([#694](https://github.com/diplodoc-platform/transform/issues/694)) ([a4742c3](https://github.com/diplodoc-platform/transform/commit/a4742c3ea43e71351e5e22d8dea8e91896d83afa))
+
 ## [4.54.0](https://github.com/diplodoc-platform/transform/compare/v4.53.0...v4.54.0) (2025-04-04)
 
 
