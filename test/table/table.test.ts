@@ -15,7 +15,8 @@ const transformYfm = (text: string) => {
 describe('Table plugin', () => {
     it('should render simple inline table', () => {
         expect(transformYfm('#|\n||1|2||\n||3|4||\n|#')).toBe(
-            '<table>\n' +
+            '<div class="yfm-table-container">\n' +
+                '<table>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
                 '<td>\n' +
@@ -34,7 +35,8 @@ describe('Table plugin', () => {
                 '</td>\n' +
                 '</tr>\n' +
                 '</tbody>\n' +
-                '</table>\n',
+                '</table>\n' +
+                '</div>\n',
         );
     });
     it('should render simple table', () => {
@@ -50,7 +52,8 @@ describe('Table plugin', () => {
                     '|#',
             ),
         ).toBe(
-            '<table>\n' +
+            '<div class="yfm-table-container">\n' +
+                '<table>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
                 '<td>\n' +
@@ -77,7 +80,8 @@ describe('Table plugin', () => {
                 '</td>\n' +
                 '</tr>\n' +
                 '</tbody>\n' +
-                '</table>\n',
+                '</table>\n' +
+                '</div>\n',
         );
     });
     it('should render simple table with attrs', () => {
@@ -93,7 +97,8 @@ describe('Table plugin', () => {
                     '|# {.test .name #id data-diplodoc-large-table data-wide-preview="true"}',
             ),
         ).toBe(
-            '<table class="test name" id="id" data-wide-preview="true" data-diplodoc-large-table="true">\n' +
+            '<div class="yfm-table-container">\n' +
+                '<table class="test name" id="id" data-wide-preview="true" data-diplodoc-large-table="true">\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
                 '<td>\n' +
@@ -120,7 +125,8 @@ describe('Table plugin', () => {
                 '</td>\n' +
                 '</tr>\n' +
                 '</tbody>\n' +
-                '</table>\n',
+                '</table>\n' +
+                '</div>\n',
         );
     });
     it('should render table between paragraphs', () => {
@@ -139,6 +145,7 @@ describe('Table plugin', () => {
             ),
         ).toBe(
             '<p>Text</p>\n' +
+                '<div class="yfm-table-container">\n' +
                 '<table>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
@@ -159,6 +166,7 @@ describe('Table plugin', () => {
                 '</tr>\n' +
                 '</tbody>\n' +
                 '</table>\n' +
+                '</div>\n' +
                 '<p>Text</p>\n',
         );
     });
@@ -175,7 +183,8 @@ describe('Table plugin', () => {
                     '|#',
             ),
         ).toBe(
-            '<table>\n' +
+            '<div class="yfm-table-container">\n' +
+                '<table>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
                 '<td>\n' +
@@ -202,7 +211,8 @@ describe('Table plugin', () => {
                 '</td>\n' +
                 '</tr>\n' +
                 '</tbody>\n' +
-                '</table>\n',
+                '</table>\n' +
+                '</div>\n',
         );
     });
     it('should render table with block elements', () => {
@@ -228,7 +238,8 @@ describe('Table plugin', () => {
                     '|#\n',
             ),
         ).toBe(
-            '<table>\n' +
+            '<div class="yfm-table-container">\n' +
+                '<table>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
                 '<td>\n' +
@@ -270,7 +281,8 @@ describe('Table plugin', () => {
                 '</td>\n' +
                 '</tr>\n' +
                 '</tbody>\n' +
-                '</table>\n',
+                '</table>\n' +
+                '</div>\n',
         );
     });
     it('should render two tables', () => {
@@ -291,7 +303,8 @@ describe('Table plugin', () => {
                     '|#',
             ),
         ).toBe(
-            '<table>\n' +
+            '<div class="yfm-table-container">\n' +
+                '<table>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
                 '<td>\n' +
@@ -311,6 +324,8 @@ describe('Table plugin', () => {
                 '</tr>\n' +
                 '</tbody>\n' +
                 '</table>\n' +
+                '</div>\n' +
+                '<div class="yfm-table-container">\n' +
                 '<table>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
@@ -330,7 +345,8 @@ describe('Table plugin', () => {
                 '</td>\n' +
                 '</tr>\n' +
                 '</tbody>\n' +
-                '</table>\n',
+                '</table>\n' +
+                '</div>\n',
         );
     });
     it('should not render table inside code', () => {
@@ -353,7 +369,8 @@ describe('Table plugin', () => {
                     '|#',
             ),
         ).toBe(
-            '<table>\n' +
+            '<div class="yfm-table-container">\n' +
+                '<table>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
                 '<td>\n' +
@@ -379,7 +396,8 @@ describe('Table plugin', () => {
                 '</td>\n' +
                 '</tr>\n' +
                 '</tbody>\n' +
-                '</table>\n',
+                '</table>\n' +
+                '</div>\n',
         );
     });
     it('should not render table without close token', () => {
@@ -467,7 +485,8 @@ describe('Table plugin', () => {
                     '|#',
             ),
         ).toBe(
-            '<table>\n' +
+            '<div class="yfm-table-container">\n' +
+                '<table>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
                 '<td>\n' +
@@ -475,6 +494,7 @@ describe('Table plugin', () => {
                 '</td>\n' +
                 '<td>\n' +
                 '<p>test</p>\n' +
+                '<div class="yfm-table-container">\n' +
                 '<table>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
@@ -495,6 +515,7 @@ describe('Table plugin', () => {
                 '</tr>\n' +
                 '</tbody>\n' +
                 '</table>\n' +
+                '</div>\n' +
                 '<p>test</p>\n' +
                 '</td>\n' +
                 '</tr>\n' +
@@ -507,7 +528,8 @@ describe('Table plugin', () => {
                 '</td>\n' +
                 '</tr>\n' +
                 '</tbody>\n' +
-                '</table>\n',
+                '</table>\n' +
+                '</div>\n',
         );
     });
     it('should render table with spaces after new line', () => {
@@ -521,7 +543,8 @@ describe('Table plugin', () => {
                     '    |#',
             ),
         ).toBe(
-            '<table>\n' +
+            '<div class="yfm-table-container">\n' +
+                '<table>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
                 '<td>\n' +
@@ -540,7 +563,8 @@ describe('Table plugin', () => {
                 '</td>\n' +
                 '</tr>\n' +
                 '</tbody>\n' +
-                '</table>\n',
+                '</table>\n' +
+                '</div>\n',
         );
     });
     it('should add empty cells', () => {
@@ -557,7 +581,8 @@ describe('Table plugin', () => {
                     '|#',
             ),
         ).toBe(
-            '<table>\n' +
+            '<div class="yfm-table-container">\n' +
+                '<table>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
                 '<td>\n' +
@@ -589,7 +614,8 @@ describe('Table plugin', () => {
                 '</td>\n' +
                 '</tr>\n' +
                 '</tbody>\n' +
-                '</table>\n',
+                '</table>\n' +
+                '</div>\n',
         );
     });
     it('should render table inside quote on each line', () => {
@@ -606,6 +632,7 @@ describe('Table plugin', () => {
             ),
         ).toBe(
             '<blockquote>\n' +
+                '<div class="yfm-table-container">\n' +
                 '<table>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
@@ -634,12 +661,14 @@ describe('Table plugin', () => {
                 '</tr>\n' +
                 '</tbody>\n' +
                 '</table>\n' +
+                '</div>\n' +
                 '</blockquote>\n',
         );
     });
     it('should correct render escaped cells', () => {
         expect(transformYfm('#|\n||1 \\| 1.1|2||\n||3|4||\n|#')).toBe(
-            '<table>\n' +
+            '<div class="yfm-table-container">\n' +
+                '<table>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
                 '<td>\n' +
@@ -658,7 +687,8 @@ describe('Table plugin', () => {
                 '</td>\n' +
                 '</tr>\n' +
                 '</tbody>\n' +
-                '</table>\n',
+                '</table>\n' +
+                '</div>\n',
         );
     });
     it('should correct render escaped rows', () => {
@@ -670,7 +700,8 @@ describe('Table plugin', () => {
                     '|#',
             ),
         ).toBe(
-            '<table>\n' +
+            '<div class="yfm-table-container">\n' +
+                '<table>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
                 '<td>\n' +
@@ -689,7 +720,8 @@ describe('Table plugin', () => {
                 '</td>\n' +
                 '</tr>\n' +
                 '</tbody>\n' +
-                '</table>\n',
+                '</table>\n' +
+                '</div>\n',
         );
     });
 
@@ -716,7 +748,8 @@ describe('Table plugin', () => {
                         '|#',
                 ),
             ).toEqual(
-                '<table>\n' +
+                '<div class="yfm-table-container">\n' +
+                    '<table>\n' +
                     '<tbody>\n' +
                     '<tr>\n' +
                     '<td>\n' +
@@ -740,7 +773,8 @@ describe('Table plugin', () => {
                     '</td>\n' +
                     '</tr>\n' +
                     '</tbody>\n' +
-                    '</table>\n',
+                    '</table>\n' +
+                    '</div>\n',
             );
         });
 
@@ -754,7 +788,8 @@ describe('Table plugin', () => {
                         '|#',
                 ),
             ).toEqual(
-                '<table>\n' +
+                '<div class="yfm-table-container">\n' +
+                    '<table>\n' +
                     '<tbody>\n' +
                     '<tr>\n' +
                     '<td>\n' +
@@ -778,7 +813,8 @@ describe('Table plugin', () => {
                     '</td>\n' +
                     '</tr>\n' +
                     '</tbody>\n' +
-                    '</table>\n',
+                    '</table>\n' +
+                    '</div>\n',
             );
         });
 
@@ -794,7 +830,8 @@ describe('Table plugin', () => {
                         '|#',
                 ),
             ).toEqual(
-                '<table>\n' +
+                '<div class="yfm-table-container">\n' +
+                    '<table>\n' +
                     '<tbody>\n' +
                     '<tr>\n' +
                     '<td>\n' +
@@ -828,7 +865,8 @@ describe('Table plugin', () => {
                     '</td>\n' +
                     '</tr>\n' +
                     '</tbody>\n' +
-                    '</table>\n',
+                    '</table>\n' +
+                    '</div>\n',
             );
         });
 
@@ -844,7 +882,8 @@ describe('Table plugin', () => {
                         '|#',
                 ),
             ).toEqual(
-                '<table>\n' +
+                '<div class="yfm-table-container">\n' +
+                    '<table>\n' +
                     '<tbody>\n' +
                     '<tr>\n' +
                     '<td>\n' +
@@ -893,7 +932,8 @@ describe('Table plugin', () => {
                     '</td>\n' +
                     '</tr>\n' +
                     '</tbody>\n' +
-                    '</table>\n',
+                    '</table>\n' +
+                    '</div>\n',
             );
         });
     });
@@ -909,7 +949,8 @@ describe('Table plugin', () => {
                         '|#',
                 ),
             ).toEqual(
-                '<table>\n' +
+                '<div class="yfm-table-container">\n' +
+                    '<table>\n' +
                     '<tbody>\n' +
                     '<tr>\n' +
                     '<td>\n' +
@@ -933,7 +974,8 @@ describe('Table plugin', () => {
                     '</td>\n' +
                     '</tr>\n' +
                     '</tbody>\n' +
-                    '</table>\n',
+                    '</table>\n' +
+                    '</div>\n',
             );
         });
 
@@ -947,7 +989,8 @@ describe('Table plugin', () => {
                         '|#',
                 ),
             ).toEqual(
-                '<table>\n' +
+                '<div class="yfm-table-container">\n' +
+                    '<table>\n' +
                     '<tbody>\n' +
                     '<tr>\n' +
                     '<td>\n' +
@@ -971,7 +1014,8 @@ describe('Table plugin', () => {
                     '</td>\n' +
                     '</tr>\n' +
                     '</tbody>\n' +
-                    '</table>\n',
+                    '</table>\n' +
+                    '</div>\n',
             );
         });
 
@@ -985,7 +1029,8 @@ describe('Table plugin', () => {
                         '|#',
                 ),
             ).toEqual(
-                '<table>\n' +
+                '<div class="yfm-table-container">\n' +
+                    '<table>\n' +
                     '<tbody>\n' +
                     '<tr>\n' +
                     '<td>\n' +
@@ -1015,7 +1060,8 @@ describe('Table plugin', () => {
                     '</td>\n' +
                     '</tr>\n' +
                     '</tbody>\n' +
-                    '</table>\n',
+                    '</table>\n' +
+                    '</div>\n',
             );
         });
     });
@@ -1031,7 +1077,8 @@ describe('Table plugin', () => {
                         '|#',
                 ),
             ).toEqual(
-                '<table>\n' +
+                '<div class="yfm-table-container">\n' +
+                    '<table>\n' +
                     '<tbody>\n' +
                     '<tr>\n' +
                     '<td>\n' +
@@ -1058,7 +1105,8 @@ describe('Table plugin', () => {
                     '</td>\n' +
                     '</tr>\n' +
                     '</tbody>\n' +
-                    '</table>\n',
+                    '</table>\n' +
+                    '</div>\n',
             );
         });
 
@@ -1084,7 +1132,8 @@ describe('Table plugin', () => {
                         '|#',
                 ),
             ).toEqual(
-                '<table>\n' +
+                '<div class="yfm-table-container">\n' +
+                    '<table>\n' +
                     '<tbody>\n' +
                     '<tr>\n' +
                     '<td>\n' +
@@ -1120,7 +1169,8 @@ describe('Table plugin', () => {
                     '</td>\n' +
                     '</tr>\n' +
                     '</tbody>\n' +
-                    '</table>\n',
+                    '</table>\n' +
+                    '</div>\n',
             );
         });
 
@@ -1132,7 +1182,8 @@ describe('Table plugin', () => {
 || ^ | > | ^ ||
 |#`),
             ).toEqual(
-                '<table>\n' +
+                '<div class="yfm-table-container">\n' +
+                    '<table>\n' +
                     '<tbody>\n' +
                     '<tr>\n' +
                     '<td>\n' +
@@ -1155,7 +1206,8 @@ describe('Table plugin', () => {
                     '</tr>\n' +
                     '<tr></tr>\n' +
                     '</tbody>\n' +
-                    '</table>\n',
+                    '</table>\n' +
+                    '</div>\n',
             );
         });
     });
@@ -1167,7 +1219,8 @@ describe('Table plugin', () => {
 || \\> | \\^  ||
 |#`),
         ).toEqual(
-            '<table>\n' +
+            '<div class="yfm-table-container">\n' +
+                '<table>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
                 '<td>\n' +
@@ -1186,7 +1239,8 @@ describe('Table plugin', () => {
                 '</td>\n' +
                 '</tr>\n' +
                 '</tbody>\n' +
-                '</table>\n',
+                '</table>\n' +
+                '</div>\n',
         );
     });
 
@@ -1244,7 +1298,8 @@ describe('Table plugin', () => {
 || Text | Text {.cell-align-center} | > | More text ||
 |#`),
             ).toEqual(
-                '<table>\n' +
+                '<div class="yfm-table-container">\n' +
+                    '<table>\n' +
                     '<tbody>\n' +
                     '<tr>\n' +
                     '<td>\n' +
@@ -1272,7 +1327,8 @@ describe('Table plugin', () => {
                     '</td>\n' +
                     '</tr>\n' +
                     '</tbody>\n' +
-                    '</table>\n',
+                    '</table>\n' +
+                    '</div>\n',
             );
         });
 
@@ -1283,7 +1339,8 @@ describe('Table plugin', () => {
 || Text {.cell-align-center} | > ||
 |#`),
             ).toEqual(
-                '<table>\n' +
+                '<div class="yfm-table-container">\n' +
+                    '<table>\n' +
                     '<tbody>\n' +
                     '<tr>\n' +
                     '<td>\n' +
@@ -1299,7 +1356,8 @@ describe('Table plugin', () => {
                     '</td>\n' +
                     '</tr>\n' +
                     '</tbody>\n' +
-                    '</table>\n',
+                    '</table>\n' +
+                    '</div>\n',
             );
         });
     });
@@ -1337,7 +1395,8 @@ describe('table with includes', () => {
                     '|#',
             ),
         ).toEqual(
-            '<table>\n' +
+            '<div class="yfm-table-container">\n' +
+                '<table>\n' +
                 '<tbody>\n' +
                 '<tr>\n' +
                 '<td>\n' +
@@ -1356,7 +1415,8 @@ describe('table with includes', () => {
                 '</td>\n' +
                 '</tr>\n' +
                 '</tbody>\n' +
-                '</table>\n',
+                '</table>\n' +
+                '</div>\n',
         );
     });
 });
