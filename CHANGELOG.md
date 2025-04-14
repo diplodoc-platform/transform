@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.56.0](https://github.com/diplodoc-platform/transform/compare/v4.55.0...v4.56.0) (2025-04-14)
+
+
+### Features
+
+* allow use tags in svgs with local links ([#670](https://github.com/diplodoc-platform/transform/issues/670)) ([82966ec](https://github.com/diplodoc-platform/transform/commit/82966ec2b166ea909438480f35ee2a51bf599131))
+
 ## [4.55.0](https://github.com/diplodoc-platform/transform/compare/v4.54.0...v4.55.0) (2025-04-11)
 
 
