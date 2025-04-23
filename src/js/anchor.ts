@@ -11,7 +11,7 @@ if (typeof document !== 'undefined') {
         }
 
         const href = target.getAttribute('data-href') || '';
-        const link = window.location.href + href;
+        const link = new URL(href, window.location.href).toString();
 
         copyToClipboard(link);
     });

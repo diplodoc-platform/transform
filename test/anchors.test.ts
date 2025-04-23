@@ -204,4 +204,40 @@ describe('Anchors', () => {
             expect(html).toEqual('<h2 id="custom-id">Test heading</h2>\n');
         });
     });
+
+    describe('when useCommonAnchorButtons is true', () => {
+        it('should replace anchor links with buttons', () => {
+            expect(
+                html('## Test heading', {
+                    useCommonAnchorButtons: true,
+                }),
+            ).toMatchSnapshot();
+        });
+
+        it('should replace custom anchor links with buttons', () => {
+            expect(
+                html('## Test heading {#custom-id}', {
+                    useCommonAnchorButtons: true,
+                }),
+            ).toMatchSnapshot();
+        });
+
+        it('should translate button title', () => {
+            expect(
+                html('## Test heading', {
+                    useCommonAnchorButtons: true,
+                    lang: 'en',
+                }),
+            ).toMatchSnapshot();
+        });
+
+        it('should not render button anchors when disableCommonAnchors is true', () => {
+            expect(
+                html('## Test heading', {
+                    useCommonAnchorButtons: true,
+                    disableCommonAnchors: true,
+                }),
+            ).toMatchSnapshot();
+        });
+    });
 });
