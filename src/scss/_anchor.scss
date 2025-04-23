@@ -1,6 +1,26 @@
 .yfm {
-    h1, h2, h3, h4, h5, h6 {
-        .yfm-anchor {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        .yfm-clipboard-anchor {
+            //reset default button style
+            background: none;
+            color: var(--yfm-color-link);
+            border: none;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+
+            &:hover {
+                color: var(--yfm-color-link-hover);
+            }
+        }
+
+        .yfm-anchor,
+        .yfm-clipboard-anchor {
             display: inline-block;
             width: 24px;
             padding-right: 4px;
@@ -22,23 +42,33 @@
             }
         }
 
-        &:hover .yfm-anchor::before {
-            opacity: 1;
+        &:hover {
+            .yfm-anchor::before,
+            .yfm-clipboard-anchor::before {
+                opacity: 1;
+            }
         }
     }
 
     table {
-        h1, h2, h3, h4, h5, h6 {
-            .yfm-anchor {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            .yfm-anchor,
+            .yfm-clipboard-anchor {
                 width: 1em;
                 margin-left: -1em;
                 padding-right: 0;
             }
         }
-    };
+    }
 
     .yfm-tabs {
-        .yfm-anchor::before {
+        .yfm-anchor::before,
+        .yfm-clipboard-anchor::before {
             position: absolute;
             padding-right: 2px;
         }

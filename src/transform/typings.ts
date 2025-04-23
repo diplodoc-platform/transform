@@ -29,6 +29,24 @@ export type Heading = {
     items?: Heading[];
 };
 
+export type Lang =
+    | 'ru'
+    | 'en'
+    | 'ar'
+    | 'cs'
+    | 'fr'
+    | 'es'
+    | 'he'
+    | 'bg'
+    | 'et'
+    | 'el'
+    | 'pt'
+    | 'zh'
+    | 'zh-tw'
+    | 'kk'
+    | 'tr'
+    | 'uz';
+
 export interface OptionsType {
     tokens?: boolean;
     vars?: Record<string, string>;
@@ -67,6 +85,10 @@ export interface OptionsType {
      * Set value to `false` to disable it
      */
     enableMarkdownAttrs?: boolean;
+    supportGithubAnchors?: boolean;
+    disableCommonAnchors?: boolean;
+    useCommonAnchorButtons?: boolean;
+    lang?: Lang;
     [x: string]: unknown;
 }
 
@@ -89,7 +111,7 @@ export type EnvType<Extras extends {} = {}> = {
 export interface MarkdownItPluginOpts {
     path: string;
     log: Logger;
-    lang: 'ru' | 'en' | 'es' | 'fr' | 'cs' | 'ar' | 'he';
+    lang: Lang;
     root: string;
     rootPublicPath: string;
     isLintRun: boolean;
