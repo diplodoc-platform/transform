@@ -31,7 +31,13 @@ export default defineConfig({
     projects: [
         {
             name: 'chromium',
-            use: {...devices['Desktop Chrome'], viewport: narrowerViewport},
+            use: {
+                ...devices['Desktop Chrome'],
+                viewport: narrowerViewport,
+                contextOptions: {
+                    permissions: ['clipboard-read', 'clipboard-write'],
+                },
+            },
         },
 
         {
