@@ -309,6 +309,7 @@
         word-wrap: break-word;
     }
 
+    li:first-child,
     li + li {
         margin-block: var(--yfm-list-item-margin-block, 0.33em 0);
     }
@@ -319,14 +320,14 @@
             margin-block: var(--yfm-list-text-margin-block, 0 15px);
         }
 
-        > p:only-child,
-        > blockquote:only-child {
+        > p:only-of-type,
+        > blockquote:only-of-type {
             margin-block: var(--yfm-list-text-only-margin-block, 0);
         }
 
         @supports selector(:has(br)) {
-            > p:only-child:has(br),
-            > blockquote:only-child:has(br) {
+            > p:only-of-type:has(br),
+            > blockquote:only-of-type:has(br) {
                 margin-block: var(--yfm-list-text-margin-block, 0 15px);
             }
         }
