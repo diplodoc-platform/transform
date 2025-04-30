@@ -75,16 +75,14 @@ const index: MarkdownItPluginCb = (md, {lang, notesAutotitle, path: optPath, log
                 // Add extra paragraph
                 const titleOpen = new state.Token('yfm_note_title_open', 'p', 1);
                 titleOpen.attrSet('class', 'yfm-note-title');
-                const titleInline = new state.Token('inline', '', 0);
+                const autotitle = notesAutotitle ? TITLES[lang][type] : '';
+                const titleContent = match[2] === undefined ? autotitle : match[2];
+                const titleInline = state.md.parseInline(titleContent, state.env)[0];
+                titleInline.map = null;
                 const titleClose = new state.Token('yfm_note_title_close', 'p', -1);
 
                 titleOpen.block = true;
                 titleClose.block = true;
-
-                const autotitle = notesAutotitle ? TITLES[lang][type] : '';
-
-                titleInline.content = match[2] === undefined ? autotitle : match[2];
-                titleInline.children = [];
 
                 const contentOpen = new state.Token('yfm_note_content_open', 'div', 1);
                 contentOpen.attrSet('class', 'yfm-note-content');
@@ -93,13 +91,6 @@ const index: MarkdownItPluginCb = (md, {lang, notesAutotitle, path: optPath, log
                 if (newOpenToken.map) {
                     contentOpen.map = [newOpenToken.map[0] + 2, newOpenToken.map[1] - 2];
                 }
-
-                state.md.inline.parse(
-                    titleInline.content,
-                    state.md,
-                    state.env,
-                    titleInline.children,
-                );
 
                 const insideTokens = [newOpenToken];
                 if (titleInline.content) {
