@@ -6,26 +6,16 @@ import {escapeHtml} from 'markdown-it/lib/common/utils';
 import slugify from 'slugify';
 
 import {headingInfo} from '../../utils';
-import {Lang, MarkdownItPluginCb} from '../typings';
+import {MarkdownItPluginCb} from '../typings';
 
 import {ANCHOR_TITLES, CUSTOM_ID_EXCEPTION, CUSTOM_ID_REGEXP} from './constants';
-
-function getAnchorTitle(originalLang?: string) {
-    let lang = originalLang as Lang;
-
-    if (!lang || !Object.keys(ANCHOR_TITLES).includes(lang)) {
-        lang = 'ru';
-    }
-
-    return ANCHOR_TITLES[lang];
-}
 
 function createAnchorButtonTokens(
     state: StateCore,
     id: string,
     setId = false,
     href: string,
-    lang: string,
+    title: string,
 ) {
     const open = new state.Token('anchor_open', 'button', 1);
     const close = new state.Token('anchor_close', 'button', -1);
@@ -33,8 +23,6 @@ function createAnchorButtonTokens(
     if (setId) {
         open.attrSet('id', id);
     }
-
-    const title = getAnchorTitle(lang);
 
     open.attrSet('class', 'yfm-clipboard-anchor');
     open.attrSet('data-href', href + '#' + id);
@@ -188,8 +176,8 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
                 }
 
                 const allAnchorIds = customIds ? customIds : [id];
-                const anchorTitleOrLang = useCommonAnchorButtons
-                    ? lang
+                const anchorTitle = useCommonAnchorButtons
+                    ? ANCHOR_TITLES[lang]
                     : removeCustomId(title).replace(/`/g, '');
 
                 allAnchorIds.forEach((customId) => {
@@ -200,7 +188,7 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
                             customId,
                             setId,
                             href,
-                            anchorTitleOrLang,
+                            anchorTitle,
                         );
                         inlineToken.children?.unshift(...linkTokens);
                     }
@@ -211,7 +199,7 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
                             ghId,
                             true,
                             href,
-                            anchorTitleOrLang,
+                            anchorTitle,
                         );
                         inlineToken.children?.unshift(...ghLinkTokens);
                     }

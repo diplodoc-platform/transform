@@ -10,15 +10,6 @@ import {TITLES} from './constants';
 const ALERT_RE = /^{% note (alert|info|tip|warning)\s*(?:"(.*?)")? %}$/;
 const WRONG_NOTES = /^{% note (.*)%}/;
 
-function getTitle(type: string, originLang: keyof typeof TITLES) {
-    let lang = originLang;
-
-    if (!lang || !Object.keys(TITLES).includes(lang)) {
-        lang = 'ru';
-    }
-
-    return TITLES[lang][type];
-}
 const matchCloseToken: MatchTokenFunction = (tokens, i) => {
     return (
         tokens[i].type === 'paragraph_open' &&
@@ -90,7 +81,7 @@ const index: MarkdownItPluginCb = (md, {lang, notesAutotitle, path: optPath, log
                 titleOpen.block = true;
                 titleClose.block = true;
 
-                const autotitle = notesAutotitle ? getTitle(type, lang) : '';
+                const autotitle = notesAutotitle ? TITLES[lang][type] : '';
 
                 titleInline.content = match[2] === undefined ? autotitle : match[2];
                 titleInline.children = [];

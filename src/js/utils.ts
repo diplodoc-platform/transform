@@ -8,14 +8,15 @@ export const isCustom = (event: Event) => {
     return !target || !(target as HTMLElement).matches;
 };
 
-export const copyToClipboard = (text: string) => {
+export const copyToClipboard = async (text: string) => {
     if (!text) {
-        return Promise.resolve();
+        return;
     }
 
     if (navigator.clipboard && typeof navigator.clipboard.writeText) {
         return navigator.clipboard.writeText(text);
     }
+
     const textarea = document.createElement('textarea');
     textarea.setAttribute('style', 'position: absolute; left: 1000%');
     textarea.textContent = text;
@@ -25,6 +26,4 @@ export const copyToClipboard = (text: string) => {
     document.execCommand('copy');
 
     document.body.removeChild(textarea);
-
-    return Promise.resolve();
 };

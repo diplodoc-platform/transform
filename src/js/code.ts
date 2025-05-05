@@ -1,27 +1,6 @@
-import {getEventTarget, isCustom} from './utils';
+import {copyToClipboard, getEventTarget, isCustom} from './utils';
 
 const BUTTON_SELECTOR = '.yfm-clipboard-button';
-
-function copyToClipboard(text: string) {
-    if (!text) {
-        return Promise.resolve();
-    }
-
-    if (navigator.clipboard && typeof navigator.clipboard.writeText) {
-        return navigator.clipboard.writeText(text);
-    }
-    const textarea = document.createElement('textarea');
-    textarea.setAttribute('style', 'position: absolute; left: 1000%');
-    textarea.textContent = text;
-    document.body.append(textarea);
-
-    textarea.select();
-    document.execCommand('copy');
-
-    document.body.removeChild(textarea);
-
-    return Promise.resolve();
-}
 
 function notifySuccess(svgButton: HTMLElement | null) {
     if (!svgButton) {

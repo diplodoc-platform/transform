@@ -12,6 +12,7 @@ import extractTitle from './title';
 import getHeadings from './headings';
 import sanitizeHtml, {defaultOptions, sanitizeStyles} from './sanitize';
 import {olAttrConversion} from './plugins/ol-attr-conversion';
+import {DEFAULT_LANG} from './constants';
 
 function initMarkdownIt(options: OptionsType) {
     const {
@@ -74,6 +75,7 @@ function getPluginOptions(options: OptionsType) {
         extractTitle,
         conditionsInCode = false,
         disableLiquid = false,
+        lang = DEFAULT_LANG,
         ...customOptions
     } = options;
 
@@ -85,6 +87,7 @@ function getPluginOptions(options: OptionsType) {
         extractTitle,
         disableLiquid,
         log,
+        lang,
     } as MarkdownItPluginOpts;
 }
 
