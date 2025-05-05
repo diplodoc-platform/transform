@@ -8,14 +8,36 @@ import slugify from 'slugify';
 import {headingInfo} from '../../utils';
 import {MarkdownItPluginCb} from '../typings';
 
-import {CUSTOM_ID_EXCEPTION, CUSTOM_ID_REGEXP} from './constants';
+import {ANCHOR_TITLES, CUSTOM_ID_EXCEPTION, CUSTOM_ID_REGEXP} from './constants';
 
-function createLinkTokens(
+function createAnchorButtonTokens(
     state: StateCore,
     id: string,
-    title: string,
     setId = false,
     href: string,
+    title: string,
+) {
+    const open = new state.Token('anchor_open', 'button', 1);
+    const close = new state.Token('anchor_close', 'button', -1);
+
+    if (setId) {
+        open.attrSet('id', id);
+    }
+
+    open.attrSet('class', 'yfm-clipboard-anchor');
+    open.attrSet('data-href', href + '#' + id);
+    open.attrSet('aria-label', title);
+    open.attrSet('title', title);
+
+    return [open, close];
+}
+
+function createAnchorLinkTokens(
+    state: StateCore,
+    id: string,
+    setId = false,
+    href: string,
+    title: string,
 ) {
     const open = new state.Token('link_open', 'a', 1);
     const close = new state.Token('link_close', 'a', -1);
@@ -76,13 +98,22 @@ interface Options {
     extractTitle?: boolean;
     supportGithubAnchors?: boolean;
     disableCommonAnchors?: boolean;
+    useCommonAnchorButtons?: boolean;
     transformLink: (v: string) => string;
     getPublicPath?: (options: Options, v?: string) => string;
 }
 
 const index: MarkdownItPluginCb<Options> = (md, options) => {
-    const {extractTitle, path, log, supportGithubAnchors, getPublicPath, disableCommonAnchors} =
-        options;
+    const {
+        extractTitle,
+        path,
+        log,
+        supportGithubAnchors,
+        getPublicPath,
+        disableCommonAnchors,
+        useCommonAnchorButtons,
+        lang,
+    } = options;
 
     const plugin = (state: StateCore) => {
         /* Do not use the plugin if it is included in the file */
@@ -96,6 +127,10 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
         const tokens = state.tokens;
         let i = 0;
         const slugger = new GithubSlugger();
+
+        const createAnchorTokens = useCommonAnchorButtons
+            ? createAnchorButtonTokens
+            : createAnchorLinkTokens;
 
         while (i < tokens.length) {
             const token = tokens[i];
@@ -141,22 +176,31 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
                 }
 
                 const allAnchorIds = customIds ? customIds : [id];
-                const anchorTitle = removeCustomId(title).replace(/`/g, '');
+                const anchorTitle = useCommonAnchorButtons
+                    ? ANCHOR_TITLES[lang]
+                    : removeCustomId(title).replace(/`/g, '');
+
                 allAnchorIds.forEach((customId) => {
                     const setId = id !== customId;
                     if (!disableCommonAnchors) {
-                        const linkTokens = createLinkTokens(
+                        const linkTokens = createAnchorTokens(
                             state,
                             customId,
-                            anchorTitle,
                             setId,
                             href,
+                            anchorTitle,
                         );
                         inlineToken.children?.unshift(...linkTokens);
                     }
 
                     if (supportGithubAnchors) {
-                        const ghLinkTokens = createLinkTokens(state, ghId, anchorTitle, true, href);
+                        const ghLinkTokens = createAnchorTokens(
+                            state,
+                            ghId,
+                            true,
+                            href,
+                            anchorTitle,
+                        );
                         inlineToken.children?.unshift(...ghLinkTokens);
                     }
                 });

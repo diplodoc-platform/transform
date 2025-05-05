@@ -272,6 +272,45 @@ exports[`Anchors should remove quotes from id 1`] = `
 </p>
 `;
 
+exports[`Anchors when useCommonAnchorButtons is true should not render button anchors when disableCommonAnchors is true 1`] = `
+<h2 id="test-heading">
+  Test heading
+</h2>
+`;
+
+exports[`Anchors when useCommonAnchorButtons is true should replace anchor links with buttons 1`] = `
+<h2 id="test-heading">
+  <button class="yfm-clipboard-anchor"
+          data-href="link.html#test-heading"
+          title="Скопировать ссылку"
+  >
+  </button>
+  Test heading
+</h2>
+`;
+
+exports[`Anchors when useCommonAnchorButtons is true should replace custom anchor links with buttons 1`] = `
+<h2 id="custom-id">
+  <button class="yfm-clipboard-anchor"
+          data-href="link.html#custom-id"
+          title="Скопировать ссылку"
+  >
+  </button>
+  Test heading
+</h2>
+`;
+
+exports[`Anchors when useCommonAnchorButtons is true should translate button title 1`] = `
+<h2 id="test-heading">
+  <button class="yfm-clipboard-anchor"
+          data-href="link.html#test-heading"
+          title="Copy link"
+  >
+  </button>
+  Test heading
+</h2>
+`;
+
 exports[`Anchors with extract title should not add an anchor for level 1 heading 1`] = `
 <p>
   Content

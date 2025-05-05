@@ -13,7 +13,9 @@ import table from '@diplodoc/transform/lib/plugins/table';
 import notes from '@diplodoc/transform/lib/plugins/notes';
 import transform from '@diplodoc/transform';
 
-const transformOptions = {
+import {OptionsType} from '../../../lib/typings';
+
+const transformOptions: OptionsType = {
     lang: 'en',
     path: '',
     plugins: [
@@ -33,8 +35,8 @@ const transformOptions = {
     ],
 };
 
-export const transformMd = (input: string): string => {
-    const {result} = transform(input, transformOptions);
+export const transformMd = (input: string, customOptions?: OptionsType): string => {
+    const {result} = transform(input, {...transformOptions, ...customOptions});
 
     return result.html;
 };

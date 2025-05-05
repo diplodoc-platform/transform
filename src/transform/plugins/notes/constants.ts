@@ -1,4 +1,6 @@
-export const TITLES: Record<string, Record<string, string>> = {
+import {Lang} from '../typings';
+
+export const TITLES: Record<Lang, Record<string, string>> = {
     ru: {
         info: 'Примечание',
         tip: 'Совет',
