@@ -297,10 +297,10 @@
         padding-left: 2.2em;
     }
 
-    ul ul,
-    ul ol,
-    ol ol,
-    ol ul {
+    ul ul:last-child,
+    ul ol:last-child,
+    ol ol:last-child,
+    ol ul:last-child {
         margin-top: 0;
         margin-bottom: 0;
     }
@@ -321,7 +321,9 @@
         }
 
         > p:only-of-type,
-        > blockquote:only-of-type {
+        > blockquote:only-of-type,
+        > p:first-child:has(+ ul),
+        > p:first-child:has(+ ol) {
             margin-block: var(--yfm-list-text-only-margin-block, 0);
         }
 

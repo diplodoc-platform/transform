@@ -14,12 +14,63 @@ export const BasicOrdered: MarkdownSnippetStory = {
     },
 };
 
+export const BasicOrderedWithEmptyLine: MarkdownSnippetStory = {
+    name: 'Basic Ordered List With Empty Line Between Items',
+    args: {
+        snippet: dedent`
+        1. This is an ordered list.
+
+        1. Every item has a numbered marker associated with it.
+        `,
+    },
+};
+
 export const BasicUnordered: MarkdownSnippetStory = {
     name: 'Basic Unordered List',
     args: {
         snippet: dedent`
-        1. This is an unordered list.
-        2. List item markers of unordered lists are usually a dot or a dash.
+        * This is an unordered list.
+        * List item markers of unordered lists are usually a dot or a dash.
+        `,
+    },
+};
+
+export const OrderedListWithIndentedLine: MarkdownSnippetStory = {
+    name: 'Ordered list with indented line',
+    args: {
+        snippet: dedent`
+        1. This is an ordered list.
+           This is an indented line inside the list item.
+        1. Every item has a numbered marker associated with it.
+        1. Every item has a numbered marker associated with it.
+        `,
+    },
+};
+
+export const OrderedListIndentedParagraph: MarkdownSnippetStory = {
+    name: 'Ordered list with indented paragraph',
+    args: {
+        snippet: dedent`
+        1. This is an ordered list.
+           This is an indented paragraph inside the list item.
+
+        1. Every item has a numbered marker associated with it.
+        1. Every item has a numbered marker associated with it.
+        `,
+    },
+};
+
+export const OrderedListWithMultipleIndentedParagraphs: MarkdownSnippetStory = {
+    name: 'Ordered list with multiple indented paragraphs',
+    args: {
+        snippet: dedent`
+        1. This is an ordered list.
+           This is an indented paragraph inside the list item.
+
+           This is an second paragraph inside the list item.
+
+        1. Every item has a numbered marker associated with it.
+        1. Every item has a numbered marker associated with it.
         `,
     },
 };
@@ -38,6 +89,41 @@ export const OrderedNestedSimple: MarkdownSnippetStory = {
     },
 };
 
+export const OrderedNestedWithIndentedParagraph: MarkdownSnippetStory = {
+    name: 'Nested ordered list with indented paragraph',
+    args: {
+        snippet: dedent`
+        1. This ordered list will be nested.
+        2. This item has additional sub-items.
+            1. Like this one
+               This is an indented paragraph inside the nested list item.
+
+            2. And this one
+            3. And this as well.
+        3. Futher numbering on top-level continues where we left off.
+        `,
+    },
+};
+
+export const OrderedNestedWithMixedContent: MarkdownSnippetStory = {
+    name: 'Nested ordered list with mixed content',
+    args: {
+        snippet: dedent`
+        1. This ordered list will be nested.
+        2. This item has additional sub-items.
+            - Like this one
+            - And this one
+
+            This paragraph between
+
+            1. Like this one
+            1. And this one
+
+        3. Futher numbering on top-level continues where we left off.
+        `,
+    },
+};
+
 export const BrokenMarkers: MarkdownSnippetStory = {
     name: 'Out-of order markers in source',
     args: {
@@ -48,6 +134,31 @@ export const BrokenMarkers: MarkdownSnippetStory = {
             1. 2nd sublist item
             7. This one begins with a 7. (Check the controls tab in Storybook for clarification).
         1. Item after sublist ends.
+        `,
+    },
+};
+
+export const NestedMixedList: MarkdownSnippetStory = {
+    name: 'Nested mixed list with conditions',
+    args: {
+        snippet: dedent`
+        - If working on frontend
+            * Set up the project structure
+            * Create reusable components
+            * Implement UI interactions
+
+        - If working on backend
+            * Design the API routes
+                * Implement business logic
+                * Implement some tests
+
+        - If working on frontend
+            * Create reusable components
+            * Implement UI interactions
+
+        - If working on backend
+            * Design the API routes
+            * Implement business logic
         `,
     },
 };
