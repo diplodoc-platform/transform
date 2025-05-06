@@ -37,7 +37,7 @@ function matchWrongNotes(tokens: Token[], i: number) {
 const findCloseTokenIdx = closeTokenFactory('Note', matchOpenToken, matchCloseToken);
 
 // @ts-ignore
-const index: MarkdownItPluginCb = (md, {lang, notesAutotitle, path: optPath, log}) => {
+const index: MarkdownItPluginCb = (md, {lang = 'en', notesAutotitle, path: optPath, log}) => {
     notesAutotitle = typeof notesAutotitle === 'boolean' ? notesAutotitle : true;
 
     const plugin = (state: StateCore) => {
