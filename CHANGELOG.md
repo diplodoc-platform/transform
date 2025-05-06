@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.57.1](https://github.com/diplodoc-platform/transform/compare/v4.57.0...v4.57.1) (2025-05-06)
+
+
+### Bug Fixes
+
+* **notes:** fixed parsing of inline markup in note title ([#702](https://github.com/diplodoc-platform/transform/issues/702)) ([51d5550](https://github.com/diplodoc-platform/transform/commit/51d55507973f3d3c4f8e7577867640cdce10e1be))
+
 ## [4.57.0](https://github.com/diplodoc-platform/transform/compare/v4.56.0...v4.57.0) (2025-05-06)
 
 
