@@ -16,6 +16,13 @@ const html = (text: string, notesAutotitle = true) => {
     return html;
 };
 
+const tokens = (text: string) => {
+    return transform(text, {
+        plugins: [alerts],
+        tokens: true,
+    });
+};
+
 describe('Alerts', () => {
     test('Should transform to new tokens', () => {
         const result = callPlugin(
@@ -195,6 +202,16 @@ describe('Alerts', () => {
         expect(
             html(dedent`
                 {% note info "" %}
+
+                {% endnote %}
+            `),
+        ).toMatchSnapshot();
+    });
+
+    test('should generate token stream', () => {
+        expect(
+            tokens(dedent`
+                {% note info "\\" %}
 
                 {% endnote %}
             `),
