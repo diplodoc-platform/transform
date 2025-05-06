@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.57.2](https://github.com/diplodoc-platform/transform/compare/v4.57.1...v4.57.2) (2025-05-06)
+
+
+### Bug Fixes
+
+* **notes:** added default lang parameter in notes ([#705](https://github.com/diplodoc-platform/transform/issues/705)) ([0a2eae3](https://github.com/diplodoc-platform/transform/commit/0a2eae3145bb0725bf71bf19b42b32dc3f9d0fbf))
+
 ## [4.57.1](https://github.com/diplodoc-platform/transform/compare/v4.57.0...v4.57.1) (2025-05-06)
 
 
