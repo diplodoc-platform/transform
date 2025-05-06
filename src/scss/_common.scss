@@ -297,10 +297,10 @@
         padding-left: 2.2em;
     }
 
-    ul ul,
-    ul ol,
-    ol ol,
-    ol ul {
+    ul ul:last-child,
+    ul ol:last-child,
+    ol ol:last-child,
+    ol ul:last-child {
         margin-top: 0;
         margin-bottom: 0;
     }
@@ -309,6 +309,7 @@
         word-wrap: break-word;
     }
 
+    li:first-child,
     li + li {
         margin-block: var(--yfm-list-item-margin-block, 0.33em 0);
     }
@@ -319,14 +320,16 @@
             margin-block: var(--yfm-list-text-margin-block, 0 15px);
         }
 
-        > p:only-child,
-        > blockquote:only-child {
+        > p:only-of-type,
+        > blockquote:only-of-type,
+        > p:first-child:has(+ ul),
+        > p:first-child:has(+ ol) {
             margin-block: var(--yfm-list-text-only-margin-block, 0);
         }
 
         @supports selector(:has(br)) {
-            > p:only-child:has(br),
-            > blockquote:only-child:has(br) {
+            > p:only-of-type:has(br),
+            > blockquote:only-of-type:has(br) {
                 margin-block: var(--yfm-list-text-margin-block, 0 15px);
             }
         }
