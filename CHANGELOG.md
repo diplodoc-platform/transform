@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.57.0](https://github.com/diplodoc-platform/transform/compare/v4.56.0...v4.57.0) (2025-05-06)
+
+
+### Features
+
+* header anchor button ([#698](https://github.com/diplodoc-platform/transform/issues/698)) ([62fa553](https://github.com/diplodoc-platform/transform/commit/62fa553ccccb23378b26b6201733854cb4dbcd12))
+
+### Bug Fixes
+
+* **styles:** fixed incorrect list spacing for nested content ([#701](https://github.com/diplodoc-platform/transform/pull/701)) ([eea9a23](https://github.com/diplodoc-platform/transform/commit/eea9a23b1ec0e4d00e78a030cb33852da531fe97))
+
 ## [4.56.0](https://github.com/diplodoc-platform/transform/compare/v4.55.0...v4.56.0) (2025-04-14)
 
 
