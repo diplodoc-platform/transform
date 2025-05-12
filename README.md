@@ -81,7 +81,7 @@ const customSanitizer = (html, options) => {
   return sanitizedHtml;
 };
 
-const { result } = transform(content, {
+const {result} = transform(content, {
   sanitize: customSanitizer,
   // Other options...
 });
@@ -164,6 +164,7 @@ MIT
 - `--yfm-list-item-margin-block`
 - `--yfm-list-text-margin-block`
 - `--yfm-list-text-only-margin-block`
+- `--yfm-list-text-last-margin-block`
 
 ## Contributing
 
