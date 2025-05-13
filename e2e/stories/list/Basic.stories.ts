@@ -25,6 +25,17 @@ export const BasicOrderedWithEmptyLine: MarkdownSnippetStory = {
     },
 };
 
+export const BasicOrderedWithEmptyItem: MarkdownSnippetStory = {
+    name: 'Basic Ordered List With Empty Item',
+    args: {
+        snippet: dedent`
+        1. This is an ordered list.
+        1.
+        1. Every item has a numbered marker associated with it.
+        `,
+    },
+};
+
 export const BasicUnordered: MarkdownSnippetStory = {
     name: 'Basic Unordered List',
     args: {
@@ -41,6 +52,19 @@ export const OrderedListWithIndentedLine: MarkdownSnippetStory = {
         snippet: dedent`
         1. This is an ordered list.
            This is an indented line inside the list item.
+        1. Every item has a numbered marker associated with it.
+        1. Every item has a numbered marker associated with it.
+        `,
+    },
+};
+
+export const OrderedListWithTwoIndentedLines: MarkdownSnippetStory = {
+    name: 'Ordered list with two indented lines',
+    args: {
+        snippet: dedent`
+        1. This is an ordered list.
+           This is an indented line inside the list item.
+           And one more.
         1. Every item has a numbered marker associated with it.
         1. Every item has a numbered marker associated with it.
         `,
@@ -160,5 +184,20 @@ export const NestedMixedList: MarkdownSnippetStory = {
             * Design the API routes
             * Implement business logic
         `,
+    },
+};
+
+export const MixedLists: MarkdownSnippetStory = {
+    name: 'Mixed lists',
+    args: {
+        snippet: dedent`
+        + Create a list by starting a line with \`+\`, \`-\`, or \`*\`
+        + Sub-lists are made by indenting 2 spaces:
+            - Marker character change forces new list start:
+            * Ac tristique libero volutpat at
+            + Facilisis in pretium nisl aliquet
+            - Nulla volutpat aliquam velit
+        + Very easy!
+       `,
     },
 };

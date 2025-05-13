@@ -164,6 +164,7 @@ MIT
 - `--yfm-list-item-margin-block`
 - `--yfm-list-text-margin-block`
 - `--yfm-list-text-only-margin-block`
+- `--yfm-list-text-last-margin-block`
 
 ## Контрибуции
 
