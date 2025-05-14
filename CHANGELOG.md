@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.57.3](https://github.com/diplodoc-platform/transform/compare/v4.57.2...v4.57.3) (2025-05-13)
+
+
+### Bug Fixes
+
+* **styles:** improved spacing handling for edge paragraphs in lists ([#708](https://github.com/diplodoc-platform/transform/issues/708)) ([f649c27](https://github.com/diplodoc-platform/transform/commit/f649c2735725ac4debe820ffc87d51443144bfd6))
+
 ## [4.57.2](https://github.com/diplodoc-platform/transform/compare/v4.57.1...v4.57.2) (2025-05-06)
 
 
