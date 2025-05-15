@@ -34,6 +34,7 @@
     "build:lib": "tsc -p tsconfig.transform.json",
     "dev:lib": "tsc -w -p tsconfig.transform.json",
     "dev:playground": "node ./scripts/dev.mjs",
+    "preplayground": "cd playground && npm ci --ignore-scripts || (exit 0)",
     "playground": "run-p dev:*",
     "artifact:playground": "node --input-type=module -e \"(await import('./playground/scripts/pages.mjs')).bundleDeployables('./pages-build')\"",
     "artifact:pages": "npm run build && npm run artifact:playground",
@@ -45,8 +46,7 @@
     "lint": "lint update && lint",
     "lint:fix": "lint update && lint fix",
     "pre-commit": "lint update && lint-staged",
-    "prepare": "husky",
-    "postinstall": "cd playground && npm ci --ignore-scripts || true"
+    "prepare": "husky"
   },
   "dependencies": {
     "@diplodoc/cut-extension": "^0.7.2",
