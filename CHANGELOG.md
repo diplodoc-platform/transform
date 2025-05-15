@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.57.5](https://github.com/diplodoc-platform/transform/compare/v4.57.4...v4.57.5) (2025-05-15)
+
+
+### Bug Fixes
+
+* run playground-install in CI workflows ([270c543](https://github.com/diplodoc-platform/transform/commit/270c543e99e8ea436b3331f2382ece9a204b7484))
+
 ## [4.57.4](https://github.com/diplodoc-platform/transform/compare/v4.57.3...v4.57.4) (2025-05-15)
 
 
