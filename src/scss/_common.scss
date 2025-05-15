@@ -215,7 +215,7 @@
             padding: 10px 20px;
             overflow: hidden;
             text-overflow: ellipsis;
-            border: 1px solid var(--yfm-color-border);
+            border: 1px solid var(--yfm-color-table-inner-border);
 
             @include removeMarginForEdgeChildren();
         }
