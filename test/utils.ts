@@ -38,6 +38,9 @@ export function callPlugin<T extends {} = {}>(
                     cb(state),
             },
         },
+        renderer: {
+            rules: {},
+        },
     } as MarkdownIt;
 
     plugin(
