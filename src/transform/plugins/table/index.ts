@@ -6,6 +6,7 @@ import {MarkdownItPluginCb} from '../typings';
 import {AttrsParser} from './attrs';
 
 const pluginName = 'yfm_table';
+const tableTokenTypes = ['table_open', 'yfm_table_open'];
 const pipeChar = 0x7c; // |
 const apostropheChar = 0x60; // `
 const hashChar = 0x23; // #
@@ -500,6 +501,21 @@ const yfmTable: MarkdownItPluginCb = (md) => {
             return true;
         },
     );
+
+    function applyTableClassRule(tokenType: string) {
+        const existingRenderer =
+            md.renderer.rules[tokenType] || md.renderer.renderToken.bind(md.renderer);
+
+        md.renderer.rules[tokenType] = (tokens, idx, options, env, renderer) => {
+            const token = tokens[idx];
+
+            token.attrSet('class', [token.attrGet('class'), 'yfm-table'].filter(Boolean).join(' '));
+
+            return existingRenderer(tokens, idx, options, env, renderer);
+        };
+    }
+
+    tableTokenTypes.forEach(applyTableClassRule);
 };
 
 export = yfmTable;
