@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.57.4](https://github.com/diplodoc-platform/transform/compare/v4.57.3...v4.57.4) (2025-05-15)
+
+
+### Bug Fixes
+
+* use `exit 0` instead of `true` in the postinstall script ([bfe89be](https://github.com/diplodoc-platform/transform/commit/bfe89be1b97d78c3c06abb2fb655921ffc556750))
+
 ## [4.57.3](https://github.com/diplodoc-platform/transform/compare/v4.57.2...v4.57.3) (2025-05-13)
 
 
