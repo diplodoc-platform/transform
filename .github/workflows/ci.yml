@@ -21,7 +21,9 @@ jobs:
           node-version: '18.x'
           cache: 'npm'
       - name: Install Packages
-        run: npm ci
+        run: |
+          npm ci
+          cd playground && npm ci
       - name: Lint Files
         run: npm run lint
       - name: Tests
