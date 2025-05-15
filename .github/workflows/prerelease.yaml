@@ -14,7 +14,9 @@ jobs:
           node-version: 18
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
-      - run: npm ci
+      - run: |
+          npm ci
+          cd playground && npm ci
       - run: npm version --no-git-tag-version 0.0.0-rc-$(git branch --show-current)-$(date "+%Y%m%d%H%M")
       - run: npm publish --no-tag
         env:

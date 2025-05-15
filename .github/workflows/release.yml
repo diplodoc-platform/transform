@@ -26,7 +26,9 @@ jobs:
         with:
           node-version: 18
           registry-url: 'https://registry.npmjs.org'
-      - run: npm ci
+      - run: |
+          npm ci
+          cd playground && npm ci
         shell: bash
       - uses: codex-team/action-nodejs-package-info@v1
         id: package
