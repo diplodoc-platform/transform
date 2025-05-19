@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.57.6](https://github.com/diplodoc-platform/transform/compare/v4.57.5...v4.57.6) (2025-05-19)
+
+
+### Bug Fixes
+
+* vk video проброс всех параметров в ссылке ([922e607](https://github.com/diplodoc-platform/transform/commit/922e6077fadf25021511becdac4ce486676a3bd6))
+
 ## [4.57.5](https://github.com/diplodoc-platform/transform/compare/v4.57.4...v4.57.5) (2025-05-15)
 
 
