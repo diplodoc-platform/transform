@@ -40,10 +40,18 @@ export function yandexParser(url: string) {
     return match ? match[1] : url;
 }
 
-const vkRegex = /^https:\/\/vk\.com\/video_ext\.php\?(oid=[-\d]+&id=[-\d]+)/;
+const vkRegex = /^https:\/\/vk\.com\/video_ext\.php\?(.*)/;
 export function vkParser(url: string) {
     const match = url.match(vkRegex);
-    return match ? match[1] : url;
+    if (match) {
+        const searchParams: URLSearchParams = new URLSearchParams(match[1]);
+        const encodedUrl: string[] = [];
+        searchParams.forEach((value, key) => {
+            encodedUrl.push(`${key}=${encodeURIComponent(value)}`);
+        });
+        return encodedUrl.join('&');
+    }
+    return url;
 }
 
 const rutubeRegex = /^https:\/\/rutube\.ru\/video\/([a-zA-Z0-9]+)\/?/;

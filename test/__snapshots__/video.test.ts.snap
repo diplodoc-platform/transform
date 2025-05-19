@@ -124,3 +124,116 @@ exports[`md-video-mfr make sure normal iframe generates properly with link to st
   </script>
 </p>
 `;
+
+exports[`md-video-vk make sure normal iframe generates properly when empty 1`] = `
+<p>
+</p>
+`;
+
+exports[`md-video-vk make sure normal iframe generates properly with additional params 1`] = `
+<p>
+  <div class="embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item vk-player"
+            type="text/html"
+            width="640"
+            height="390"
+            src="https://vk.com/video_ext.php?oid=-207738372&amp;id=456239060&amp;hd=2&amp;autoplay=1&amp;width=853&amp;height=480"
+            frameborder="0"
+            webkitallowfullscreen
+            mozallowfullscreen
+            allowfullscreen
+    >
+    </iframe>
+  </div>
+</p>
+`;
+
+exports[`md-video-vk make sure normal iframe generates properly with another sort params 1`] = `
+<p>
+  <div class="embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item vk-player"
+            type="text/html"
+            width="640"
+            height="390"
+            src="https://vk.com/video_ext.php?oid=width%3D853&amp;-207738372=&amp;hd=2&amp;autoplay=1&amp;id=456239060&amp;height=480"
+            frameborder="0"
+            webkitallowfullscreen
+            mozallowfullscreen
+            allowfullscreen
+    >
+    </iframe>
+  </div>
+</p>
+`;
+
+exports[`md-video-vk make sure normal iframe generates properly with id 1`] = `
+<p>
+  <div class="embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item vk-player"
+            type="text/html"
+            width="640"
+            height="390"
+            src="https://vk.com/video_ext.php?oid=-207738372&amp;id=456239060"
+            frameborder="0"
+            webkitallowfullscreen
+            mozallowfullscreen
+            allowfullscreen
+    >
+    </iframe>
+  </div>
+</p>
+`;
+
+exports[`md-video-vk make sure normal iframe generates properly with id and line break 1`] = `
+<p>
+  <div class="embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item vk-player"
+            type="text/html"
+            width="640"
+            height="390"
+            src="https://vk.com/video_ext.php?oid=-207738372&amp;id=456239060"
+            frameborder="0"
+            webkitallowfullscreen
+            mozallowfullscreen
+            allowfullscreen
+    >
+    </iframe>
+  </div>
+</p>
+`;
+
+exports[`md-video-vk make sure normal iframe generates properly with id and two extra spaces 1`] = `
+<p>
+  <div class="embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item vk-player"
+            type="text/html"
+            width="640"
+            height="390"
+            src="https://vk.com/video_ext.php?oid=-207738372&amp;id=456239060"
+            frameborder="0"
+            webkitallowfullscreen
+            mozallowfullscreen
+            allowfullscreen
+    >
+    </iframe>
+  </div>
+</p>
+`;
+
+exports[`md-video-vk make sure normal iframe generates properly with link 1`] = `
+<p>
+  <div class="embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item vk-player"
+            type="text/html"
+            width="640"
+            height="390"
+            src="https://vk.com/video_ext.php?oid=-207738372&amp;id=456239060"
+            frameborder="0"
+            webkitallowfullscreen
+            mozallowfullscreen
+            allowfullscreen
+    >
+    </iframe>
+  </div>
+</p>
+`;

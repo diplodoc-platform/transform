@@ -101,3 +101,48 @@ describe('md-video-mfr', () => {
         expect(renderedHtml).toMatchSnapshot();
     });
 });
+
+describe('md-video-vk', () => {
+    const md = new MarkdownIt({}).use(video);
+
+    it('make sure normal iframe generates properly when empty', () => {
+        const renderedHtml = md.render('@[vk]()');
+        expect(renderedHtml).toMatchSnapshot();
+    });
+
+    it('make sure normal iframe generates properly with id', () => {
+        const renderedHtml = md.render('@[vk](oid=-207738372&id=456239060)');
+        expect(renderedHtml).toMatchSnapshot();
+    });
+
+    it('make sure normal iframe generates properly with id and line break', () => {
+        const renderedHtml = md.render('@[vk](oid=-207738372&id=456239060\n)');
+        expect(renderedHtml).toMatchSnapshot();
+    });
+
+    it('make sure normal iframe generates properly with id and two extra spaces', () => {
+        const renderedHtml = md.render('@[vk]( oid=-207738372&id=456239060 )');
+        expect(renderedHtml).toMatchSnapshot();
+    });
+
+    it('make sure normal iframe generates properly with link', () => {
+        const renderedHtml = md.render(
+            '@[vk](https://vk.com/video_ext.php?oid=-207738372&id=456239060)',
+        );
+        expect(renderedHtml).toMatchSnapshot();
+    });
+
+    it('make sure normal iframe generates properly with additional params', () => {
+        const renderedHtml = md.render(
+            '@[vk](https://vk.com/video_ext.php?oid=-207738372&id=456239060&hd=2&autoplay=1&width=853&height=480)',
+        );
+        expect(renderedHtml).toMatchSnapshot();
+    });
+
+    it('make sure normal iframe generates properly with another sort params', () => {
+        const renderedHtml = md.render(
+            '@[vk](https://vk.com/video_ext.php?oid=width=853&-207738372&hd=2&autoplay=1&id=456239060&height=480)',
+        );
+        expect(renderedHtml).toMatchSnapshot();
+    });
+});
