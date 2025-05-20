@@ -4,6 +4,7 @@ import Token from 'markdown-it/lib/token';
 
 import {MarkdownItPluginCb} from '../typings';
 import {MatchTokenFunction, nestedCloseTokenIdxFactory as closeTokenFactory} from '../utils';
+import {DEFAULT_LANG} from '../../constants';
 
 import {TITLES} from './constants';
 
@@ -17,6 +18,16 @@ const matchCloseToken: MatchTokenFunction = (tokens, i) => {
         tokens[i + 1].content.trim() === '{% endnote %}'
     );
 };
+
+function getTitle(type: string, originLang: string) {
+    let lang = originLang;
+
+    if (!lang || !Object.keys(TITLES).includes(lang)) {
+        lang = DEFAULT_LANG;
+    }
+
+    return TITLES[lang as keyof typeof TITLES][type];
+}
 
 function matchOpenToken(tokens: Token[], i: number) {
     return (
@@ -36,8 +47,14 @@ function matchWrongNotes(tokens: Token[], i: number) {
 
 const findCloseTokenIdx = closeTokenFactory('Note', matchOpenToken, matchCloseToken);
 
-// @ts-ignore
-const index: MarkdownItPluginCb = (md, {lang = 'en', notesAutotitle, path: optPath, log}) => {
+type NotesPluginParams = {
+    notesAutotitle: boolean;
+};
+
+const index: MarkdownItPluginCb<NotesPluginParams> = (
+    md,
+    {lang = DEFAULT_LANG, notesAutotitle, path: optPath, log},
+) => {
     notesAutotitle = typeof notesAutotitle === 'boolean' ? notesAutotitle : true;
 
     const plugin = (state: StateCore) => {
@@ -75,7 +92,7 @@ const index: MarkdownItPluginCb = (md, {lang = 'en', notesAutotitle, path: optPa
                 // Add extra paragraph
                 const titleOpen = new state.Token('yfm_note_title_open', 'p', 1);
                 titleOpen.attrSet('class', 'yfm-note-title');
-                const autotitle = notesAutotitle ? TITLES[lang][type] : '';
+                const autotitle = notesAutotitle ? getTitle(type, lang) : '';
                 const titleContent = match[2] === undefined ? autotitle : match[2];
                 const titleInline = state.md.parseInline(titleContent, state.env)[0];
                 titleInline.map = null;
