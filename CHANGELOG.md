@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.57.7](https://github.com/diplodoc-platform/transform/compare/v4.57.6...v4.57.7) (2025-05-20)
+
+
+### Bug Fixes
+
+* Fix notes autotitles resolving for unknown langs ([d9af892](https://github.com/diplodoc-platform/transform/commit/d9af8922b3525a3d2668d588addbe7501bb7131c))
+
 ## [4.57.6](https://github.com/diplodoc-platform/transform/compare/v4.57.5...v4.57.6) (2025-05-19)
 
 
