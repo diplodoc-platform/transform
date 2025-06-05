@@ -88,7 +88,7 @@ export interface OptionsType {
     supportGithubAnchors?: boolean;
     disableCommonAnchors?: boolean;
     useCommonAnchorButtons?: boolean;
-    lang?: Lang;
+    lang?: string;
     [x: string]: unknown;
 }
 
