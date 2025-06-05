@@ -68,7 +68,6 @@ export interface OptionsType {
     needFlatListHeadings?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     plugins?: ExtendedPluginWithCollect<any, any>[];
-    preprocessors?: MarkdownItPreprocessorCb[]; // Preprocessors should modify the input before passing it to MD
     highlightLangs?: HighlightLangMap;
     disableRules?: string[];
     extractChangelogs?: boolean;
