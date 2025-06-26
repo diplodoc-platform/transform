@@ -2,7 +2,7 @@ import type StateBlock from 'markdown-it/lib/rules_block/state_block';
 import type Token from 'markdown-it/lib/token';
 import type {MarkdownItPluginCb} from '../typings';
 
-import {AttrsParser} from './attrs';
+import {AttrsParser} from '@diplodoc/utils';
 
 const pluginName = 'yfm_table';
 const pipeChar = 0x7c; // |
