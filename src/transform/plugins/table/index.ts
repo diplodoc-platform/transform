@@ -57,38 +57,50 @@ const isCloseTableOrder: CheckFn = (src, pos) => checkCharsOrder(closeTableOrder
 type Stats = {line: number; pos: number};
 
 class StateIterator {
-    pos: number;
-    line: number;
+    private _pos: number;
+    private _line: number;
+    private _lineEnds: number;
 
     private state: StateBlock;
-    private lineEnds: number;
+
+    get pos() {
+        return this._pos;
+    }
+
+    get line() {
+        return this._line;
+    }
+
+    get lineEnds() {
+        return this._lineEnds;
+    }
 
     constructor(state: StateBlock, pos: number, line: number) {
         this.state = state;
-        this.line = line;
-        this.pos = pos;
-        this.lineEnds = this.state.eMarks[this.line];
+        this._line = line;
+        this._pos = pos;
+        this._lineEnds = this.state.eMarks[this._line];
     }
 
     stats(): Stats {
         return {
-            line: this.line,
-            pos: this.pos,
+            line: this._line,
+            pos: this._pos,
         };
     }
 
     get symbol() {
-        return this.state.src[this.pos];
+        return this.state.src[this._pos];
     }
 
     next(steps = 1) {
         for (let i = 0; i < steps; i++) {
-            this.pos++;
+            this._pos++;
 
-            if (this.pos > this.lineEnds) {
-                this.line++;
-                this.pos = this.state.bMarks[this.line] + this.state.tShift[this.line];
-                this.lineEnds = this.state.eMarks[this.line];
+            if (this._pos > this._lineEnds) {
+                this._line++;
+                this._pos = this.state.bMarks[this._line] + this.state.tShift[this._line];
+                this._lineEnds = this.state.eMarks[this._line];
             }
         }
     }
