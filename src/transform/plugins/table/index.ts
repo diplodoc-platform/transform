@@ -251,7 +251,6 @@ function getTableRowPositions(
 
     let isInsideCode = false;
     let isInsideMath = false;
-    let isInsideTable = false;
     let isInsideLiquidVariable = false;
     const rowMap = new Map();
 
@@ -323,7 +322,6 @@ function getTableRowPositions(
         }
 
         if (isOpenTableOrder(state.src, iter.pos)) {
-            isInsideTable = true;
             tableLevel++;
             iter.next(openTableOrder.length);
             continue;
@@ -336,16 +334,18 @@ function getTableRowPositions(
                 endOfTable = iter.line + 2;
                 break;
             } else {
-                isInsideTable = false;
                 tableLevel--;
                 iter.next(closeTableOrder.length);
                 continue;
             }
         }
 
-        if (isInsideTable) {
-            iter.next();
-            continue;
+        {
+            const isInsideTable = tableLevel > 0;
+            if (isInsideTable) {
+                iter.next();
+                continue;
+            }
         }
 
         if (isRowOrder(state.src, iter.pos)) {

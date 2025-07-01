@@ -515,6 +515,99 @@ describe('Table plugin', () => {
                 '</table>\n',
         );
     });
+
+    it('should render table inside table 2', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            ||
+
+            #|
+            ||
+
+            table2
+
+            ||
+            |#
+
+            ||
+            |#
+            `),
+        ).toBe(dd`
+            <table>
+            <tbody>
+            <tr>
+            <td>
+            <table>
+            <tbody>
+            <tr>
+            <td>
+            <p>table2</p>
+            </td>
+            </tr>
+            </tbody>
+            </table>
+            </td>
+            </tr>
+            </tbody>
+            </table>
+            
+            `);
+    });
+
+    it('should render table inside table inside table', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            ||
+
+            #|
+            ||
+
+            #|
+            ||
+
+            table3
+
+            ||
+            |#
+
+            ||
+            |#
+
+            ||
+            |#
+            `),
+        ).toBe(dd`
+            <table>
+            <tbody>
+            <tr>
+            <td>
+            <table>
+            <tbody>
+            <tr>
+            <td>
+            <table>
+            <tbody>
+            <tr>
+            <td>
+            <p>table3</p>
+            </td>
+            </tr>
+            </tbody>
+            </table>
+            </td>
+            </tr>
+            </tbody>
+            </table>
+            </td>
+            </tr>
+            </tbody>
+            </table>
+            
+            `);
+    });
+
     it('should render table with spaces after new line', () => {
         expect(
             transformYfm(
