@@ -1,10 +1,10 @@
+import type {MarkdownItPluginOpts} from '../typings';
+import type {ChangelogItem} from './types';
+
 import {bold} from 'chalk';
 
 import initMarkdownIt from '../../md';
 import imsize from '../imsize';
-import {MarkdownItPluginOpts} from '../typings';
-
-import {ChangelogItem} from './types';
 
 import changelogPlugin from './index';
 

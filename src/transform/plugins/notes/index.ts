@@ -1,9 +1,11 @@
-import {bold} from 'chalk';
-import StateCore from 'markdown-it/lib/rules_core/state_core';
-import Token from 'markdown-it/lib/token';
+import type StateCore from 'markdown-it/lib/rules_core/state_core';
+import type Token from 'markdown-it/lib/token';
+import type {MarkdownItPluginCb} from '../typings';
+import type {MatchTokenFunction} from '../utils';
 
-import {MarkdownItPluginCb} from '../typings';
-import {MatchTokenFunction, nestedCloseTokenIdxFactory as closeTokenFactory} from '../utils';
+import {bold} from 'chalk';
+
+import {nestedCloseTokenIdxFactory as closeTokenFactory} from '../utils';
 import {DEFAULT_LANG} from '../../constants';
 
 import {TITLES} from './constants';

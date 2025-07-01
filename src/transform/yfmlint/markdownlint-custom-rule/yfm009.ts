@@ -1,4 +1,4 @@
-import {Rule} from 'markdownlint';
+import type {Rule} from 'markdownlint';
 
 export const yfm009: Rule = {
     names: ['YFM009', 'no-term-definition-in-content'],

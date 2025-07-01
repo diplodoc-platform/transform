@@ -1,5 +1,6 @@
+import type Token from 'markdown-it/lib/token';
+
 import url from 'url';
-import Token from 'markdown-it/lib/token';
 
 export function isLocalUrl(url: string) {
     return !/^(?:[a-z]+:)?\/\//i.test(url);

@@ -1,4 +1,4 @@
-import MarkdownIt from 'markdown-it';
+import type MarkdownIt from 'markdown-it';
 
 import {TOKEN_NAME, renderTokens, replaceTokens} from './block-anchor';
 

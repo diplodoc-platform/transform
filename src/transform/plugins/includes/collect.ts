@@ -1,10 +1,10 @@
+import type {IncludeCollectOpts} from './types';
+
 import {relative} from 'path';
 import {bold} from 'chalk';
 import {readFileSync} from 'fs';
 
 import {isFileExists, resolveRelativePath} from '../../utilsFS';
-
-import {IncludeCollectOpts} from './types';
 
 const includesPaths: string[] = [];
 

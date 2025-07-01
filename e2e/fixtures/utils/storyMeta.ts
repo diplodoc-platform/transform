@@ -1,9 +1,9 @@
-import {Meta, StoryObj} from '@storybook/html';
+import type {Meta, StoryObj} from '@storybook/html';
+import type {OptionsType} from '../../../lib/typings';
+
 import '@diplodoc/transform/dist/css/yfm.min.css';
 import '@diplodoc/transform/dist/css/print.css';
 import '@diplodoc/transform/dist/js/yfm.js';
-
-import {OptionsType} from '../../../lib/typings';
 
 import {transformMd} from './transformPreset';
 

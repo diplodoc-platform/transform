@@ -1,22 +1,25 @@
-import {
-    Checkbox,
+import type {
     CheckboxOptions,
     ExtensionAuto,
-    ImgSize,
     ImgSizeOptions,
+    VideoOptions,
+    YfmCutOptions,
+    YfmHeadingOptions,
+    YfmNoteOptions,
+    YfmTableOptions,
+} from '@doc-tools/yfm-editor';
+
+import {
+    Checkbox,
+    ImgSize,
     Monospace,
     Video,
-    VideoOptions,
     YfmCut,
-    YfmCutOptions,
     YfmDist,
     YfmFile,
     YfmHeading,
-    YfmHeadingOptions,
     YfmNote,
-    YfmNoteOptions,
     YfmTable,
-    YfmTableOptions,
     YfmTabs,
 } from '@doc-tools/yfm-editor';
 

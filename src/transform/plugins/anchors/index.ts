@@ -1,12 +1,13 @@
+import type StateCore from 'markdown-it/lib/rules_core/state_core';
+import type Token from 'markdown-it/lib/token';
+import type {MarkdownItPluginCb} from '../typings';
+
 import {bold} from 'chalk';
 import GithubSlugger from 'github-slugger';
-import StateCore from 'markdown-it/lib/rules_core/state_core';
-import Token from 'markdown-it/lib/token';
 import {escapeHtml} from 'markdown-it/lib/common/utils';
 import slugify from 'slugify';
 
 import {headingInfo} from '../../utils';
-import {MarkdownItPluginCb} from '../typings';
 
 import {ANCHOR_TITLES, CUSTOM_ID_EXCEPTION, CUSTOM_ID_REGEXP} from './constants';
 

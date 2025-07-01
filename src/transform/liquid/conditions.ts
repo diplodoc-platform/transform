@@ -1,10 +1,12 @@
+import type {SourceMapApi} from './sourceMap';
+
 import {bold} from 'chalk';
 
 import {log} from '../log';
 
 import {NoValue, evalExp} from './evaluation';
 import {tagLine} from './lexical';
-import {SourceMapApi, createSourceMapApi, getLineNumber} from './sourceMap';
+import {createSourceMapApi, getLineNumber} from './sourceMap';
 import legacyConditions from './legacyConditions';
 
 interface SourceMap {

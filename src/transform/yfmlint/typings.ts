@@ -1,11 +1,8 @@
 import type {Dictionary} from 'lodash';
-
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-import {Plugin, Rule} from 'markdownlint';
-
-import {MarkdownItPreprocessorCb} from '../typings';
-
-import {LintConfig, PluginOptions} from '.';
+import type {Plugin, Rule} from 'markdownlint';
+import type {MarkdownItPreprocessorCb} from '../typings';
+import type {LintConfig, PluginOptions} from '.';
 
 export interface Options {
     input: string;

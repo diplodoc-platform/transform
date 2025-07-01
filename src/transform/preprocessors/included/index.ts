@@ -1,6 +1,7 @@
+import type {MarkdownItPreprocessorCb} from '../../typings';
+import type {MarkdownItIncluded} from '../../plugins/includes/types';
+
 import {getFullIncludePath} from '../../utilsFS';
-import {MarkdownItPreprocessorCb} from '../../typings';
-import {MarkdownItIncluded} from '../../plugins/includes/types';
 
 const INCLUDE_REGEXP = /^\s*{%\s*included\s*\((.+?)\)\s*%}\s*$/;
 const INCLUDE_END_REGEXP = /^\s*{% endincluded %}\s*$/;

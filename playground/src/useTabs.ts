@@ -1,6 +1,8 @@
-import {ReactNode, useState} from 'react';
-import {TabsProps} from '@gravity-ui/uikit';
-import {TabsItemProps} from '@gravity-ui/uikit/build/esm/components/Tabs/Tabs';
+import type {ReactNode} from 'react';
+import type {TabsProps} from '@gravity-ui/uikit';
+import type {TabsItemProps} from '@gravity-ui/uikit/build/esm/components/Tabs/Tabs';
+
+import {useState} from 'react';
 import {deleteQuery, persist} from 'src/utils';
 
 export type TabItem = TabsItemProps & {node?: ReactNode};

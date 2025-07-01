@@ -1,4 +1,6 @@
-import {Card, Tabs, TabsProps, TextArea} from '@gravity-ui/uikit';
+import type {TabsProps} from '@gravity-ui/uikit';
+
+import {Card, Tabs, TextArea} from '@gravity-ui/uikit';
 
 export type OutputAreaProps = {
     handleSelectTab: (active: string) => void;

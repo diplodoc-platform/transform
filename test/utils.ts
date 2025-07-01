@@ -1,9 +1,9 @@
 /* eslint-disable no-implicit-globals */
+import type StateCore from 'markdown-it/lib/rules_core/state_core';
+import type {MarkdownItPluginCb, MarkdownItPluginOpts} from 'src/transform/plugins/typings';
+
 import Token from 'markdown-it/lib/token';
 import MarkdownIt from 'markdown-it';
-import StateCore from 'markdown-it/lib/rules_core/state_core';
-
-import {MarkdownItPluginCb, MarkdownItPluginOpts} from 'src/transform/plugins/typings';
 
 import {log} from '../src/transform/log';
 
