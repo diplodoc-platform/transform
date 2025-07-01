@@ -1,6 +1,7 @@
 import type StateBlock from 'markdown-it/lib/rules_block/state_block';
 import type Token from 'markdown-it/lib/token';
 import type {MarkdownItPluginCb} from '../typings';
+import type {YfmTablePluginOptions} from './types';
 
 import {AttrsParser} from '@diplodoc/utils';
 
@@ -41,7 +42,15 @@ const isCodeBlockOrder: CheckFn = (src, pos) => checkCharsOrder(codeBlockOrder, 
 const openTableOrder = [hashChar, pipeChar];
 const isOpenTableOrder: CheckFn = (src, pos) => checkCharsOrder(openTableOrder, src, pos);
 
-const notEscaped: CheckFn = (src, pos) => src.charCodeAt(pos - 1) !== backSlashChar;
+const isEscaped: CheckFn = (src, pos) => {
+    const start = pos;
+    pos--;
+    while (src.charCodeAt(pos) === backSlashChar) {
+        pos--;
+    }
+    return (start - pos) % 2 === 0;
+};
+const notEscaped: CheckFn = (src, pos) => !isEscaped(src, pos);
 
 const rowStartOrder = [pipeChar, pipeChar];
 const isRowOrder: CheckFn = (src, pos) =>
@@ -53,6 +62,57 @@ const isCellOrder: CheckFn = (src, pos) =>
 
 const closeTableOrder = [pipeChar, hashChar];
 const isCloseTableOrder: CheckFn = (src, pos) => checkCharsOrder(closeTableOrder, src, pos);
+
+type SkipInlineFn = (src: string, pos: number, max: number) => false | SkipInlineResult;
+type SkipInlineResult = {
+    end: number;
+    steps: number;
+};
+
+const skipInlineCode: SkipInlineFn = (src, pos, max) => {
+    // this function is an adaptation of original markdown-it backticks plugin
+    // https://github.com/markdown-it/markdown-it/blob/master/lib/rules_inline/backticks.mjs
+
+    if (src.charCodeAt(pos) !== apostropheChar) {
+        return false;
+    }
+    if (pos > 0 && isEscaped(src, pos)) {
+        return false;
+    }
+
+    const start = pos;
+
+    // scan marker length
+    while (pos < max && src.charCodeAt(pos) === apostropheChar) {
+        pos++;
+    }
+
+    const marker = src.slice(start, pos);
+    const openerLength = marker.length;
+
+    let matchEnd = pos;
+    let matchStart: number;
+
+    while ((matchStart = src.indexOf('`', matchEnd)) !== -1) {
+        matchEnd = matchStart + 1;
+
+        // scan marker length
+        while (matchEnd < max && src.charCodeAt(matchEnd) === apostropheChar) {
+            matchEnd++;
+        }
+
+        const closerLength = matchEnd - matchStart;
+
+        if (closerLength === openerLength) {
+            return {
+                end: matchEnd,
+                steps: matchEnd - start,
+            };
+        }
+    }
+
+    return false;
+};
 
 type Stats = {line: number; pos: number};
 
@@ -112,11 +172,13 @@ interface RowPositions {
     pos: number;
 }
 
+// eslint-disable-next-line complexity
 function getTableRowPositions(
     state: StateBlock,
     startPosition: number,
     endPosition: number,
     startLine: number,
+    opts: YfmTablePluginOptions = {},
 ): RowPositions {
     let endOfTable = null;
     let tableLevel = 0;
@@ -150,9 +212,11 @@ function getTableRowPositions(
             break;
         }
 
-        if (isCodeBlockOrder(state.src, iter.pos)) {
-            isInsideCode = !isInsideCode;
-            iter.next(codeBlockOrder.length);
+        if (opts.table_ignoreSplittersInBlockCode !== false) {
+            if (isCodeBlockOrder(state.src, iter.pos)) {
+                isInsideCode = !isInsideCode;
+                iter.next(codeBlockOrder.length);
+            }
         }
 
         if (isInsideCode) {
@@ -173,6 +237,14 @@ function getTableRowPositions(
         if (isInsideLiquidVariable) {
             iter.next();
             continue;
+        }
+
+        if (opts.table_ignoreSplittersInInlineCode) {
+            const result = skipInlineCode(state.src, iter.pos, iter.lineEnds);
+            if (result !== false) {
+                iter.next(result.steps);
+                continue;
+            }
         }
 
         if (isOpenTableOrder(state.src, iter.pos)) {
@@ -370,7 +442,7 @@ const clearTokens = (tableStart: number, tokens: Token[]): void => {
     });
 };
 
-const yfmTable: MarkdownItPluginCb = (md) => {
+const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
     md.block.ruler.before(
         'code',
         pluginName,
@@ -397,6 +469,7 @@ const yfmTable: MarkdownItPluginCb = (md) => {
                 startPosition,
                 endPosition,
                 startLine,
+                opts,
             );
 
             const attrs = extractAttributes(state, pos);

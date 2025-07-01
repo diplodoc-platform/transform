@@ -1,13 +1,18 @@
+import type {YfmTablePluginOptions} from '../../src/transform/plugins/table/types';
+
+import dd from 'ts-dedent';
+
 import transform from '../../src/transform';
 import table from '../../src/transform/plugins/table';
 import includes from '../../src/transform/plugins/includes';
 
-const transformYfm = (text: string) => {
+const transformYfm = (text: string, opts?: YfmTablePluginOptions) => {
     const {
         result: {html},
     } = transform(text, {
         plugins: [table],
         enableMarkdownAttrs: false,
+        ...opts,
     });
     return html;
 };
@@ -691,6 +696,177 @@ describe('Table plugin', () => {
                 '</tbody>\n' +
                 '</table>\n',
         );
+    });
+
+    it('should ignore pipe in code-block', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            ||
+            \`\`\`
+            before | after
+            \`\`\`
+            ||
+            |#
+            `),
+        ).toBe(dd`
+            <table>
+            <tbody>
+            <tr>
+            <td>
+            <pre><code class="hljs">before | after
+            </code></pre>
+            </td>
+            </tr>
+            </tbody>
+            </table>
+
+            `);
+    });
+
+    describe('table_ignoreSplittersInBlockCode=false', () => {
+        it('should split cells by pipe in code-block', () => {
+            expect(
+                transformYfm(
+                    dd`
+                #|
+                ||
+                \`\`\`
+                before | after
+                \`\`\`
+                ||
+                |#
+                `,
+                    {table_ignoreSplittersInBlockCode: false},
+                ),
+            ).toBe(dd`
+                <table>
+                <tbody>
+                <tr>
+                <td>
+                <pre><code class="hljs">before |</code></pre>
+                </td>
+                <td>
+                <p>after</p>
+                <pre><code class="hljs">|</code></pre>
+                </td>
+                </tr>
+                </tbody>
+                </table>
+
+                `);
+        });
+    });
+
+    it('should split cells by pipe in inline-code', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            || code \`before|after\` code ||
+            |#
+            `),
+        ).toBe(dd`
+            <table>
+            <tbody>
+            <tr>
+            <td>
+            <p>code \`before</p>
+            </td>
+            <td>
+            <p>after\` code</p>
+            </td>
+            </tr>
+            </tbody>
+            </table>
+
+            `);
+    });
+
+    describe('table_ignoreSplittersInInlineCode=true', () => {
+        it('should ignore pipe in inline-code', () => {
+            expect(
+                transformYfm(
+                    dd`
+                #|
+                || code \`before|after\` code ||
+                |#
+                `,
+                    {table_ignoreSplittersInInlineCode: true},
+                ),
+            ).toBe(dd`
+                <table>
+                <tbody>
+                <tr>
+                <td>
+                <p>code <code>before|after</code> code</p>
+                </td>
+                </tr>
+                </tbody>
+                </table>
+
+                `);
+        });
+
+        it('should split cells by pipe in escaped inline-code', () => {
+            expect(
+                transformYfm(
+                    dd`
+                #|
+                || code \\\`before|after\` code ||
+                |#
+                `,
+                    {table_ignoreSplittersInInlineCode: true},
+                ),
+            ).toBe(dd`
+                <table>
+                <tbody>
+                <tr>
+                <td>
+                <p>code \`before</p>
+                </td>
+                <td>
+                <p>after\` code</p>
+                </td>
+                </tr>
+                </tbody>
+                </table>
+
+                `);
+        });
+    });
+
+    it('should split cells by pipe in multiline content', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            ||
+
+            one
+
+            two | three
+
+            four
+
+            ||
+            |#
+            `),
+        ).toBe(dd`
+            <table>
+            <tbody>
+            <tr>
+            <td>
+            <p>one</p>
+            <p>two</p>
+            </td>
+            <td>
+            <p>three</p>
+            <p>four</p>
+            </td>
+            </tr>
+            </tbody>
+            </table>
+
+            `);
     });
 
     it('parses table with liquid variables inside', () => {
