@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 
-import {MarkdownItPluginCb} from './typings';
+import type {MarkdownItPluginCb} from './typings';
 import {generateID} from './utils';
 
 const wrapInClipboard = (element: string | undefined, id: number) => {
@@ -53,7 +53,7 @@ interface EnvTerm {
 
 function termReplace(str: string, env: EnvTerm, escape: (str: string) => string): string {
     const regTerms = Object.keys(env.terms)
-        .map((el) => el.substr(1))
+        .map((el) => el.slice(1))
         .map(escape)
         .join('|');
     const regText = '\\[([^\\[]+)\\](\\(\\*(' + regTerms + ')\\))';
