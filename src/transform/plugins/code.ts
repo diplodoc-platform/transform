@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 
 import type {MarkdownItPluginCb} from './typings';
+
 import {generateID} from './utils';
 
 const wrapInClipboard = (element: string | undefined, id: number) => {
