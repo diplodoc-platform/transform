@@ -16,4 +16,20 @@ export type YfmTablePluginOptions = {
      * @default false
      */
     table_ignoreSplittersInInlineCode?: boolean;
+    /**
+     * Sets whether to interpret the pipe symbol inside the math block as a table separator.
+     *
+     * Set to true if the math_block rule is enabled in the parser.
+     *
+     * @default false
+     */
+    table_ignoreSplittersInBlockMath?: boolean;
+    /**
+     * Sets whether to interpret the pipe symbol inside the inline math as a table separator.
+     *
+     * Set to true if the math_inline rule is enabled in the parser.
+     *
+     * @default false
+     */
+    table_ignoreSplittersInInlineMath?: boolean;
 };
