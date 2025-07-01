@@ -12,6 +12,7 @@ const hashChar = 0x23; // #
 const backSlashChar = 0x5c; // \
 const curlyBraceOpen = 123;
 const curlyBraceClose = 125;
+const dollarChar = 36; // $
 
 const checkCharsOrder = (order: number[], src: string, pos: number) => {
     const currentOrder = [...order];
@@ -38,6 +39,9 @@ const isLiquidVariableEnd: CheckFn = (src, pos) =>
 
 const codeBlockOrder = [apostropheChar, apostropheChar, apostropheChar];
 const isCodeBlockOrder: CheckFn = (src, pos) => checkCharsOrder(codeBlockOrder, src, pos);
+
+const mathBlockOrder = [dollarChar, dollarChar];
+const isMathBlockOrder: CheckFn = (src, pos) => checkCharsOrder(mathBlockOrder, src, pos);
 
 const openTableOrder = [hashChar, pipeChar];
 const isOpenTableOrder: CheckFn = (src, pos) => checkCharsOrder(openTableOrder, src, pos);
@@ -109,6 +113,61 @@ const skipInlineCode: SkipInlineFn = (src, pos, max) => {
                 steps: matchEnd - start,
             };
         }
+    }
+
+    return false;
+};
+
+const skipInlineMath: SkipInlineFn = (src, pos, max) => {
+    // this function is an adaptation of latex-extension plugin
+    // https://github.com/diplodoc-platform/latex-extension/blob/master/src/plugin/transform.ts
+
+    if (src.charCodeAt(pos) !== dollarChar) {
+        return false;
+    }
+    if (pos > 0 && !notEscaped(src, pos)) {
+        return false;
+    }
+
+    {
+        const nextChar = pos + 1 <= max ? src.charCodeAt(pos + 1) : -1;
+        if (nextChar === 0x20 /* " " */ || nextChar === 0x09 /* \t */) {
+            return false;
+        }
+        if (nextChar === dollarChar) {
+            return {
+                end: pos + 2,
+                steps: 2,
+            };
+        }
+    }
+
+    const start = pos + 1;
+    let match = start;
+    // eslint-disable-next-line no-cond-assign
+    while ((match = src.indexOf('$', match))) {
+        if (match === -1 || match > max) {
+            return false;
+        }
+        if (isEscaped(src, match)) {
+            match++;
+            continue;
+        }
+
+        const prevChar = src.charCodeAt(match - 1);
+        const nextChar = match + 1 <= max ? src.charCodeAt(match + 1) : -1;
+        if (
+            prevChar === 0x20 /* " " */ ||
+            prevChar === 0x09 /* \t */ ||
+            (nextChar >= 0x30 /* "0" */ && nextChar <= 0x39) /* "9" */
+        ) {
+            return false;
+        }
+
+        return {
+            end: match + 1,
+            steps: match + 1 - start,
+        };
     }
 
     return false;
@@ -191,6 +250,7 @@ function getTableRowPositions(
     const rows: [number, number, typeof currentRow][] = [];
 
     let isInsideCode = false;
+    let isInsideMath = false;
     let isInsideTable = false;
     let isInsideLiquidVariable = false;
     const rowMap = new Map();
@@ -213,13 +273,20 @@ function getTableRowPositions(
         }
 
         if (opts.table_ignoreSplittersInBlockCode !== false) {
-            if (isCodeBlockOrder(state.src, iter.pos)) {
+            if (!isInsideMath && isCodeBlockOrder(state.src, iter.pos)) {
                 isInsideCode = !isInsideCode;
                 iter.next(codeBlockOrder.length);
             }
         }
 
-        if (isInsideCode) {
+        if (opts.table_ignoreSplittersInBlockMath) {
+            if (!isInsideCode && isMathBlockOrder(state.src, iter.pos)) {
+                isInsideMath = !isInsideMath;
+                iter.next(mathBlockOrder.length);
+            }
+        }
+
+        if (isInsideCode || isInsideMath) {
             iter.next();
             continue;
         }
@@ -241,6 +308,14 @@ function getTableRowPositions(
 
         if (opts.table_ignoreSplittersInInlineCode) {
             const result = skipInlineCode(state.src, iter.pos, iter.lineEnds);
+            if (result !== false) {
+                iter.next(result.steps);
+                continue;
+            }
+        }
+
+        if (opts.table_ignoreSplittersInInlineMath) {
+            const result = skipInlineMath(state.src, iter.pos, iter.lineEnds);
             if (result !== false) {
                 iter.next(result.steps);
                 continue;

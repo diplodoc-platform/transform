@@ -835,6 +835,145 @@ describe('Table plugin', () => {
         });
     });
 
+    it('should split cells by pipe in math-block', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            ||
+            $$
+            before | after
+            $$
+            ||
+            |#
+            `),
+        ).toBe(dd`
+            <table>
+            <tbody>
+            <tr>
+            <td>
+            <p>$$<br />
+            before</p>
+            </td>
+            <td>
+            <p>after<br />
+            $$</p>
+            </td>
+            </tr>
+            </tbody>
+            </table>
+
+            `);
+    });
+
+    describe('table_ignoreSplittersInBlockMath=true', () => {
+        it('should ignore pipe in math-block', () => {
+            expect(
+                transformYfm(
+                    dd`
+                #|
+                ||
+                $$
+                before | after
+                $$
+                ||
+                |#
+                `,
+                    {table_ignoreSplittersInBlockMath: true},
+                ),
+            ).toBe(dd`
+                <table>
+                <tbody>
+                <tr>
+                <td>
+                <p>$$<br />
+                before | after<br />
+                $$</p>
+                </td>
+                </tr>
+                </tbody>
+                </table>
+
+                `);
+        });
+    });
+
+    it('should split cells by pipe in inline-math', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            || math $before|after$ math ||
+            |#
+            `),
+        ).toBe(dd`
+            <table>
+            <tbody>
+            <tr>
+            <td>
+            <p>math $before</p>
+            </td>
+            <td>
+            <p>after$ math</p>
+            </td>
+            </tr>
+            </tbody>
+            </table>
+
+            `);
+    });
+
+    describe('table_ignoreSplittersInInlineMath=true', () => {
+        it('should ignore pipe in inline-math', () => {
+            expect(
+                transformYfm(
+                    dd`
+                #|
+                || math $before\\$|\\$after$ math ||
+                |#
+                `,
+                    {table_ignoreSplittersInInlineMath: true},
+                ),
+            ).toBe(dd`
+                <table>
+                <tbody>
+                <tr>
+                <td>
+                <p>math $before$|$after$ math</p>
+                </td>
+                </tr>
+                </tbody>
+                </table>
+
+                `);
+        });
+
+        it('should split cells by pipe in escaped inline-math', () => {
+            expect(
+                transformYfm(
+                    dd`
+                #|
+                || math \\$before|after$ math ||
+                |#
+                `,
+                    {table_ignoreSplittersInInlineMath: true},
+                ),
+            ).toBe(dd`
+                <table>
+                <tbody>
+                <tr>
+                <td>
+                <p>math $before</p>
+                </td>
+                <td>
+                <p>after$ math</p>
+                </td>
+                </tr>
+                </tbody>
+                </table>
+
+                `);
+        });
+    });
+
     it('should split cells by pipe in multiline content', () => {
         expect(
             transformYfm(dd`
