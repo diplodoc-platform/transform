@@ -1,7 +1,7 @@
-import StateCore from 'markdown-it/lib/rules_core/state_core';
-import Token from 'markdown-it/lib/token';
+import type StateCore from 'markdown-it/lib/rules_core/state_core';
+import type Token from 'markdown-it/lib/token';
+import type {MarkdownItPluginCb} from '../typings';
 
-import {MarkdownItPluginCb} from '../typings';
 import {generateID} from '../utils';
 
 import {termDefinitions} from './termDefinitions';

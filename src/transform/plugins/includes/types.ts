@@ -1,5 +1,5 @@
-import {MarkdownIt} from '../../typings';
-import {MarkdownItPluginOpts} from '../typings';
+import type {MarkdownIt} from '../../typings';
+import type {MarkdownItPluginOpts} from '../typings';
 
 export interface MarkdownItIncluded extends MarkdownIt {
     included?: {

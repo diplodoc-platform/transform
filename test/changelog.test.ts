@@ -1,3 +1,6 @@
+import type {Logger} from '../src/transform/log';
+import type {ChangelogItem} from '../src/transform/plugins/changelog/types';
+
 import path from 'path';
 import fs from 'fs';
 
@@ -5,8 +8,6 @@ import transform from '../src/transform';
 import changelogPlugin from '../src/transform/plugins/changelog';
 import changelogCollect from '../src/transform/plugins/changelog/collect';
 import imsize from '../src/transform/plugins/imsize';
-import {Logger} from '../src/transform/log';
-import {ChangelogItem} from '../src/transform/plugins/changelog/types';
 
 describe('Changelog', () => {
     function getItem(date: string | undefined, index: number | undefined) {

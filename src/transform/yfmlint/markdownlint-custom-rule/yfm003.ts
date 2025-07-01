@@ -1,4 +1,4 @@
-import {Rule} from 'markdownlint';
+import type {Rule} from 'markdownlint';
 
 export const yfm003: Rule = {
     names: ['YFM003', 'unreachable-link'],

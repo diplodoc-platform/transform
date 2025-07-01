@@ -1,4 +1,5 @@
 import type {Dictionary} from 'lodash';
+import type {ArgvSettings} from './services/argv';
 
 import cloneDeepWith from 'lodash/cloneDeepWith';
 
@@ -8,7 +9,7 @@ import applySubstitutions from './substitutions';
 import {prepareSourceMap} from './sourceMap';
 import applyCycles from './cycles';
 import applyConditions from './conditions';
-import ArgvService, {ArgvSettings} from './services/argv';
+import ArgvService from './services/argv';
 
 const fence = '```';
 

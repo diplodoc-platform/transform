@@ -1,7 +1,6 @@
-import StateBlock from 'markdown-it/lib/rules_block/state_block';
-import Token from 'markdown-it/lib/token';
-
-import {MarkdownItPluginCb} from '../typings';
+import type StateBlock from 'markdown-it/lib/rules_block/state_block';
+import type Token from 'markdown-it/lib/token';
+import type {MarkdownItPluginCb} from '../typings';
 
 import {AttrsParser} from './attrs';
 

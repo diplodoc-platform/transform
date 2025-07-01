@@ -1,6 +1,7 @@
+import type {PageContent} from 'node_modules/@gravity-ui/page-constructor/build/esm/index';
+
 import {useCallback, useState} from 'react';
 import {Editor} from '@gravity-ui/page-constructor/editor';
-import {PageContent} from 'node_modules/@gravity-ui/page-constructor/build/esm/index';
 import {contentTransformer} from '@gravity-ui/page-constructor/server';
 import {memoizeLast} from 'src/PageConstructorEditor/utils';
 import {deleteQuery, persist, prefill} from 'src/utils';

@@ -1,18 +1,13 @@
+import type Token from 'markdown-it/lib/token';
+import type {StateCore} from '../../typings';
+import type {GetFileTokensOpts} from '../../utilsFS';
+import type {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
+import type {MarkdownItIncluded} from './types';
+
 import {bold} from 'chalk';
-import Token from 'markdown-it/lib/token';
 
-import {StateCore} from '../../typings';
-import {
-    GetFileTokensOpts,
-    getFileTokens,
-    getFullIncludePath,
-    getRealPath,
-    isFileExists,
-} from '../../utilsFS';
 import {findBlockTokens} from '../../utils';
-import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
-
-import {MarkdownItIncluded} from './types';
+import {getFileTokens, getFullIncludePath, getRealPath, isFileExists} from '../../utilsFS';
 
 const INCLUDE_REGEXP = /^{%\s*include\s*(notitle)?\s*\[(.+?)]\((.+?)\)\s*%}$/;
 

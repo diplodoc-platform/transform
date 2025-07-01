@@ -1,10 +1,11 @@
+import type {MarkdownItPluginOpts} from '../typings';
+
 import chain from 'lodash/chain';
 import {sep} from 'path';
 
 import {getSinglePageAnchorId, resolveRelativePath} from '../../utilsFS';
 import {transformLinkToOriginalArticle} from '../../utils';
 import {сarriage} from '../utils';
-import {MarkdownItPluginOpts} from '../typings';
 
 import {CUSTOM_ID_EXCEPTION, CUSTOM_ID_REGEXP} from './constants';
 

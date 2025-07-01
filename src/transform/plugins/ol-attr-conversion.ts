@@ -1,4 +1,4 @@
-import {MarkdownItPluginCb} from '../typings';
+import type {MarkdownItPluginCb} from '../typings';
 
 const cssWhitelist = {
     '--hier-list-start': true,

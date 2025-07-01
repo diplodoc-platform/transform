@@ -1,6 +1,6 @@
-import StateInline, {Delimiter} from 'markdown-it/lib/rules_inline/state_inline';
-
-import {MarkdownItPluginCb} from './typings';
+import type {Delimiter} from 'markdown-it/lib/rules_inline/state_inline';
+import type StateInline from 'markdown-it/lib/rules_inline/state_inline';
+import type {MarkdownItPluginCb} from './typings';
 
 const monospace: MarkdownItPluginCb = (md) => {
     function postProcess(state: StateInline, delimiters: Delimiter[]) {

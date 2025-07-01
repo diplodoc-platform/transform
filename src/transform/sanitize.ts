@@ -1,10 +1,12 @@
-import sanitizeHtml, {Attributes, Tag} from 'sanitize-html';
+import type {Attributes, Tag} from 'sanitize-html';
+import type {CssWhiteList} from './typings';
+
+import sanitizeHtml from 'sanitize-html';
 // @ts-ignore
 import cssfilter from 'cssfilter';
 import * as cheerio from 'cheerio';
 import css from 'css';
 
-import {CssWhiteList} from './typings';
 import log from './log';
 
 export type SanitizeFunction = (

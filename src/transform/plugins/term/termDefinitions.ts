@@ -1,7 +1,6 @@
-import StateBlock from 'markdown-it/lib/rules_block/state_block';
-
-import {MarkdownIt} from '../../typings';
-import {MarkdownItPluginOpts} from '../typings';
+import type StateBlock from 'markdown-it/lib/rules_block/state_block';
+import type {MarkdownIt} from '../../typings';
+import type {MarkdownItPluginOpts} from '../typings';
 
 import {BASIC_TERM_REGEXP} from './constants';
 

@@ -1,4 +1,6 @@
-import {Locator, test as base, expect} from '@playwright/test';
+import type {Locator} from '@playwright/test';
+
+import {test as base, expect} from '@playwright/test';
 
 type TestFixtures = {
     metaTitle?: string;

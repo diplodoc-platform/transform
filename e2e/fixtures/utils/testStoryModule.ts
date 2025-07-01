@@ -1,8 +1,7 @@
-import {Meta} from '@storybook/html';
+import type {Meta} from '@storybook/html';
+import type {MarkdownSnippetProps, MarkdownSnippetStory} from './storyMeta';
 
 import {expect, test} from '../test';
-
-import {MarkdownSnippetProps, MarkdownSnippetStory} from './storyMeta';
 
 type CSFModule = {
     default: Meta<MarkdownSnippetProps>;
