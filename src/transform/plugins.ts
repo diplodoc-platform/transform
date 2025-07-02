@@ -15,7 +15,7 @@ import file from './plugins/file';
 import imsize from './plugins/imsize';
 import term from './plugins/term';
 import blockAnchor from './plugins/block-anchor';
-import inlineCode from './plugins/inline-code';
+import inlineCode from './plugins/inline-code/inline-code';
 
 const defaultPlugins = [
     meta,

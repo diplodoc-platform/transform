@@ -1,10 +1,11 @@
-import {MarkdownItPluginCb, StateCore} from '../typings';
+import {MarkdownItPluginCb, StateCore} from '../../typings';
+import {generateID} from '../utils';
 
-import {generateID} from './utils';
+import {LANG_TOKEN} from './constant';
 
-// const REG_EX_INLINE_CODE = /`([^`]*)`/
+const inlineCode: MarkdownItPluginCb = (md, options) => {
+    const lang = options.lang;
 
-const inlineCode: MarkdownItPluginCb = (md) => {
     md.renderer.rules.code_inline = function (tokens, idx) {
         const id = tokens[idx].attrGet('id');
 
@@ -44,7 +45,7 @@ const inlineCode: MarkdownItPluginCb = (md) => {
             tokens.push(dialog);
 
             const text = new state.Token('text', '', 0);
-            text.content = 'Успешно';
+            text.content = LANG_TOKEN[lang] ?? 'Copied';
             tokens.push(text);
 
             const closeDialog = new state.Token('dfn_close', 'dfn', -1);
