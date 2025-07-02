@@ -5,7 +5,6 @@ import DefaultMarkdownIt from 'markdown-it';
 import attrs from 'markdown-it-attrs';
 
 import DefaultPlugins from './plugins';
-import {preprocess} from './preprocessors';
 import {log} from './log';
 import makeHighlight from './highlight';
 import extractTitle from './title';
@@ -60,7 +59,7 @@ function initMarkdownIt(options: OptionsType) {
     initPlugins(md, options, pluginOptions);
 
     // Init preprocessor and MD parser
-    const parse = initParser(md, options, env, pluginOptions);
+    const parse = initParser(md, options, env);
 
     // Init render to HTML compiler
     const compile = initCompiler(md, options, env);
@@ -116,12 +115,7 @@ function initPlugins(md: MarkdownIt, options: OptionsType, pluginOptions: Markdo
     }
 }
 
-function initParser(
-    md: MarkdownIt,
-    options: OptionsType,
-    env: EnvType,
-    pluginOptions: MarkdownItPluginOpts,
-) {
+function initParser(md: MarkdownIt, options: OptionsType, env: EnvType) {
     return (input: string) => {
         const {
             extractTitle: extractTitleOption,
@@ -129,9 +123,6 @@ function initParser(
             needFlatListHeadings = false,
             getPublicPath,
         } = options;
-
-        // Run preprocessor
-        input = preprocess(input, pluginOptions, options, md);
 
         // Generate global href link
         const href = getPublicPath ? getPublicPath(options) : '';

@@ -8,7 +8,6 @@ import QuickLRU from 'quick-lru';
 import liquidSnippet from './liquid';
 import {StateCore} from './typings';
 import {defaultTransformLink} from './utils';
-import {preprocess} from './preprocessors';
 
 const filesCache = new QuickLRU<string, string>({maxSize: 1000});
 
@@ -82,9 +81,6 @@ export function getFileTokens(
         content = liquidResult.output;
         sourceMap = liquidResult.sourceMap;
     }
-
-    // Run preprocessor
-    content = preprocess(content, options);
 
     if (!disableLint && lintMarkdown) {
         lintMarkdown({

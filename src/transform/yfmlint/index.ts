@@ -6,7 +6,6 @@ import union from 'lodash/union';
 import attrs from 'markdown-it-attrs';
 
 import {LogLevels, Logger} from '../log';
-import {preprocess} from '../preprocessors';
 
 import baseDefaultLintConfig from './yfmlint';
 import {
@@ -28,8 +27,7 @@ const defaultLintRules = [yfm001, yfm002, yfm003, yfm004, yfm005, yfm006, yfm007
 const lintCache = new Set();
 
 function yfmlint(opts: Options) {
-    let {input} = opts;
-    const {plugins: customPlugins, pluginOptions, customLintRules, sourceMap} = opts;
+    const {input, plugins: customPlugins, pluginOptions, customLintRules, sourceMap} = opts;
     const {path = 'input', log} = pluginOptions;
 
     pluginOptions.isLintRun = true;
@@ -60,9 +58,6 @@ function yfmlint(opts: Options) {
     const {enableMarkdownAttrs = true} = opts;
     const plugins = customPlugins && [...(enableMarkdownAttrs ? [attrs] : []), ...customPlugins];
     const preparedPlugins = plugins && plugins.map((plugin) => [plugin, pluginOptions]);
-
-    // Run preprocessor
-    input = preprocess(input, pluginOptions, opts);
 
     let result;
     try {
