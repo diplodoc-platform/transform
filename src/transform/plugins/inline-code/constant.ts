@@ -2,7 +2,7 @@ import {Lang} from '../typings';
 
 export const LANG_TOKEN: Record<Lang, string> = {
     ru: 'Cкопировано',
-    en: 'copied',
+    en: 'Сopied',
     ar: 'تم النسخ',
     cs: 'Zkopírováno',
     fr: 'Copié',
