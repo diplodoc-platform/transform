@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.58.0](https://github.com/diplodoc-platform/transform/compare/v4.57.7...v4.58.0) (2025-07-02)
+
+
+### Features
+
+* **table:** ignore table splitters in inline code (under flag) ([dcd22bd](https://github.com/diplodoc-platform/transform/commit/dcd22bdb733beddcbe3281b6ab7eba5daa26e3ba))
+* **table:** ignore table splitters in math (under flag) ([567f70a](https://github.com/diplodoc-platform/transform/commit/567f70a843ec32991c6109f306a9bc5ab8ab1158))
+
+
+### Bug Fixes
+
+* **table:** fix nested tables parsing ([42ba889](https://github.com/diplodoc-platform/transform/commit/42ba889c81f208427f648fe191c87583a2dac87e))
+
 ## [4.57.7](https://github.com/diplodoc-platform/transform/compare/v4.57.6...v4.57.7) (2025-05-20)
 
 
