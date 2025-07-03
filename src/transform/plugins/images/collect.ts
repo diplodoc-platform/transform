@@ -3,7 +3,7 @@ import type {MarkdownItPluginOpts} from '../typings';
 import MarkdownIt from 'markdown-it';
 import {relative} from 'path';
 
-import {isLocalUrl} from '../../utils';
+import {getSrcTokenAttr, isLocalUrl} from '../../utils';
 import {resolveRelativePath} from '../../utilsFS';
 import deflist from '../deflist';
 import imsize from '../imsize';
@@ -33,7 +33,7 @@ const collect = (input: string, options: Options) => {
                 return;
             }
 
-            const src = childToken.attrGet('src') || '';
+            const src = getSrcTokenAttr(childToken);
 
             if (!isLocalUrl(src)) {
                 return;

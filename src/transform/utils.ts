@@ -92,6 +92,16 @@ export function getHrefTokenAttr(token: Token) {
     return href;
 }
 
+export function getSrcTokenAttr(token: Token) {
+    let src = token.attrGet('src') || '';
+    try {
+        // decodeURI can throw an error https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError
+        src = decodeURI(src);
+    } catch (e) {}
+
+    return src;
+}
+
 export const PAGE_LINK_REGEXP = /\.(md|ya?ml)$/i;
 
 export function defaultTransformLink(href: string) {
