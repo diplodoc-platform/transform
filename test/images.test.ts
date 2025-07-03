@@ -1,8 +1,23 @@
+import {dirname, resolve} from 'path';
+import {unlinkSync, writeFileSync} from 'fs';
 import MarkdownIt from 'markdown-it';
 
 import transform from '../src/transform';
 import images from '../src/transform/plugins/images';
 import {log} from '../src/transform/log';
+
+const mocksPath = require.resolve('./utils.ts');
+const transformYfm = (text: string) => {
+    const {
+        result: {html},
+    } = transform(text, {
+        plugins: [images],
+        path: mocksPath,
+        root: dirname(mocksPath),
+    });
+
+    return html;
+};
 
 describe('Images plugin', () => {
     beforeEach(() => {
@@ -15,6 +30,19 @@ describe('Images plugin', () => {
         const src = tokens[1].children?.[0].attrGet('src');
 
         expect(src).toBe(encodeURI('русские-символы.png'));
+    });
+
+    test('should handle local image links with cyrillic characters', () => {
+        const imagePath = resolve(dirname(mocksPath), 'русские-символы.png');
+
+        writeFileSync(imagePath, '');
+
+        const html = transformYfm('![тест](./русские-символы.png)');
+
+        expect(html).toEqual('<p><img src="/русские-символы.png" alt="тест" /></p>\n');
+        expect(log.isEmpty()).toEqual(true);
+
+        unlinkSync(imagePath);
     });
 
     test('should handle external image links with cyrillic characters', () => {
