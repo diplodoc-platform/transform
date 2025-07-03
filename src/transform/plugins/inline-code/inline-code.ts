@@ -1,15 +1,18 @@
 import {MarkdownItPluginCb, StateCore} from '../../typings';
 import {generateID} from '../utils';
 
-import {LANG_TOKEN} from './constant';
+import {LANG_TOKEN, LANG_TOKEN_DESCRIPTION, LANG_TOKEN_LABEL} from './constant';
 
 const inlineCode: MarkdownItPluginCb = (md, options) => {
     const lang = options.lang;
 
     md.renderer.rules.code_inline = function (tokens, idx) {
-        const id = tokens[idx].attrGet('id');
+        const id = generateID();
 
-        return `<code class="yfm-clipboard-inline-code" term-key="${id}" id="${id}" tabindex='0'>${tokens[idx].content}</code>`;
+        const description = LANG_TOKEN_DESCRIPTION[lang] ?? LANG_TOKEN_DESCRIPTION.en;
+        const label = LANG_TOKEN_LABEL[lang] ?? LANG_TOKEN_LABEL.en;
+
+        return `<code class="yfm-clipboard-inline-code" role="button" aria-label="${label}" aria-description="${description}" tabindex='0' id="${id}">${tokens[idx].content}</code>`;
     };
 
     md.core.ruler.after('inline', 'tooltip_code_inline', (state: StateCore) => {
@@ -32,12 +35,9 @@ const inlineCode: MarkdownItPluginCb = (md, options) => {
                 return;
             }
 
-            const id = generateID();
-            child.attrSet('id', id);
-
             const dialog = new state.Token('dfn_open', 'dfn', 1);
             dialog.attrSet('class', 'yfm yfm-term_dfn');
-            dialog.attrSet('id', `${id}_element`);
+            dialog.attrSet('id', `tooltip_inline_clipboard_dialog`);
             dialog.attrSet('role', 'dialog');
             dialog.attrSet('aria-live', 'polite');
             dialog.attrSet('aria-modal', 'true');
@@ -50,6 +50,7 @@ const inlineCode: MarkdownItPluginCb = (md, options) => {
 
             const closeDialog = new state.Token('dfn_close', 'dfn', -1);
             tokens.push(closeDialog);
+            break;
         }
     });
 };
