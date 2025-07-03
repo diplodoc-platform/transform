@@ -6,6 +6,8 @@ import type {MarkdownItPluginCb} from '../typings';
 import {bold} from 'chalk';
 import yaml from 'js-yaml';
 
+import {getSrcTokenAttr} from '../../utils';
+
 interface Options {
     extractChangelogs?: boolean;
 }
@@ -85,7 +87,7 @@ function parseBody(tokens: Token[], state: StateCore) {
                 alt = md.renderer.renderInlineAsText(imageToken.children, md.options, env);
             }
             image = {
-                src: imageToken.attrGet('src'),
+                src: getSrcTokenAttr(imageToken),
                 alt,
                 ratio,
             };
