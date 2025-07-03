@@ -3,9 +3,12 @@ import {getCoords, trapFocus} from '../term/utils';
 import {OPEN_CLASS} from './constant';
 
 export let timer: ReturnType<typeof setTimeout> | null = null;
-export let inlineTooltip: HTMLElement | null = null;
 
 let isListenerNeeded = true;
+
+export function getTooltipElement(): HTMLElement | null {
+    return document.querySelector('.yfm-inline-code-tooltip');
+}
 
 function setTooltipAriaAttributes(tooltipElement: HTMLElement, targetElement: HTMLElement): void {
     const ariaLive = targetElement.getAttribute('aria-live') || 'polite';
@@ -31,7 +34,7 @@ function tooltipParentElement(target: HTMLElement | null) {
 }
 
 function tooltipOnResize() {
-    const openedDefinition = inlineTooltip;
+    const openedDefinition = getTooltipElement();
 
     if (!openedDefinition) {
         return;
@@ -155,7 +158,15 @@ export function openTooltip(target: HTMLElement) {
     setTooltipAriaAttributes(tooltipElement, target);
     setTooltipPosition(tooltipElement, target);
 
-    tooltipElement.classList.toggle(OPEN_CLASS);
+    // In order not to get rid of the smooth appearance effect, I had to do this
+    if (tooltipElement.classList.contains(OPEN_CLASS)) {
+        tooltipElement.classList.remove(OPEN_CLASS);
+        requestAnimationFrame(() => {
+            tooltipElement.classList.add(OPEN_CLASS);
+        });
+    } else {
+        tooltipElement.classList.add(OPEN_CLASS);
+    }
 
     trapFocus(tooltipElement);
 
@@ -165,7 +176,6 @@ export function openTooltip(target: HTMLElement) {
 export function closeTooltip(target: HTMLElement) {
     checkTimerAndClear();
     closeTooltipFn(target);
-    inlineTooltip = null;
 }
 
 export function tooltipWorker(target: HTMLElement) {
@@ -174,14 +184,9 @@ export function tooltipWorker(target: HTMLElement) {
     if (!definition) {
         return;
     }
-
-    inlineTooltip = definition;
-
     checkTimerAndClear();
     timer = setTimeout(() => {
-        if (definition) {
-            closeTooltip(definition);
-        }
+        closeTooltip(definition);
         timer = null;
-    }, 5000);
+    }, 1000);
 }

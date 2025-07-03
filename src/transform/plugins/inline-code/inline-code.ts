@@ -36,7 +36,7 @@ const inlineCode: MarkdownItPluginCb = (md, options) => {
             }
 
             const dialog = new state.Token('dfn_open', 'dfn', 1);
-            dialog.attrSet('class', 'yfm yfm-term_dfn');
+            dialog.attrSet('class', 'yfm inline_code_tooltip');
             dialog.attrSet('id', `tooltip_inline_clipboard_dialog`);
             dialog.attrSet('role', 'dialog');
             dialog.attrSet('aria-live', 'polite');
