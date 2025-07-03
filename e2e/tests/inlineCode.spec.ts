@@ -19,7 +19,17 @@ describeStory(stories, 'Base', () => {
         expect(clipboardContent).toEqual(innerText);
     });
 
-    test('Click to inline code should open tooltip and close it after 1sec', async ({
+    test('Click to inline code should open tooltip', async ({yfmRoot, page}) => {
+        const anchorButton = yfmRoot.getByRole('button');
+        await anchorButton.click();
+
+        const tooltip = page.locator('dfn[id="tooltip_inline_clipboard_dialog"]');
+        const classes = await tooltip.getAttribute('class');
+
+        expect(classes).toContain('open');
+    });
+
+    test('Click to inline code should open tooltip and close it after 1second', async ({
         yfmRoot,
         page,
     }) => {
