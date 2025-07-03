@@ -45,7 +45,7 @@ const inlineCode: MarkdownItPluginCb = (md, options) => {
             tokens.push(dialog);
 
             const text = new state.Token('text', '', 0);
-            text.content = LANG_TOKEN[lang] ?? 'Copied';
+            text.content = LANG_TOKEN[lang] ?? LANG_TOKEN.en;
             tokens.push(text);
 
             const closeDialog = new state.Token('dfn_close', 'dfn', -1);

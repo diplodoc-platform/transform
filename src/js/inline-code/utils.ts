@@ -1,4 +1,4 @@
-import {getCoords, trapFocus} from '../term/utils';
+import {getCoords} from '../term/utils';
 
 import {OPEN_CLASS} from './constant';
 
@@ -167,8 +167,6 @@ export function openTooltip(target: HTMLElement) {
     } else {
         tooltipElement.classList.add(OPEN_CLASS);
     }
-
-    trapFocus(tooltipElement);
 
     return tooltipElement;
 }
