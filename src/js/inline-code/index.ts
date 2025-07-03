@@ -21,7 +21,7 @@ export function inlineCopyFn(target: HTMLElement) {
     });
 }
 
-if (document !== undefined) {
+if (typeof document !== 'undefined') {
     document.addEventListener('click', (event) => {
         const target = getEventTarget(event) as HTMLElement;
 
