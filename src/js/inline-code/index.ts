@@ -4,7 +4,7 @@ import {INLINE_CODE, OPEN_CLASS} from './constant';
 import {
     closeTooltip,
     getInlineCodeByTooltip,
-    inlineTooltip,
+    getTooltipElement,
     setTooltipPosition,
     tooltipWorker,
 } from './utils';
@@ -49,6 +49,8 @@ if (document !== undefined) {
             });
         }
 
+        const inlineTooltip = getTooltipElement();
+
         if (event.key === 'Escape' && inlineTooltip) {
             closeTooltip(inlineTooltip);
             getInlineCodeByTooltip(inlineTooltip)?.focus(); // Set focus back to open button after closing popup
@@ -56,6 +58,7 @@ if (document !== undefined) {
     });
 
     window.addEventListener('resize', () => {
+        const inlineTooltip = getTooltipElement();
         if (!inlineTooltip) {
             return;
         }
