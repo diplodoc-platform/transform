@@ -49,7 +49,7 @@ if (typeof document !== 'undefined') {
             .map((node) => node.textContent)
             .join('');
 
-        copyToClipboard(textContent).then(() => {
+        copyToClipboard(textContent.trim()).then(() => {
             notifySuccess(parent.querySelector('.yfm-clipboard-icon'));
         });
     });
