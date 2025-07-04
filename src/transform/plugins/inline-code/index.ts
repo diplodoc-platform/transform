@@ -35,7 +35,7 @@ const inlineCode: MarkdownItPluginCb = (md, options) => {
                 return;
             }
 
-            const dialog = new state.Token('dfn_open', 'dfn', 1);
+            const dialog = new state.Token('tooltip_open', 'div', 1);
             dialog.attrSet('class', 'yfm inline_code_tooltip');
             dialog.attrSet('id', `tooltip_inline_clipboard_dialog`);
             dialog.attrSet('role', 'dialog');
@@ -48,7 +48,7 @@ const inlineCode: MarkdownItPluginCb = (md, options) => {
             text.content = LANG_TOKEN[lang] ?? LANG_TOKEN.en;
             tokens.push(text);
 
-            const closeDialog = new state.Token('dfn_close', 'dfn', -1);
+            const closeDialog = new state.Token('tooltip_close', 'div', -1);
             tokens.push(closeDialog);
             break;
         }
