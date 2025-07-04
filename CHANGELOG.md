@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.58.1](https://github.com/diplodoc-platform/transform/compare/v4.58.0...v4.58.1) (2025-07-04)
+
+
+### Bug Fixes
+
+* add copyclipboard trim ([a4dcb2c](https://github.com/diplodoc-platform/transform/commit/a4dcb2cd77eb3e4aa07421db3dcfe833c1a5f2a2))
+
 ## [4.58.0](https://github.com/diplodoc-platform/transform/compare/v4.57.7...v4.58.0) (2025-07-02)
 
 
