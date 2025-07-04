@@ -1,0 +1,59 @@
+.inline_code_tooltip {
+    position: absolute;
+    z-index: 100;
+
+    width: fit-content;
+    max-width: 450px;
+
+    @media screen and (max-width: 600px) {
+        & {
+            max-width: 80%;
+        }
+    }
+
+    visibility: hidden;
+    opacity: 0;
+
+    padding: 10px;
+
+    background-color: var(--yfm-color-term-dfn-background);
+
+    font-size: inherit;
+    line-height: inherit;
+    font-style: normal;
+
+    border-radius: 4px;
+
+    box-shadow: 0 8px 20px var(--yfm-color-term-dfn-shadow);
+    outline: none;
+
+    &::before {
+        content: '';
+        position: absolute;
+        z-index: -1;
+        inset: 0;
+
+        border-radius: inherit;
+        box-shadow: 0 0 0 1px var(--yfm-color-term-dfn-pseudo-shadow);
+    }
+
+    &.open {
+        visibility: visible;
+
+        animation-name: popup;
+        animation-duration: 0.1s;
+        animation-timing-function: ease-out;
+        animation-fill-mode: forwards;
+
+        @keyframes popup {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    }
+}

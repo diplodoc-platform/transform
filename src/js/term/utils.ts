@@ -172,7 +172,7 @@ export function closeDefinition(definition: HTMLElement) {
     isListenerNeeded = true;
 }
 
-function getCoords(elem: HTMLElement) {
+export function getCoords(elem: HTMLElement) {
     const box = elem.getBoundingClientRect();
 
     const body = document.body;
