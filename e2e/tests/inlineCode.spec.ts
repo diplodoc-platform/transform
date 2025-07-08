@@ -1,6 +1,6 @@
 import {describeStory} from 'fixtures/utils/testStoryModule';
 
-import * as stories from '../stories/inline-code/inlineCode.stories';
+import * as stories from '../stories/inline-code/InlineCode.stories';
 import {expect, test} from '../fixtures/test';
 
 test.beforeEach(({browserName}) =>
