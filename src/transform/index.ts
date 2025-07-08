@@ -47,7 +47,6 @@ function transform(originInput: string, options: OptionsType = {}): OutputType |
         if (options.tokens === true) {
             return tokens;
         }
-
         return emitResult(compile(tokens), env);
     } catch (error) {
         handleError(error, options.path);

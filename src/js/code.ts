@@ -18,39 +18,45 @@ function notifySuccess(svgButton: HTMLElement | null) {
     icon.beginElement();
 }
 
+function buttonCopyFn(target: HTMLElement) {
+    const parent = target.parentNode;
+
+    if (!parent) {
+        return;
+    }
+
+    const code = parent.querySelector<HTMLElement>('pre code');
+    if (!code) {
+        return;
+    }
+
+    // Get all text nodes and filter out line numbers
+    const textContent = Array.from(code.childNodes)
+        .filter((node) => {
+            // Skip line number spans
+            if (node instanceof HTMLElement && node.classList.contains('yfm-line-number')) {
+                return false;
+            }
+            return true;
+        })
+        .map((node) => node.textContent)
+        .join('');
+
+    copyToClipboard(textContent).then(() => {
+        notifySuccess(parent.querySelector('.yfm-clipboard-icon'));
+    });
+}
+
 if (typeof document !== 'undefined') {
     document.addEventListener('click', (event) => {
         const target = getEventTarget(event) as HTMLElement;
 
-        if (isCustom(event) || !target.matches(BUTTON_SELECTOR)) {
+        const button = target.matches(BUTTON_SELECTOR);
+
+        if (isCustom(event) || !button) {
             return;
         }
 
-        const parent = target.parentNode;
-
-        if (!parent) {
-            return;
-        }
-
-        const code = parent.querySelector<HTMLElement>('pre code');
-        if (!code) {
-            return;
-        }
-
-        // Get all text nodes and filter out line numbers
-        const textContent = Array.from(code.childNodes)
-            .filter((node) => {
-                // Skip line number spans
-                if (node instanceof HTMLElement && node.classList.contains('yfm-line-number')) {
-                    return false;
-                }
-                return true;
-            })
-            .map((node) => node.textContent)
-            .join('');
-
-        copyToClipboard(textContent.trim()).then(() => {
-            notifySuccess(parent.querySelector('.yfm-clipboard-icon'));
-        });
+        buttonCopyFn(target);
     });
 }

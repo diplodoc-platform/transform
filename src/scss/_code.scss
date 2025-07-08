@@ -38,5 +38,14 @@
         &-icon {
             pointer-events: none;
         }
+
+        &-inline-code {
+            transition: 0.3s;
+
+            &:hover {
+                cursor: pointer;
+                background-color: var(--yfm-color-code-background-hovered-private);
+            }
+        }
     }
 }
