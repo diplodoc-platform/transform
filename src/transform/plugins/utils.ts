@@ -1,8 +1,8 @@
+import type Token from 'markdown-it/lib/token';
+import type {Logger} from '../log';
+
 import {bold} from 'chalk';
 import {platform} from 'process';
-import Token from 'markdown-it/lib/token';
-
-import {Logger} from '../log';
 
 export type MatchTokenFunction = (
     tokens: Token[],

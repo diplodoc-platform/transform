@@ -1,5 +1,5 @@
-import {VideoService} from './const';
-import {Services} from './types';
+import type {VideoService} from './const';
+import type {Services} from './types';
 
 const ytRegex = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
 export function youtubeParser(url: string) {

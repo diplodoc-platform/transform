@@ -1,3 +1,5 @@
+import type {OptionsType} from '../../../lib/typings';
+
 import meta from '@diplodoc/transform/lib/plugins/meta';
 import sup from '@diplodoc/transform/lib/plugins/sup';
 import cut from '@diplodoc/transform/lib/plugins/cut';
@@ -13,8 +15,6 @@ import table from '@diplodoc/transform/lib/plugins/table';
 import notes from '@diplodoc/transform/lib/plugins/notes';
 import transform from '@diplodoc/transform';
 import inlineCode from '@diplodoc/transform/lib/plugins/inline-code';
-
-import {OptionsType} from '../../../lib/typings';
 
 const transformOptions: OptionsType = {
     lang: 'en',

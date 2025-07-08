@@ -1,4 +1,5 @@
 import type {Dictionary} from 'lodash';
+import type {StateCore} from './typings';
 
 import {readFileSync, realpathSync, statSync} from 'fs';
 import escapeRegExp from 'lodash/escapeRegExp';
@@ -6,7 +7,6 @@ import {join, parse, relative, resolve, sep} from 'path';
 import QuickLRU from 'quick-lru';
 
 import liquidSnippet from './liquid';
-import {StateCore} from './typings';
 import {defaultTransformLink} from './utils';
 import {preprocess} from './preprocessors';
 

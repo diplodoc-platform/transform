@@ -1,6 +1,7 @@
-import {PluginWithOptions} from 'markdown-it';
+import type {PluginWithOptions} from 'markdown-it';
+import type {ImsizeOptions} from './plugin';
 
-import {ImsizeOptions, imageWithSize} from './plugin';
+import {imageWithSize} from './plugin';
 
 /**
  * Imsize plugin for markdown-it.

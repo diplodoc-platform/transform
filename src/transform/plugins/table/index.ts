@@ -1,9 +1,9 @@
-import StateBlock from 'markdown-it/lib/rules_block/state_block';
-import Token from 'markdown-it/lib/token';
+import type StateBlock from 'markdown-it/lib/rules_block/state_block';
+import type Token from 'markdown-it/lib/token';
+import type {MarkdownItPluginCb} from '../typings';
+import type {YfmTablePluginOptions} from './types';
 
-import {MarkdownItPluginCb} from '../typings';
-
-import {AttrsParser} from './attrs';
+import {AttrsParser} from '@diplodoc/utils';
 
 const pluginName = 'yfm_table';
 const pipeChar = 0x7c; // |
@@ -12,6 +12,7 @@ const hashChar = 0x23; // #
 const backSlashChar = 0x5c; // \
 const curlyBraceOpen = 123;
 const curlyBraceClose = 125;
+const dollarChar = 36; // $
 
 const checkCharsOrder = (order: number[], src: string, pos: number) => {
     const currentOrder = [...order];
@@ -39,10 +40,21 @@ const isLiquidVariableEnd: CheckFn = (src, pos) =>
 const codeBlockOrder = [apostropheChar, apostropheChar, apostropheChar];
 const isCodeBlockOrder: CheckFn = (src, pos) => checkCharsOrder(codeBlockOrder, src, pos);
 
+const mathBlockOrder = [dollarChar, dollarChar];
+const isMathBlockOrder: CheckFn = (src, pos) => checkCharsOrder(mathBlockOrder, src, pos);
+
 const openTableOrder = [hashChar, pipeChar];
 const isOpenTableOrder: CheckFn = (src, pos) => checkCharsOrder(openTableOrder, src, pos);
 
-const notEscaped: CheckFn = (src, pos) => src.charCodeAt(pos - 1) !== backSlashChar;
+const isEscaped: CheckFn = (src, pos) => {
+    const start = pos;
+    pos--;
+    while (src.charCodeAt(pos) === backSlashChar) {
+        pos--;
+    }
+    return (start - pos) % 2 === 0;
+};
+const notEscaped: CheckFn = (src, pos) => !isEscaped(src, pos);
 
 const rowStartOrder = [pipeChar, pipeChar];
 const isRowOrder: CheckFn = (src, pos) =>
@@ -55,41 +67,159 @@ const isCellOrder: CheckFn = (src, pos) =>
 const closeTableOrder = [pipeChar, hashChar];
 const isCloseTableOrder: CheckFn = (src, pos) => checkCharsOrder(closeTableOrder, src, pos);
 
+type SkipInlineFn = (src: string, pos: number, max: number) => false | SkipInlineResult;
+type SkipInlineResult = {
+    end: number;
+    steps: number;
+};
+
+const skipInlineCode: SkipInlineFn = (src, pos, max) => {
+    // this function is an adaptation of original markdown-it backticks plugin
+    // https://github.com/markdown-it/markdown-it/blob/master/lib/rules_inline/backticks.mjs
+
+    if (src.charCodeAt(pos) !== apostropheChar) {
+        return false;
+    }
+    if (pos > 0 && isEscaped(src, pos)) {
+        return false;
+    }
+
+    const start = pos;
+
+    // scan marker length
+    while (pos < max && src.charCodeAt(pos) === apostropheChar) {
+        pos++;
+    }
+
+    const marker = src.slice(start, pos);
+    const openerLength = marker.length;
+
+    let matchEnd = pos;
+    let matchStart: number;
+
+    while ((matchStart = src.indexOf('`', matchEnd)) !== -1) {
+        matchEnd = matchStart + 1;
+
+        // scan marker length
+        while (matchEnd < max && src.charCodeAt(matchEnd) === apostropheChar) {
+            matchEnd++;
+        }
+
+        const closerLength = matchEnd - matchStart;
+
+        if (closerLength === openerLength) {
+            return {
+                end: matchEnd,
+                steps: matchEnd - start,
+            };
+        }
+    }
+
+    return false;
+};
+
+const skipInlineMath: SkipInlineFn = (src, pos, max) => {
+    // this function is an adaptation of latex-extension plugin
+    // https://github.com/diplodoc-platform/latex-extension/blob/master/src/plugin/transform.ts
+
+    if (src.charCodeAt(pos) !== dollarChar) {
+        return false;
+    }
+    if (pos > 0 && !notEscaped(src, pos)) {
+        return false;
+    }
+
+    {
+        const nextChar = pos + 1 <= max ? src.charCodeAt(pos + 1) : -1;
+        if (nextChar === 0x20 /* " " */ || nextChar === 0x09 /* \t */) {
+            return false;
+        }
+        if (nextChar === dollarChar) {
+            return {
+                end: pos + 2,
+                steps: 2,
+            };
+        }
+    }
+
+    const start = pos + 1;
+    let match = start;
+    // eslint-disable-next-line no-cond-assign
+    while ((match = src.indexOf('$', match))) {
+        if (match === -1 || match > max) {
+            return false;
+        }
+        if (isEscaped(src, match)) {
+            match++;
+            continue;
+        }
+
+        const prevChar = src.charCodeAt(match - 1);
+        const nextChar = match + 1 <= max ? src.charCodeAt(match + 1) : -1;
+        if (
+            prevChar === 0x20 /* " " */ ||
+            prevChar === 0x09 /* \t */ ||
+            (nextChar >= 0x30 /* "0" */ && nextChar <= 0x39) /* "9" */
+        ) {
+            return false;
+        }
+
+        return {
+            end: match + 1,
+            steps: match + 1 - start,
+        };
+    }
+
+    return false;
+};
+
 type Stats = {line: number; pos: number};
 
 class StateIterator {
-    pos: number;
-    line: number;
+    private _pos: number;
+    private _line: number;
+    private _lineEnds: number;
 
     private state: StateBlock;
-    private lineEnds: number;
+
+    get pos() {
+        return this._pos;
+    }
+
+    get line() {
+        return this._line;
+    }
+
+    get lineEnds() {
+        return this._lineEnds;
+    }
 
     constructor(state: StateBlock, pos: number, line: number) {
         this.state = state;
-        this.line = line;
-        this.pos = pos;
-        this.lineEnds = this.state.eMarks[this.line];
+        this._line = line;
+        this._pos = pos;
+        this._lineEnds = this.state.eMarks[this._line];
     }
 
     stats(): Stats {
         return {
-            line: this.line,
-            pos: this.pos,
+            line: this._line,
+            pos: this._pos,
         };
     }
 
     get symbol() {
-        return this.state.src[this.pos];
+        return this.state.src[this._pos];
     }
 
     next(steps = 1) {
         for (let i = 0; i < steps; i++) {
-            this.pos++;
+            this._pos++;
 
-            if (this.pos > this.lineEnds) {
-                this.line++;
-                this.pos = this.state.bMarks[this.line] + this.state.tShift[this.line];
-                this.lineEnds = this.state.eMarks[this.line];
+            if (this._pos > this._lineEnds) {
+                this._line++;
+                this._pos = this.state.bMarks[this._line] + this.state.tShift[this._line];
+                this._lineEnds = this.state.eMarks[this._line];
             }
         }
     }
@@ -101,11 +231,13 @@ interface RowPositions {
     pos: number;
 }
 
+// eslint-disable-next-line complexity
 function getTableRowPositions(
     state: StateBlock,
     startPosition: number,
     endPosition: number,
     startLine: number,
+    opts: YfmTablePluginOptions = {},
 ): RowPositions {
     let endOfTable = null;
     let tableLevel = 0;
@@ -118,7 +250,7 @@ function getTableRowPositions(
     const rows: [number, number, typeof currentRow][] = [];
 
     let isInsideCode = false;
-    let isInsideTable = false;
+    let isInsideMath = false;
     let isInsideLiquidVariable = false;
     const rowMap = new Map();
 
@@ -139,12 +271,21 @@ function getTableRowPositions(
             break;
         }
 
-        if (isCodeBlockOrder(state.src, iter.pos)) {
-            isInsideCode = !isInsideCode;
-            iter.next(codeBlockOrder.length);
+        if (opts.table_ignoreSplittersInBlockCode !== false) {
+            if (!isInsideMath && isCodeBlockOrder(state.src, iter.pos)) {
+                isInsideCode = !isInsideCode;
+                iter.next(codeBlockOrder.length);
+            }
         }
 
-        if (isInsideCode) {
+        if (opts.table_ignoreSplittersInBlockMath) {
+            if (!isInsideCode && isMathBlockOrder(state.src, iter.pos)) {
+                isInsideMath = !isInsideMath;
+                iter.next(mathBlockOrder.length);
+            }
+        }
+
+        if (isInsideCode || isInsideMath) {
             iter.next();
             continue;
         }
@@ -164,8 +305,23 @@ function getTableRowPositions(
             continue;
         }
 
+        if (opts.table_ignoreSplittersInInlineCode) {
+            const result = skipInlineCode(state.src, iter.pos, iter.lineEnds);
+            if (result !== false) {
+                iter.next(result.steps);
+                continue;
+            }
+        }
+
+        if (opts.table_ignoreSplittersInInlineMath) {
+            const result = skipInlineMath(state.src, iter.pos, iter.lineEnds);
+            if (result !== false) {
+                iter.next(result.steps);
+                continue;
+            }
+        }
+
         if (isOpenTableOrder(state.src, iter.pos)) {
-            isInsideTable = true;
             tableLevel++;
             iter.next(openTableOrder.length);
             continue;
@@ -178,16 +334,18 @@ function getTableRowPositions(
                 endOfTable = iter.line + 2;
                 break;
             } else {
-                isInsideTable = false;
                 tableLevel--;
                 iter.next(closeTableOrder.length);
                 continue;
             }
         }
 
-        if (isInsideTable) {
-            iter.next();
-            continue;
+        {
+            const isInsideTable = tableLevel > 0;
+            if (isInsideTable) {
+                iter.next();
+                continue;
+            }
         }
 
         if (isRowOrder(state.src, iter.pos)) {
@@ -359,7 +517,7 @@ const clearTokens = (tableStart: number, tokens: Token[]): void => {
     });
 };
 
-const yfmTable: MarkdownItPluginCb = (md) => {
+const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
     md.block.ruler.before(
         'code',
         pluginName,
@@ -386,6 +544,7 @@ const yfmTable: MarkdownItPluginCb = (md) => {
                 startPosition,
                 endPosition,
                 startLine,
+                opts,
             );
 
             const attrs = extractAttributes(state, pos);

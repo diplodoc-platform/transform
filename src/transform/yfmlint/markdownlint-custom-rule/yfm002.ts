@@ -1,4 +1,4 @@
-import {Rule} from 'markdownlint';
+import type {Rule} from 'markdownlint';
 
 export const yfm002: Rule = {
     names: ['YFM002', 'no-header-found-for-link'],

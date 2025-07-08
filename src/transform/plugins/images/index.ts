@@ -1,13 +1,14 @@
+import type Token from 'markdown-it/lib/token';
+import type {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
+import type {StateCore} from '../../typings';
+
 import {join, sep} from 'path';
 import {bold} from 'chalk';
 import {optimize} from 'svgo';
-import Token from 'markdown-it/lib/token';
 import {readFileSync} from 'fs';
 
 import {isFileExists, resolveRelativePath} from '../../utilsFS';
 import {isExternalHref, isLocalUrl} from '../../utils';
-import {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
-import {StateCore} from '../../typings';
 
 interface ImageOpts extends MarkdownItPluginOpts {
     assetsPublicPath: string;

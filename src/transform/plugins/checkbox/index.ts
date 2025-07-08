@@ -1,6 +1,7 @@
 import type {PluginWithOptions} from 'markdown-it';
+import type {CheckboxOptions} from './checkbox';
 
-import {CheckboxOptions, checkboxReplace} from './checkbox';
+import {checkboxReplace} from './checkbox';
 
 /**
  * Checkbox plugin for markdown-it.

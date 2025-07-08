@@ -1,9 +1,10 @@
+import type {Extension} from '@doc-tools/yfm-editor';
+
 import React, {useEffect, useState} from 'react';
 import {cloneDeep} from 'lodash';
 import {
     BasePreset,
     BehaviorPreset,
-    Extension,
     MarkdownBlocksPreset,
     MarkdownMarksPreset,
 } from '@doc-tools/yfm-editor';

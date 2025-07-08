@@ -1,5 +1,5 @@
-import StateCore from 'markdown-it/lib/rules_core/state_core';
-import Token from 'markdown-it/lib/token';
+import type StateCore from 'markdown-it/lib/rules_core/state_core';
+import type Token from 'markdown-it/lib/token';
 
 const pattern = /^{%[^\S\r\n]*anchor[^\S\r\n]+([\w-]+)[^\S\r\n]*%}/;
 export const TOKEN_NAME = 'anchor';

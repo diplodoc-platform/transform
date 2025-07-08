@@ -1,4 +1,4 @@
-import {Rule} from 'markdownlint';
+import type {Rule} from 'markdownlint';
 
 export const yfm005: Rule = {
     names: ['YFM005', 'tab-list-not-closed'],

@@ -1,9 +1,9 @@
-import MarkdownIt from 'markdown-it';
-import Token from 'markdown-it/lib/token';
-import Renderer from 'markdown-it/lib/renderer';
+import type MarkdownIt from 'markdown-it';
+import type Token from 'markdown-it/lib/token';
+import type Renderer from 'markdown-it/lib/renderer';
+import type {MarkdownItPluginOpts} from '../src/transform/plugins/typings';
 
 import code from '../src/transform/plugins/code';
-import {MarkdownItPluginOpts} from '../src/transform/plugins/typings';
 
 const getMd = (fence: jest.Mock) => ({
     renderer: {

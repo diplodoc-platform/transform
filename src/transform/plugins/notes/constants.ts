@@ -1,4 +1,4 @@
-import {Lang} from '../typings';
+import type {Lang} from '../typings';
 
 export const TITLES: Record<Lang, Record<string, string>> = {
     ru: {

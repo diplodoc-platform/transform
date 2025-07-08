@@ -1,3 +1,5 @@
+import type {MarkdownItPluginOpts} from '../typings';
+
 import MarkdownIt from 'markdown-it';
 import {relative} from 'path';
 
@@ -5,7 +7,6 @@ import {isLocalUrl} from '../../utils';
 import {resolveRelativePath} from '../../utilsFS';
 import deflist from '../deflist';
 import imsize from '../imsize';
-import {MarkdownItPluginOpts} from '../typings';
 
 type Options = MarkdownItPluginOpts & {
     destPath: string;
