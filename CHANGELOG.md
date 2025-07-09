@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.59.0](https://github.com/diplodoc-platform/transform/compare/v4.58.1...v4.59.0) (2025-07-09)
+
+
+### Features
+
+* copy inline code ([#730](https://github.com/diplodoc-platform/transform/issues/730)) ([a4a8f0f](https://github.com/diplodoc-platform/transform/commit/a4a8f0f9a4bc2d28268ed1d7fdb7d5b631cc636f))
+* sticky thead ([#734](https://github.com/diplodoc-platform/transform/issues/734)) ([b5014b8](https://github.com/diplodoc-platform/transform/commit/b5014b89945bf2b7fb56079c33809a4eee041f33))
+
 ## [4.58.1](https://github.com/diplodoc-platform/transform/compare/v4.58.0...v4.58.1) (2025-07-04)
 
 ### Bug Fixes
