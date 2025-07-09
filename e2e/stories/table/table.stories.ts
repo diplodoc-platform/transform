@@ -8,40 +8,40 @@ export const Base: MarkdownSnippetStory = {
     name: 'Base',
     args: {
         snippet: dedent`
-| Заголовок1  | Заголовок2  |
+| head1  | head2  |
 | ----------- | ----------- |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
-| Текст       | Текст       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
 `,
     },
 };
