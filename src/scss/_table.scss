@@ -30,3 +30,15 @@
     }
 }
 
+.yfm table {
+    thead {
+        position: sticky;
+        top: 0;
+
+        & th {
+            background-color: var(--yfm-color-table-row-header-background-primary);
+        }
+    }
+
+    max-height: 70vh;
+}
