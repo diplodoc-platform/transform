@@ -35,8 +35,17 @@
         position: sticky;
         top: 0;
 
-        & th {
-            background-color: var(--yfm-color-table-row-header-background);
+        & tr {
+            position: relative;
+            z-index: 2;
+        }
+
+        &::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-color: var(--yfm-color-base);
+            z-index: 1;
         }
     }
 
