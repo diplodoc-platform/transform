@@ -31,13 +31,32 @@
 }
 
 .yfm table {
+    position: relative;
+
     thead {
         position: sticky;
         top: 0;
 
-        background: var(--yfm-color-base);
-        box-shadow: 0 1px 0 0 var(--yfm-color-border);
-        z-index: 1;
+        & th {
+            position: relative;
+            z-index: 0;
+        }
+
+        & th::before {
+            content: '';
+            background: var(--yfm-color-base);
+            position: absolute;
+            inset: 0;
+            z-index: -2;
+        }
+
+        & th::after {
+            content: '';
+            background: var(--yfm-color-table-row-background);
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+        }
     }
 
     max-height: 70vh;

@@ -191,7 +191,7 @@
         border-spacing: 0;
         background: var(--yfm-color-base);
 
-        thead tr,
+        thead,
         tr:nth-child(2n) {
             background-color: var(--yfm-color-table-row-background);
         }
