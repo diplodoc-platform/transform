@@ -35,18 +35,9 @@
         position: sticky;
         top: 0;
 
-        & tr {
-            position: relative;
-            z-index: 2;
-        }
-
-        &::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-color: var(--yfm-color-base);
-            z-index: 1;
-        }
+        background: var(--yfm-color-base);
+        box-shadow: 0 1px 0 0 var(--yfm-color-border);
+        z-index: 1;
     }
 
     max-height: 70vh;
