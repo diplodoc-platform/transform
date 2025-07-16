@@ -32,16 +32,16 @@ export function OutputArea(props: OutputAreaProps) {
             </div>
             <div>
                 {tabActive === 'preview' ? (
-                    <Card size="m" className="dc-doc-page area__yfm">
-                        <div
-                            dangerouslySetInnerHTML={{
-                                __html: `
-                                <div class="yfm">${output}</div>    
-                            `,
-                            }}
-                            className="area__card"
-                        ></div>
-                    </Card>
+                    <div className="dc-doc-page">
+                        <Card size="m" className="yfm area__yfm">
+                            <div
+                                dangerouslySetInnerHTML={{
+                                    __html: output,
+                                }}
+                                className="area__card"
+                            />
+                        </Card>
+                    </div>
                 ) : (
                     <TextArea onUpdate={handleInputChange} value={output} size="l" />
                 )}
