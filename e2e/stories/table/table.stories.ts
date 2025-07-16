@@ -47,3 +47,45 @@ export const Base: MarkdownSnippetStory = {
 `,
     },
 };
+
+export const WithoutSticky: MarkdownSnippetStory = {
+    name: 'Base',
+    args: {
+        snippet: dedent`
+| head1  | head2  |
+| ----------- | ----------- |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+`,
+    },
+};

@@ -15,3 +15,9 @@ describeStory(stories, 'Base', () => {
         await expect(yfmRoot).toHaveScreenshot();
     });
 });
+
+describeStory(stories, 'WithoutSticky', () => {
+    test('table without sticky', async ({yfmRoot}) => {
+        await expect(yfmRoot).toHaveScreenshot();
+    });
+});
