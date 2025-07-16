@@ -5,7 +5,7 @@ import WYSIWYGEditor from 'src/WYSIWYGEditor';
 import Header from 'src/Header';
 import {PageConstructor, PageConstructorProvider} from '@gravity-ui/page-constructor';
 import {Button, useTheme} from '@gravity-ui/uikit';
-import {useThemeApp} from 'src/context/theme';
+import {THEME_NAME, useThemeApp} from 'src/context/theme';
 
 import {restore} from '../utils';
 
@@ -48,7 +48,7 @@ const App = () => {
         })),
         initial: mode[urlMode] ? urlMode : EditorType.SPLIT,
     });
-    const {setTheme} = useThemeApp();
+    const {setTheme, themeType, setThemeType} = useThemeApp();
     const theme = useTheme();
 
     return (
@@ -82,11 +82,23 @@ const App = () => {
                             setTheme((x) => (x === 'light' ? 'dark' : 'light'));
                         };
 
+                        const clickMainTheme = () => {
+                            setThemeType((x) => (x === 'default' ? 'diplodoc' : 'default'));
+                        };
+
                         return (
                             <div className="theme-section">
-                                <div>Тема: {theme === 'light' ? 'Светлая' : 'Темная'}</div>
+                                <div>Тип темы: </div>
                                 <div>
-                                    <Button onClick={click}>Сменить тему</Button>
+                                    <Button onClick={clickMainTheme}>
+                                        {THEME_NAME[themeType]}
+                                    </Button>
+                                </div>
+                                <div>Тема:</div>
+                                <div>
+                                    <Button onClick={click}>
+                                        {theme === 'light' ? 'Светлая' : 'Темная'}
+                                    </Button>
                                 </div>
                             </div>
                         );
