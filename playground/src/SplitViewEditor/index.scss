@@ -1,63 +1,64 @@
 .split-view {
-  display: flex;
+    display: flex;
 
-  gap: 30px;
+    gap: 30px;
 
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
+    @media (max-width: 768px) {
+        flex-direction: column;
+    }
 }
 
 .area__card {
-  padding: 10px 25px;
+    padding: 10px 25px;
 
-  & > section {
-    height: var(--diplodoc-playground-height);
-    min-height: var(--diplodoc-playground-height);
-    max-height: var(--diplodoc-playground-height);
+    & > section {
+        height: var(--diplodoc-playground-height);
+        min-height: var(--diplodoc-playground-height);
+        max-height: var(--diplodoc-playground-height);
 
-    overflow-y: scroll;
-    overflow-x: hidden;
+        overflow: hidden scroll;
 
-    padding: 0;
-  }
+        padding: 0;
+    }
 }
 
 /* yfm preview */
+
 .area__yfm {
-  border-radius: 2px;
+    border-radius: 2px;
 
-  height: calc(var(--diplodoc-playground-height) + 26px);
-  min-height: calc(var(--diplodoc-playground-height) + 26px);
-  max-height: calc(var(--diplodoc-playground-height) + 26px);
+    height: calc(var(--diplodoc-playground-height) + 26px);
+    min-height: calc(var(--diplodoc-playground-height) + 26px);
+    max-height: calc(var(--diplodoc-playground-height) + 26px);
 
-  overflow-y: scroll;
-  overflow-x: hidden;
+    overflow: hidden scroll;
 }
 
 .area-card__editor {
-  border-radius: 2px;
-  padding-right: 0px;
+    border-radius: 2px;
+    padding-right: 0px;
 }
 
 .area__tabs {
-  text-transform: uppercase;
+    text-transform: uppercase;
 }
 
 .input {
-  width: 50%;
+    width: 50%;
 
-  @media (max-width: 768px) {
-    width: 100%;
-  }
+    @media (max-width: 768px) {
+        width: 100%;
+    }
 
-  margin-top: 39px;
+    margin-top: 39px;
 }
 
 .output {
-  width: 50%;
+    width: 50%;
 
-  @media (max-width: 768px) {
-    width: 100%;
-  }
+    @media (max-width: 768px) {
+        width: 100%;
+    }
 }
+
+@import '@diplodoc/components/build/index.css';

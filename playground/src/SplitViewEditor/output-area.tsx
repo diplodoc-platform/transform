@@ -32,9 +32,13 @@ export function OutputArea(props: OutputAreaProps) {
             </div>
             <div>
                 {tabActive === 'preview' ? (
-                    <Card size="m" className="yfm area__yfm">
+                    <Card size="m" className="dc-doc-page area__yfm">
                         <div
-                            dangerouslySetInnerHTML={{__html: output}}
+                            dangerouslySetInnerHTML={{
+                                __html: `
+                                <div class="yfm">${output}</div>    
+                            `,
+                            }}
                             className="area__card"
                         ></div>
                     </Card>
