@@ -4,6 +4,8 @@ import PageConstructorEditor from 'src/PageConstructorEditor';
 import WYSIWYGEditor from 'src/WYSIWYGEditor';
 import Header from 'src/Header';
 import {PageConstructor, PageConstructorProvider} from '@gravity-ui/page-constructor';
+import {Button, useTheme} from '@gravity-ui/uikit';
+import {useThemeApp} from 'src/context/theme';
 
 import {restore} from '../utils';
 
@@ -46,11 +48,13 @@ const App = () => {
         })),
         initial: mode[urlMode] ? urlMode : EditorType.SPLIT,
     });
+    const {setTheme} = useThemeApp();
+    const theme = useTheme();
 
     return (
         <>
             {/* @ts-expect-error */}
-            <PageConstructorProvider theme={'light'}>
+            <PageConstructorProvider theme={theme}>
                 <PageConstructor
                     // @ts-expect-error
                     navigation={navigation}
@@ -72,6 +76,20 @@ const App = () => {
                                 </Playground>
                             ),
                         },
+                    }}
+                    renderMenu={() => {
+                        const click = () => {
+                            setTheme((x) => (x === 'light' ? 'dark' : 'light'));
+                        };
+
+                        return (
+                            <div className="theme-section">
+                                <div>Тема: {theme === 'light' ? 'Светлая' : 'Темная'}</div>
+                                <div>
+                                    <Button onClick={click}>Сменить тему</Button>
+                                </div>
+                            </div>
+                        );
                     }}
                     content={{
                         blocks: [

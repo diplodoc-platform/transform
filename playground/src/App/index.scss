@@ -1,24 +1,32 @@
 .app {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  flex-direction: column;
-  align-content: center;
-  align-items: center;
+    display: flex;
+    flex-flow: column wrap;
+    place-content: center center;
+    align-items: center;
 }
 
 .playground {
-  @media (max-width: 1328px) {
-    width: 100%
-  }
+    @media (max-width: 1328px) {
+        width: 100%;
+    }
 
-  margin-top: 20px;
+    margin-top: 20px;
 }
 
 .tabs {
-  width: fit-content;
+    width: fit-content;
 }
 
 .editor:has(.ye-editor-component) {
-  margin-top: 30px;
+    margin-top: 30px;
+}
+
+.theme-section {
+    width: 100%;
+    padding: 4px 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
 }

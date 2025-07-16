@@ -7,12 +7,23 @@ import {App} from './App';
 import './index.css';
 import './styles.scss';
 import './overrides.scss';
+import {ThemeProviderApp, useThemeApp} from './context/theme';
 
 const container = document.getElementById('app');
 const root = createRoot(container as HTMLElement);
 
 root.render(
-    <ThemeProvider theme="light">
-        <App />
-    </ThemeProvider>,
+    <ThemeProviderApp>
+        <Bootstrap />
+    </ThemeProviderApp>,
 );
+
+function Bootstrap() {
+    const {theme} = useThemeApp();
+
+    return (
+        <ThemeProvider theme={theme}>
+            <App />
+        </ThemeProvider>
+    );
+}
