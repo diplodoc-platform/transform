@@ -44,6 +44,7 @@ function transform(originInput: string, options: OptionsType = {}): OutputType |
 
     try {
         const tokens = parse(input);
+        // drawTokens(tokens)
         if (options.tokens === true) {
             return tokens;
         }
@@ -52,6 +53,13 @@ function transform(originInput: string, options: OptionsType = {}): OutputType |
         handleError(error, options.path);
     }
 }
+
+// function drawTokens(tokens: Token[]) {
+//     tokens.forEach((token) => {
+//         const spase = '     '.repeat(token.level);
+//         console.log(`${spase}`, token);
+//     });
+// }
 
 export = transform;
 
