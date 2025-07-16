@@ -42,6 +42,8 @@ export const Base: MarkdownSnippetStory = {
 | Text       | Text       |
 | Text       | Text       |
 | Text       | Text       |
+
+{ sticky-header }
 `,
     },
 };
