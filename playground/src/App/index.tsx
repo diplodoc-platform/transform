@@ -88,16 +88,16 @@ const App = () => {
 
                         return (
                             <div className="theme-section">
-                                <div>Тип темы: </div>
+                                <div>type theme: </div>
                                 <div>
                                     <Button onClick={clickMainTheme}>
                                         {THEME_NAME[themeType]}
                                     </Button>
                                 </div>
-                                <div>Тема:</div>
+                                <div>theme:</div>
                                 <div>
                                     <Button onClick={click}>
-                                        {theme === 'light' ? 'Светлая' : 'Темная'}
+                                        {theme === 'light' ? 'Light' : 'Dark'}
                                     </Button>
                                 </div>
                             </div>

@@ -26,8 +26,8 @@ export const THEME: Record<TypeStyle, string> = {
 };
 
 export const THEME_NAME: Record<TypeStyle, string> = {
-    default: 'Стандарт',
-    diplodoc: 'Диплодок',
+    default: 'Default',
+    diplodoc: 'Diplodoc',
 };
 
 export const ThemeProviderApp = ({children}) => {

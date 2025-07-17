@@ -8,7 +8,7 @@
     "rightItems": [
       {
         "type": "link",
-        "text": "Документация",
+        "text": "Documentation",
         "url": "https://diplodoc.com/docs/ru/",
         "target": "_self"
       }
