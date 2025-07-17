@@ -30,13 +30,32 @@
     }
 }
 
-.yfm table {
+.yfm table[sticky-header] {
+    position: relative;
+
     thead {
         position: sticky;
         top: 0;
 
         & th {
-            background-color: var(--yfm-color-table-row-header-background);
+            position: relative;
+            z-index: 0;
+        }
+
+        & th::before {
+            content: '';
+            background: var(--yfm-color-base);
+            position: absolute;
+            inset: 0;
+            z-index: -2;
+        }
+
+        & th::after {
+            content: '';
+            background: var(--yfm-color-table-row-background);
+            position: absolute;
+            inset: 0;
+            z-index: -1;
         }
     }
 
