@@ -42,6 +42,50 @@ export const Base: MarkdownSnippetStory = {
 | Text       | Text       |
 | Text       | Text       |
 | Text       | Text       |
+
+{ sticky-header }
+`,
+    },
+};
+
+export const WithoutSticky: MarkdownSnippetStory = {
+    name: 'Base',
+    args: {
+        snippet: dedent`
+| head1  | head2  |
+| ----------- | ----------- |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
+| Text       | Text       |
 `,
     },
 };
