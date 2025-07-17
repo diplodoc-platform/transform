@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.59.1](https://github.com/diplodoc-platform/transform/compare/v4.59.0...v4.59.1) (2025-07-17)
+
+
+### Bug Fixes
+
+* fixed css variables ([#738](https://github.com/diplodoc-platform/transform/issues/738)) ([c32d00e](https://github.com/diplodoc-platform/transform/commit/c32d00eb34045ca3a3401b307cfc8acd04c5a625))
+* **sticky-header:** styling thead table ([#742](https://github.com/diplodoc-platform/transform/issues/742)) ([64a835e](https://github.com/diplodoc-platform/transform/commit/64a835efd2c97dc84c2f27ba5caead609a100e89))
+
 ## [4.59.0](https://github.com/diplodoc-platform/transform/compare/v4.58.1...v4.59.0) (2025-07-09)
 
 
