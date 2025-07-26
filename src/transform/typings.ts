@@ -87,6 +87,7 @@ export interface OptionsType {
     enableMarkdownAttrs?: boolean;
     supportGithubAnchors?: boolean;
     disableCommonAnchors?: boolean;
+    disableInlineCode?: boolean;
     useCommonAnchorButtons?: boolean;
     lang?: Lang;
     [x: string]: unknown;
