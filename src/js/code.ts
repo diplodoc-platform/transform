@@ -8,6 +8,7 @@ function notifySuccess(svgButton: HTMLElement | null) {
     }
 
     const id = svgButton.getAttribute('data-animation');
+
     // @ts-expect-error
     const icon = svgButton.getRootNode().getElementById(`visibileAnimation-${id}`);
 
@@ -26,6 +27,7 @@ function buttonCopyFn(target: HTMLElement) {
     }
 
     const code = parent.querySelector<HTMLElement>('pre code');
+
     if (!code) {
         return;
     }
@@ -44,6 +46,8 @@ function buttonCopyFn(target: HTMLElement) {
 
     copyToClipboard(textContent).then(() => {
         notifySuccess(parent.querySelector('.yfm-clipboard-icon'));
+
+        setTimeout(() => target.blur(), 1500);
     });
 }
 

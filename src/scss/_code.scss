@@ -2,11 +2,14 @@
     &-clipboard {
         position: relative;
 
+        .yfm-clipboard-button {
+            min-width: 20px;
+            min-height: 20px;
+        }
+
         &:hover {
             .yfm-clipboard-button {
                 opacity: 1;
-                min-height: 20px;
-                min-width: 20px;
             }
         }
 
