@@ -12,6 +12,7 @@ import extractTitle from './title';
 import getHeadings from './headings';
 import sanitizeHtml, {defaultOptions, sanitizeStyles} from './sanitize';
 import {olAttrConversion} from './plugins/ol-attr-conversion';
+import inlineCode from './plugins/inline-code';
 import {DEFAULT_LANG} from './constants';
 
 function initMarkdownIt(options: OptionsType) {
@@ -108,6 +109,7 @@ function initPlugins(md: MarkdownIt, options: OptionsType, pluginOptions: Markdo
     }
 
     md.use(olAttrConversion);
+    md.use(inlineCode, pluginOptions);
 
     plugins.forEach((plugin) => md.use(plugin, pluginOptions));
 
