@@ -11,6 +11,7 @@ const transformYfm = (text: string, opts?: YfmTablePluginOptions) => {
         result: {html},
     } = transform(text, {
         plugins: [table],
+        disableInlineCode: true,
         enableMarkdownAttrs: false,
         ...opts,
     });
