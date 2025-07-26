@@ -23,7 +23,7 @@ describeStory(stories, 'Base', () => {
         const anchorButton = yfmRoot.getByRole('button');
         await anchorButton.click();
 
-        const tooltip = page.locator('div[id="tooltip_inline_clipboard_dialog"]');
+        const tooltip = page.locator('div#tooltip_inline_clipboard_dialog.open');
         const classes = await tooltip.getAttribute('class');
 
         expect(classes).toContain('open');
@@ -36,14 +36,12 @@ describeStory(stories, 'Base', () => {
         const anchorButton = yfmRoot.getByRole('button');
         await anchorButton.click();
 
-        const tooltip = page.locator('div[id="tooltip_inline_clipboard_dialog"]');
-        let classes = await tooltip.getAttribute('class');
+        const tooltip = page.locator('div#tooltip_inline_clipboard_dialog.open');
 
-        expect(classes).toContain('open');
+        await expect(tooltip).toHaveCount(1);
 
-        await new Promise((r) => setTimeout(r, 1005));
+        await new Promise((r) => setTimeout(r, 1100));
 
-        classes = await tooltip.getAttribute('class');
-        expect(classes).not.toContain('open');
+        await expect(tooltip).toHaveCount(0);
     });
 });

@@ -99,6 +99,7 @@ function initPlugins(md: MarkdownIt, options: OptionsType, pluginOptions: Markdo
         leftDelimiter = '{',
         rightDelimiter = '}',
         plugins = DefaultPlugins,
+        disableInlineCode,
         enableMarkdownAttrs,
     } = options;
 
@@ -109,7 +110,10 @@ function initPlugins(md: MarkdownIt, options: OptionsType, pluginOptions: Markdo
     }
 
     md.use(olAttrConversion);
-    md.use(inlineCode, pluginOptions);
+
+    if (!disableInlineCode) {
+        md.use(inlineCode, pluginOptions);
+    }
 
     plugins.forEach((plugin) => md.use(plugin, pluginOptions));
 
