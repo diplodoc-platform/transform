@@ -1,3 +1,5 @@
+import {escapeHtml} from 'markdown-it/lib/common/utils';
+
 import {MarkdownItPluginCb, StateCore} from '../../typings';
 import {generateID} from '../utils';
 
@@ -12,7 +14,7 @@ const inlineCode: MarkdownItPluginCb = (md, options) => {
         const description = LANG_TOKEN_DESCRIPTION[lang] ?? LANG_TOKEN_DESCRIPTION.en;
         const label = LANG_TOKEN_LABEL[lang] ?? LANG_TOKEN_LABEL.en;
 
-        return `<code class="yfm-clipboard-inline-code" role="button" aria-label="${label}" aria-description="${description}" tabindex='0' id="${id}">${tokens[idx].content}</code>`;
+        return `<code class="yfm-clipboard-inline-code" role="button" aria-label="${label}" aria-description="${description}" tabindex='0' id="${id}">${escapeHtml(tokens[idx].content)}</code>`;
     };
 
     md.core.ruler.after('inline', 'tooltip_code_inline', (state: StateCore) => {
