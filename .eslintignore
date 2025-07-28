@@ -1,5 +1,4 @@
 !e2e/.storybook/
-
 .idea
 .vscode
 .history
@@ -13,5 +12,4 @@ node_modules
 /coverage
 /pages-build
 /playground/www
-
 /external
