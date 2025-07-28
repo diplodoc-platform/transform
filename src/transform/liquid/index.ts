@@ -117,13 +117,13 @@ function liquidSnippet<
         }, {});
     }
 
-    if (cycles) {
-        output = applyCycles(output, vars, path, {sourceMap});
-    }
-
     if (conditions) {
         const strict = conditions === 'strict';
         output = applyConditions(output, vars, path, {sourceMap, strict, useLegacyConditions});
+    }
+
+    if (cycles) {
+        output = applyCycles(output, vars, path, {sourceMap});
     }
 
     if (substitutions) {
