@@ -37,6 +37,11 @@ if (typeof document !== 'undefined') {
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' && document.activeElement) {
             const activeElement = document.activeElement as HTMLElement;
+            const classInlineCode = INLINE_CODE.replace('.', '');
+
+            if (!activeElement.classList.contains(classInlineCode)) {
+                return;
+            }
 
             const innerText = activeElement.innerText;
 
