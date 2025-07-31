@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.60.0](https://github.com/diplodoc-platform/transform/compare/v4.59.1...v4.60.0) (2025-07-28)
+
+
+### Features
+
+* supported sticky header for multiline table ([#746](https://github.com/diplodoc-platform/transform/issues/746)) ([6e0e682](https://github.com/diplodoc-platform/transform/commit/6e0e6821749d65c9f0b7ed73f49974b3a6192d84))
+
+
+### Bug Fixes
+
+* **styles:** fix KaTeX formula rendering ([#744](https://github.com/diplodoc-platform/transform/issues/744)) ([5e2c7d3](https://github.com/diplodoc-platform/transform/commit/5e2c7d37a924fa6b3b6407f7cca1000d933c8171))
+
 ## [4.59.1](https://github.com/diplodoc-platform/transform/compare/v4.59.0...v4.59.1) (2025-07-17)
 
 
