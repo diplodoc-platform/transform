@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.60.1](https://github.com/diplodoc-platform/transform/compare/v4.60.0...v4.60.1) (2025-08-04)
+
+
+### Bug Fixes
+
+* disable prefix in svg classes ([140eb5a](https://github.com/diplodoc-platform/transform/commit/140eb5a9e963cfeca214cfaf8606da47358176f8))
+
 ## [4.60.0](https://github.com/diplodoc-platform/transform/compare/v4.59.1...v4.60.0) (2025-07-28)
 
 
