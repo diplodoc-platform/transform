@@ -15,7 +15,6 @@ import file from './plugins/file';
 import imsize from './plugins/imsize';
 import term from './plugins/term';
 import blockAnchor from './plugins/block-anchor';
-import inlineCode from './plugins/inline-code';
 
 const defaultPlugins = [
     meta,
@@ -33,7 +32,6 @@ const defaultPlugins = [
     imsize,
     term,
     blockAnchor,
-    inlineCode,
 ] as MarkdownItPluginCb[];
 
 export = defaultPlugins;
