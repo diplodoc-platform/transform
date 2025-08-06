@@ -113,6 +113,10 @@
         }
     }
 
+    .mermaid svg[id*='mermaid'] {
+        max-height: none;
+    }
+
     img {
         object-fit: contain;
         background-color: var(--yfm-color-base);
