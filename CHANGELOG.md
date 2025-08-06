@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.60.2](https://github.com/diplodoc-platform/transform/compare/v4.60.1...v4.60.2) (2025-08-06)
+
+
+### Bug Fixes
+
+* set max-height: none for .yfm mermaid svg ([8746df0](https://github.com/diplodoc-platform/transform/commit/8746df00c308cc9998a71423607e242888c1295b))
+
 ## [4.60.1](https://github.com/diplodoc-platform/transform/compare/v4.60.0...v4.60.1) (2025-08-04)
 
 
