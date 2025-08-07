@@ -1,0 +1,4 @@
+.yfm[data-theme='light'] img[src$='#dark-mode-only'],
+.yfm[data-theme='dark'] img[src$='#light-mode-only'] {
+    display: none;
+}
