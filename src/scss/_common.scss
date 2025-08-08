@@ -1,8 +1,8 @@
 /* stylelint-disable declaration-no-important */
 
-@import 'private';
-@import 'brand';
-@import 'lists';
+@use 'private';
+@use 'brand';
+@use 'lists';
 
 @mixin removeMarginForEdgeChildren {
     & > *:first-child {
@@ -15,8 +15,8 @@
 }
 
 .yfm {
-    @include private-brand();
-    @include brand();
+    @include private.private-brand();
+    @include brand.brand();
 
     font-family: var(--yfm-font-family-sans);
     font-size: 15px;
@@ -24,6 +24,13 @@
     word-wrap: break-word;
     color: var(--yfm-color-text);
     tab-size: var(--yfm-tab-size, inherit);
+
+    --yfm-font-family-monospace:
+        'Menlo', 'Monaco', 'Consolas', 'Ubuntu Mono', 'Liberation Mono', 'DejaVu Sans Mono',
+        'Courier New', 'Courier', monospace;
+    --yfm-font-family-sans:
+        'Segoe UI', arial, helvetica, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol';
 
     * {
         box-sizing: border-box;
@@ -413,9 +420,4 @@
         clip-path: inset(100%);
         user-select: none;
     }
-
-    --yfm-font-family-monospace: 'Menlo', 'Monaco', 'Consolas', 'Ubuntu Mono', 'Liberation Mono',
-        'DejaVu Sans Mono', 'Courier New', 'Courier', monospace;
-    --yfm-font-family-sans: 'Segoe UI', arial, helvetica, sans-serif, 'Apple Color Emoji',
-        'Segoe UI Emoji', 'Segoe UI Symbol';
 }
