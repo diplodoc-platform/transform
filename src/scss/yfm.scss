@@ -1,6 +1,7 @@
-@import 'base';
-@import 'yfm-only';
-@import 'modal';
-@import '@diplodoc/cut-extension/runtime';
-@import '@diplodoc/file-extension/runtime';
-@import '@diplodoc/tabs-extension/runtime';
+@use 'base';
+@use 'yfm-only';
+@use 'modal';
+
+@forward '@diplodoc/cut-extension/runtime';
+@forward '@diplodoc/file-extension/runtime';
+@forward '@diplodoc/tabs-extension/runtime';

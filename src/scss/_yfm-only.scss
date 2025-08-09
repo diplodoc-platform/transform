@@ -6,8 +6,8 @@
     as the file is subject to changes without prior notice.
  */
 
-@import 'note';
-@import 'katex';
-@import 'table';
-@import 'term';
-@import 'inline-code';
+@use 'note';
+@use 'katex';
+@use 'table';
+@use 'term';
+@use 'inline-code';
