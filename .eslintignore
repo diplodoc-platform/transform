@@ -13,3 +13,5 @@ node_modules
 /coverage
 /pages-build
 /playground/www
+
+/external

@@ -5,7 +5,7 @@ import autoprefixer from 'autoprefixer';
 import postcssPresetEnv from 'postcss-preset-env';
 import postcss from 'postcss';
 
-import tsconfigJson from '../tsconfig.json' assert {type: 'json'};
+import tsconfigJson from '../tsconfig.json' with {type: 'json'};
 
 /** @type {import('esbuild').BuildOptions}*/
 const common = {
