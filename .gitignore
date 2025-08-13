@@ -30,3 +30,5 @@ tsconfig.tsbuildinfo
 test-results/
 playwright-report/
 ctrf/
+
+/external
