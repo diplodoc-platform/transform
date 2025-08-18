@@ -1,6 +1,6 @@
 import MarkdownIt from 'markdown-it';
 import {mdRenderer} from '@diplodoc/markdown-it-markdown-renderer';
-import meta from 'markdown-it-meta';
+import meta from '@local/transform/plugins/meta';
 import sup from 'markdown-it-sup';
 import cut from '@local/transform/plugins/cut';
 import checkbox from '@local/transform/plugins/checkbox';
