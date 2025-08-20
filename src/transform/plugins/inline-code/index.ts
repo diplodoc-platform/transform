@@ -1,6 +1,7 @@
+import type {MarkdownItPluginCb, StateCore} from '../../typings';
+
 import {escapeHtml} from 'markdown-it/lib/common/utils';
 
-import {MarkdownItPluginCb, StateCore} from '../../typings';
 import {generateID} from '../utils';
 
 import {LANG_TOKEN, LANG_TOKEN_DESCRIPTION, LANG_TOKEN_LABEL} from './constant';

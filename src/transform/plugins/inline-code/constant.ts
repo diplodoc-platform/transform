@@ -1,4 +1,4 @@
-import {Lang} from '../typings';
+import type {Lang} from '../typings';
 
 export const LANG_TOKEN: Record<Lang, string> = {
     ru: 'Скопировано',

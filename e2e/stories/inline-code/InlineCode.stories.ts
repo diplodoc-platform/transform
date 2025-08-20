@@ -1,6 +1,8 @@
+import type {MarkdownSnippetStory} from '../../fixtures/utils/storyMeta';
+
 import dedent from 'ts-dedent';
 
-import {MarkdownSnippetStory, getSnippetMeta} from '../../fixtures/utils/storyMeta';
+import {getSnippetMeta} from '../../fixtures/utils/storyMeta';
 
 export default {...getSnippetMeta(), title: 'Builtins/Code/InlineCode'};
 
