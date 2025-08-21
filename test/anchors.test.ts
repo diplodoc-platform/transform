@@ -16,7 +16,6 @@ const html = (text: string, opts?: transform.Options) => {
         path: mocksPath,
         root: dirname(mocksPath),
         getPublicPath,
-        disableInlineCode: true,
         enableMarkdownAttrs: false,
         ...opts,
     });
