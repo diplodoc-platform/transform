@@ -78,7 +78,6 @@
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "markdown-it": "^13.0.1",
-    "markdown-it-meta": "^0.0.1",
     "markdown-it-sup": "^1.0.0",
     "monaco-editor": "^0.41.0",
     "react-error-boundary": "^4.0.13"
