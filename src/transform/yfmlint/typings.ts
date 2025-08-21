@@ -16,5 +16,4 @@ export interface Options {
     // TODO: set false in next major
     /** @default true */
     enableMarkdownAttrs?: boolean;
-    disableInlineCode?: boolean;
 }
