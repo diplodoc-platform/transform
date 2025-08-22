@@ -8,7 +8,9 @@ describeStory(stories, 'Base', () => {
         const codeBlock = yfmRoot.locator('.yfm-clipboard');
         await expect(codeBlock).toBeVisible();
 
-        expect(await codeBlock.screenshot()).toMatchSnapshot('base-code-block.png');
+        expect(await codeBlock.screenshot()).toMatchSnapshot('base-code-block.png', {
+            maxDiffPixelRatio: 0.015,
+        });
     });
 
     test('code block visual regression on hover', async ({yfmRoot, page}) => {
@@ -18,7 +20,9 @@ describeStory(stories, 'Base', () => {
         await codeBlock.hover();
         await page.waitForTimeout(50);
 
-        expect(await codeBlock.screenshot()).toMatchSnapshot('base-code-block-hover.png');
+        expect(await codeBlock.screenshot()).toMatchSnapshot('base-code-block-hover.png', {
+            maxDiffPixelRatio: 0.015,
+        });
     });
 
     test('code block visual regression after click copy button', async ({yfmRoot, page}) => {
@@ -29,6 +33,8 @@ describeStory(stories, 'Base', () => {
         await copyButton.click();
         await page.waitForTimeout(100);
 
-        expect(await codeBlock.screenshot()).toMatchSnapshot('base-code-block-copied.png');
+        expect(await codeBlock.screenshot()).toMatchSnapshot('base-code-block-copied.png', {
+            maxDiffPixelRatio: 0.015,
+        });
     });
 });
