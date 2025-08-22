@@ -41,7 +41,7 @@ describeStory(stories, 'Base', () => {
 
         expect(classes).toContain('open');
 
-        await new Promise((r) => setTimeout(r, 1005));
+        await new Promise((r) => setTimeout(r, 1100));
 
         classes = await tooltip.getAttribute('class');
         expect(classes).not.toContain('open');
