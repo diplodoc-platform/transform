@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.60.3](https://github.com/diplodoc-platform/transform/compare/v4.60.2...v4.60.3) (2025-08-22)
+
+
+### Bug Fixes
+
+* fixed copy to clipboard button ([#747](https://github.com/diplodoc-platform/transform/issues/747)) ([c2deb68](https://github.com/diplodoc-platform/transform/commit/c2deb6880e850eefe8abc2d339d13e0b3c98168f))
+* fixed key event in inline-code ([#748](https://github.com/diplodoc-platform/transform/issues/748)) ([414feda](https://github.com/diplodoc-platform/transform/commit/414fedab697face1c0591ad6dda5ac5fc831b675))
+* ignore scripts ([8beb0a1](https://github.com/diplodoc-platform/transform/commit/8beb0a134bd7446052ce69f1da74a05617775752))
+* remove deprecated sass warning ([53369ee](https://github.com/diplodoc-platform/transform/commit/53369ee88de09894796ed6f486739ad51116ae21))
+* remove deprecated sass warning ([8beb0a1](https://github.com/diplodoc-platform/transform/commit/8beb0a134bd7446052ce69f1da74a05617775752))
+* return husky ([8beb0a1](https://github.com/diplodoc-platform/transform/commit/8beb0a134bd7446052ce69f1da74a05617775752))
+* rollback 18 to e2e ([f77ce0e](https://github.com/diplodoc-platform/transform/commit/f77ce0e354b7adba3f0c3338be017eefbb041870))
+
 ## [4.60.2](https://github.com/diplodoc-platform/transform/compare/v4.60.1...v4.60.2) (2025-08-06)
 
 
