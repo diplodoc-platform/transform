@@ -108,6 +108,20 @@ MIT
 - `--yfm-tab-size`
 - `--yfm-text-block-margin-block`
 - `--yfm-text-block-margin-inline`
+- `--yfm-font-size`
+- `--yfm-font-line-height`
+- `--yfm-font-size-h1`
+- `--yfm-font-line-height-h1`
+- `--yfm-font-size-h2`
+- `--yfm-font-line-height-h2`
+- `--yfm-font-size-h3`
+- `--yfm-font-line-height-h3`
+- `--yfm-font-size-h4`
+- `--yfm-font-line-height-h4`
+- `--yfm-font-size-h5`
+- `--yfm-font-line-height-h5`
+- `--yfm-font-size-h6`
+- `--yfm-font-line-height-h6`
 
 **code**
 

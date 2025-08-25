@@ -19,8 +19,8 @@
     @include brand.brand();
 
     font-family: var(--yfm-font-family-sans);
-    font-size: 15px;
-    line-height: 20px;
+    font-size: var(--yfm-font-size, 15px);
+    line-height: var(--yfm-font-line-height, 20px);
     word-wrap: break-word;
     color: var(--yfm-color-text);
     tab-size: var(--yfm-tab-size, inherit);
@@ -55,33 +55,33 @@
     }
 
     h1 {
-        font-size: 32px;
-        line-height: 40px;
+        font-size: var(--yfm-font-size-h1, 32px);
+        line-height: var(--yfm-font-line-height-h1, 40px);
     }
 
     h2 {
-        font-size: 24px;
-        line-height: 28px;
+        font-size: var(--yfm-font-size-h2, 24px);
+        line-height: var(--yfm-font-line-height-h2, 28px);
     }
 
     h3 {
-        font-size: 20px;
-        line-height: 24px;
+        font-size: var(--yfm-font-size-h3, 20px);
+        line-height: var(--yfm-font-line-height-h3, 24px);
     }
 
     h4 {
-        font-size: 17px;
-        line-height: 24px;
+        font-size: var(--yfm-font-size-h4, 17px);
+        line-height: var(--yfm-font-line-height-h4, 24px);
     }
 
     h5 {
-        font-size: 15px;
-        line-height: 20px;
+        font-size: var(--yfm-font-size-h5, 15px);
+        line-height: var(--yfm-font-line-height-h5, 20px);
     }
 
     h6 {
-        font-size: 13px;
-        line-height: 18px;
+        font-size: var(--yfm-font-size-h6, 13px);
+        line-height: var(--yfm-font-line-height-h6, 18px);
     }
 
     a {
