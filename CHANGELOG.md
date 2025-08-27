@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.60.4](https://github.com/diplodoc-platform/transform/compare/v4.60.3...v4.60.4) (2025-08-27)
+
+
+### Dependency update
+
+* Update cut-extension to 1.0.0 version ([526acb5](https://github.com/diplodoc-platform/transform/commit/526acb531d9be3a8bb1a99aedbbdf883755672db))
+
 ## [4.60.3](https://github.com/diplodoc-platform/transform/compare/v4.60.2...v4.60.3) (2025-08-22)
 
 
