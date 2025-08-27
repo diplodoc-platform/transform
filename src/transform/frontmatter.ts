@@ -23,7 +23,7 @@ const escapeLiquid = (content: string): string =>
 
 /**
  * Inverse of a workaround defined above.
- * @see `escapeLiquidSubstitutionSyntax`
+ * @see `escapeLiquid`
  * @param escapedContent Input string with `{}` escaped with backslashes
  * @returns Unescaped string
  */

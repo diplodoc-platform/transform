@@ -14,6 +14,8 @@ import video from '@diplodoc/transform/lib/plugins/video';
 import table from '@diplodoc/transform/lib/plugins/table';
 import notes from '@diplodoc/transform/lib/plugins/notes';
 import transform from '@diplodoc/transform';
+import inlineCode from '@diplodoc/transform/lib/plugins/inline-code';
+import code from '@diplodoc/transform/lib/plugins/code';
 
 const transformOptions: OptionsType = {
     lang: 'en',
@@ -32,6 +34,8 @@ const transformOptions: OptionsType = {
         video,
         table,
         notes,
+        inlineCode,
+        code,
     ],
 };
 

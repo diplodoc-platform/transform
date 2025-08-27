@@ -1,11 +1,13 @@
 /**
     Note: This file excludes "cut", "file" and "tabs" as they are handled separately
-    in dedicated extensions (packages). In the future, "note", "term"
+    in dedicated extensions (packages). In the future, "note", "term", "katex"
     and "table" will also be excluded from this file and moved to yfm.scss,
     once they are moved to separate packages. Direct usage is not recommended,
     as the file is subject to changes without prior notice.
  */
 
-@import 'note';
-@import 'table';
-@import 'term';
+@use 'note';
+@use 'katex';
+@use 'table';
+@use 'term';
+@use 'inline-code';

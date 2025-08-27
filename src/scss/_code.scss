@@ -2,11 +2,14 @@
     &-clipboard {
         position: relative;
 
+        .yfm-clipboard-button {
+            min-width: 20px;
+            min-height: 20px;
+        }
+
         &:hover {
             .yfm-clipboard-button {
                 opacity: 1;
-                min-height: 20px;
-                min-width: 20px;
             }
         }
 
@@ -37,6 +40,15 @@
 
         &-icon {
             pointer-events: none;
+        }
+
+        &-inline-code {
+            transition: 0.3s;
+
+            &:hover {
+                cursor: pointer;
+                background-color: var(--yfm-color-code-background-hovered-private);
+            }
         }
     }
 }

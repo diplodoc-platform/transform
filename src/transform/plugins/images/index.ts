@@ -8,7 +8,7 @@ import {optimize} from 'svgo';
 import {readFileSync} from 'fs';
 
 import {isFileExists, resolveRelativePath} from '../../utilsFS';
-import {isExternalHref, isLocalUrl} from '../../utils';
+import {getSrcTokenAttr, isExternalHref, isLocalUrl} from '../../utils';
 
 interface ImageOpts extends MarkdownItPluginOpts {
     assetsPublicPath: string;
@@ -20,7 +20,7 @@ function replaceImageSrc(
     state: StateCore,
     {assetsPublicPath = sep, root = '', path: optsPath, log}: ImageOpts,
 ) {
-    const src = token.attrGet('src') || '';
+    const src = getSrcTokenAttr(token);
     const currentPath = state.env.path || optsPath;
 
     if (!isLocalUrl(src)) {
@@ -48,7 +48,7 @@ interface SVGOpts extends MarkdownItPluginOpts {
 function prefix() {
     const value = Math.floor(Math.random() * 1e9);
 
-    return value.toString(16);
+    return 'rnd-' + value.toString(16);
 }
 
 function convertSvg(
@@ -57,7 +57,7 @@ function convertSvg(
     {path: optsPath, log, notFoundCb, root}: SVGOpts,
 ) {
     const currentPath = state.env.path || optsPath;
-    const path = resolveRelativePath(currentPath, token.attrGet('src') || '');
+    const path = resolveRelativePath(currentPath, getSrcTokenAttr(token));
 
     try {
         const raw = readFileSync(path).toString();
@@ -67,6 +67,7 @@ function convertSvg(
                     name: 'prefixIds',
                     params: {
                         prefix: prefix(),
+                        prefixClassNames: false,
                     },
                 },
             ],
@@ -114,7 +115,7 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                         return;
                     }
 
-                    const imgSrc = childrenTokens[j].attrGet('src') || '';
+                    const imgSrc = getSrcTokenAttr(childrenTokens[j]);
                     const shouldInlineSvg = opts.inlineSvg !== false && !isExternalHref(imgSrc);
 
                     if (imgSrc.endsWith('.svg') && shouldInlineSvg) {

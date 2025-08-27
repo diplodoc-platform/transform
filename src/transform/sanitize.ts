@@ -302,6 +302,7 @@ const htmlAttrs = [
     'data-*',
     'wide-content',
     'sandbox',
+    'sticky-header',
 ];
 
 const svgAttrs = [
