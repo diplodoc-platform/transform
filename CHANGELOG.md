@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.61.0](https://github.com/diplodoc-platform/transform/compare/v4.60.4...v4.61.0) (2025-08-28)
+
+
+### Features
+
+* add font-size css variables ([1f29d7c](https://github.com/diplodoc-platform/transform/commit/1f29d7c1918e91c91a7ff42c641cbb788c7acf1e))
+
+
+### Dependency update
+
+* Update cut extension ([2382ffe](https://github.com/diplodoc-platform/transform/commit/2382ffefb9398bf13662b278bc48b136e1a58030))
+
 ## [4.60.4](https://github.com/diplodoc-platform/transform/compare/v4.60.3...v4.60.4) (2025-08-27)
 
 
