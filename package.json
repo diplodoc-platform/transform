@@ -49,7 +49,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@diplodoc/cut-extension": "^1.0.0",
+    "@diplodoc/cut-extension": "^1.1.0",
     "@diplodoc/file-extension": "^0.2.1",
     "@diplodoc/tabs-extension": "^3.7.2",
     "@diplodoc/utils": "^2.1.0",
