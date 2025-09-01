@@ -28,10 +28,134 @@ exports[`XSS checks with disabled markdown-it-attrs BASE tag 1`] = `""`;
 
 exports[`XSS checks with disabled markdown-it-attrs BGSOUND 1`] = `""`;
 
+exports[`XSS checks with disabled markdown-it-attrs CSS backface-visibility attack 1`] = `
+<aside>
+  XSS
+</aside>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS background-position attack 1`] = `
+<abbr>
+  XSS
+</abbr>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS border-image attack 1`] = `
+<textarea>
+</textarea>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS box-shadow attack 1`] = `<input>`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS clip-path attack 1`] = `""`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS counter attack 1`] = `
+<meter>
+</meter>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS cursor attack 1`] = `
+<fieldset>
+  <legend>
+    XSS
+  </legend>
+</fieldset>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS flex property attack 1`] = `
+<acronym>
+  XSS
+</acronym>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS grid-area attack 1`] = `
+<address>
+  XSS
+</address>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS list-style attack 1`] = `
+<label>
+  XSS
+</label>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS mask property attack 1`] = `
+<select>
+  <option>
+    XSS
+  </option>
+</select>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS offset-path attack 1`] = `
+<cite>
+  XSS
+</cite>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS outline attack 1`] = `
+<datalist>
+  <option>
+  </option>
+</datalist>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS perspective attack 1`] = `
+<article>
+  XSS
+</article>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS quotes property attack 1`] = `
+<progress>
+</progress>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS shape-outside attack 1`] = `
+<bdo>
+  XSS
+</bdo>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS text-shadow attack 1`] = `
+<output>
+</output>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS transform property attack 1`] = `""`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS transition property attack 1`] = `
+<button>
+  XSS
+</button>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS variables attack 1`] = `
+<marquee>
+  XSS
+</marquee>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS will-change attack 1`] = `
+<bdi>
+  XSS
+</bdi>
+`;
+
 exports[`XSS checks with disabled markdown-it-attrs Case insensitive XSS attack vector 1`] = `
 <p>
   &lt;img src=JaVaScRiPt:alert('XSS')&gt;
 </p>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs Case variations - mixed case 1`] = `""`;
+
+exports[`XSS checks with disabled markdown-it-attrs Case variations - uppercase STYLE 1`] = `""`;
+
+exports[`XSS checks with disabled markdown-it-attrs Combined attack with comments bypass 1`] = `
+"
+"
 `;
 
 exports[`XSS checks with disabled markdown-it-attrs DIV background-image 1`] = `
@@ -149,6 +273,23 @@ exports[`XSS checks with disabled markdown-it-attrs Malformed img tags 1`] = `
 </p>
 `;
 
+exports[`XSS checks with disabled markdown-it-attrs Multi-line attack via color with comments 1`] = `
+<style>
+  .hack {
+  color: red;
+}
+</style>
+<style>
+</style>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs Multiple property attack 1`] = `<img src="x">`;
+
+exports[`XSS checks with disabled markdown-it-attrs Nested style tags attack 1`] = `
+<style>
+</style>
+`;
+
 exports[`XSS checks with disabled markdown-it-attrs No Filter Evasion 1`] = `""`;
 
 exports[`XSS checks with disabled markdown-it-attrs No closing script tags 1`] = `""`;
@@ -212,6 +353,45 @@ exports[`XSS checks with disabled markdown-it-attrs SSI (Server Side Includes) 1
 
 exports[`XSS checks with disabled markdown-it-attrs Spaces and meta chars before the JavaScript in images for XSS 1`] = `<img>`;
 
+exports[`XSS checks with disabled markdown-it-attrs Style closure via @import directive 1`] = `
+<iframe>
+</iframe>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs Style closure via animation-name 1`] = `
+<details open>
+</details>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs Style closure via background-image 1`] = `<img src="x">`;
+
+exports[`XSS checks with disabled markdown-it-attrs Style closure via calc() function 1`] = `""`;
+
+exports[`XSS checks with disabled markdown-it-attrs Style closure via content property 1`] = `
+<svg>
+</svg>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs Style closure via filter property 1`] = `
+<audio src="x">
+</audio>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs Style closure via font-family with complex payload 1`] = `
+<style>
+</style>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs Style closure via grid-template-areas 1`] = `
+<video src="x">
+</video>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs Style closure with space variations 1`] = `
+<style>
+</style>
+`;
+
 exports[`XSS checks with disabled markdown-it-attrs TABLE 1`] = `
 <table background="javascript:alert('XSS')">
 </table>
@@ -232,6 +412,14 @@ exports[`XSS checks with disabled markdown-it-attrs US-ASCII encoding 1`] = `
 <p>
   ¼script¾alert(¢XSS¢)¼/script¾
 </p>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs Unicode escape in font-family 1`] = `
+<style>
+  .unicode {
+  font-family: "\\22 \\3E \\3C /style\\3E \\3C script\\3E alert(1)\\3C /script\\3E";
+}
+</style>
 `;
 
 exports[`XSS checks with disabled markdown-it-attrs Unicode escape sequences 1`] = `
@@ -399,10 +587,134 @@ exports[`XSS checks with enabled markdown-it-attrs BASE tag 1`] = `""`;
 
 exports[`XSS checks with enabled markdown-it-attrs BGSOUND 1`] = `""`;
 
+exports[`XSS checks with enabled markdown-it-attrs CSS backface-visibility attack 1`] = `
+<aside>
+  XSS
+</aside>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS background-position attack 1`] = `
+<abbr>
+  XSS
+</abbr>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS border-image attack 1`] = `
+<textarea>
+</textarea>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS box-shadow attack 1`] = `<input>`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS clip-path attack 1`] = `""`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS counter attack 1`] = `
+<meter>
+</meter>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS cursor attack 1`] = `
+<fieldset>
+  <legend>
+    XSS
+  </legend>
+</fieldset>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS flex property attack 1`] = `
+<acronym>
+  XSS
+</acronym>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS grid-area attack 1`] = `
+<address>
+  XSS
+</address>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS list-style attack 1`] = `
+<label>
+  XSS
+</label>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS mask property attack 1`] = `
+<select>
+  <option>
+    XSS
+  </option>
+</select>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS offset-path attack 1`] = `
+<cite>
+  XSS
+</cite>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS outline attack 1`] = `
+<datalist>
+  <option>
+  </option>
+</datalist>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS perspective attack 1`] = `
+<article>
+  XSS
+</article>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS quotes property attack 1`] = `
+<progress>
+</progress>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS shape-outside attack 1`] = `
+<bdo>
+  XSS
+</bdo>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS text-shadow attack 1`] = `
+<output>
+</output>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS transform property attack 1`] = `""`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS transition property attack 1`] = `
+<button>
+  XSS
+</button>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS variables attack 1`] = `
+<marquee>
+  XSS
+</marquee>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS will-change attack 1`] = `
+<bdi>
+  XSS
+</bdi>
+`;
+
 exports[`XSS checks with enabled markdown-it-attrs Case insensitive XSS attack vector 1`] = `
 <p>
   &lt;img src=JaVaScRiPt:alert('XSS')&gt;
 </p>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs Case variations - mixed case 1`] = `""`;
+
+exports[`XSS checks with enabled markdown-it-attrs Case variations - uppercase STYLE 1`] = `""`;
+
+exports[`XSS checks with enabled markdown-it-attrs Combined attack with comments bypass 1`] = `
+"
+"
 `;
 
 exports[`XSS checks with enabled markdown-it-attrs DIV background-image 1`] = `
@@ -520,6 +832,23 @@ exports[`XSS checks with enabled markdown-it-attrs Malformed img tags 1`] = `
 </p>
 `;
 
+exports[`XSS checks with enabled markdown-it-attrs Multi-line attack via color with comments 1`] = `
+<style>
+  .hack {
+  color: red;
+}
+</style>
+<style>
+</style>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs Multiple property attack 1`] = `<img src="x">`;
+
+exports[`XSS checks with enabled markdown-it-attrs Nested style tags attack 1`] = `
+<style>
+</style>
+`;
+
 exports[`XSS checks with enabled markdown-it-attrs No Filter Evasion 1`] = `""`;
 
 exports[`XSS checks with enabled markdown-it-attrs No closing script tags 1`] = `""`;
@@ -583,6 +912,45 @@ exports[`XSS checks with enabled markdown-it-attrs SSI (Server Side Includes) 1`
 
 exports[`XSS checks with enabled markdown-it-attrs Spaces and meta chars before the JavaScript in images for XSS 1`] = `<img>`;
 
+exports[`XSS checks with enabled markdown-it-attrs Style closure via @import directive 1`] = `
+<iframe>
+</iframe>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs Style closure via animation-name 1`] = `
+<details open>
+</details>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs Style closure via background-image 1`] = `<img src="x">`;
+
+exports[`XSS checks with enabled markdown-it-attrs Style closure via calc() function 1`] = `""`;
+
+exports[`XSS checks with enabled markdown-it-attrs Style closure via content property 1`] = `
+<svg>
+</svg>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs Style closure via filter property 1`] = `
+<audio src="x">
+</audio>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs Style closure via font-family with complex payload 1`] = `
+<style>
+</style>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs Style closure via grid-template-areas 1`] = `
+<video src="x">
+</video>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs Style closure with space variations 1`] = `
+<style>
+</style>
+`;
+
 exports[`XSS checks with enabled markdown-it-attrs TABLE 1`] = `
 <table background="javascript:alert('XSS')">
 </table>
@@ -603,6 +971,14 @@ exports[`XSS checks with enabled markdown-it-attrs US-ASCII encoding 1`] = `
 <p>
   ¼script¾alert(¢XSS¢)¼/script¾
 </p>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs Unicode escape in font-family 1`] = `
+<style>
+  .unicode {
+  font-family: "\\22 \\3E \\3C /style\\3E \\3C script\\3E alert(1)\\3C /script\\3E";
+}
+</style>
 `;
 
 exports[`XSS checks with enabled markdown-it-attrs Unicode escape sequences 1`] = `

@@ -181,6 +181,154 @@ const ckecks = [
         '<style>.xss{content: "&lt;script&gt;alert(1)&lt;/script&gt;"}</style>',
     ],
     ['Unicode escape sequences', '<style>.xss{content: "\\003Cscript\\003E"}</style>'],
+    [
+        'Style closure via font-family with complex payload',
+        '<style>.xss{font-family: "<//**/style/><h1><xss>XSSHere</xss><script>alert(1)</script></h1><style>"}</style>',
+    ],
+    [
+        'Style closure via background-image',
+        '<style>.attack{background-image: url("</style><img src=x onerror=alert(1)><style>");}</style>',
+    ],
+    [
+        'Style closure via content property',
+        '<style>.evil{content: "</style><svg onload=alert(1)><style>";}</style>',
+    ],
+    [
+        'Multi-line attack via color with comments',
+        "<style>.hack{color: red;/* */ } </style><script>alert('XSS')</script><style> .fake {}</style>",
+    ],
+    [
+        'Style closure via @import directive',
+        '<style>@import "</style><iframe src=javascript:alert(1)></iframe><style>";</style>',
+    ],
+    [
+        'Style closure via animation-name',
+        '<style>.anim{animation-name: "</style><details open ontoggle=alert(1)><style>";}</style>',
+    ],
+    [
+        'CSS variables attack',
+        '<style>:root{--evil: "</style><marquee onstart=alert(1)>XSS</marquee><style>";}</style>',
+    ],
+    [
+        'Style closure via filter property',
+        '<style>.blur{filter: blur(5px) "</style><audio src=x onerror=alert(1)><style>";}</style>',
+    ],
+    [
+        'Style closure via grid-template-areas',
+        '<style>.grid{grid-template-areas: "</style><video src=x onerror=alert(1)><style>";}</style>',
+    ],
+    [
+        'Combined attack with comments bypass',
+        '<style>/* fake comment */ .test { color: "</style><!--\n--><script>alert(\'Bypassed!\')</script><!--\n--><style>"; }</style>',
+    ],
+    [
+        'Unicode escape in font-family',
+        '<style>.unicode{font-family: "\\22 \\3E \\3C /style\\3E \\3C script\\3E alert(1)\\3C /script\\3E";}</style>',
+    ],
+    [
+        'Style closure via calc() function',
+        '<style>.calc{width: calc(100% "</style><embed src=javascript:alert(1)><style>");}</style>',
+    ],
+    [
+        'Case variations - uppercase STYLE',
+        '<STYLE>.xss{font-family: "</STYLE><script>alert(1)</script><STYLE>"}</STYLE>',
+    ],
+    [
+        'Case variations - mixed case',
+        '<StYlE>.xss{font-family: "</StYlE><script>alert(1)</script><StYlE>"}</StYlE>',
+    ],
+    [
+        'Style closure with space variations',
+        '<style>.xss{font-family: "</ style><script>alert(1)</script><style>"}</style>',
+    ],
+    [
+        'Multiple property attack',
+        '<style>.multi{background: "</style><script>alert(1)</script><style>"; color: "</style><img src=x onerror=alert(2)><style>";}</style>',
+    ],
+    [
+        'Nested style tags attack',
+        '<style>.outer{content: "</style><style>.inner{}</style><script>alert(1)</script><style>";}</style>',
+    ],
+    [
+        'CSS transform property attack',
+        '<style>.transform{transform: rotate(0deg) "</style><object data=javascript:alert(1)></object><style>";}</style>',
+    ],
+    [
+        'CSS transition property attack',
+        '<style>.transition{transition: all 1s "</style><form><button formaction=javascript:alert(1)>XSS</button></form><style>";}</style>',
+    ],
+    [
+        'CSS box-shadow attack',
+        '<style>.shadow{box-shadow: 0 0 5px "</style><input onfocus=alert(1) autofocus><style>";}</style>',
+    ],
+    [
+        'CSS border-image attack',
+        '<style>.border{border-image: url("</style><textarea onfocus=alert(1) autofocus></textarea><style>");}</style>',
+    ],
+    [
+        'CSS mask property attack',
+        '<style>.mask{mask: url("</style><select onfocus=alert(1) autofocus><option>XSS</option></select><style>");}</style>',
+    ],
+    [
+        'CSS clip-path attack',
+        '<style>.clip{clip-path: url("</style><keygen onfocus=alert(1) autofocus><style>");}</style>',
+    ],
+    [
+        'CSS counter attack',
+        '<style>.counter{counter-reset: xss "</style><meter onfocus=alert(1) autofocus></meter><style>";}</style>',
+    ],
+    [
+        'CSS quotes property attack',
+        '<style>.quotes{quotes: "</style><progress onfocus=alert(1) autofocus></progress><style>";}</style>',
+    ],
+    [
+        'CSS text-shadow attack',
+        '<style>.text{text-shadow: 1px 1px "</style><output onfocus=alert(1) autofocus></output><style>";}</style>',
+    ],
+    [
+        'CSS outline attack',
+        '<style>.outline{outline: 1px solid "</style><datalist><option onfocus=alert(1) autofocus></option></datalist><style>";}</style>',
+    ],
+    [
+        'CSS cursor attack',
+        '<style>.cursor{cursor: url("</style><fieldset><legend onfocus=alert(1) autofocus>XSS</legend></fieldset><style>");}</style>',
+    ],
+    [
+        'CSS list-style attack',
+        '<style>.list{list-style: url("</style><label onfocus=alert(1) autofocus>XSS</label><style>");}</style>',
+    ],
+    [
+        'CSS background-position attack',
+        '<style>.bg{background-position: 0 0 "</style><abbr onfocus=alert(1) autofocus>XSS</abbr><style>";}</style>',
+    ],
+    [
+        'CSS flex property attack',
+        '<style>.flex{flex: 1 1 "</style><acronym onfocus=alert(1) autofocus>XSS</acronym><style>";}</style>',
+    ],
+    [
+        'CSS grid-area attack',
+        '<style>.area{grid-area: "</style><address onfocus=alert(1) autofocus>XSS</address><style>";}</style>',
+    ],
+    [
+        'CSS perspective attack',
+        '<style>.persp{perspective: 100px "</style><article onfocus=alert(1) autofocus>XSS</article><style>";}</style>',
+    ],
+    [
+        'CSS backface-visibility attack',
+        '<style>.back{backface-visibility: hidden "</style><aside onfocus=alert(1) autofocus>XSS</aside><style>";}</style>',
+    ],
+    [
+        'CSS will-change attack',
+        '<style>.will{will-change: transform "</style><bdi onfocus=alert(1) autofocus>XSS</bdi><style>";}</style>',
+    ],
+    [
+        'CSS shape-outside attack',
+        '<style>.shape{shape-outside: url("</style><bdo onfocus=alert(1) autofocus>XSS</bdo><style>");}</style>',
+    ],
+    [
+        'CSS offset-path attack',
+        '<style>.offset{offset-path: url("</style><cite onfocus=alert(1) autofocus>XSS</cite><style>");}</style>',
+    ],
 ];
 
 describe.each([
