@@ -1,5 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`CSS safe cases should allow safe CSS values 1`] = `
+<style>
+  .safe {
+  color: red;
+  font-size: 14px;
+  margin: 10px;
+}
+</style>
+`;
+
+exports[`CSS safe cases should allow safe font-family values 1`] = `
+<style>
+  .safe {
+  font-family: "Arial, sans-serif";
+}
+</style>
+`;
+
 exports[`XSS checks with disabled markdown-it-attrs & JavaScript includes 1`] = `<br size="&amp;{alert('XSS')}">`;
 
 exports[`XSS checks with disabled markdown-it-attrs Anonymous HTML with style attribute 1`] = `""`;
@@ -80,6 +98,16 @@ exports[`XSS checks with disabled markdown-it-attrs HTML entities 1`] = `
 <p>
   &lt;img src=javascript:alert("XSS")&gt;
 </p>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs HTML entities in CSS values 1`] = `
+<style>
+</style>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs HTML tags in CSS values 1`] = `
+<style>
+</style>
 `;
 
 exports[`XSS checks with disabled markdown-it-attrs Half open HTML/JavaScript XSS vector 1`] = `
@@ -206,6 +234,11 @@ exports[`XSS checks with disabled markdown-it-attrs US-ASCII encoding 1`] = `
 </p>
 `;
 
+exports[`XSS checks with disabled markdown-it-attrs Unicode escape sequences 1`] = `
+<style>
+</style>
+`;
+
 exports[`XSS checks with disabled markdown-it-attrs Using an EMBED tag you can embed a Flash movie that contains XSS 1`] = `
 <p>
   &lt;embed src="http://ha.ckers.Using an EMBED tag you can embed a Flash movie that contains XSS. Click here for a demo. If you add the attributes allowScriptAccess="never" and allownetworking="internal" it can mitigate this risk (thank you to Jonathan Vanasco for the info).:org/xss.swf" AllowScriptAccess="always"&gt;
@@ -239,6 +272,11 @@ exports[`XSS checks with disabled markdown-it-attrs You can EMBED SVG which can 
 exports[`XSS checks with disabled markdown-it-attrs body image 1`] = `""`;
 
 exports[`XSS checks with disabled markdown-it-attrs body tag 1`] = `""`;
+
+exports[`XSS checks with disabled markdown-it-attrs complex XSS payload in font-family 1`] = `
+<style>
+</style>
+`;
 
 exports[`XSS checks with disabled markdown-it-attrs frame 1`] = `""`;
 
@@ -301,6 +339,8 @@ exports[`XSS checks with disabled markdown-it-attrs meta 1`] = `""`;
 exports[`XSS checks with disabled markdown-it-attrs style sheet 1`] = `""`;
 
 exports[`XSS checks with disabled markdown-it-attrs style tag 1`] = `""`;
+
+exports[`XSS checks with disabled markdown-it-attrs style tag closure attempts 1`] = `""`;
 
 exports[`XSS checks with disabled markdown-it-attrs style tag using background 1`] = `
 <style type="text/css">
@@ -431,6 +471,16 @@ exports[`XSS checks with enabled markdown-it-attrs HTML entities 1`] = `
 </p>
 `;
 
+exports[`XSS checks with enabled markdown-it-attrs HTML entities in CSS values 1`] = `
+<style>
+</style>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs HTML tags in CSS values 1`] = `
+<style>
+</style>
+`;
+
 exports[`XSS checks with enabled markdown-it-attrs Half open HTML/JavaScript XSS vector 1`] = `
 <p>
   &lt;img src="javascript:alert('XSS')"
@@ -555,6 +605,11 @@ exports[`XSS checks with enabled markdown-it-attrs US-ASCII encoding 1`] = `
 </p>
 `;
 
+exports[`XSS checks with enabled markdown-it-attrs Unicode escape sequences 1`] = `
+<style>
+</style>
+`;
+
 exports[`XSS checks with enabled markdown-it-attrs Using an EMBED tag you can embed a Flash movie that contains XSS 1`] = `
 <p>
   &lt;embed src="http://ha.ckers.Using an EMBED tag you can embed a Flash movie that contains XSS. Click here for a demo. If you add the attributes allowScriptAccess="never" and allownetworking="internal" it can mitigate this risk (thank you to Jonathan Vanasco for the info).:org/xss.swf" AllowScriptAccess="always"&gt;
@@ -588,6 +643,11 @@ exports[`XSS checks with enabled markdown-it-attrs You can EMBED SVG which can c
 exports[`XSS checks with enabled markdown-it-attrs body image 1`] = `""`;
 
 exports[`XSS checks with enabled markdown-it-attrs body tag 1`] = `""`;
+
+exports[`XSS checks with enabled markdown-it-attrs complex XSS payload in font-family 1`] = `
+<style>
+</style>
+`;
 
 exports[`XSS checks with enabled markdown-it-attrs frame 1`] = `""`;
 
@@ -650,6 +710,8 @@ exports[`XSS checks with enabled markdown-it-attrs meta 1`] = `""`;
 exports[`XSS checks with enabled markdown-it-attrs style sheet 1`] = `""`;
 
 exports[`XSS checks with enabled markdown-it-attrs style tag 1`] = `""`;
+
+exports[`XSS checks with enabled markdown-it-attrs style tag closure attempts 1`] = `""`;
 
 exports[`XSS checks with enabled markdown-it-attrs style tag using background 1`] = `
 <style type="text/css">

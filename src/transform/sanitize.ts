@@ -563,6 +563,20 @@ export const defaultOptions: SanitizeOptions = {
     },
 };
 
+function isSafeCssValue(value: string): boolean {
+    // Block HTML tags
+    if (/[<>]/g.test(value)) {
+        return false;
+    }
+
+    // Block HTML entities and Unicode escape
+    if (/(&lt;|&gt;|\\00[3-4][C-E])/gi.test(value)) {
+        return false;
+    }
+
+    return true;
+}
+
 function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) {
     const styleTags = dom('style');
 
@@ -587,6 +601,10 @@ function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) 
 
                 rule.declarations = rule.declarations.filter((declaration: css.Declaration) => {
                     if (!declaration.property || !declaration.value) {
+                        return false;
+                    }
+
+                    if (!isSafeCssValue(declaration.value)) {
                         return false;
                     }
 

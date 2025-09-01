@@ -167,6 +167,20 @@ const ckecks = [
         'href animate from',
         `<div id="test"><svg><a xmlns:xlink="http://www.w3.org/1999/xlink" href="javascript:alert(document.domain)"><circle r="400"></circle><animate attributeName="href" begin="0" from="javascript:alert(document.domain)" to="&" /></a></div>`,
     ],
+    ['HTML tags in CSS values', '<style>.xss{font-family: "<script>alert(1)</script>"}</style>'],
+    [
+        'style tag closure attempts',
+        '<style>.xss{font-family: "</style><script>alert(1)</script><style>"}</style>',
+    ],
+    [
+        'complex XSS payload in font-family',
+        '<style>.xss{font-family: "<//**/style/><h1><xss>XSSHere</xss><a id=yaSafeFrameAsyncCallbacks href=xss:alert(1)>1</a><script src=https://example.com/some.js></script></h1><style>"}</style>',
+    ],
+    [
+        'HTML entities in CSS values',
+        '<style>.xss{content: "&lt;script&gt;alert(1)&lt;/script&gt;"}</style>',
+    ],
+    ['Unicode escape sequences', '<style>.xss{content: "\\003Cscript\\003E"}</style>'],
 ];
 
 describe.each([
@@ -177,5 +191,17 @@ describe.each([
         it(name, () => {
             expect(html(input, {enableMarkdownAttrs})).toMatchSnapshot();
         });
+    });
+});
+
+describe('CSS safe cases', () => {
+    it('should allow safe CSS values', () => {
+        expect(
+            html('<style>.safe{color: red; font-size: 14px; margin: 10px;}</style>'),
+        ).toMatchSnapshot();
+    });
+
+    it('should allow safe font-family values', () => {
+        expect(html('<style>.safe{font-family: "Arial, sans-serif"}</style>')).toMatchSnapshot();
     });
 });
