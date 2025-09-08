@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.61.1](https://github.com/diplodoc-platform/transform/compare/v4.61.0...v4.61.1) (2025-09-08)
+
+
+### Bug Fixes
+
+* remove italic from dl ([696ab42](https://github.com/diplodoc-platform/transform/commit/696ab42d7772020e93767779bca802d76f30d2cb))
+
 ## [4.61.0](https://github.com/diplodoc-platform/transform/compare/v4.60.4...v4.61.0) (2025-08-28)
 
 
