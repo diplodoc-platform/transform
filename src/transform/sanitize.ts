@@ -1,10 +1,18 @@
 import type {Attributes, Tag} from 'sanitize-html';
 import type {CssWhiteList} from './typings';
+import type {
+    Document as Parse5Document,
+    Element as Parse5Element,
+    Node as Parse5Node,
+    ParentNode as Parse5ParentNode,
+    Template as Parse5Template,
+    TextNode as Parse5TextNode,
+} from 'parse5/dist/tree-adapters/default';
 
 import sanitizeHtml from 'sanitize-html';
 // @ts-ignore
 import cssfilter from 'cssfilter';
-import * as cheerio from 'cheerio';
+import * as parse5 from 'parse5';
 import css from 'css';
 
 import log from './log';
@@ -563,11 +571,51 @@ export const defaultOptions: SanitizeOptions = {
     },
 };
 
-function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) {
-    const styleTags = dom('style');
+function isElement(node: Parse5Node): node is Parse5Element {
+    return (node as Parse5Element).tagName !== undefined;
+}
 
-    styleTags.each((_index, element) => {
-        const styleText = dom(element).text();
+function traverse(node: Parse5Node, cb: (n: Parse5Node) => void) {
+    cb(node);
+    const parent = node as Parse5ParentNode;
+    if (parent.childNodes) {
+        for (const child of parent.childNodes) {
+            traverse(child, cb);
+        }
+    }
+    const template = node as Parse5Template;
+    if (template.content) {
+        traverse(template.content, cb);
+    }
+}
+
+function findElement(root: Parse5Document, tag: string): Parse5Element | null {
+    let found: Parse5Element | null = null;
+    traverse(root, (n) => {
+        if (!found && isElement(n) && n.tagName === tag) {
+            found = n;
+        }
+    });
+    return found;
+}
+
+function serializeInner(node: Parse5ParentNode): string {
+    return node.childNodes.map((child) => parse5.serializeOuter(child)).join('');
+}
+
+function sanitizeStyleTags(root: Parse5Document, cssWhiteList: CssWhiteList) {
+    const styleTags: Parse5Element[] = [];
+    traverse(root, (node) => {
+        if (isElement(node) && node.tagName === 'style') {
+            styleTags.push(node);
+        }
+    });
+
+    styleTags.forEach((element) => {
+        const styleText = element.childNodes
+            .filter((n) => n.nodeName === '#text')
+            .map((n) => (n as Parse5TextNode).value)
+            .join('');
 
         try {
             const parsedCSS = css.parse(styleText);
@@ -607,9 +655,19 @@ function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) 
                 });
             });
 
-            dom(element).text(css.stringify(parsedCSS));
+            element.childNodes = [
+                {
+                    nodeName: '#text',
+                    value: css.stringify(parsedCSS),
+                    parentNode: element,
+                } as Parse5TextNode,
+            ];
         } catch (error) {
-            dom(element).remove();
+            if (element.parentNode) {
+                element.parentNode.childNodes = element.parentNode.childNodes.filter(
+                    (n) => n !== element,
+                );
+            }
 
             const errorMessage = error instanceof Error ? error.message : `${error}`;
             log.info(errorMessage);
@@ -617,33 +675,38 @@ function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) 
     });
 }
 
-function sanitizeStyleAttrs(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) {
+function sanitizeStyleAttrs(root: Parse5Document, cssWhiteList: CssWhiteList) {
     const options = {
         whiteList: cssWhiteList,
     };
     const cssSanitizer = new cssfilter.FilterCSS(options);
-
-    dom('*').each((_index, element) => {
-        const styleAttrValue = dom(element).attr('style');
-
-        if (!styleAttrValue) {
-            return;
+    traverse(root, (node) => {
+        if (isElement(node)) {
+            const styleAttr = node.attrs.find((a) => a.name === 'style');
+            if (!styleAttr) {
+                return;
+            }
+            styleAttr.value = cssSanitizer.process(styleAttr.value);
+            if (!styleAttr.value) {
+                node.attrs = node.attrs.filter((a) => a !== styleAttr);
+            }
         }
-
-        dom(element).attr('style', cssSanitizer.process(styleAttrValue));
     });
 }
 
 export function sanitizeStyles(html: string, options: SanitizeOptions) {
     const cssWhiteList = options.cssWhiteList || {};
 
-    const $ = cheerio.load(html);
+    const document = parse5.parse(html);
 
-    sanitizeStyleTags($, cssWhiteList);
-    sanitizeStyleAttrs($, cssWhiteList);
+    sanitizeStyleTags(document, cssWhiteList);
+    sanitizeStyleAttrs(document, cssWhiteList);
 
-    const styles = $('head').html() || '';
-    const content = $('body').html() || '';
+    const head = findElement(document, 'head');
+    const body = findElement(document, 'body');
+
+    const styles = head ? serializeInner(head) : '';
+    const content = body ? serializeInner(body) : '';
 
     return styles + content;
 }
