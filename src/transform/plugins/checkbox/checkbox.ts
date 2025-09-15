@@ -4,7 +4,8 @@ import type StateCore from 'markdown-it/lib/rules_core/state_core';
 import type Token from 'markdown-it/lib/token';
 
 // eslint-disable-next-line no-useless-escape
-export const pattern = /^\[(X|\s|\_|\-)\]\s(.*)/i;
+export const pattern = /^\[(X|\s|\_|\-)\]\s((.|\s)*)/i;
+
 export const CheckboxTokenType = {
     Checkbox: 'checkbox',
     CheckboxOpen: 'checkbox_open',
@@ -77,12 +78,34 @@ export const checkboxReplace = function (_md: MarkdownIt, opts?: CheckboxOptions
          */
         token = new state.Token(CheckboxTokenType.CheckboxLabelOpen, 'label', 1);
         token.attrs = [['for', id]];
+        token.block = true;
         nodes.push(token);
 
         /**
          * content of label tag
          */
         token = state.md.parseInline(label, state.env)[0];
+        token.block = true;
+
+        let lastChild: Token;
+        if (token.children) {
+            token.children = token.children.filter((filterItem, index) => {
+                if (index === 0) {
+                    lastChild = filterItem;
+                    return true;
+                }
+
+                const isBreak = !(
+                    filterItem.type === 'text' &&
+                    filterItem.markup === '&nbsp;' &&
+                    lastChild.type === 'softbreak'
+                );
+                lastChild = filterItem;
+
+                return isBreak;
+            });
+        }
+
         nodes.push(token);
 
         /**
@@ -99,6 +122,7 @@ export const checkboxReplace = function (_md: MarkdownIt, opts?: CheckboxOptions
 
         return nodes;
     };
+
     const splitTextToken = function (state: StateCore, matches: RegExpMatchArray, i: number) {
         let checked = false;
         const value = matches[1];
@@ -108,6 +132,7 @@ export const checkboxReplace = function (_md: MarkdownIt, opts?: CheckboxOptions
         }
         return createTokens(state, checked, label, i);
     };
+
     return function (state) {
         const blockTokens = state.tokens;
         for (let i = 0; i < blockTokens.length; i++) {
