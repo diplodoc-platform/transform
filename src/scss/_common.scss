@@ -190,15 +190,18 @@
         z-index: 1;
 
         box-sizing: border-box;
-        border: 1px solid var(--yfm-color-border);
+        border: 1px solid var(--yfm-color-table-border);
         border-radius: 8px;
         border-collapse: collapse;
         border-spacing: 0;
-        background: var(--yfm-color-base);
+        background: var(--yfm-color-table-background);
 
-        thead,
+        thead {
+            background-color: var(--yfm-color-table-head-background);
+        }
+
         tr:nth-child(2n) {
-            background-color: var(--yfm-color-table-row-background);
+            background-color: var(--yfm-color-table-stripe-row-background);
         }
 
         tr:first-child {
@@ -220,7 +223,7 @@
             padding: 10px 20px;
             overflow: hidden;
             text-overflow: ellipsis;
-            border: 1px solid var(--yfm-color-border);
+            border: 1px solid var(--yfm-color-table-border);
 
             @include removeMarginForEdgeChildren();
         }

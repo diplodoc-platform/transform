@@ -44,7 +44,7 @@
     td::before,
     th::before {
         content: '';
-        background: var(--yfm-color-base);
+        background: var(--yfm-color-table-background);
         position: absolute;
         inset: 0;
         z-index: -2;
@@ -53,7 +53,7 @@
     td::after,
     th::after {
         content: '';
-        background: var(--yfm-color-table-row-background);
+        background: var(--yfm-color-table-head-background);
         position: absolute;
         inset: 0;
         z-index: -1;
