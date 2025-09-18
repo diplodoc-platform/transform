@@ -101,8 +101,6 @@ MIT
 - `--yfm-color-link`
 - `--yfm-color-base`
 - `--yfm-color-link-hover`
-- `--yfm-color-table`
-- `--yfm-color-table-row-background`
 - `--yfm-color-border`
 - `--yfm-color-accent`
 - `--yfm-tab-size`
@@ -179,6 +177,14 @@ MIT
 - `--yfm-list-text-margin-block`
 - `--yfm-list-text-only-margin-block`
 - `--yfm-list-text-last-margin-block`
+
+**table**
+
+- `--yfm-color-table`
+- `--yfm-color-table-border`
+- `--yfm-color-table-background`
+- `--yfm-color-table-head-background`
+- `--yfm-color-table-stripe-row-background`
 
 ## Contributing
 

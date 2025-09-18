@@ -5,10 +5,6 @@
     --yfm-color-link: var(--yfm-color-link-private);
     --yfm-color-link-hover: var(--yfm-color-link-hover-private);
 
-    --yfm-color-table: var(--yfm-color-table-private);
-    --yfm-color-table-row-background: var(--yfm-color-table-row-background-private);
-    --yfm-color-table-row-header-background: var(--yfm-color-table-row-header-background-private);
-
     --yfm-color-border: var(--yfm-color-border-private);
 
     --yfm-color-accent: var(--yfm-color-accent-private);
@@ -48,4 +44,13 @@
     --yfm-color-modal-actions-hover: var(--yfm-color-modal-actions-hover-private);
     --yfm-color-modal-wide-content: var(--yfm-color-modal-wide-content-private);
     --yfm-color-modal-wide-content-overlay: var(--yfm-color-modal-wide-content-overlay-private);
+
+    // table
+    --yfm-color-table: var(--yfm-color-table-private);
+    --yfm-color-table-border: var(--yfm-color-border);
+    --yfm-color-table-background: var(--yfm-color-base);
+    --yfm-color-table-head-background: var(--yfm-color-table-row-background);
+    --yfm-color-table-stripe-row-background: var(--yfm-color-table-row-background);
+    // TODO: next var is deprecated, need to remove later
+    --yfm-color-table-row-background: var(--yfm-color-table-row-background-private);
 }
