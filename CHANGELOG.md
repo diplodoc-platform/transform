@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.62.0](https://github.com/diplodoc-platform/transform/compare/v4.61.1...v4.62.0) (2025-09-18)
+
+
+### Features
+
+* **styles:** add mod to disable stripe rows in table ([1efc922](https://github.com/diplodoc-platform/transform/commit/1efc92263a8be5afb02e8264482f8cf7472b0caa))
+* **styles:** update table css-vars ([bfee639](https://github.com/diplodoc-platform/transform/commit/bfee639184abb7a0110ba692a9b31adc8d2c772c))
+
 ## [4.61.1](https://github.com/diplodoc-platform/transform/compare/v4.61.0...v4.61.1) (2025-09-08)
 
 
