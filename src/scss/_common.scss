@@ -200,10 +200,6 @@
             background-color: var(--yfm-color-table-head-background);
         }
 
-        tr:nth-child(2n) {
-            background-color: var(--yfm-color-table-stripe-row-background);
-        }
-
         tr:first-child {
             td,
             th {
@@ -246,6 +242,10 @@
         tr th:last-child {
             border-right: none;
         }
+    }
+
+    &:not(.yfm_no-stripe-table) table tr:nth-child(2n) {
+        background-color: var(--yfm-color-table-stripe-row-background);
     }
 
     hr {
