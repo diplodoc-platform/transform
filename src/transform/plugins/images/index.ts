@@ -1,6 +1,6 @@
 import type Token from 'markdown-it/lib/token';
 import type {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
-import type {StateCore} from '../../typings';
+import type {ImageOptions, StateCore} from '../../typings';
 
 import {join, sep} from 'path';
 import {bold} from 'chalk';
@@ -43,37 +43,20 @@ function replaceImageSrc(
 
 interface SVGOpts extends MarkdownItPluginOpts {
     notFoundCb: (s: string) => void;
-}
-
-function prefix() {
-    const value = Math.floor(Math.random() * 1e9);
-
-    return 'rnd-' + value.toString(16);
+    imageOpts: ImageOptions;
 }
 
 function convertSvg(
     token: Token,
     state: StateCore,
-    {path: optsPath, log, notFoundCb, root}: SVGOpts,
+    {path: optsPath, log, notFoundCb, root, imageOpts}: SVGOpts,
 ) {
     const currentPath = state.env.path || optsPath;
     const path = resolveRelativePath(currentPath, getSrcTokenAttr(token));
 
     try {
         const raw = readFileSync(path).toString();
-        const result = optimize(raw, {
-            plugins: [
-                {
-                    name: 'prefixIds',
-                    params: {
-                        prefix: prefix(),
-                        prefixClassNames: false,
-                    },
-                },
-            ],
-        });
-
-        const content = result.data;
+        const content = raw === '' ? '' : replaceSvgContent(raw, imageOpts);
         const svgToken = new state.Token('image_svg', '', 0);
         svgToken.attrSet('content', content);
 
@@ -116,7 +99,11 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                     }
 
                     const imgSrc = getSrcTokenAttr(childrenTokens[j]);
-                    const shouldInlineSvg = opts.inlineSvg !== false && !isExternalHref(imgSrc);
+                    const shouldInlineSvg =
+                        (childrenTokens[j].attrGet('inline') === null
+                            ? opts.inlineSvg !== false
+                            : childrenTokens[j].attrGet('inline') === 'true') &&
+                        !isExternalHref(imgSrc);
 
                     if (imgSrc.endsWith('.svg') && shouldInlineSvg) {
                         childrenTokens[j] = convertSvg(childrenTokens[j], state, opts);
@@ -147,4 +134,50 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
     };
 };
 
-export = index;
+function replaceSvgContent(content: string, options: ImageOptions) {
+    // monoline
+    content = content.replace(/\n/g, '');
+
+    // width, height
+    let svgRoot = content.replace(/<svg([^>]*)>.*/g, '$1');
+    //. (\w+)=(?:'([^']*)'|"([^"]*)"|(\S+))
+    const [, width, height] = svgRoot.match(/(?:width="(.*?)").*?(?:height="(.*?)")/) || [
+        null,
+        null,
+        null,
+    ];
+    if (!width && options.width) {
+        svgRoot = `${svgRoot} width="${options.width}"`;
+    }
+    if (!height && options.height) {
+        svgRoot = `${svgRoot} height="${options.height}"`;
+    }
+    if (!width && !height && (options.width || options.height)) {
+        content = content.replace(/<svg([^>]*)>/, `<svg${svgRoot}>`);
+    }
+
+    // randomize ids
+    content = optimize(content, {
+        plugins: [
+            {
+                name: 'prefixIds',
+                params: {
+                    prefix: 'rnd-' + Math.floor(Math.random() * 1e9).toString(16),
+                    prefixClassNames: false,
+                },
+            },
+        ],
+    }).data;
+
+    return content;
+}
+
+// Create an object that is the index function with an additional replaceSvgContent property
+const imagesPlugin: typeof index & {replaceSvgContent: typeof replaceSvgContent} = Object.assign(
+    index,
+    {
+        replaceSvgContent,
+    },
+);
+
+export = imagesPlugin;
