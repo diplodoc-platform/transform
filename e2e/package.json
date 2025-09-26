@@ -11,6 +11,7 @@
   "devDependencies": {
     "@chromatic-com/storybook": "^3.2.6",
     "@playwright/test": "^1.51.1",
+    "@rsbuild/plugin-node-polyfill": "^1.4.2",
     "@storybook/addon-essentials": "^8.6.7",
     "@storybook/addon-interactions": "^8.6.7",
     "@storybook/blocks": "^8.6.7",

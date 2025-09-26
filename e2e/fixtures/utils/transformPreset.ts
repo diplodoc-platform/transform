@@ -6,6 +6,7 @@ import cut from '@diplodoc/transform/lib/plugins/cut';
 import checkbox from '@diplodoc/transform/lib/plugins/checkbox';
 import anchors from '@diplodoc/transform/lib/plugins/anchors';
 import monospace from '@diplodoc/transform/lib/plugins/monospace';
+import images from '@diplodoc/transform/lib/plugins/images';
 import imsize from '@diplodoc/transform/lib/plugins/imsize';
 import file from '@diplodoc/transform/lib/plugins/file';
 import includes from '@diplodoc/transform/lib/plugins/includes';
@@ -27,6 +28,7 @@ const transformOptions: OptionsType = {
         checkbox,
         anchors,
         monospace,
+        images,
         imsize,
         file,
         includes,

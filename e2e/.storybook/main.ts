@@ -1,5 +1,7 @@
 import type {StorybookConfig} from 'storybook-html-rsbuild';
 
+import {pluginNodePolyfill} from '@rsbuild/plugin-node-polyfill';
+
 const config: StorybookConfig = {
     stories: ['../stories/**/*.mdx', '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
     addons: [
@@ -17,6 +19,10 @@ const config: StorybookConfig = {
         options: {},
     },
     rsbuildFinal: (config) => {
+        // Add node polyfill plugin
+        config.plugins = config.plugins || [];
+        config.plugins.push(pluginNodePolyfill());
+
         config.resolve = {
             ...config.resolve,
             alias: {
