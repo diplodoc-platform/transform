@@ -10,6 +10,9 @@ import {readFileSync} from 'fs';
 import {isFileExists, resolveRelativePath} from '../../utilsFS';
 import {getSrcTokenAttr, isExternalHref, isLocalUrl} from '../../utils';
 
+const sanitizeAttribute = (value: string): string =>
+    value.replace(/(\d*[%pxemvwh]{0,3}).*/gi, '$1');
+
 interface ImageOpts extends MarkdownItPluginOpts {
     assetsPublicPath: string;
     inlineSvg?: boolean;
@@ -147,10 +150,12 @@ function replaceSvgContent(content: string, options: ImageOptions) {
         null,
     ];
     if (!width && options.width) {
-        svgRoot = `${svgRoot} width="${options.width}"`;
+        const sanitizedWidth = sanitizeAttribute(options.width.toString());
+        svgRoot = `${svgRoot} width="${sanitizedWidth}"`;
     }
     if (!height && options.height) {
-        svgRoot = `${svgRoot} height="${options.height}"`;
+        const sanitizedHeight = sanitizeAttribute(options.height.toString());
+        svgRoot = `${svgRoot} height="${sanitizedHeight}"`;
     }
     if (!width && !height && (options.width || options.height)) {
         content = content.replace(/<svg([^>]*)>/, `<svg${svgRoot}>`);
