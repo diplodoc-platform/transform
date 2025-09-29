@@ -59,4 +59,25 @@ describe('Images plugin', () => {
         );
         expect(log.isEmpty()).toEqual(true);
     });
+
+    test('should sanitize width and height attributes for inline SVG', () => {
+        const imagePath = resolve(dirname(mocksPath), 'test.svg');
+        const svgContent =
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="red" /></svg>';
+
+        writeFileSync(imagePath, svgContent);
+
+        const html1 = transformYfm('![test](./test.svg){width=50 height=50 inline=true}');
+        expect(html1).toContain('width="50"');
+        expect(html1).toContain('height="50"');
+
+        const html2 = transformYfm(
+            '![test](./test.svg){width=\'100" onload="alert(1)\' height=\'100" onload="alert(1)\' inline=true}',
+        );
+        expect(html2).not.toContain('onload="alert(1)"');
+        expect(html2).toContain('width="');
+        expect(html2).not.toContain('onload="alert(1)"');
+
+        unlinkSync(imagePath);
+    });
 });
