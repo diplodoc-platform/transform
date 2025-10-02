@@ -67,16 +67,15 @@ describe('Images plugin', () => {
 
         writeFileSync(imagePath, svgContent);
 
-        const html1 = transformYfm('![test](./test.svg){width=50 height=50 inline=true}');
+        const html1 = transformYfm('![test](./test.svg){width=50 height=50% inline=true}');
         expect(html1).toContain('width="50"');
-        expect(html1).toContain('height="50"');
+        expect(html1).toContain('height="50%"');
 
         const html2 = transformYfm(
-            '![test](./test.svg){width=\'100" onload="alert(1)\' height=\'100" onload="alert(1)\' inline=true}',
+            '![test](./test.svg){width=\'100vmax" onload="alert(1)\' height=\'100" onload="alert(1)\' inline=true}',
         );
         expect(html2).not.toContain('onload="alert(1)"');
         expect(html2).toContain('width="');
-        expect(html2).not.toContain('onload="alert(1)"');
 
         unlinkSync(imagePath);
     });

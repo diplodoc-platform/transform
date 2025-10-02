@@ -10,8 +10,7 @@ import {readFileSync} from 'fs';
 import {isFileExists, resolveRelativePath} from '../../utilsFS';
 import {getSrcTokenAttr, isExternalHref, isLocalUrl} from '../../utils';
 
-const sanitizeAttribute = (value: string): string =>
-    value.replace(/(\d*[%pxemvwh]{0,3}).*/gi, '$1');
+const sanitizeAttribute = (value: string): string => value.replace(/(\d*[%a-z]{0,5}).*/gi, '$1');
 
 interface ImageOpts extends MarkdownItPluginOpts {
     assetsPublicPath: string;
@@ -143,12 +142,15 @@ function replaceSvgContent(content: string, options: ImageOptions) {
 
     // width, height
     let svgRoot = content.replace(/<svg([^>]*)>.*/g, '$1');
-    //. (\w+)=(?:'([^']*)'|"([^"]*)"|(\S+))
-    const [, width, height] = svgRoot.match(/(?:width="(.*?)").*?(?:height="(.*?)")/) || [
-        null,
-        null,
-        null,
-    ];
+
+    const {width, height} = svgRoot
+        .match(/(?:width="(.*?)")|(?:height="(.*?)")/g)
+        ?.reduce((acc: {[key: string]: string}, val) => {
+            const [key, value] = val.split('=');
+            acc[key] = value;
+            return acc;
+        }, {}) || {width: undefined, height: undefined};
+
     if (!width && options.width) {
         const sanitizedWidth = sanitizeAttribute(options.width.toString());
         svgRoot = `${svgRoot} width="${sanitizedWidth}"`;
@@ -157,7 +159,7 @@ function replaceSvgContent(content: string, options: ImageOptions) {
         const sanitizedHeight = sanitizeAttribute(options.height.toString());
         svgRoot = `${svgRoot} height="${sanitizedHeight}"`;
     }
-    if (!width && !height && (options.width || options.height)) {
+    if ((!width && options.width) || (!height && options.height)) {
         content = content.replace(/<svg([^>]*)>/, `<svg${svgRoot}>`);
     }
 
