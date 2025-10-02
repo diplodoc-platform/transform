@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.63.0](https://github.com/diplodoc-platform/transform/compare/v4.62.0...v4.63.0) (2025-10-02)
+
+
+### Features
+
+* svg inline true/false on target image ([a7a59d2](https://github.com/diplodoc-platform/transform/commit/a7a59d2e320cdc8ca571925ef839b200b5ed2f5b))
+
 ## [4.62.0](https://github.com/diplodoc-platform/transform/compare/v4.61.1...v4.62.0) (2025-09-18)
 
 
