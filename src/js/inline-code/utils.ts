@@ -2,7 +2,7 @@ import type {Lang} from 'src/transform/typings';
 
 import {getCoords} from '../term/utils';
 
-import {INLINE_CODE, INLINE_CODE_ID, LANG_TOKEN, OPEN_CLASS} from './constant';
+import {INLINE_CODE, INLINE_CODE_CLASS, INLINE_CODE_ID, LANG_TOKEN, OPEN_CLASS} from './constant';
 
 export let timer: ReturnType<typeof setTimeout> | null = null;
 
@@ -157,16 +157,17 @@ function createTooltip() {
     if (!tooltip) {
         const pageContent = document.querySelector('.dc-doc-page__content') || document.body;
         const lang = document.documentElement.lang || 'en';
+        const tooltipText = LANG_TOKEN[lang as Lang] ?? LANG_TOKEN.en;
+        const host = document.createElement('div');
 
-        tooltip = document.createElement('div');
+        host.innerHTML = `
+            <div id="${INLINE_CODE_ID}" class="${INLINE_CODE_CLASS}"
+                role="dialog" aria-live="polite" aria-modal="true">
+                ${tooltipText}
+            </div>
+        `;
 
-        tooltip.id = INLINE_CODE_ID;
-        tooltip.className = 'yfm inline_code_tooltip';
-        tooltip.setAttribute('role', 'dialog');
-        tooltip.setAttribute('aria-live', 'polite');
-        tooltip.setAttribute('aria-modal', 'true');
-        tooltip.innerHTML = LANG_TOKEN[lang as Lang] ?? LANG_TOKEN.en;
-
+        tooltip = host.firstElementChild as HTMLElement;
         pageContent.appendChild(tooltip);
     }
 
