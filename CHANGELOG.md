@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.63.1](https://github.com/diplodoc-platform/transform/compare/v4.63.0...v4.63.1) (2025-10-03)
+
+
+### Bug Fixes
+
+* creating a tooltip on the client ([#770](https://github.com/diplodoc-platform/transform/issues/770)) ([766ef14](https://github.com/diplodoc-platform/transform/commit/766ef14035fc870cca1c0ff422efd1252d9f01f5))
+
 ## [4.63.0](https://github.com/diplodoc-platform/transform/compare/v4.62.0...v4.63.0) (2025-10-02)
 
 
