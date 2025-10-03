@@ -1,13 +1,15 @@
+import type {Lang} from 'src/transform/typings';
+
 import {getCoords} from '../term/utils';
 
-import {OPEN_CLASS} from './constant';
+import {INLINE_CODE, INLINE_CODE_ID, LANG_TOKEN, OPEN_CLASS} from './constant';
 
 export let timer: ReturnType<typeof setTimeout> | null = null;
 
 let isListenerNeeded = true;
 
 export function getTooltipElement(): HTMLElement | null {
-    return document.querySelector('.yfm-inline-code-tooltip');
+    return document.getElementById(INLINE_CODE_ID);
 }
 
 function setTooltipAriaAttributes(tooltipElement: HTMLElement, targetElement: HTMLElement): void {
@@ -135,40 +137,64 @@ export function getInlineCodeByTooltip(definition: HTMLElement) {
 function closeTooltipFn(definition: HTMLElement) {
     definition.classList.remove(OPEN_CLASS);
     const inline = getInlineCodeByTooltip(definition);
-    const tooltipParent = tooltipParentElement(inline);
+    const inlineCodepParent = tooltipParentElement(inline);
+    const tooltipParent = tooltipParentElement(definition);
 
     definition.removeAttribute('inline-id');
 
-    if (!tooltipParent) {
+    if (!inlineCodepParent || !tooltipParent) {
         return;
     }
 
-    tooltipParent.removeEventListener('scroll', tooltipOnResize);
+    tooltipParent.removeChild(definition);
+    inlineCodepParent.removeEventListener('scroll', tooltipOnResize);
     isListenerNeeded = true;
 }
 
-export function openTooltip(target: HTMLElement) {
-    const tooltipElement = document.getElementById('tooltip_inline_clipboard_dialog');
+function createTooltip() {
+    let tooltip = getTooltipElement();
 
-    if (!target.matches('.yfm-clipboard-inline-code') || !tooltipElement) {
+    if (!tooltip) {
+        const pageContent = document.querySelector('.dc-doc-page__content') || document.body;
+        const lang = document.documentElement.lang || 'en';
+
+        tooltip = document.createElement('div');
+
+        tooltip.id = INLINE_CODE_ID;
+        tooltip.className = 'yfm inline_code_tooltip';
+        tooltip.role = 'dialog';
+        tooltip.setAttribute('aria-live', 'polite');
+        tooltip.setAttribute('aria-modal', 'true');
+        tooltip.innerHTML = LANG_TOKEN[lang as Lang] ?? LANG_TOKEN.en;
+
+        pageContent.appendChild(tooltip);
+    }
+
+    return tooltip;
+}
+
+export function openTooltip(target: HTMLElement) {
+    const tooltip = createTooltip();
+
+    if (!target.matches(INLINE_CODE) || !tooltip) {
         return;
     }
 
-    tooltipElement.setAttribute('inline-id', target.getAttribute('id') || '');
-    setTooltipAriaAttributes(tooltipElement, target);
-    setTooltipPosition(tooltipElement, target);
+    tooltip.setAttribute('inline-id', target.getAttribute('id') || '');
+    setTooltipAriaAttributes(tooltip, target);
+    setTooltipPosition(tooltip, target);
 
     // In order not to get rid of the smooth appearance effect, I had to do this
-    if (tooltipElement.classList.contains(OPEN_CLASS)) {
-        tooltipElement.classList.remove(OPEN_CLASS);
+    if (tooltip.classList.contains(OPEN_CLASS)) {
+        tooltip.classList.remove(OPEN_CLASS);
         requestAnimationFrame(() => {
-            tooltipElement.classList.add(OPEN_CLASS);
+            tooltip.classList.add(OPEN_CLASS);
         });
     } else {
-        tooltipElement.classList.add(OPEN_CLASS);
+        tooltip.classList.add(OPEN_CLASS);
     }
 
-    return tooltipElement;
+    return tooltip;
 }
 
 export function closeTooltip(target: HTMLElement) {

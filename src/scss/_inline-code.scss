@@ -2,7 +2,7 @@
     position: absolute;
     z-index: 100;
 
-    visibility: hidden;
+    display: none;
     opacity: 0;
 
     padding: 10px;
@@ -38,7 +38,7 @@
     }
 
     &.open {
-        visibility: visible;
+        display: block;
 
         animation-name: popup;
         animation-duration: 0.1s;

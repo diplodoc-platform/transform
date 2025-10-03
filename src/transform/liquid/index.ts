@@ -177,13 +177,13 @@ function liquidDocument<
     const liquidedContent =
         typeof liquidedResult === 'object' ? liquidedResult.output : liquidedResult;
 
-    const output = composeFrontMatter(liquidedFrontMatter, liquidedContent);
+    const output = composeFrontMatter(liquidedFrontMatter, liquidedContent as string);
 
     if (typeof liquidedResult === 'object') {
         const inputLinesCount = linesCount(input);
         const outputLinesCount = linesCount(output);
         const contentLinesCount = linesCount(strippedContent);
-        const contentLinesDiff = linesCount(liquidedContent) - contentLinesCount;
+        const contentLinesDiff = linesCount(liquidedContent as string) - contentLinesCount;
 
         const fullLinesDiff = outputLinesCount - inputLinesCount;
 
