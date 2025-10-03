@@ -1,24 +1,5 @@
 import type {Lang} from '../typings';
 
-export const LANG_TOKEN: Record<Lang, string> = {
-    ru: 'Скопировано',
-    en: 'Copied',
-    ar: 'تم النسخ',
-    cs: 'Zkopírováno',
-    fr: 'Copié',
-    es: 'Copiado',
-    he: 'הועתק',
-    bg: 'Копирано',
-    et: 'Kopeeritud',
-    el: 'Αντιγράφηκε',
-    pt: 'Copiado',
-    zh: '已复制',
-    'zh-tw': '已複製',
-    kk: 'Көшірілді',
-    tr: 'Kopyalandı',
-    uz: 'Nusxalandi',
-};
-
 export const LANG_TOKEN_DESCRIPTION: Record<Lang, string> = {
     ru: 'Чтобы скопировать текст внутри блока нажмите на блок',
     en: 'To copy the text inside the block, click on the block',
