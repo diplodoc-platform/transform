@@ -162,7 +162,7 @@ function createTooltip() {
 
         tooltip.id = INLINE_CODE_ID;
         tooltip.className = 'yfm inline_code_tooltip';
-        tooltip.role = 'dialog';
+        tooltip.setAttribute('role', 'dialog');
         tooltip.setAttribute('aria-live', 'polite');
         tooltip.setAttribute('aria-modal', 'true');
         tooltip.innerHTML = LANG_TOKEN[lang as Lang] ?? LANG_TOKEN.en;

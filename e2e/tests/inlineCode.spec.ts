@@ -37,13 +37,10 @@ describeStory(stories, 'Base', () => {
         await anchorButton.click();
 
         const tooltip = page.locator('div[id="tooltip_inline_clipboard_dialog"]');
-        let classes = await tooltip.getAttribute('class');
-
-        expect(classes).toContain('open');
+        await expect(tooltip).toBeVisible();
 
         await new Promise((r) => setTimeout(r, 1100));
 
-        classes = await tooltip.getAttribute('class');
-        expect(classes).not.toContain('open');
+        await expect(tooltip).not.toBeVisible();
     });
 });
