@@ -1,5 +1,5 @@
 @use 'yfm-base';
 
-@import '@diplodoc/cut-extension/runtime/styles.css';
-@import '@diplodoc/file-extension/runtime/styles.css';
-@import '@diplodoc/tabs-extension/runtime/styles.css';
+@forward '@diplodoc/cut-extension/runtime';
+@forward '@diplodoc/file-extension/runtime';
+@forward '@diplodoc/tabs-extension/runtime';
