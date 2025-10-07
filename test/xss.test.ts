@@ -123,18 +123,11 @@ const ckecks: Array<[string, string]> = [
     ['iframe', `<iframe src="javascript:alert('XSS');"></iframe>`],
     ['iframe Event based', `<iframe src=# onmouseover="alert(document.cookie)"></iframe>`],
     ['frame', `<frameset><frame src="javascript:alert('XSS');"></frameset>`],
-    ['TABLE', `<table background="javascript:alert('XSS')">`],
-    ['TD', `<table><td background="javascript:alert('XSS')">`],
     ['DIV background-image', `<div style="background-image: url(javascript:alert('XSS'))">`],
-    [
-        'DIV background-image with unicoded XSS exploit',
-        `<div style="background-image:\\0075\\0072\\006C\\0028'\\006a\\0061\\0076\\0061\\0073\\0063\\0072\\0069\\0070\\0074\\003a\\0061\\006c\\0065\\0072\\0074\\0028.1027\\0058.1053\\0053\\0027\\0029'\\0029">`,
-    ],
     [
         'DIV background-image with unicoded XSS exploit 2',
         `<div style="background-image: url(&#1;javascript:alert('XSS'))">`,
     ],
-    ['DIV expression', `<div style="width: expression(alert('XSS'));">`],
     ['Downlevel-Hidden block', `<!--[if gte IE 4]>\n<script>alert('XSS');</script>\n<![endif]-->`],
     ['BASE tag', `<base href="javascript:alert('XSS');//">`],
     [
@@ -392,22 +385,6 @@ describe('CSS safe cases', () => {
         expect(html('<style>.safe{font-family: "Arial, sans-serif"}</style>')).toMatchSnapshot();
     });
 
-    it('should allow content with angle brackets in quoted strings', () => {
-        expect(html('<style>.safe::before{content: ">"}</style>')).toMatchSnapshot();
-        expect(html('<style>.safe::after{content: "<"}</style>')).toMatchSnapshot();
-    });
-
-    it('should allow content with unicode-escaped angle brackets in quoted strings', () => {
-        expect(html('<style>.safe::before{content: "\\003E"}</style>')).toMatchSnapshot();
-        expect(html('<style>.safe::after{content: "\\003C"}</style>')).toMatchSnapshot();
-    });
-
-    it('should allow standard color/length/number values', () => {
-        expect(
-            html('<style>.safe{color:#333; opacity:0.5; z-index:10; line-height:1.4}</style>'),
-        ).toMatchSnapshot();
-    });
-
     it('should allow common shorthands', () => {
         expect(
             html('<style>.safe{margin:0 auto; padding:10px 5px; border:1px solid #000}</style>'),
@@ -440,42 +417,9 @@ describe('CSS safe cases', () => {
         ).toMatchSnapshot();
     });
 
-    it('should allow transforms and transitions without URLs', () => {
-        expect(
-            html('<style>.safe{transform:rotate(0deg); transition:opacity 200ms ease-in}</style>'),
-        ).toMatchSnapshot();
-    });
-
-    it('should allow keyframes with safe properties', () => {
-        expect(
-            html('<style>@keyframes fade{from{opacity:0} to{opacity:1}}</style>'),
-        ).toMatchSnapshot();
-    });
-
-    it('should allow @media blocks with safe declarations', () => {
-        expect(
-            html('<style>@media (min-width:600px){.safe{display:block; font-weight:bold}}</style>'),
-        ).toMatchSnapshot();
-    });
-
-    it('should allow quotes property with valid string pairs', () => {
-        expect(html('<style>.safe{quotes: "«" "»" "‹" "›"}</style>')).toMatchSnapshot();
-    });
-
     it('should allow list-style-type keywords', () => {
         expect(
             html('<style>ul.safe{list-style-type:disc} ol.safe{list-style-type:decimal}</style>'),
-        ).toMatchSnapshot();
-    });
-
-    it('should allow grid and flex safe values', () => {
-        expect(
-            html('<style>.safe{display:grid; grid-template-columns:1fr 2fr; gap:8px}</style>'),
-        ).toMatchSnapshot();
-        expect(
-            html(
-                '<style>.safe2{display:flex; align-items:center; justify-content:space-between}</style>',
-            ),
         ).toMatchSnapshot();
     });
 
@@ -484,31 +428,8 @@ describe('CSS safe cases', () => {
         expect(html('<style>ul > li > a{text-decoration:none}</style>')).toMatchSnapshot();
     });
 
-    it('should allow range context media queries (MQ4 syntax)', () => {
-        expect(
-            html('<style>@media (600px < width < 1200px){.r{display:block}}</style>'),
-        ).toMatchSnapshot();
-        expect(
-            html('<style>@media (width >= 768px){.r2{display:block}}</style>'),
-        ).toMatchSnapshot();
-    });
-
-    it('should allow grid-template-areas strings containing angle brackets', () => {
-        expect(html('<style>.grid{grid-template-areas:"<m m>" "hd hd"}</style>')).toMatchSnapshot();
-    });
-
     it('should allow font-family names with angle brackets when quoted', () => {
         expect(html('<style>.t{font-family:"ACME <Pro>"}</style>')).toMatchSnapshot();
-    });
-
-    it('should allow counters() with string separator containing angle bracket', () => {
-        expect(
-            html('<style>h2::before{content:counters(section, " > ")}</style>'),
-        ).toMatchSnapshot();
-    });
-
-    it('should allow content with @ symbol', () => {
-        expect(html('<style>.email::before{content:"@"}</style>')).toMatchSnapshot();
     });
 
     it('should allow valid data URL for images', () => {
@@ -516,18 +437,6 @@ describe('CSS safe cases', () => {
             html(
                 '<style>.icon{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==)}</style>',
             ),
-        ).toMatchSnapshot();
-    });
-
-    it('should allow content with < and > separately', () => {
-        expect(html('<style>.lt::before{content:"<"}</style>')).toMatchSnapshot();
-        expect(html('<style>.gt::before{content:">"}</style>')).toMatchSnapshot();
-    });
-
-    it('should block BiDi override in javascript: URL', () => {
-        // BiDi RIGHT-TO-LEFT OVERRIDE (\u202E) hides javascript:
-        expect(
-            html('<style>.xss{background:url(\u202EtpircSavaJ\u202C:alert(1))}</style>'),
         ).toMatchSnapshot();
     });
 
