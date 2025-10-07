@@ -319,8 +319,18 @@ exports[`XSS checks with disabled markdown-it-attrs DIV background-image 1`] = `
 </div>
 `;
 
+exports[`XSS checks with disabled markdown-it-attrs DIV background-image with unicoded XSS exploit 1`] = `
+<div style="background-image:\\0075\\0072\\006C\\0028'\\006a\\0061\\0076\\0061\\0073\\0063\\0072\\0069\\0070\\0074\\003a\\0061\\006c\\0065\\0072\\0074\\0028.1027\\0058.1053\\0053\\0027\\0029'\\0029">
+</div>
+`;
+
 exports[`XSS checks with disabled markdown-it-attrs DIV background-image with unicoded XSS exploit 2 1`] = `
-<div style="background-image:url(javascript:alert('XSS'))">
+<div>
+</div>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs DIV expression 1`] = `
+<div style="width:expression(alert('XSS'))">
 </div>
 `;
 
@@ -536,6 +546,22 @@ exports[`XSS checks with disabled markdown-it-attrs Style closure via grid-templ
 exports[`XSS checks with disabled markdown-it-attrs Style closure with space variations 1`] = `
 <style>
 </style>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs TABLE 1`] = `
+<table background="javascript:alert('XSS')">
+</table>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs TD 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td background="javascript:alert('XSS')">
+      </td>
+    </tr>
+  </tbody>
+</table>
 `;
 
 exports[`XSS checks with disabled markdown-it-attrs URL uppercase 1`] = `
@@ -938,8 +964,18 @@ exports[`XSS checks with enabled markdown-it-attrs DIV background-image 1`] = `
 </div>
 `;
 
+exports[`XSS checks with enabled markdown-it-attrs DIV background-image with unicoded XSS exploit 1`] = `
+<div style="background-image:\\0075\\0072\\006C\\0028'\\006a\\0061\\0076\\0061\\0073\\0063\\0072\\0069\\0070\\0074\\003a\\0061\\006c\\0065\\0072\\0074\\0028.1027\\0058.1053\\0053\\0027\\0029'\\0029">
+</div>
+`;
+
 exports[`XSS checks with enabled markdown-it-attrs DIV background-image with unicoded XSS exploit 2 1`] = `
-<div style="background-image:url(javascript:alert('XSS'))">
+<div>
+</div>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs DIV expression 1`] = `
+<div style="width:expression(alert('XSS'))">
 </div>
 `;
 
@@ -1155,6 +1191,22 @@ exports[`XSS checks with enabled markdown-it-attrs Style closure via grid-templa
 exports[`XSS checks with enabled markdown-it-attrs Style closure with space variations 1`] = `
 <style>
 </style>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs TABLE 1`] = `
+<table background="javascript:alert('XSS')">
+</table>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs TD 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td background="javascript:alert('XSS')">
+      </td>
+    </tr>
+  </tbody>
+</table>
 `;
 
 exports[`XSS checks with enabled markdown-it-attrs URL uppercase 1`] = `

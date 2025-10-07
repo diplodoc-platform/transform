@@ -123,11 +123,18 @@ const ckecks: Array<[string, string]> = [
     ['iframe', `<iframe src="javascript:alert('XSS');"></iframe>`],
     ['iframe Event based', `<iframe src=# onmouseover="alert(document.cookie)"></iframe>`],
     ['frame', `<frameset><frame src="javascript:alert('XSS');"></frameset>`],
+    ['TABLE', `<table background="javascript:alert('XSS')">`],
+    ['TD', `<table><td background="javascript:alert('XSS')">`],
     ['DIV background-image', `<div style="background-image: url(javascript:alert('XSS'))">`],
+    [
+        'DIV background-image with unicoded XSS exploit',
+        `<div style="background-image:\\0075\\0072\\006C\\0028'\\006a\\0061\\0076\\0061\\0073\\0063\\0072\\0069\\0070\\0074\\003a\\0061\\006c\\0065\\0072\\0074\\0028.1027\\0058.1053\\0053\\0027\\0029'\\0029">`,
+    ],
     [
         'DIV background-image with unicoded XSS exploit 2',
         `<div style="background-image: url(&#1;javascript:alert('XSS'))">`,
     ],
+    ['DIV expression', `<div style="width: expression(alert('XSS'));">`],
     ['Downlevel-Hidden block', `<!--[if gte IE 4]>\n<script>alert('XSS');</script>\n<![endif]-->`],
     ['BASE tag', `<base href="javascript:alert('XSS');//">`],
     [
