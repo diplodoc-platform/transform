@@ -1,7 +1,6 @@
 /* stylelint-disable declaration-no-important */
 
 @use 'private';
-@use 'brand';
 @use 'lists';
 
 @mixin removeMarginForEdgeChildren {
@@ -16,13 +15,12 @@
 
 .yfm {
     @include private.private-brand();
-    @include brand.brand();
 
     font-family: var(--yfm-font-family-sans);
     font-size: var(--yfm-font-size, 15px);
     line-height: var(--yfm-font-line-height, 20px);
     word-wrap: break-word;
-    color: var(--yfm-color-text);
+    color: var(--yfm-color-text, var(--yfm-color-text-private));
     tab-size: var(--yfm-tab-size, inherit);
 
     --yfm-font-family-monospace: 'Menlo', 'Monaco', 'Consolas', 'Ubuntu Mono', 'Liberation Mono',
@@ -84,12 +82,12 @@
 
     a {
         background-color: transparent;
-        color: var(--yfm-color-link);
+        color: var(--yfm-color-link, var(--yfm-color-link-private));
         text-decoration: none;
 
         &:hover,
         &:active {
-            color: var(--yfm-color-link-hover);
+            color: var(--yfm-color-link-hover, var(--yfm-color-link-hover-private));
         }
 
         &:not([href]) {
@@ -124,7 +122,7 @@
 
     img {
         object-fit: contain;
-        background-color: var(--yfm-color-base);
+        background-color: var(--yfm-color-base, var(--yfm-color-base-private));
     }
 
     svg {
@@ -180,7 +178,7 @@
     }
 
     table {
-        color: var(--yfm-color-table);
+        color: var(--yfm-color-table, var(--yfm-color-table-private));
 
         display: inline-block;
         max-width: 100%;
@@ -190,14 +188,17 @@
         z-index: 1;
 
         box-sizing: border-box;
-        border: 1px solid var(--yfm-color-table-border);
+        border: 1px solid var(--yfm-color-border, var(--yfm-color-border-private));
         border-radius: 8px;
         border-collapse: collapse;
         border-spacing: 0;
-        background: var(--yfm-color-table-background);
+        background: var(--yfm-color-base, var(--yfm-color-base-private));
 
         thead {
-            background-color: var(--yfm-color-table-head-background);
+            background-color: var(
+                --yfm-color-table-row-background,
+                var(--yfm-color-table-row-background-private)
+            );
         }
 
         tr:first-child {
@@ -219,7 +220,7 @@
             padding: 10px 20px;
             overflow: hidden;
             text-overflow: ellipsis;
-            border: 1px solid var(--yfm-color-table-border);
+            border: 1px solid var(--yfm-color-border, var(--yfm-color-border-private));
 
             @include removeMarginForEdgeChildren();
         }
@@ -245,7 +246,10 @@
     }
 
     &:not(.yfm_no-stripe-table) table tr:nth-child(2n) {
-        background-color: var(--yfm-color-table-stripe-row-background);
+        background-color: var(
+            --yfm-color-table-row-background,
+            var(--yfm-color-table-row-background-private)
+        );
     }
 
     hr {
@@ -255,7 +259,7 @@
         margin: 1.5em 0;
         overflow: hidden;
 
-        background-color: var(--yfm-color-border);
+        background-color: var(--yfm-color-border, var(--yfm-color-border-private));
         border: none;
 
         &::before {
@@ -273,7 +277,7 @@
     blockquote {
         position: relative;
         padding-left: 12px;
-        border-left: 3px solid var(--yfm-color-accent);
+        border-left: 3px solid var(--yfm-color-accent, var(--yfm-color-accent-private));
 
         @include removeMarginForEdgeChildren();
     }
@@ -341,11 +345,14 @@
 
     code {
         padding: 0.1em 0.4em 0.15em;
-        background-color: var(--yfm-color-inline-code-background);
+        background-color: var(
+            --yfm-color-inline-code-background,
+            var(--yfm-color-inline-code-background-private)
+        );
         border-radius: 4px;
         font-size: 0.875em;
         white-space: pre-wrap;
-        color: var(--yfm-color-inline-code);
+        color: var(--yfm-color-inline-code, var(--yfm-color-inline-code-private));
         tab-size: var(--yfm-tab-size-code, inherit);
     }
 
@@ -369,7 +376,7 @@
         word-wrap: normal;
         background-color: transparent;
         border: 0;
-        color: var(--yfm-color-text);
+        color: var(--yfm-color-text, var(--yfm-color-text-private));
     }
 
     pre > code {
@@ -377,8 +384,11 @@
         padding: 16px;
         overflow: auto;
 
-        background-color: var(--yfm-color-code-background);
-        color: var(--yfm-color-text);
+        background-color: var(
+            --yfm-color-code-background,
+            var(--yfm-color-code-background-private)
+        );
+        color: var(--yfm-color-text, var(--yfm-color-text-private));
 
         white-space: pre;
 

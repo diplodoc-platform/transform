@@ -47,7 +47,10 @@
 
             &:hover {
                 cursor: pointer;
-                background-color: var(--yfm-color-code-background-hovered-private);
+                background-color: var(
+                    --yfm-color-code-hovered-background,
+                    var(--yfm-color-code-background-hovered-private)
+                );
             }
         }
     }

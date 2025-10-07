@@ -1,6 +1,6 @@
 .yfm-term {
     &_title {
-        color: var(--yfm-color-term-title);
+        color: var(--yfm-color-term-title, var(--yfm-color-term-title-private));
         cursor: pointer;
 
         border-bottom: 1px dotted;
@@ -10,7 +10,7 @@
         font-style: normal;
 
         &:hover {
-            color: var(--yfm-color-term-title-hover);
+            color: var(--yfm-color-term-title-hover, var(--yfm-color-term-title-hover-private));
         }
     }
 
@@ -23,7 +23,10 @@
 
         padding: 10px;
 
-        background-color: var(--yfm-color-term-dfn-background);
+        background-color: var(
+            --yfm-color-term-dfn-background,
+            var(--yfm-color-term-dfn-background-private)
+        );
 
         font-size: inherit;
         line-height: inherit;
@@ -31,7 +34,8 @@
 
         border-radius: 4px;
 
-        box-shadow: 0 8px 20px var(--yfm-color-term-dfn-shadow);
+        box-shadow: 0 8px 20px
+            var(--yfm-color-term-dfn-shadow, var(--yfm-color-term-dfn-shadow-private));
         outline: none;
 
         width: fit-content;
@@ -50,7 +54,11 @@
             inset: 0;
 
             border-radius: inherit;
-            box-shadow: 0 0 0 1px var(--yfm-color-term-dfn-pseudo-shadow);
+            box-shadow: 0 0 0 1px
+                var(
+                    --yfm-color-term-dfn-pseudo-shadow,
+                    var(--yfm-color-term-dfn-presudo-shadow-private)
+                );
         }
 
         &.open {
