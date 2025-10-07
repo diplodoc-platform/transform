@@ -568,72 +568,130 @@ const DANGEROUS_TAGS_RE =
     /<\s*(script|iframe|object|embed|svg|img|video|audio|link|meta|base|form|style|template|math|foreignobject)\b/i;
 const CLOSE_STYLE_RE = /<\s*\/\s*style/i;
 const DANGEROUS_URL_RE =
-    /url\(\s*['"]?\s*(?:javascript:|vbscript:|data\s*:\s*(?:text\/html|application\/xhtml\+xml|image\/svg\+xml)(?:\s*;base64)?)/i;
+    /url\s*\(\s*['"]?\s*(?:javascript:|vbscript:|data\s*:\s*(?:text\/html|application\/xhtml\+xml|image\/svg\+xml))/i;
 const IE_EXPR_RE = /expression\s*\(/i;
 const IE_BEHAVIOR_RE = /behavior\s*:/i;
 const MOZ_BINDING_RE = /-moz-binding\s*:/i;
 const AT_RULES_RE = /@(?:import|charset|namespace)\b/i;
+const COMMENTS_RE = /\/\*[^]*?\*\//g; // CSS comments: /* ... */
 
-// normalize CSS value by decoding HTML entities and CSS escapes
+// control characters (C0/C1) and BiDi override characters that can hide malicious content
+const CTRL_BIDI_RE = new RegExp(
+    [
+        String.raw`[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]`, // C0/C1 controls
+        String.raw`[\u202A-\u202E\u2066-\u2069]`, // BiDi overrides
+    ].join('|'),
+    'g',
+);
+
+const SAFE_VALUE_FAST_CHECK_RE = /[<&\\/]|@|url\s*\(|expression|behavior|-moz-binding/i;
+
+// backslash (CSS escapes), ampersand (HTML entities), BiDi overrides
+const FAST_PATH_RE = /[\\&\u202A-\u202E\u2066-\u2069]/;
+
+// combined regex for decoding CSS escapes and HTML entities
+const RE_DECODE = new RegExp(
+    [
+        String.raw`\\([0-9A-Fa-f]{1,6})\s?`, // CSS hex escapes: \41 or \000041  → 'A'
+        String.raw`&#x([0-9A-Fa-f]{1,6});`, // HTML hex entities: &#x41; or &#X41; → 'A'
+        String.raw`&#(\d{1,7});`, // HTML decimal entities: &#65; → 'A'
+        String.raw`&([a-zA-Z][a-zA-Z0-9]{1,31});`, // HTML named entities: &lt; or &amp; → '<' or '&'
+    ].join('|'),
+    'g',
+);
+
+const htmlEntities: Record<string, string> = {
+    lt: '<',
+    gt: '>',
+    quot: '"',
+    apos: "'",
+    amp: '&',
+    newline: '\n',
+    tab: '\t',
+    colon: ':',
+    sol: '/',
+    lpar: '(',
+    rpar: ')',
+};
+
+// Decodes a single escaped or encoded token
+function decodeToken(
+    whole: string,
+    cssHex?: string,
+    htmlHex?: string,
+    htmlDec?: string,
+    named?: string,
+): string {
+    if (cssHex) {
+        return String.fromCodePoint(parseInt(cssHex, 16) || 0);
+    }
+    if (htmlHex) {
+        return String.fromCodePoint(parseInt(htmlHex, 16) || 0);
+    }
+    if (htmlDec) {
+        return String.fromCodePoint(parseInt(htmlDec, 10) || 0);
+    }
+    if (named) {
+        const rep = htmlEntities[named] ?? htmlEntities[named.toLowerCase()];
+        if (rep) {
+            return rep;
+        }
+    }
+    return whole;
+}
+
+// Normalize CSS value by decoding HTML entities and CSS escapes
 function normalizeCssValue(value: string): string {
-    let normalized = String(value || '');
+    let normalized = String(value ?? '');
 
-    // strip NUL and control characters (often used for bypasses)
-    // eslint-disable-next-line no-control-regex
-    normalized = normalized.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '');
+    // early-exit if no special chars
+    if (!FAST_PATH_RE.test(normalized)) {
+        return normalized;
+    }
 
-    // remove CSS comments early to avoid hiding escapes inside comments
-    normalized = normalized.replace(/\/\*[\s\S]*?\*\//g, '');
-
-    // decode HTML numeric entities (hex and decimal)
-    normalized = normalized.replace(/&#x([0-9a-fA-F]+);/g, (_, hex) =>
-        String.fromCodePoint(parseInt(hex, 16) || 0),
-    );
-    normalized = normalized.replace(/&#(\d+);/g, (_, dec) =>
-        String.fromCodePoint(parseInt(dec, 10) || 0),
-    );
-
-    // named entities
+    // 1. remove CSS comments to prevent hiding escapes inside /* ... */
+    // 2. strip control characters and BiDi overrides
+    // 3. decode all CSS escapes and HTML entities in one pass
     normalized = normalized
-        .replace(/&lt;/gi, '<')
-        .replace(/&gt;/gi, '>')
-        .replace(/&quot;/gi, '"')
-        .replace(/&apos;/gi, "'")
-        .replace(/&amp;/gi, '&');
+        .replace(COMMENTS_RE, '')
+        .replace(CTRL_BIDI_RE, '')
+        .replace(RE_DECODE, decodeToken);
 
-    // CSS hex escapes \h{1,6}[ ]
-    normalized = normalized.replace(/\\([0-9A-Fa-f]{1,6})\s?/g, (_, hex) =>
-        String.fromCodePoint(parseInt(hex, 16) || 0),
-    );
-
-    // unicode normalization
+    // unicode normalization (NFKC) to prevent homograph attacks
     try {
         normalized = normalized.normalize('NFKC');
-    } catch (e) {
-        log.error(`Error ...`);
+    } catch (_) {
+        // silent fail: logging the value could expose sensitive data
     }
 
     return normalized;
 }
 
 // checks if a CSS value is safe from XSS attacks
-function isSafeCssValue(_property: string, value: string): boolean {
-    // early-exit for trivial safe values (plain numbers, colors, etc.)
-    if (!/[<&\\@]|expression|behavior|-moz-binding|url\(/i.test(value)) {
+function isSafeCssValue(property: string, value: string): boolean {
+    const prop = property.toLowerCase();
+    const isContentProperty = prop === 'content';
+
+    // normalize first to prevent bypasses via comments/escapes
+    const normalized = normalizeCssValue(value);
+
+    // early-exit for trivial safe values
+    if (!SAFE_VALUE_FAST_CHECK_RE.test(normalized)) {
         return true;
     }
 
-    const normalized = normalizeCssValue(value);
+    // сheck if normalized value looks like an HTML tag
+    const looksLikeTag = /<[^>]{0,128}>/i.test(normalized);
 
     const dangerousPatterns = [
-        CLOSE_STYLE_RE, // </style> tag closure
-        DANGEROUS_TAGS_RE, // dangerous HTML tags
+        looksLikeTag && CLOSE_STYLE_RE, // </style> tag closure
+        !isContentProperty && looksLikeTag && DANGEROUS_TAGS_RE, // dangerous HTML tags
         DANGEROUS_URL_RE, // javascript:, data:, vbscript: URLs
         IE_EXPR_RE, // IE expression()
         IE_BEHAVIOR_RE, // IE behavior:
-        MOZ_BINDING_RE, // Firefox -moz-binding
+        MOZ_BINDING_RE, // FF -moz-binding
         AT_RULES_RE, // @import, @charset, @namespace
-    ];
+    ].filter(Boolean) as RegExp[];
 
     return !dangerousPatterns.some((pattern) => pattern.test(normalized));
 }

@@ -14,7 +14,7 @@ const html = (text: string, options?: Parameters<typeof transform>[1]) => {
 
 // https://sking7.github.io/articles/218647712.html
 
-const ckecks = [
+const ckecks: Array<[string, string]> = [
     [
         'XSS Locator 1',
         `';alert(String.fromCharCode(88,83,83))//';alert(String.fromCharCode(88,83,83))//";alert(String.fromCharCode(88,83,83))//";alert(String.fromCharCode(88,83,83))//--></script>">'><script>alert(String.fromCharCode(88,83,83))</script>`,
@@ -329,6 +329,45 @@ const ckecks = [
         'CSS offset-path attack',
         '<style>.offset{offset-path: url("</style><cite onfocus=alert(1) autofocus>XSS</cite><style>");}</style>',
     ],
+    [
+        'CSS comments hiding escapes',
+        '<div style="background:url(/* */\\6a\\61\\76\\61\\73\\63\\72\\69\\70\\74:alert(1))">test</div>',
+    ],
+    [
+        'u/**/rl obfuscation',
+        '<style>.test { background: u/**/rl(javascript:alert(1)); }</style><div class="test">test</div>',
+    ],
+    [
+        'ur/* */l obfuscation',
+        '<style>.test { background: ur/* */l(javascript:alert(1)); }</style><div class="test">test</div>',
+    ],
+    ['&colon; entity', '<div style="background:url(javascript&colon;alert(1))">test</div>'],
+    [
+        '&NewLine; entity',
+        '<style>.test { background: url(java&NewLine;script:alert(1)); }</style><div class="test">test</div>',
+    ],
+    [
+        '&Tab; entity',
+        '<style>.test { background: url(java&Tab;script:alert(1)); }</style><div class="test">test</div>',
+    ],
+    [
+        'u\\72l escape',
+        '<style>.test { background: u\\72 l(javascript:alert(1)); }</style><div class="test">test</div>',
+    ],
+    [
+        '\\75rl escape',
+        '<style>.test { background: \\75 rl(javascript:alert(1)); }</style><div class="test">test</div>',
+    ],
+    [
+        'URL uppercase',
+        '<style>.test { background: URL(javascript:alert(1)); }</style><div class="test">test</div>',
+    ],
+    [
+        'uRl mixed case',
+        '<style>.test { background: uRl(javascript:alert(1)); }</style><div class="test">test</div>',
+    ],
+    ['@charset', '<style>@charset "javascript:alert(1)";</style>'],
+    ['@namespace', '<style>@namespace url("javascript:alert(1)");</style>'],
 ];
 
 describe.each([
@@ -465,6 +504,50 @@ describe('CSS safe cases', () => {
     it('should allow counters() with string separator containing angle bracket', () => {
         expect(
             html('<style>h2::before{content:counters(section, " > ")}</style>'),
+        ).toMatchSnapshot();
+    });
+
+    it('should allow content with @ symbol', () => {
+        expect(html('<style>.email::before{content:"@"}</style>')).toMatchSnapshot();
+    });
+
+    it('should allow valid data URL for images', () => {
+        expect(
+            html(
+                '<style>.icon{background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==)}</style>',
+            ),
+        ).toMatchSnapshot();
+    });
+
+    it('should allow content with < and > separately', () => {
+        expect(html('<style>.lt::before{content:"<"}</style>')).toMatchSnapshot();
+        expect(html('<style>.gt::before{content:">"}</style>')).toMatchSnapshot();
+    });
+
+    it('should block BiDi override in javascript: URL', () => {
+        // BiDi RIGHT-TO-LEFT OVERRIDE (\u202E) hides javascript:
+        expect(
+            html('<style>.xss{background:url(\u202EtpircSavaJ\u202C:alert(1))}</style>'),
+        ).toMatchSnapshot();
+    });
+
+    it('should block CSS escapes forming javascript: in URL', () => {
+        // \0006a\000061... decodes to "javascript:"
+        expect(
+            html(
+                '<style>.xss{background:url(\\0006a\\000061\\000076\\000061\\000073\\000063\\000072\\000069\\000070\\000074:alert(1))}</style>',
+            ),
+        ).toMatchSnapshot();
+    });
+
+    it('should block @import in property value', () => {
+        expect(html('<style>.xss{font-family:"@import url(evil.css)"}</style>')).toMatchSnapshot();
+    });
+
+    it('should block BiDi in content with script tag', () => {
+        // BiDi could hide malicious content
+        expect(
+            html('<style>.xss{content:"\u202E<script>alert(1)</script>\u202C"}</style>'),
         ).toMatchSnapshot();
     });
 });

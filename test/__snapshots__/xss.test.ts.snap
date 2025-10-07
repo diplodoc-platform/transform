@@ -40,6 +40,21 @@ exports[`CSS safe cases should allow common shorthands 1`] = `
 </style>
 `;
 
+exports[`CSS safe cases should allow content with < and > separately 1`] = `
+<style>
+</style>
+`;
+
+exports[`CSS safe cases should allow content with < and > separately 2`] = `
+<style>
+</style>
+`;
+
+exports[`CSS safe cases should allow content with @ symbol 1`] = `
+<style>
+</style>
+`;
+
 exports[`CSS safe cases should allow content with angle brackets in quoted strings 1`] = `
 <style>
 </style>
@@ -183,7 +198,84 @@ exports[`CSS safe cases should allow transforms and transitions without URLs 1`]
 </style>
 `;
 
+exports[`CSS safe cases should allow valid data URL for images 1`] = `
+<style>
+  .icon {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==);
+}
+</style>
+`;
+
+exports[`CSS safe cases should block @import in property value 1`] = `
+<style>
+</style>
+`;
+
+exports[`CSS safe cases should block BiDi in content with script tag 1`] = `
+<style>
+</style>
+`;
+
+exports[`CSS safe cases should block BiDi override in javascript: URL 1`] = `
+<style>
+  .xss {
+  background: url(‮tpircSavaJ‬:alert(1));
+}
+</style>
+`;
+
+exports[`CSS safe cases should block CSS escapes forming javascript: in URL 1`] = `
+<style>
+</style>
+`;
+
 exports[`XSS checks with disabled markdown-it-attrs & JavaScript includes 1`] = `<br size="&amp;{alert('XSS')}">`;
+
+exports[`XSS checks with disabled markdown-it-attrs &NewLine; entity 1`] = `
+<style>
+  .test {
+  background: url(java&NewLine;script:alert(1));
+}
+</style>
+<div class="test">
+  test
+</div>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs &Tab; entity 1`] = `
+<style>
+  .test {
+  background: url(java&Tab;script:alert(1));
+}
+</style>
+<div class="test">
+  test
+</div>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs &colon; entity 1`] = `
+<div>
+  test
+</div>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs @charset 1`] = `
+<style>
+</style>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs @namespace 1`] = `
+<style>
+</style>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs \\75rl escape 1`] = `
+<style>
+</style>
+<div class="test">
+  test
+</div>
+`;
 
 exports[`XSS checks with disabled markdown-it-attrs Anonymous HTML with style attribute 1`] = `""`;
 
@@ -213,6 +305,12 @@ exports[`XSS checks with disabled markdown-it-attrs CSS border-image attack 1`] 
 exports[`XSS checks with disabled markdown-it-attrs CSS box-shadow attack 1`] = `<input>`;
 
 exports[`XSS checks with disabled markdown-it-attrs CSS clip-path attack 1`] = `""`;
+
+exports[`XSS checks with disabled markdown-it-attrs CSS comments hiding escapes 1`] = `
+<div>
+  test
+</div>
+`;
 
 exports[`XSS checks with disabled markdown-it-attrs CSS counter attack 1`] = `
 <meter>
@@ -573,6 +671,14 @@ exports[`XSS checks with disabled markdown-it-attrs TD 1`] = `
 </table>
 `;
 
+exports[`XSS checks with disabled markdown-it-attrs URL uppercase 1`] = `
+<style>
+</style>
+<div class="test">
+  test
+</div>
+`;
+
 exports[`XSS checks with disabled markdown-it-attrs US-ASCII encoding 1`] = `
 <p>
   ¼script¾alert(¢XSS¢)¼/script¾
@@ -720,6 +826,38 @@ exports[`XSS checks with disabled markdown-it-attrs svg with style tag and forei
 </p>
 `;
 
+exports[`XSS checks with disabled markdown-it-attrs u/**/rl obfuscation 1`] = `
+<style>
+</style>
+<div class="test">
+  test
+</div>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs u\\72l escape 1`] = `
+<style>
+</style>
+<div class="test">
+  test
+</div>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs uRl mixed case 1`] = `
+<style>
+</style>
+<div class="test">
+  test
+</div>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs ur/* */l obfuscation 1`] = `
+<style>
+</style>
+<div class="test">
+  test
+</div>
+`;
+
 exports[`XSS checks with disabled markdown-it-attrs xlink:href 1`] = `
 <div id="test">
   <svg>
@@ -737,6 +875,52 @@ exports[`XSS checks with disabled markdown-it-attrs xlink:href 1`] = `
 `;
 
 exports[`XSS checks with enabled markdown-it-attrs & JavaScript includes 1`] = `<br size="&amp;{alert('XSS')}">`;
+
+exports[`XSS checks with enabled markdown-it-attrs &NewLine; entity 1`] = `
+<style>
+  .test {
+  background: url(java&NewLine;script:alert(1));
+}
+</style>
+<div class="test">
+  test
+</div>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs &Tab; entity 1`] = `
+<style>
+  .test {
+  background: url(java&Tab;script:alert(1));
+}
+</style>
+<div class="test">
+  test
+</div>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs &colon; entity 1`] = `
+<div>
+  test
+</div>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs @charset 1`] = `
+<style>
+</style>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs @namespace 1`] = `
+<style>
+</style>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs \\75rl escape 1`] = `
+<style>
+</style>
+<div class="test">
+  test
+</div>
+`;
 
 exports[`XSS checks with enabled markdown-it-attrs Anonymous HTML with style attribute 1`] = `""`;
 
@@ -766,6 +950,12 @@ exports[`XSS checks with enabled markdown-it-attrs CSS border-image attack 1`] =
 exports[`XSS checks with enabled markdown-it-attrs CSS box-shadow attack 1`] = `<input>`;
 
 exports[`XSS checks with enabled markdown-it-attrs CSS clip-path attack 1`] = `""`;
+
+exports[`XSS checks with enabled markdown-it-attrs CSS comments hiding escapes 1`] = `
+<div>
+  test
+</div>
+`;
 
 exports[`XSS checks with enabled markdown-it-attrs CSS counter attack 1`] = `
 <meter>
@@ -1126,6 +1316,14 @@ exports[`XSS checks with enabled markdown-it-attrs TD 1`] = `
 </table>
 `;
 
+exports[`XSS checks with enabled markdown-it-attrs URL uppercase 1`] = `
+<style>
+</style>
+<div class="test">
+  test
+</div>
+`;
+
 exports[`XSS checks with enabled markdown-it-attrs US-ASCII encoding 1`] = `
 <p>
   ¼script¾alert(¢XSS¢)¼/script¾
@@ -1271,6 +1469,38 @@ exports[`XSS checks with enabled markdown-it-attrs svg with style tag and foreig
     </style>
   </svg>
 </p>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs u/**/rl obfuscation 1`] = `
+<style>
+</style>
+<div class="test">
+  test
+</div>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs u\\72l escape 1`] = `
+<style>
+</style>
+<div class="test">
+  test
+</div>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs uRl mixed case 1`] = `
+<style>
+</style>
+<div class="test">
+  test
+</div>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs ur/* */l obfuscation 1`] = `
+<style>
+</style>
+<div class="test">
+  test
+</div>
 `;
 
 exports[`XSS checks with enabled markdown-it-attrs xlink:href 1`] = `
