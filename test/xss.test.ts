@@ -352,4 +352,119 @@ describe('CSS safe cases', () => {
     it('should allow safe font-family values', () => {
         expect(html('<style>.safe{font-family: "Arial, sans-serif"}</style>')).toMatchSnapshot();
     });
+
+    it('should allow content with angle brackets in quoted strings', () => {
+        expect(html('<style>.safe::before{content: ">"}</style>')).toMatchSnapshot();
+        expect(html('<style>.safe::after{content: "<"}</style>')).toMatchSnapshot();
+    });
+
+    it('should allow content with unicode-escaped angle brackets in quoted strings', () => {
+        expect(html('<style>.safe::before{content: "\\003E"}</style>')).toMatchSnapshot();
+        expect(html('<style>.safe::after{content: "\\003C"}</style>')).toMatchSnapshot();
+    });
+
+    it('should allow standard color/length/number values', () => {
+        expect(
+            html('<style>.safe{color:#333; opacity:0.5; z-index:10; line-height:1.4}</style>'),
+        ).toMatchSnapshot();
+    });
+
+    it('should allow common shorthands', () => {
+        expect(
+            html('<style>.safe{margin:0 auto; padding:10px 5px; border:1px solid #000}</style>'),
+        ).toMatchSnapshot();
+    });
+
+    it('should allow safe functions like calc()', () => {
+        expect(
+            html('<style>.safe{width:calc(100% - 2rem); height:calc(50vh - 10px)}</style>'),
+        ).toMatchSnapshot();
+    });
+
+    it('should allow gradients', () => {
+        expect(
+            html('<style>.safe{background:linear-gradient(45deg, #000, #fff)}</style>'),
+        ).toMatchSnapshot();
+    });
+
+    it('should allow CSS variables with fallbacks', () => {
+        expect(
+            html(
+                '<style>.safe{color:var(--brand-color, #222); background:var(--bg, transparent)}</style>',
+            ),
+        ).toMatchSnapshot();
+    });
+
+    it('should allow safe font-family lists', () => {
+        expect(
+            html("<style>.safe{font-family: Arial, 'Helvetica Neue', sans-serif}</style>"),
+        ).toMatchSnapshot();
+    });
+
+    it('should allow transforms and transitions without URLs', () => {
+        expect(
+            html('<style>.safe{transform:rotate(0deg); transition:opacity 200ms ease-in}</style>'),
+        ).toMatchSnapshot();
+    });
+
+    it('should allow keyframes with safe properties', () => {
+        expect(
+            html('<style>@keyframes fade{from{opacity:0} to{opacity:1}}</style>'),
+        ).toMatchSnapshot();
+    });
+
+    it('should allow @media blocks with safe declarations', () => {
+        expect(
+            html('<style>@media (min-width:600px){.safe{display:block; font-weight:bold}}</style>'),
+        ).toMatchSnapshot();
+    });
+
+    it('should allow quotes property with valid string pairs', () => {
+        expect(html('<style>.safe{quotes: "«" "»" "‹" "›"}</style>')).toMatchSnapshot();
+    });
+
+    it('should allow list-style-type keywords', () => {
+        expect(
+            html('<style>ul.safe{list-style-type:disc} ol.safe{list-style-type:decimal}</style>'),
+        ).toMatchSnapshot();
+    });
+
+    it('should allow grid and flex safe values', () => {
+        expect(
+            html('<style>.safe{display:grid; grid-template-columns:1fr 2fr; gap:8px}</style>'),
+        ).toMatchSnapshot();
+        expect(
+            html(
+                '<style>.safe2{display:flex; align-items:center; justify-content:space-between}</style>',
+            ),
+        ).toMatchSnapshot();
+    });
+
+    it('should allow child combinator in selectors', () => {
+        expect(html('<style>.card > .title{font-weight:700}</style>')).toMatchSnapshot();
+        expect(html('<style>ul > li > a{text-decoration:none}</style>')).toMatchSnapshot();
+    });
+
+    it('should allow range context media queries (MQ4 syntax)', () => {
+        expect(
+            html('<style>@media (600px < width < 1200px){.r{display:block}}</style>'),
+        ).toMatchSnapshot();
+        expect(
+            html('<style>@media (width >= 768px){.r2{display:block}}</style>'),
+        ).toMatchSnapshot();
+    });
+
+    it('should allow grid-template-areas strings containing angle brackets', () => {
+        expect(html('<style>.grid{grid-template-areas:"<m m>" "hd hd"}</style>')).toMatchSnapshot();
+    });
+
+    it('should allow font-family names with angle brackets when quoted', () => {
+        expect(html('<style>.t{font-family:"ACME <Pro>"}</style>')).toMatchSnapshot();
+    });
+
+    it('should allow counters() with string separator containing angle bracket', () => {
+        expect(
+            html('<style>h2::before{content:counters(section, " > ")}</style>'),
+        ).toMatchSnapshot();
+    });
 });

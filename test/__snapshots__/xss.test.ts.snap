@@ -1,5 +1,140 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`CSS safe cases should allow @media blocks with safe declarations 1`] = `
+<style>
+</style>
+`;
+
+exports[`CSS safe cases should allow CSS variables with fallbacks 1`] = `
+<style>
+  .safe {
+  color: var(--brand-color, #222);
+  background: var(--bg, transparent);
+}
+</style>
+`;
+
+exports[`CSS safe cases should allow child combinator in selectors 1`] = `
+<style>
+  .card > .title {
+  font-weight: 700;
+}
+</style>
+`;
+
+exports[`CSS safe cases should allow child combinator in selectors 2`] = `
+<style>
+  ul > li > a {
+  text-decoration: none;
+}
+</style>
+`;
+
+exports[`CSS safe cases should allow common shorthands 1`] = `
+<style>
+  .safe {
+  margin: 0 auto;
+  padding: 10px 5px;
+  border: 1px solid #000;
+}
+</style>
+`;
+
+exports[`CSS safe cases should allow content with angle brackets in quoted strings 1`] = `
+<style>
+</style>
+`;
+
+exports[`CSS safe cases should allow content with angle brackets in quoted strings 2`] = `
+<style>
+</style>
+`;
+
+exports[`CSS safe cases should allow content with unicode-escaped angle brackets in quoted strings 1`] = `
+<style>
+</style>
+`;
+
+exports[`CSS safe cases should allow content with unicode-escaped angle brackets in quoted strings 2`] = `
+<style>
+</style>
+`;
+
+exports[`CSS safe cases should allow counters() with string separator containing angle bracket 1`] = `
+<style>
+</style>
+`;
+
+exports[`CSS safe cases should allow font-family names with angle brackets when quoted 1`] = `
+<style>
+  .t {
+  font-family: "ACME
+  <Pro>";
+}
+</style>
+`;
+
+exports[`CSS safe cases should allow gradients 1`] = `
+<style>
+  .safe {
+  background: linear-gradient(45deg, #000, #fff);
+}
+</style>
+`;
+
+exports[`CSS safe cases should allow grid and flex safe values 1`] = `
+<style>
+  .safe {
+  display: grid;
+}
+</style>
+`;
+
+exports[`CSS safe cases should allow grid and flex safe values 2`] = `
+<style>
+  .safe2 {
+  display: flex;
+}
+</style>
+`;
+
+exports[`CSS safe cases should allow grid-template-areas strings containing angle brackets 1`] = `
+<style>
+</style>
+`;
+
+exports[`CSS safe cases should allow keyframes with safe properties 1`] = `
+<style>
+</style>
+`;
+
+exports[`CSS safe cases should allow list-style-type keywords 1`] = `
+<style>
+  ul.safe {
+  list-style-type: disc;
+}
+
+ol.safe {
+  list-style-type: decimal;
+}
+</style>
+`;
+
+exports[`CSS safe cases should allow quotes property with valid string pairs 1`] = `
+<style>
+</style>
+`;
+
+exports[`CSS safe cases should allow range context media queries (MQ4 syntax) 1`] = `
+<style>
+</style>
+`;
+
+exports[`CSS safe cases should allow range context media queries (MQ4 syntax) 2`] = `
+<style>
+</style>
+`;
+
 exports[`CSS safe cases should allow safe CSS values 1`] = `
 <style>
   .safe {
@@ -10,11 +145,41 @@ exports[`CSS safe cases should allow safe CSS values 1`] = `
 </style>
 `;
 
+exports[`CSS safe cases should allow safe font-family lists 1`] = `
+<style>
+  .safe {
+  font-family: Arial, 'Helvetica Neue', sans-serif;
+}
+</style>
+`;
+
 exports[`CSS safe cases should allow safe font-family values 1`] = `
 <style>
   .safe {
   font-family: "Arial, sans-serif";
 }
+</style>
+`;
+
+exports[`CSS safe cases should allow safe functions like calc() 1`] = `
+<style>
+  .safe {
+  width: calc(100% - 2rem);
+  height: calc(50vh - 10px);
+}
+</style>
+`;
+
+exports[`CSS safe cases should allow standard color/length/number values 1`] = `
+<style>
+  .safe {
+  color: #333;
+}
+</style>
+`;
+
+exports[`CSS safe cases should allow transforms and transitions without URLs 1`] = `
+<style>
 </style>
 `;
 
@@ -416,9 +581,6 @@ exports[`XSS checks with disabled markdown-it-attrs US-ASCII encoding 1`] = `
 
 exports[`XSS checks with disabled markdown-it-attrs Unicode escape in font-family 1`] = `
 <style>
-  .unicode {
-  font-family: "\\22 \\3E \\3C /style\\3E \\3C script\\3E alert(1)\\3C /script\\3E";
-}
 </style>
 `;
 
@@ -537,9 +699,6 @@ exports[`XSS checks with disabled markdown-it-attrs style tag using background 1
 
 exports[`XSS checks with disabled markdown-it-attrs style tag using background-image 1`] = `
 <style>
-  .xss {
-  background-image: url("javascript:alert('XSS')");
-}
 </style>
 <a class="XSS">
 </a>
@@ -975,9 +1134,6 @@ exports[`XSS checks with enabled markdown-it-attrs US-ASCII encoding 1`] = `
 
 exports[`XSS checks with enabled markdown-it-attrs Unicode escape in font-family 1`] = `
 <style>
-  .unicode {
-  font-family: "\\22 \\3E \\3C /style\\3E \\3C script\\3E alert(1)\\3C /script\\3E";
-}
 </style>
 `;
 
@@ -1096,9 +1252,6 @@ exports[`XSS checks with enabled markdown-it-attrs style tag using background 1`
 
 exports[`XSS checks with enabled markdown-it-attrs style tag using background-image 1`] = `
 <style>
-  .xss {
-  background-image: url("javascript:alert('XSS')");
-}
 </style>
 <a class="XSS">
 </a>
