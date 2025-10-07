@@ -563,18 +563,79 @@ export const defaultOptions: SanitizeOptions = {
     },
 };
 
-function isSafeCssValue(value: string): boolean {
-    // Block HTML tags
-    if (/[<>]/g.test(value)) {
-        return false;
+// dangerous patterns
+const DANGEROUS_TAGS_RE =
+    /<\s*(script|iframe|object|embed|svg|img|video|audio|link|meta|base|form|style|template|math|foreignobject)\b/i;
+const CLOSE_STYLE_RE = /<\s*\/\s*style/i;
+const DANGEROUS_URL_RE =
+    /url\(\s*['"]?\s*(?:javascript:|vbscript:|data\s*:\s*(?:text\/html|application\/xhtml\+xml|image\/svg\+xml)(?:\s*;base64)?)/i;
+const IE_EXPR_RE = /expression\s*\(/i;
+const IE_BEHAVIOR_RE = /behavior\s*:/i;
+const MOZ_BINDING_RE = /-moz-binding\s*:/i;
+const AT_RULES_RE = /@(?:import|charset|namespace)\b/i;
+
+// normalize CSS value by decoding HTML entities and CSS escapes
+function normalizeCssValue(value: string): string {
+    let normalized = String(value || '');
+
+    // strip NUL and control characters (often used for bypasses)
+    // eslint-disable-next-line no-control-regex
+    normalized = normalized.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '');
+
+    // remove CSS comments early to avoid hiding escapes inside comments
+    normalized = normalized.replace(/\/\*[\s\S]*?\*\//g, '');
+
+    // decode HTML numeric entities (hex and decimal)
+    normalized = normalized.replace(/&#x([0-9a-fA-F]+);/g, (_, hex) =>
+        String.fromCodePoint(parseInt(hex, 16) || 0),
+    );
+    normalized = normalized.replace(/&#(\d+);/g, (_, dec) =>
+        String.fromCodePoint(parseInt(dec, 10) || 0),
+    );
+
+    // named entities
+    normalized = normalized
+        .replace(/&lt;/gi, '<')
+        .replace(/&gt;/gi, '>')
+        .replace(/&quot;/gi, '"')
+        .replace(/&apos;/gi, "'")
+        .replace(/&amp;/gi, '&');
+
+    // CSS hex escapes \h{1,6}[ ]
+    normalized = normalized.replace(/\\([0-9A-Fa-f]{1,6})\s?/g, (_, hex) =>
+        String.fromCodePoint(parseInt(hex, 16) || 0),
+    );
+
+    // unicode normalization
+    try {
+        normalized = normalized.normalize('NFKC');
+    } catch (e) {
+        log.error(`Error ...`);
     }
 
-    // Block HTML entities and Unicode escape
-    if (/(&lt;|&gt;|\\00[3-4][C-E])/gi.test(value)) {
-        return false;
+    return normalized;
+}
+
+// checks if a CSS value is safe from XSS attacks
+function isSafeCssValue(_property: string, value: string): boolean {
+    // early-exit for trivial safe values (plain numbers, colors, etc.)
+    if (!/[<&\\@]|expression|behavior|-moz-binding|url\(/i.test(value)) {
+        return true;
     }
 
-    return true;
+    const normalized = normalizeCssValue(value);
+
+    const dangerousPatterns = [
+        CLOSE_STYLE_RE, // </style> tag closure
+        DANGEROUS_TAGS_RE, // dangerous HTML tags
+        DANGEROUS_URL_RE, // javascript:, data:, vbscript: URLs
+        IE_EXPR_RE, // IE expression()
+        IE_BEHAVIOR_RE, // IE behavior:
+        MOZ_BINDING_RE, // Firefox -moz-binding
+        AT_RULES_RE, // @import, @charset, @namespace
+    ];
+
+    return !dangerousPatterns.some((pattern) => pattern.test(normalized));
 }
 
 function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) {
@@ -604,17 +665,17 @@ function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) 
                         return false;
                     }
 
-                    if (!isSafeCssValue(declaration.value)) {
+                    const prop = String(declaration.property).toLowerCase();
+                    const val = String(declaration.value);
+
+                    if (!isSafeCssValue(prop, val)) {
                         return false;
                     }
 
-                    const isWhiteListed = cssWhiteList[declaration.property];
+                    const isWhiteListed = Boolean(cssWhiteList[prop]);
 
                     if (isWhiteListed) {
-                        declaration.value = cssfilter.safeAttrValue(
-                            declaration.property,
-                            declaration.value,
-                        );
+                        declaration.value = cssfilter.safeAttrValue(prop, val);
                     }
 
                     if (!declaration.value) {
