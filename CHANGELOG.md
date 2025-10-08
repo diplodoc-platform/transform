@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.63.2](https://github.com/diplodoc-platform/transform/compare/v4.63.1...v4.63.2) (2025-10-08)
+
+
+### Bug Fixes
+
+* change font bold for list definition ([ffe276d](https://github.com/diplodoc-platform/transform/commit/ffe276d7ee9d2b66f3f5c1551de3a07e748b95b1))
+
 ## [4.63.1](https://github.com/diplodoc-platform/transform/compare/v4.63.0...v4.63.1) (2025-10-03)
 
 
