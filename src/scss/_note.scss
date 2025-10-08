@@ -51,10 +51,20 @@
     }
 
     $backgroundColors: (
-        yfm-accent-info: var(--yfm-color-note-info-background),
-        yfm-accent-tip: var(--yfm-color-note-tip-background),
-        yfm-accent-alert: var(--yfm-color-note-important-background),
-        yfm-accent-warning: var(--yfm-color-note-warning-background),
+        yfm-accent-info:
+            var(--yfm-color-note-info-background, var(--yfm-color-note-info-background-private)),
+        yfm-accent-tip:
+            var(--yfm-color-note-tip-background, var(--yfm-color-note-tip-background-private)),
+        yfm-accent-alert:
+            var(
+                --yfm-color-note-important-background,
+                var(--yfm-color-note-important-background-private)
+            ),
+        yfm-accent-warning:
+            var(
+                --yfm-color-note-warning-background,
+                var(--yfm-color-note-warning-background-private)
+            ),
     );
 
     @each $type, $color in $backgroundColors {
