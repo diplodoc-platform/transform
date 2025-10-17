@@ -44,7 +44,7 @@ function buttonCopyFn(target: HTMLElement) {
         .map((node) => node.textContent)
         .join('');
 
-    copyToClipboard(textContent).then(() => {
+    copyToClipboard(textContent.trim()).then(() => {
         notifySuccess(parent.querySelector('.yfm-clipboard-icon'));
 
         setTimeout(() => target.blur(), 1500);
