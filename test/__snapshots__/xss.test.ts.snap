@@ -236,6 +236,40 @@ exports[`XSS checks with disabled markdown-it-attrs You can EMBED SVG which can 
 </p>
 `;
 
+exports[`XSS checks with disabled markdown-it-attrs animate with values attribute 1`] = `
+<p>
+  <svg>
+    <animate xlink:href="#xss"
+             attributename="href"
+    >
+    </animate>
+    <a id="xss">
+      <text x="20"
+            y="20"
+      >
+        XSS
+      </text>
+    </a>
+  </svg>
+</p>
+`;
+
+exports[`XSS checks with disabled markdown-it-attrs animate with values attribute and data: scheme 1`] = `
+<p>
+  <svg>
+    <animate xlink:href="#x"
+             attributename="href"
+    >
+    </animate>
+    <a id="x">
+      <text>
+        Click
+      </text>
+    </a>
+  </svg>
+</p>
+`;
+
 exports[`XSS checks with disabled markdown-it-attrs body image 1`] = `""`;
 
 exports[`XSS checks with disabled markdown-it-attrs body tag 1`] = `""`;
@@ -582,6 +616,40 @@ exports[`XSS checks with enabled markdown-it-attrs XSS locator 2 1`] = `
 
 exports[`XSS checks with enabled markdown-it-attrs You can EMBED SVG which can contain your XSS vector 1`] = `
 <p>
+</p>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs animate with values attribute 1`] = `
+<p>
+  <svg>
+    <animate xlink:href="#xss"
+             attributename="href"
+    >
+    </animate>
+    <a id="xss">
+      <text x="20"
+            y="20"
+      >
+        XSS
+      </text>
+    </a>
+  </svg>
+</p>
+`;
+
+exports[`XSS checks with enabled markdown-it-attrs animate with values attribute and data: scheme 1`] = `
+<p>
+  <svg>
+    <animate xlink:href="#x"
+             attributename="href"
+    >
+    </animate>
+    <a id="x">
+      <text>
+        Click
+      </text>
+    </a>
+  </svg>
 </p>
 `;
 
