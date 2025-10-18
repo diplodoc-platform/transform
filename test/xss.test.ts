@@ -167,6 +167,14 @@ const ckecks = [
         'href animate from',
         `<div id="test"><svg><a xmlns:xlink="http://www.w3.org/1999/xlink" href="javascript:alert(document.domain)"><circle r="400"></circle><animate attributeName="href" begin="0" from="javascript:alert(document.domain)" to="&" /></a></div>`,
     ],
+    [
+        'animate with values attribute',
+        `<svg><animate xlink:href="#xss" attributeName="href" values="javascript:alert(1)"></animate><a id="xss"><text x="20" y="20">XSS</text></a></svg>`,
+    ],
+    [
+        'animate with values attribute and data: scheme',
+        `<svg><animate xlink:href="#x" attributeName="href" values="data:text/html,<script>alert(1)</script>"></animate><a id="x"><text>Click</text></a></svg>`,
+    ],
 ];
 
 describe.each([

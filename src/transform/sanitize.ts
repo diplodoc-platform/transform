@@ -554,6 +554,7 @@ export const defaultOptions: SanitizeOptions = {
         'xlink:href',
         'from',
         'to',
+        'values',
     ],
     allowVulnerableTags: true,
     parser: defaultParseOptions,
