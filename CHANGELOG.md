@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.63.3](https://github.com/diplodoc-platform/transform/compare/v4.63.2...v4.63.3) (2025-10-20)
+
+
+### Bug Fixes
+
+* trim clipboard text ([db90f97](https://github.com/diplodoc-platform/transform/commit/db90f9765f6de34ab4e6a6bdc85c3d419fae5504))
+
 ## [4.63.2](https://github.com/diplodoc-platform/transform/compare/v4.63.1...v4.63.2) (2025-10-08)
 
 
