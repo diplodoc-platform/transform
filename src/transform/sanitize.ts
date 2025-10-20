@@ -563,6 +563,139 @@ export const defaultOptions: SanitizeOptions = {
     },
 };
 
+// dangerous patterns
+const DANGEROUS_TAGS_RE =
+    /<\s*(script|iframe|object|embed|svg|img|video|audio|link|meta|base|form|style|template|math|foreignobject)\b/i;
+const CLOSE_STYLE_RE = /<\s*\/\s*style/i;
+const DANGEROUS_URL_RE =
+    /url\s*\(\s*['"]?\s*(?:javascript:|vbscript:|data\s*:\s*(?:text\/html|application\/xhtml\+xml|image\/svg\+xml))/i;
+const IE_EXPR_RE = /expression\s*\(/i;
+const IE_BEHAVIOR_RE = /behavior\s*:/i;
+const MOZ_BINDING_RE = /-moz-binding\s*:/i;
+const AT_RULES_RE = /@(?:import|charset|namespace)\b/i;
+const COMMENTS_RE = /\/\*[^]*?\*\//g; // CSS comments: /* ... */
+
+// control characters (C0/C1) and BiDi override characters that can hide malicious content
+const CTRL_BIDI_RE = new RegExp(
+    [
+        String.raw`[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]`, // C0/C1 controls
+        String.raw`[\u202A-\u202E\u2066-\u2069]`, // BiDi overrides
+    ].join('|'),
+    'g',
+);
+
+const SAFE_VALUE_FAST_CHECK_RE = /[<&\\/]|@|url\s*\(|expression|behavior|-moz-binding/i;
+
+// backslash (CSS escapes), ampersand (HTML entities), BiDi overrides
+const FAST_PATH_RE = /[\\&\u202A-\u202E\u2066-\u2069]/;
+
+// combined regex for decoding CSS escapes and HTML entities
+const RE_DECODE = new RegExp(
+    [
+        String.raw`\\([0-9A-Fa-f]{1,6})\s?`, // CSS hex escapes: \41 or \000041  → 'A'
+        String.raw`&#x([0-9A-Fa-f]{1,6});`, // HTML hex entities: &#x41; or &#X41; → 'A'
+        String.raw`&#(\d{1,7});`, // HTML decimal entities: &#65; → 'A'
+        String.raw`&([a-zA-Z][a-zA-Z0-9]{1,31});`, // HTML named entities: &lt; or &amp; → '<' or '&'
+    ].join('|'),
+    'g',
+);
+
+const htmlEntities: Record<string, string> = {
+    lt: '<',
+    gt: '>',
+    quot: '"',
+    apos: "'",
+    amp: '&',
+    newline: '\n',
+    tab: '\t',
+    colon: ':',
+    sol: '/',
+    lpar: '(',
+    rpar: ')',
+};
+
+// Decodes a single escaped or encoded token
+function decodeToken(
+    whole: string,
+    cssHex?: string,
+    htmlHex?: string,
+    htmlDec?: string,
+    named?: string,
+): string {
+    if (cssHex) {
+        return String.fromCodePoint(parseInt(cssHex, 16) || 0);
+    }
+    if (htmlHex) {
+        return String.fromCodePoint(parseInt(htmlHex, 16) || 0);
+    }
+    if (htmlDec) {
+        return String.fromCodePoint(parseInt(htmlDec, 10) || 0);
+    }
+    if (named) {
+        const rep = htmlEntities[named] ?? htmlEntities[named.toLowerCase()];
+        if (rep) {
+            return rep;
+        }
+    }
+    return whole;
+}
+
+// Normalize CSS value by decoding HTML entities and CSS escapes
+function normalizeCssValue(value: string): string {
+    let normalized = String(value ?? '');
+
+    // early-exit if no special chars
+    if (!FAST_PATH_RE.test(normalized)) {
+        return normalized;
+    }
+
+    // 1. remove CSS comments to prevent hiding escapes inside /* ... */
+    // 2. strip control characters and BiDi overrides
+    // 3. decode all CSS escapes and HTML entities in one pass
+    normalized = normalized
+        .replace(COMMENTS_RE, '')
+        .replace(CTRL_BIDI_RE, '')
+        .replace(RE_DECODE, decodeToken);
+
+    // unicode normalization (NFKC) to prevent homograph attacks
+    try {
+        normalized = normalized.normalize('NFKC');
+    } catch (_) {
+        // silent fail: logging the value could expose sensitive data
+    }
+
+    return normalized;
+}
+
+// checks if a CSS value is safe from XSS attacks
+function isSafeCssValue(property: string, value: string): boolean {
+    const prop = property.toLowerCase();
+    const isContentProperty = prop === 'content';
+
+    // normalize first to prevent bypasses via comments/escapes
+    const normalized = normalizeCssValue(value);
+
+    // early-exit for trivial safe values
+    if (!SAFE_VALUE_FAST_CHECK_RE.test(normalized)) {
+        return true;
+    }
+
+    // сheck if normalized value looks like an HTML tag
+    const looksLikeTag = /<[^>]{0,128}>/i.test(normalized);
+
+    const dangerousPatterns = [
+        looksLikeTag && CLOSE_STYLE_RE, // </style> tag closure
+        !isContentProperty && looksLikeTag && DANGEROUS_TAGS_RE, // dangerous HTML tags
+        DANGEROUS_URL_RE, // javascript:, data:, vbscript: URLs
+        IE_EXPR_RE, // IE expression()
+        IE_BEHAVIOR_RE, // IE behavior:
+        MOZ_BINDING_RE, // FF -moz-binding
+        AT_RULES_RE, // @import, @charset, @namespace
+    ].filter(Boolean) as RegExp[];
+
+    return !dangerousPatterns.some((pattern) => pattern.test(normalized));
+}
+
 function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) {
     const styleTags = dom('style');
 
@@ -590,13 +723,17 @@ function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) 
                         return false;
                     }
 
-                    const isWhiteListed = cssWhiteList[declaration.property];
+                    const prop = String(declaration.property).toLowerCase();
+                    const val = String(declaration.value);
+
+                    if (!isSafeCssValue(prop, val)) {
+                        return false;
+                    }
+
+                    const isWhiteListed = Boolean(cssWhiteList[prop]);
 
                     if (isWhiteListed) {
-                        declaration.value = cssfilter.safeAttrValue(
-                            declaration.property,
-                            declaration.value,
-                        );
+                        declaration.value = cssfilter.safeAttrValue(prop, val);
                     }
 
                     if (!declaration.value) {
