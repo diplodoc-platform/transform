@@ -188,16 +188,16 @@
         z-index: 1;
 
         box-sizing: border-box;
-        border: 1px solid var(--yfm-color-border, var(--yfm-color-border-private));
+        border: 1px solid var(--yfm-color-table-border, var(--yfm-color-table-border-private));
         border-radius: 8px;
         border-collapse: collapse;
         border-spacing: 0;
-        background: var(--yfm-color-base, var(--yfm-color-base-private));
+        background: var(--yfm-color-table-background, var(--yfm-color-table-background-private));
 
         thead {
             background-color: var(
-                --yfm-color-table-row-background,
-                var(--yfm-color-table-row-background-private)
+                --yfm-color-table-head-background,
+                var(--yfm-color-table-head-background-private)
             );
         }
 
@@ -220,7 +220,7 @@
             padding: 10px 20px;
             overflow: hidden;
             text-overflow: ellipsis;
-            border: 1px solid var(--yfm-color-border, var(--yfm-color-border-private));
+            border: 1px solid var(--yfm-color-table-border, var(--yfm-color-table-border-private));
 
             @include removeMarginForEdgeChildren();
         }
@@ -247,8 +247,8 @@
 
     &:not(.yfm_no-stripe-table) table tr:nth-child(2n) {
         background-color: var(
-            --yfm-color-table-row-background,
-            var(--yfm-color-table-row-background-private)
+            --yfm-color-table-stripe-row-background,
+            var(--yfm-color-table-stripe-row-background-private)
         );
     }
 
