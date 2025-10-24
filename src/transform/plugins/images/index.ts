@@ -160,7 +160,7 @@ function replaceSvgContent(content: string, options: ImageOptions) {
         svgRoot = `${svgRoot} height="${sanitizedHeight}"`;
     }
     if ((!width && options.width) || (!height && options.height)) {
-        content = content.replace(/<svg([^>]*)>/, `<svg${svgRoot}>`);
+        content = content.replace(/.*?<svg([^>]*)>/, `<svg${svgRoot}>`);
     }
 
     // randomize ids
