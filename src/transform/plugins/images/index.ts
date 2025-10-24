@@ -141,7 +141,7 @@ function replaceSvgContent(content: string, options: ImageOptions) {
     content = content.replace(/\n/g, '');
 
     // width, height
-    let svgRoot = content.replace(/<svg([^>]*)>.*/g, '$1');
+    let svgRoot = content.replace(/.*?<svg([^>]*)>.*/g, '$1');
 
     const {width, height} = svgRoot
         .match(/(?:width="(.*?)")|(?:height="(.*?)")/g)
