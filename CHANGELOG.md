@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.63.4](https://github.com/diplodoc-platform/transform/compare/v4.63.3...v4.63.4) (2025-10-24)
+
+
+### Bug Fixes
+
+* Fix svg replacement for svgs with banner ([d1aaca6](https://github.com/diplodoc-platform/transform/commit/d1aaca62c30153800e287bb6ba58306658c69afc))
+* Fix svg replacement for svgs with banner ([ae5eb39](https://github.com/diplodoc-platform/transform/commit/ae5eb3953bf8b61ec19a58875d522036fe7fde29))
+
 ## [4.63.3](https://github.com/diplodoc-platform/transform/compare/v4.63.2...v4.63.3) (2025-10-20)
 
 
