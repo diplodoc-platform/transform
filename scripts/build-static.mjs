@@ -2,8 +2,9 @@
 
 import esbuild from 'esbuild';
 
-import {runChainsWith} from './package-build-configs.mjs';
+import {copyScssFiles, runChainsWith} from './package-build-configs.mjs';
 
 const executeBuild = (buildOptions) => esbuild.build(buildOptions);
 
 await runChainsWith(executeBuild);
+await copyScssFiles();

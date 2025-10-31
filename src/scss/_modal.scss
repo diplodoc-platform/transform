@@ -21,7 +21,7 @@
 
     .wide-content-wrapper {
         z-index: 200;
-        background-color: var(--yfm-color-modal-content);
+        background-color: var(--yfm-color-modal-content, var(--yfm-color-modal-content-private));
         height: 90vh;
         width: 70vw;
         border-radius: 10px;
@@ -72,7 +72,10 @@
                 transition: background 300ms;
 
                 &:hover {
-                    background: var(--yfm-color-modal-actions-hover);
+                    background: var(
+                        --yfm-color-modal-actions-hover,
+                        var(--yfm-color-modal-actions-hover-private)
+                    );
                 }
             }
         }
@@ -100,7 +103,7 @@
     z-index: 100;
     padding: 6px;
     box-sizing: content-box;
-    color: var(--yfm-color-modal-wide-content);
+    color: var(--yfm-color-modal-wide-content, var(--yfm-color-modal-wide-content-private));
     cursor: pointer;
 
     & > svg {
@@ -116,6 +119,9 @@
     position: fixed;
     top: 0;
     left: 0;
-    background-color: var(--yfm-color-modal-wide-content-overlay);
+    background-color: var(
+        --yfm-color-modal-wide-content-overlay,
+        var(--yfm-color-modal-wide-content-overlay-private)
+    );
     opacity: 0.6;
 }

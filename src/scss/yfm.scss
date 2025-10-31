@@ -1,6 +1,4 @@
-@use 'base';
-@use 'yfm-only';
-@use 'modal';
+@use 'yfm-base';
 
 @forward '@diplodoc/cut-extension/runtime';
 @forward '@diplodoc/file-extension/runtime';

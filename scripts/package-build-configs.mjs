@@ -1,11 +1,16 @@
-import {dirname} from 'node:path';
+import {dirname, join} from 'node:path';
 import {createRequire} from 'node:module';
+import {copyFile, mkdir, readdir} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
 import {sassPlugin} from 'esbuild-sass-plugin';
 import autoprefixer from 'autoprefixer';
 import postcssPresetEnv from 'postcss-preset-env';
 import postcss from 'postcss';
 
 import tsconfigJson from '../tsconfig.json' with {type: 'json'};
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const projectRoot = join(__dirname, '..');
 
 /** @type {import('esbuild').BuildOptions}*/
 const common = {
@@ -147,6 +152,37 @@ const ScriptChains = [
 ];
 
 const StaticBuildChains = [...StyleChains, ...ScriptChains];
+
+// Recursively copy SCSS files from src to dest
+async function copyScssFilesRecursive(src, dest) {
+    const entries = await readdir(src, {withFileTypes: true});
+
+    await mkdir(dest, {recursive: true});
+
+    await Promise.all(
+        entries.map(async (entry) => {
+            const srcPath = join(src, entry.name);
+            const destPath = join(dest, entry.name);
+
+            if (entry.isDirectory()) {
+                await copyScssFilesRecursive(srcPath, destPath);
+            } else if (entry.isFile() && entry.name.endsWith('.scss')) {
+                await copyFile(srcPath, destPath);
+            }
+        }),
+    );
+}
+
+// Copy SCSS files to dist/scss
+export async function copyScssFiles() {
+    const srcScssDir = join(projectRoot, 'src', 'scss');
+    const distScssDir = join(projectRoot, 'dist', 'scss');
+
+    await copyScssFilesRecursive(srcScssDir, distScssDir);
+
+    // eslint-disable-next-line no-console
+    console.log('SCSS files copied to dist/scss');
+}
 
 export const runChainsWith = (block) =>
     Promise.all(
