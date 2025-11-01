@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.63.6](https://github.com/diplodoc-platform/transform/compare/v4.63.5...v4.63.6) (2025-11-01)
+
+
+### Bug Fixes
+
+* svg with different row attributes ([e8ac9e7](https://github.com/diplodoc-platform/transform/commit/e8ac9e7d897839be493fc2df524326e965272b1a))
+
 ## [4.63.5](https://github.com/diplodoc-platform/transform/compare/v4.63.4...v4.63.5) (2025-10-29)
 
 
