@@ -138,7 +138,7 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
 
 function replaceSvgContent(content: string, options: ImageOptions) {
     // monoline
-    content = content.replace(/\n/g, '');
+    content = content.replace(/>\n</g, '><').replace(/\n/g, ' ');
 
     // width, height
     let svgRoot = content.replace(/.*?<svg([^>]*)>.*/g, '$1');
