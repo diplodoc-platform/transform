@@ -74,6 +74,62 @@ function convertSvg(
     }
 }
 
+function imageCaption(state: StateCore) {
+    const tokens = state.tokens;
+
+    for (let i = 0; i < tokens.length; i++) {
+        if (tokens[i].type !== 'inline') {
+            continue;
+        }
+
+        const childrenTokens = tokens[i].children || [];
+        const newTokens: Token[] = [];
+
+        for (let j = 0; j < childrenTokens.length; j++) {
+            const token = childrenTokens[j];
+
+            if (token.type === 'image') {
+                const attrs = token.attrs || [];
+                const hasCaptionAttr = attrs.some(([key]) => key === 'caption');
+
+                if (hasCaptionAttr) {
+                    const captionAttr = attrs.find(([key]) => key === 'caption');
+                    const explicitCaption = captionAttr ? captionAttr[1] : '';
+                    const title = attrs.find(([key]) => key === 'title');
+                    const captionText = explicitCaption || (title ? title[1] : '');
+
+                    const figureOpen = new state.Token('figure_open', 'figure', 1);
+                    const figureClose = new state.Token('figure_close', 'figure', -1);
+
+                    if (captionText) {
+                        const captionOpen = new state.Token('figcaption_open', 'figcaption', 1);
+                        const captionContent = new state.Token('text', '', 0);
+                        captionContent.content = captionText;
+                        const captionClose = new state.Token('figcaption_close', 'figcaption', -1);
+
+                        newTokens.push(
+                            figureOpen,
+                            token,
+                            captionOpen,
+                            captionContent,
+                            captionClose,
+                            figureClose,
+                        );
+                    } else {
+                        newTokens.push(figureOpen, token, figureClose);
+                    }
+                } else {
+                    newTokens.push(token);
+                }
+            } else {
+                newTokens.push(token);
+            }
+        }
+
+        tokens[i].children = newTokens;
+    }
+}
+
 type Opts = SVGOpts & ImageOpts;
 
 const index: MarkdownItPluginCb<Opts> = (md, opts) => {
@@ -97,7 +153,8 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                     const didPatch = childrenTokens[j].attrGet('yfm_patched') || false;
 
                     if (didPatch) {
-                        return;
+                        j++;
+                        continue;
                     }
 
                     const imgSrc = getSrcTokenAttr(childrenTokens[j]);
@@ -115,7 +172,6 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
 
                     childrenTokens[j].attrSet('yfm_patched', '1');
                 }
-
                 j++;
             }
 
@@ -129,6 +185,7 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
         md.core.ruler.push('images', plugin);
     }
 
+    md.core.ruler.push('image_caption', imageCaption);
     md.renderer.rules.image_svg = (tokens, index) => {
         const token = tokens[index];
 

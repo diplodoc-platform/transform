@@ -45,7 +45,7 @@ const collect = (input: string, options: Options) => {
             if (singlePage && !path.includes('_includes/')) {
                 const newSrc = relative(root, resolveRelativePath(path, src));
 
-                result = result.replace(src, newSrc);
+                result = result.replace(new RegExp(src, 'g'), newSrc);
             }
 
             copyFile(targetPath, targetDestPath);
