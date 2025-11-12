@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.63.8](https://github.com/diplodoc-platform/transform/compare/v4.63.7...v4.63.8) (2025-11-12)
+
+
+### Bug Fixes
+
+* support CRLF in monoline svg with ([3747e28](https://github.com/diplodoc-platform/transform/commit/3747e281e3c1ebe3929d444d37899bde5bd2f14e))
+
 ## [4.63.7](https://github.com/diplodoc-platform/transform/compare/v4.63.6...v4.63.7) (2025-11-05)
 
 
