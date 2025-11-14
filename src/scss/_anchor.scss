@@ -8,14 +8,14 @@
         .yfm-clipboard-anchor {
             //reset default button style
             background: none;
-            color: var(--yfm-color-link);
+            color: var(--yfm-color-link, var(--yfm-color-link-private));
             border: none;
             padding: 0;
             font: inherit;
             cursor: pointer;
 
             &:hover {
-                color: var(--yfm-color-link-hover);
+                color: var(--yfm-color-link-hover, var(--yfm-color-link-hover-private));
             }
         }
 

@@ -3,9 +3,7 @@
     --yfm-color-link-private: #027bf3;
     --yfm-color-link-hover-private: #004080;
     --yfm-color-base-private: #ffffff;
-    --yfm-color-table-private: #333;
     --yfm-color-border-private: rgba(0, 0, 0, 0.07);
-    --yfm-color-table-row-background-private: rgba(0, 0, 0, 0.02);
     --yfm-color-accent-private: #027bf3;
 
     --yfm-color-inline-code-private: rgba(59, 96, 128, 1);
@@ -37,10 +35,17 @@
     --yfm-color-term-title-hover-private: #004080;
     --yfm-color-term-dfn-background-private: rgb(255, 255, 255);
     --yfm-color-term-dfn-shadow-private: rgba(0, 0, 0, 0.15);
-    --yfm-color-term-dfn-presudo-shadow-private: rgb(229, 229, 229);
+    --yfm-color-term-dfn-pseudo-shadow-private: rgb(229, 229, 229);
 
     --yfm-color-modal-content-private: rgb(255, 255, 255);
     --yfm-color-modal-actions-hover-private: rgba(0, 0, 0, 0.05);
     --yfm-color-modal-wide-content-private: rgba(0, 0, 0, 0.85);
     --yfm-color-modal-wide-content-overlay-private: rgb(0, 0, 0);
+
+    --yfm-color-table-private: #333;
+    --yfm-color-table-row-background-private: rgba(0, 0, 0, 0.02);
+    --yfm-color-table-border-private: rgba(0, 0, 0, 0.07);
+    --yfm-color-table-background-private: #ffffff;
+    --yfm-color-table-head-background-private: rgba(0, 0, 0, 0.02);
+    --yfm-color-table-stripe-row-background-private: rgba(0, 0, 0, 0.02);
 }
