@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.64.0](https://github.com/diplodoc-platform/transform/compare/v4.63.8...v4.64.0) (2025-11-14)
+
+
+### Features
+
+* delete brand color for use diplodoc/themes in other proejcts ([#772](https://github.com/diplodoc-platform/transform/issues/772)) ([4560dee](https://github.com/diplodoc-platform/transform/commit/4560dee1034681ed53ef9e123723c4dfc80b742b))
+
 ## [4.63.8](https://github.com/diplodoc-platform/transform/compare/v4.63.7...v4.63.8) (2025-11-12)
 
 
