@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.64.1](https://github.com/diplodoc-platform/transform/compare/v4.64.0...v4.64.1) (2025-11-18)
+
+
+### Dependency update
+
+* Update @diplodoc/tabs-extension to 3.7.5 ([#794](https://github.com/diplodoc-platform/transform/issues/794)) ([c7a706b](https://github.com/diplodoc-platform/transform/commit/c7a706b7849d35c06ef75fcb7480be2bf4025f10))
+
 ## [4.64.0](https://github.com/diplodoc-platform/transform/compare/v4.63.8...v4.64.0) (2025-11-14)
 
 
