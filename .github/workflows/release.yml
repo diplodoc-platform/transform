@@ -7,6 +7,7 @@ name: release
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 
 jobs:
   release:
@@ -26,6 +27,10 @@ jobs:
         with:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
+      - name: Install latest npm (>= 11.5.1)
+        run: |
+          [ "$(printf '%s\n' "11.5.1" "$(npm -v)" | sort -V | head -n1)" = "11.5.1" ] || npm install -g npm@latest
+        shell: bash
       - run: |
           npm ci
           cd playground && npm ci
@@ -41,8 +46,6 @@ jobs:
           changelog-types: '[{"type":"feat","section":"Features","hidden":false},{"type":"fix","section":"Bug Fixes","hidden":false},{"type":"perf","section":"Performance Improvements","hidden":false},{"type":"deps","section":"Dependency update","hidden":false}]'
           bump-minor-pre-major: true
       - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.ROBOT_DATAUI_NPM_TOKEN}}
         if: ${{ steps.release.outputs.release_created }}
         shell: bash
       - run: npm run artifact:pages
