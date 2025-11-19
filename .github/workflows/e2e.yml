@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
+          node-version: 22
           cache: 'npm'
       - name: Install latest npm (>= 11.5.1)
         run: |
