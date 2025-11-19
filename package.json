@@ -12,6 +12,9 @@
     "tools",
     "generator"
   ],
+  "engines": {
+    "npm": ">=11.5.1"
+  },
   "homepage": "https://github.com/diplodoc-platform/transform#readme",
   "bugs": {
     "url": "https://github.com/diplodoc-platform/transform/issues"
