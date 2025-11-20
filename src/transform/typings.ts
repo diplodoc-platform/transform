@@ -90,6 +90,15 @@ export interface OptionsType {
     useCommonAnchorButtons?: boolean;
     lang?: Lang;
     [x: string]: unknown;
+    rawContent?: (path: string, assets: Record<string, string | boolean>) => string | boolean;
+    calcPath?: (root: string, path: string) => string;
+    replaceImageSrc?: (
+        state: StateCore,
+        currentPath: string,
+        path: string,
+        imgSrc: string,
+        opts: unknown,
+    ) => string;
 }
 
 export interface OutputType {
