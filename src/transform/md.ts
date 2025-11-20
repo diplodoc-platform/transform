@@ -76,6 +76,10 @@ function getPluginOptions(options: OptionsType) {
         conditionsInCode = false,
         disableLiquid = false,
         lang = DEFAULT_LANG,
+        svgInline = {
+            enabled: true,
+            maxFileSize: 2 * 1024 * 1024,
+        },
         ...customOptions
     } = options;
 
@@ -88,6 +92,7 @@ function getPluginOptions(options: OptionsType) {
         disableLiquid,
         log,
         lang,
+        svgInline,
     } as MarkdownItPluginOpts;
 }
 

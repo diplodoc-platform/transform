@@ -44,7 +44,18 @@ interface SVGOpts extends MarkdownItPluginOpts {
 function convertSvg(
     token: Token,
     state: StateCore,
-    {file: path, log, notFoundCb, assets, rootFile, root, imageOpts, rawContent}: Opts,
+    {
+        file: path,
+        log,
+        notFoundCb,
+        assets,
+        rootFile,
+        root,
+        forceInlineSvg,
+        imageOpts,
+        rawContent,
+        svgInline: {maxFileSize},
+    }: Opts,
 ) {
     try {
         let raw = rawContent(path, assets);
@@ -52,6 +63,15 @@ function convertSvg(
             throw new Error('Asset not found');
         }
         raw = raw === true ? '' : raw;
+        if (raw.length > maxFileSize) {
+            if (forceInlineSvg) {
+                log.warn(`Svg size more than in params but forced inline: ${bold(path)}`);
+            } else {
+                log.info(`Svg size more than in params: ${bold(path)}`);
+                token.attrSet('YFM011', `Svg size more than ${maxFileSize}`);
+                return null;
+            }
+        }
         const content = raw === '' ? '' : replaceSvgContent(raw, imageOpts);
         const svgToken = new state.Token('image_svg', '', 0);
         svgToken.attrSet('content', content);
@@ -83,6 +103,10 @@ type Opts = SVGOpts &
         assets: Record<string, string>;
         file: string;
         rootFile: string;
+        svgInline: {
+            enabled: boolean;
+            maxFileSize: number;
+        };
     };
 
 const getRawFile = (path: string) => {
@@ -95,6 +119,13 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
         calcPath = resolveRelativePath,
         replaceImageSrc: replaceImage = replaceImageSrc,
     } = opts;
+    // TODO:goldserg need remove support opts.inlineSvg
+    if (opts.inlineSvg !== undefined) {
+        opts.svgInline = {
+            ...opts.svgInline,
+            enabled: opts.inlineSvg,
+        };
+    }
     md.assets = [];
 
     const plugin = (state: StateCore) => {
@@ -117,7 +148,9 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                 const imgSrc = getSrcTokenAttr(image);
                 const forceInlineSvg = image.attrGet('inline') === 'true';
                 const shouldInlineSvg =
-                    image.attrGet('inline') === null ? opts.inlineSvg !== false : forceInlineSvg;
+                    image.attrGet('inline') === null
+                        ? opts.svgInline.enabled !== false
+                        : forceInlineSvg;
                 const imageOpts = {
                     width: image.attrGet('width'),
                     height: image.attrGet('height'),
@@ -135,6 +168,7 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                     const svgToken = convertSvg(image, state, {
                         ...opts,
                         rawContent,
+                        forceInlineSvg,
                         calcPath,
                         imageOpts,
                         rootFile: root,

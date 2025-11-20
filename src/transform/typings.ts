@@ -90,6 +90,10 @@ export interface OptionsType {
     useCommonAnchorButtons?: boolean;
     lang?: Lang;
     [x: string]: unknown;
+    svgInline?: {
+        enabled: boolean;
+        maxFileSize: number;
+    };
     rawContent?: (path: string, assets: Record<string, string | boolean>) => string | boolean;
     calcPath?: (root: string, path: string) => string;
     replaceImageSrc?: (
@@ -130,6 +134,10 @@ export interface MarkdownItPluginOpts {
     extractTitle?: boolean;
     disableLiquid?: boolean;
     skipLinkFileCheck?: boolean;
+    svgInline?: {
+        enabled: boolean;
+        maxFileSize: number;
+    };
 }
 
 export type MarkdownItPluginCb<T extends {} = {}> = {
