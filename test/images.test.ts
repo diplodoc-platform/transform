@@ -75,7 +75,13 @@ describe('Images plugin', () => {
             '![test](./test.svg){width=\'100vmax" onload="alert(1)\' height=\'100" onload="alert(1)\' inline=true}',
         );
         expect(html2).not.toContain('onload="alert(1)"');
-        expect(html2).toContain('width="');
+        expect(html2).not.toContain('width="');
+
+        const html3 = transformYfm(
+            '![test](./test.svg){inline=true width=\'100vmax" onload="alert(1)\' height=\'100" onload="alert(1)\'}',
+        );
+        expect(html3).not.toContain('onload="alert(1)"');
+        expect(html3).not.toContain('width="');
 
         unlinkSync(imagePath);
     });
