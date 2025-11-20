@@ -20,7 +20,10 @@ export = function makeHighlight(langs: HighlightLangMap = {}) {
                 classNames.push(lang);
 
                 try {
-                    highlightedStr = hljs.highlight(lang, str, true).value;
+                    highlightedStr = hljs.highlight(str, {
+                        language: lang,
+                        ignoreIllegals: true,
+                    }).value;
                 } catch (_) {}
             }
 
