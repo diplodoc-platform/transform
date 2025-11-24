@@ -36,61 +36,35 @@ function replaceImageSrc(
     return publicSrc;
 }
 
+interface InlineOptions {
+    enabled: boolean;
+    maxFileSize: number;
+}
+
 interface SVGOpts extends MarkdownItPluginOpts {
     notFoundCb: (s: string) => void;
     imageOpts: ImageOptions;
+    svgInline: InlineOptions;
 }
 
-function convertSvg(
-    token: Token,
-    state: StateCore,
-    {
-        file: path,
-        log,
-        notFoundCb,
-        assets,
-        rootFile,
-        root,
-        forceInlineSvg,
-        imageOpts,
-        rawContent,
-        svgInline: {maxFileSize},
-    }: Opts,
-) {
+function getSvgContent(file: string, from: string, {rawContent, notFoundCb, log, root = ''}: Opts) {
     try {
-        let raw = rawContent(path, assets);
-        if (!raw) {
-            throw new Error('Asset not found');
-        }
-        raw = raw === true ? '' : raw;
-        if (raw.length > maxFileSize) {
-            if (forceInlineSvg) {
-                log.warn(`Svg size more than in params but forced inline: ${bold(path)}`);
-            } else {
-                log.info(`Svg size more than in params: ${bold(path)}`);
-                token.attrSet('YFM011', `Svg size more than ${maxFileSize}`);
-                return null;
-            }
-        }
-        const content = raw === '' ? '' : replaceSvgContent(raw, imageOpts);
-        const svgToken = new state.Token('image_svg', '', 0);
-        svgToken.attrSet('content', content);
-
-        return svgToken;
+        return rawContent(file);
     } catch (e: unknown) {
-        log.error(`SVG ${path} from ${rootFile} not found`);
+        const path = file.replace(root, '');
+        log.error(`SVG ${path} from ${from} not found`);
 
         if (notFoundCb) {
-            notFoundCb(path.replace(root, ''));
+            notFoundCb(path);
         }
 
-        return token;
+        return null;
     }
 }
 
 type Opts = SVGOpts &
     ImageOpts & {
-        rawContent: (path: string, assets: Record<string, string | boolean>) => string | boolean;
+        rawContent: (path: string) => string;
         calcPath: (root: string, path: string) => string;
         replaceImageSrc: (
             state: StateCore,
@@ -99,15 +73,20 @@ type Opts = SVGOpts &
             imgSrc: string,
             opts: ImageOpts,
         ) => string;
-        forceInlineSvg: boolean;
-        assets: Record<string, string>;
         file: string;
-        rootFile: string;
-        svgInline: {
-            enabled: boolean;
-            maxFileSize: number;
-        };
     };
+
+function shouldBeInlined(token: Token, opts: InlineOptions) {
+    if (!token.attrGet('src')?.endsWith('.svg')) {
+        return false;
+    }
+
+    const forceInlineSvg = token.attrGet('inline') === 'true';
+    const shouldInlineSvg =
+        forceInlineSvg || (token.attrGet('inline') !== 'false' && opts.enabled !== false);
+
+    return shouldInlineSvg;
+}
 
 const getRawFile = (path: string) => {
     return readFileSync(path, 'utf8').toString();
@@ -146,42 +125,41 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                 }
 
                 const imgSrc = getSrcTokenAttr(image);
-                const forceInlineSvg = image.attrGet('inline') === 'true';
-                const shouldInlineSvg =
-                    image.attrGet('inline') === null
-                        ? opts.svgInline.enabled !== false
-                        : forceInlineSvg;
-                const imageOpts = {
-                    width: image.attrGet('width'),
-                    height: image.attrGet('height'),
-                    inline: shouldInlineSvg,
-                };
-
                 if (isExternalHref(imgSrc)) {
                     return;
                 }
 
-                const root = state.env.path || opts.path;
-                const file = calcPath(root, imgSrc);
+                const forceInlineSvg = image.attrGet('inline') === 'true';
+                const shouldInlineSvg = shouldBeInlined(image, opts.svgInline);
+                const imageOpts = {
+                    width: image.attrGet('width'),
+                    height: image.attrGet('height'),
+                };
 
-                if (imgSrc.endsWith('.svg') && shouldInlineSvg) {
-                    const svgToken = convertSvg(image, state, {
+                const from = state.env.path || opts.path;
+                const file = calcPath(from, imgSrc);
+
+                if (shouldInlineSvg) {
+                    const svgContent = getSvgContent(file, from, {
                         ...opts,
                         rawContent,
-                        forceInlineSvg,
-                        calcPath,
-                        imageOpts,
-                        rootFile: root,
-                        file,
                     });
-                    if (svgToken) {
-                        childrenTokens[index] = svgToken;
-                    } else {
-                        image.attrSet('src', replaceImage(state, root, file, imgSrc, opts));
-                        image.attrSet('yfm_patched', '1');
+                    if (svgContent) {
+                        if (svgContent.length > opts.svgInline.maxFileSize && !forceInlineSvg) {
+                            image.attrSet(
+                                'YFM011',
+                                `Svg size: ${svgContent.length}; Config size: ${opts.svgInline.maxFileSize}; Src: ${bold(file)}`,
+                            );
+                        } else {
+                            const svgToken = new state.Token('image_svg', '', 0);
+                            svgToken.attrSet('content', replaceSvgContent(svgContent, imageOpts));
+                            childrenTokens[index] = svgToken;
+                        }
                     }
-                } else {
-                    image.attrSet('src', replaceImage(state, root, file, imgSrc, opts));
+                }
+
+                if (childrenTokens[index].type === 'image') {
+                    image.attrSet('src', replaceImage(state, from, file, imgSrc, opts));
                     image.attrSet('yfm_patched', '1');
                 }
             });
@@ -201,7 +179,10 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
     };
 };
 
-function replaceSvgContent(content: string, options: ImageOptions) {
+function replaceSvgContent(content: string | null, options: ImageOptions) {
+    if (!content) {
+        return '';
+    }
     // monoline
     content = content.replace(/>\r?\n</g, '><').replace(/\r?\n/g, ' ');
 
