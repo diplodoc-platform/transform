@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.64.2](https://github.com/diplodoc-platform/transform/compare/v4.64.1...v4.64.2) (2025-11-24)
+
+
+### Bug Fixes
+
+* fixed highlight.js ([#799](https://github.com/diplodoc-platform/transform/issues/799)) ([5230aec](https://github.com/diplodoc-platform/transform/commit/5230aec3f6c6e11333ac5b70b9b2bddc4a7bc623))
+
 ## [4.64.1](https://github.com/diplodoc-platform/transform/compare/v4.64.0...v4.64.1) (2025-11-18)
 
 
