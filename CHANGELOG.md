@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.65.0](https://github.com/diplodoc-platform/transform/compare/v4.64.2...v4.65.0) (2025-11-25)
+
+
+### Features
+
+* add svg inline options ([2194e0a](https://github.com/diplodoc-platform/transform/commit/2194e0a8b058c38b80092106855b7259658e2b1a))
+
+
+### Bug Fixes
+
+* refactoring plugin images ([dd29425](https://github.com/diplodoc-platform/transform/commit/dd2942573f1d1c44bfcffd5c7791b0a8318a5f7b))
+
 ## [4.64.2](https://github.com/diplodoc-platform/transform/compare/v4.64.1...v4.64.2) (2025-11-24)
 
 
