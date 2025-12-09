@@ -186,6 +186,9 @@ function replaceSvgContent(content: string | null, options: ImageOptions) {
     // monoline
     content = content.replace(/>\r?\n</g, '><').replace(/\r?\n/g, ' ');
 
+    // remove <?xml...?>
+    content = content.replace(/<\?xml.*?\?>.*?(<svg.*)/g, '$1');
+
     // width, height
     let svgRoot = content.replace(/.*?<svg([^>]*)>.*/g, '$1');
 
