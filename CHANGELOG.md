@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.65.1](https://github.com/diplodoc-platform/transform/compare/v4.65.0...v4.65.1) (2025-12-09)
+
+
+### Bug Fixes
+
+* remove xml header from svg ([2603932](https://github.com/diplodoc-platform/transform/commit/260393252bf1ad65233814057165975ff95e5e4c))
+
 ## [4.65.0](https://github.com/diplodoc-platform/transform/compare/v4.64.2...v4.65.0) (2025-11-25)
 
 
