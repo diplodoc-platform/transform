@@ -16,7 +16,7 @@ describeStory(stories, 'AccordionWithRadioTabs', () => {
         const question = yfmRoot.getByRole('tab', {name: 'Вопрос 1'});
         await question.click();
 
-        const yesTab = yfmRoot.getByRole('radio', {name: 'Да'});
+        const yesTab = yfmRoot.getByRole('tab', {name: 'Да'});
 
         await yesTab.click();
         await expect(yfmRoot).toHaveScreenshot();
