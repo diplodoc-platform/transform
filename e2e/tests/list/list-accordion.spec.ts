@@ -25,7 +25,7 @@ describeStory(stories, 'AccordionWithRadioTabs', () => {
 
 describeStory(stories, 'AccordionNested', () => {
     test('Visual test with nested accordion', async ({yfmRoot}) => {
-        const outerFirst = yfmRoot.getByRole('tab', {name: 'Внешний пункт'});
+        const outerFirst = yfmRoot.getByRole('tab', {name: 'Внешний пункт 1'});
 
         await outerFirst.click();
 

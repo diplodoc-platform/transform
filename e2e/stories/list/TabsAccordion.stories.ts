@@ -60,7 +60,7 @@ export const AccordionNested: MarkdownSnippetStory = {
         snippet: dedent`
         {% list tabs accordion %}
 
-        - Внешний пункт
+        - Внешний пункт 1
 
             {% list tabs accordion %}
 
