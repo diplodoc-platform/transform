@@ -12,13 +12,13 @@ export const AccordionBasic: MarkdownSnippetStory = {
         snippet: dedent`
         {% list tabs accordion %}
 
-        - Первый пункт
+        - First item
 
-            Контент первого пункта.
+            Content of the first item.
 
-        - Второй пункт
+        - Second item
 
-            Контент второго пункта.
+            Content of the second item.
 
         {% endlist %}
         `,
@@ -31,23 +31,23 @@ export const AccordionWithRadioTabs: MarkdownSnippetStory = {
         snippet: dedent`
         {% list tabs accordion %}
 
-        - Вопрос 1
+        - Question 1
 
             {% list tabs radio %}
 
-            - Да
+            - Yes
 
-                Ответ для "Да".
+                Answer for "Yes".
 
-            - Нет
+            - No
 
-                Ответ для "Нет".
+                Answer for "No".
 
             {% endlist %}
 
-        - Вопрос 2
+        - Question 2
 
-            Контент второго пункта аккордеона.
+            Content of the second accordion item.
 
         {% endlist %}
         `,
@@ -60,23 +60,23 @@ export const AccordionNested: MarkdownSnippetStory = {
         snippet: dedent`
         {% list tabs accordion %}
 
-        - Внешний пункт 1
+        - Outer item 1
 
             {% list tabs accordion %}
 
-            - Внутренний пункт 1
+            - Inner item 1
 
-                Контент внутреннего пункта 1.
+                Content of inner item 1.
 
-            - Внутренний пункт 2
+            - Inner item 2
 
-                Контент внутреннего пункта 2.
+                Content of inner item 2.
 
             {% endlist %}
 
-        - Внешний пункт 2
+        - Outer item 2
 
-            Второй внешний пункт без вложенного аккордеона.
+            Second outer item without nested accordion.
 
         {% endlist %}
         `,

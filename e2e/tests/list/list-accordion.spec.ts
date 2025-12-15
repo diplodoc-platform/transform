@@ -4,7 +4,7 @@ import {expect, test} from '../../fixtures/test';
 
 describeStory(stories, 'AccordionBasic', () => {
     test('Visual test only accordion', async ({yfmRoot}) => {
-        const first = yfmRoot.getByRole('tab', {name: 'Первый пункт'});
+        const first = yfmRoot.getByRole('tab', {name: 'First item'});
 
         await first.click();
         await expect(yfmRoot).toHaveScreenshot();
@@ -13,10 +13,10 @@ describeStory(stories, 'AccordionBasic', () => {
 
 describeStory(stories, 'AccordionWithRadioTabs', () => {
     test('Visual test with nested radio tabs', async ({yfmRoot}) => {
-        const question = yfmRoot.getByRole('tab', {name: 'Вопрос 1'});
+        const question = yfmRoot.getByRole('tab', {name: 'Question 1'});
         await question.click();
 
-        const yesTab = yfmRoot.getByRole('tab', {name: 'Да'});
+        const yesTab = yfmRoot.getByRole('tab', {name: 'Yes'});
 
         await yesTab.click();
         await expect(yfmRoot).toHaveScreenshot();
@@ -25,11 +25,11 @@ describeStory(stories, 'AccordionWithRadioTabs', () => {
 
 describeStory(stories, 'AccordionNested', () => {
     test('Visual test with nested accordion', async ({yfmRoot}) => {
-        const outerFirst = yfmRoot.getByRole('tab', {name: 'Внешний пункт 1'});
+        const outerFirst = yfmRoot.getByRole('tab', {name: 'Outer item 1'});
 
         await outerFirst.click();
 
-        const innerFirst = yfmRoot.getByRole('tab', {name: 'Внутренний пункт 1'});
+        const innerFirst = yfmRoot.getByRole('tab', {name: 'Inner item 1'});
 
         await innerFirst.click();
         await expect(yfmRoot).toHaveScreenshot();
