@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.65.2](https://github.com/diplodoc-platform/transform/compare/v4.65.1...v4.65.2) (2025-12-15)
+
+
+### Bug Fixes
+
+* fixed nested elements in accordion ([#808](https://github.com/diplodoc-platform/transform/issues/808)) ([b8b0619](https://github.com/diplodoc-platform/transform/commit/b8b0619c7e0d2795803c9c3c7194c72cf2a8a408))
+
 ## [4.65.1](https://github.com/diplodoc-platform/transform/compare/v4.65.0...v4.65.1) (2025-12-09)
 
 
