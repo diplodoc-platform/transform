@@ -202,7 +202,7 @@ export const imageWithSize = (md: MarkdownIt, opts?: ImsizeOptions): ParserInlin
             // Handle inline attribute from curly braces
             if (state.src.slice(Math.max(0, pos), max).includes('{')) {
                 const result = parseInlineAttributes(
-                    state.src.slice(Math.max(0, pos) + 1, max - 1),
+                    state.src.slice(Math.max(0, pos) + 1, max - 1).replace(/\{?(.*?)\}.*/, '$1'),
                 );
 
                 if (result.width !== '') {
