@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.65.3](https://github.com/diplodoc-platform/transform/compare/v4.65.2...v4.65.3) (2025-12-18)
+
+
+### Bug Fixes
+
+* svg with incorrect parse by md-it from linux ([d8088f4](https://github.com/diplodoc-platform/transform/commit/d8088f493b3cab8fe2a9b554afd61bf824b6af8b))
+
 ## [4.65.2](https://github.com/diplodoc-platform/transform/compare/v4.65.1...v4.65.2) (2025-12-15)
 
 
