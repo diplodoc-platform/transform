@@ -2,8 +2,9 @@
 
 import type {CheckboxOptions} from '../src/transform/plugins/checkbox/checkbox';
 
-import path from 'path';
+import path from 'node:path';
 import MarkdownIt from 'markdown-it';
+import dd from 'ts-dedent';
 
 import transform from '../src/transform';
 import plugin from '../src/transform/plugins/checkbox';
@@ -22,7 +23,7 @@ const transformYfm = (text: string) => {
 
 describe('markdown-it-checkbox', () => {
     describe('markdown-it-checkbox()', () => {
-        const md = new MarkdownIt({});
+        const md = new MarkdownIt({breaks: true});
 
         md.use(plugin, {
             divWrap: false,
@@ -91,5 +92,23 @@ describe('markdown-it-checkbox', () => {
                 '<label for="checkbox0">text <em>italic</em> <strong>bold</strong> label</label>\n' +
                 '</div>\n',
         );
+    });
+
+    it('should generate token stream', () => {
+        const markup = dd`
+        paragraph
+
+        [ ] checkbox0
+        [X] checkbox1
+
+        [_] long
+        checkbox2
+        [x] long
+        looong
+        checkbox3
+        `;
+
+        const tokens = new MarkdownIt({breaks: true}).use(plugin).parse(markup, {});
+        expect(tokens).toMatchSnapshot();
     });
 });

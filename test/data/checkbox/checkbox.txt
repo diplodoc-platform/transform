@@ -53,3 +53,95 @@
 </li>
 </ul>
 .
+
+.
+[ ] one
+[_] two
+[x] tree
+[X] four
+[ ] five
+.
+<div class="checkbox">
+<input type="checkbox" id="checkbox6" disabled="">
+<label for="checkbox6">one</label>
+</div>
+<div class="checkbox">
+<input type="checkbox" id="checkbox7" disabled="">
+<label for="checkbox7">two</label>
+</div>
+<div class="checkbox">
+<input type="checkbox" id="checkbox8" disabled="" checked="true">
+<label for="checkbox8">tree</label>
+</div>
+<div class="checkbox">
+<input type="checkbox" id="checkbox9" disabled="" checked="true">
+<label for="checkbox9">four</label>
+</div>
+<div class="checkbox">
+<input type="checkbox" id="checkbox10" disabled="">
+<label for="checkbox10">five</label>
+</div>
+.
+
+.
+not [ ] checkbox
+.
+<p>not [ ] checkbox</p>
+.
+
+.
+not
+[ ] checkbox
+.
+<p>not<br>
+[ ] checkbox</p>
+.
+
+.
+[ ] text [ ] text2
+.
+<div class="checkbox">
+<input type="checkbox" id="checkbox11" disabled="">
+<label for="checkbox11">text [ ] text2</label>
+</div>
+.
+
+.
+[x] text **bold** text
+.
+<div class="checkbox">
+<input type="checkbox" id="checkbox12" disabled="" checked="true">
+<label for="checkbox12">text <strong>bold</strong> text</label>
+</div>
+.
+
+.
+[_] long
+long
+text
+.
+<div class="checkbox">
+<input type="checkbox" id="checkbox13" disabled="">
+<label for="checkbox13">long<br>
+long<br>
+text</label>
+</div>
+.
+
+.
+[_] first
+checkbox
+[X] second
+checkbox
+.
+<div class="checkbox">
+<input type="checkbox" id="checkbox14" disabled="">
+<label for="checkbox14">first<br>
+checkbox</label>
+</div>
+<div class="checkbox">
+<input type="checkbox" id="checkbox15" disabled="" checked="true">
+<label for="checkbox15">second<br>
+checkbox</label>
+</div>
+.
