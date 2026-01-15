@@ -51,7 +51,7 @@ function processRecursive(
                 }
             }
         }
-    } catch (e) {
+    } catch {
         log.error(`No such file or has no access to ${bold(includePath)} in ${bold(path)}`);
     }
 }

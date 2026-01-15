@@ -24,7 +24,7 @@ export = function makeHighlight(langs: HighlightLangMap = {}) {
                         language: lang,
                         ignoreIllegals: true,
                     }).value;
-                } catch (_) {}
+                } catch {}
             }
 
             highlightedStr = highlightedStr || escapeHtml(str);
