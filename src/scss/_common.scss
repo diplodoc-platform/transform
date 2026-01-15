@@ -23,10 +23,12 @@
     color: var(--yfm-color-text, var(--yfm-color-text-private));
     tab-size: var(--yfm-tab-size, inherit);
 
-    --yfm-font-family-monospace: 'Menlo', 'Monaco', 'Consolas', 'Ubuntu Mono', 'Liberation Mono',
-        'DejaVu Sans Mono', 'Courier New', 'Courier', monospace;
-    --yfm-font-family-sans: 'Segoe UI', arial, helvetica, sans-serif, 'Apple Color Emoji',
-        'Segoe UI Emoji', 'Segoe UI Symbol';
+    --yfm-font-family-monospace:
+        'Menlo', 'Monaco', 'Consolas', 'Ubuntu Mono', 'Liberation Mono', 'DejaVu Sans Mono',
+        'Courier New', 'Courier', monospace;
+    --yfm-font-family-sans:
+        'Segoe UI', arial, helvetica, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol';
 
     * {
         box-sizing: border-box;

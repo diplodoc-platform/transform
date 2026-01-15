@@ -50,7 +50,7 @@ interface SVGOpts extends MarkdownItPluginOpts {
 function getSvgContent(file: string, from: string, {rawContent, notFoundCb, log, root = ''}: Opts) {
     try {
         return rawContent(file);
-    } catch (e: unknown) {
+    } catch {
         const path = file.replace(root, '');
         log.error(`SVG ${path} from ${from} not found`);
 
@@ -168,7 +168,7 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
 
     try {
         md.core.ruler.before('includes', 'images', plugin);
-    } catch (e) {
+    } catch {
         md.core.ruler.push('images', plugin);
     }
 

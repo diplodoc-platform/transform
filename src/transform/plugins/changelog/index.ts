@@ -163,7 +163,7 @@ const changelog: MarkdownItPluginCb<Options> = function (md, {extractChangelogs,
 
     try {
         md.core.ruler.before('curly_attributes', 'changelog', plugin);
-    } catch (e) {
+    } catch {
         md.core.ruler.push('changelog', plugin);
     }
 };

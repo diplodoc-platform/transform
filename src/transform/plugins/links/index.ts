@@ -262,7 +262,7 @@ const index: MarkdownItPluginCb<ProcOpts & Options> = (md: MarkdownItIncluded, o
 
     try {
         md.core.ruler.before('includes', 'links', plugin);
-    } catch (e) {
+    } catch {
         md.core.ruler.push('links', plugin);
     }
 };

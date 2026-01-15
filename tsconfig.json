@@ -9,5 +9,6 @@
     "target": "ES6",
     "types": ["node", "jest"]
   },
-  "include": ["src/**/*", "test/**/*"]
+  "include": ["src/**/*", "test/**/*"],
+  "exclude": ["node_modules", "lib", "dist", "e2e", "playground"]
 }

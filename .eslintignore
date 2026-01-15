@@ -11,5 +11,12 @@ node_modules
 /cache
 /coverage
 /pages-build
-/playground/www
+/playground
+/e2e
 /external
+.lintstagedrc.js
+.eslintrc.js
+.prettierrc.js
+.stylelintrc.js
+jest.config.js
+esbuild/**/*.mjs
