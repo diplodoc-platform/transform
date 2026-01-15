@@ -138,7 +138,7 @@ const index: MarkdownItPluginCb<NotesPluginParams> = (
 
     try {
         md.core.ruler.before('curly_attributes', 'notes', plugin);
-    } catch (e) {
+    } catch {
         md.core.ruler.push('notes', plugin);
     }
 };

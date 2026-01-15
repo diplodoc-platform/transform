@@ -14,7 +14,8 @@
                 display: table-row-group;
             }
 
-            th, td {
+            th,
+            td {
                 page-break-inside: avoid;
                 white-space: pre-wrap;
                 text-overflow: initial;

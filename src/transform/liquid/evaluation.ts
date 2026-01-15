@@ -28,7 +28,7 @@ const operators: Record<string, WithFilter | NoFilter | DotOperator> = {
     '|': ((l, filter, exp) => {
         try {
             return filter(l);
-        } catch (e) {
+        } catch {
             if (!filter) {
                 throw new SkippedEvalError('Cannot apply an unsupported filter', exp);
             }
@@ -46,7 +46,7 @@ const operators: Record<string, WithFilter | NoFilter | DotOperator> = {
             const {name, args} = parsed;
 
             return l[name](...args);
-        } catch (e) {
+        } catch {
             if (!l) {
                 throw new SkippedEvalError(
                     `Cannot apply the function '${name}' on an undefined variable`,

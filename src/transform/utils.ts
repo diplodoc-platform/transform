@@ -87,7 +87,7 @@ export function getHrefTokenAttr(token: Token) {
     let href = token.attrGet('href') || '';
     try {
         href = decodeURI(href);
-    } catch (e) {}
+    } catch {}
 
     return href;
 }
@@ -97,7 +97,7 @@ export function getSrcTokenAttr(token: Token) {
     try {
         // decodeURI can throw an error https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError
         src = decodeURI(src);
-    } catch (e) {}
+    } catch {}
 
     return src;
 }

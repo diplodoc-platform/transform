@@ -4,9 +4,22 @@
 
 [![NPM version](https://img.shields.io/npm/v/@diplodoc/transform.svg?style=flat)](https://www.npmjs.org/package/@diplodoc/transform)
 
-[@diplodoc/transform](https://www.npmjs.com/package/@diplodoc/transform) is a package for converting Yandex Flavored Markdown to HTML.
+# @diplodoc/transform
+
+Core transformation package for the Diplodoc platform. Converts Yandex Flavored Markdown (YFM) to HTML with support for interactive components, Liquid templates, and extensible plugin architecture.
 
 Use it in your code to work with text during program execution. For example, to display user-generated content.
+
+## Features
+
+- **YFM to HTML transformation** — Core markdown processing with YFM extensions
+- **Liquid template support** — Variable substitution, conditions, cycles
+- **Plugin system** — Extensible architecture using extension packages (cut, tabs, file)
+- **Client-side runtime** — Interactive components (tabs, cuts, terms, anchors, etc.)
+- **SCSS styles** — Comprehensive styling system with CSS variables
+- **Multiple output formats** — HTML, metadata, titles, headings
+- **HTML sanitization** — Built-in XSS protection with customizable sanitizer
+- **YFMLint integration** — Custom markdownlint rules for YFM validation
 
 ## Installation {#install}
 
@@ -186,12 +199,48 @@ MIT
 - `--yfm-color-table-head-background`
 - `--yfm-color-table-stripe-row-background`
 
+## Development
+
+### Setup
+
+```bash
+# Install dependencies
+npm install
+
+# Build server-side code
+npm run build:lib
+
+# Build client-side assets
+npm run build:dist
+
+# Build both
+npm run build
+
+# Run unit tests
+npm test
+
+# Type check
+npm run typecheck
+
+# Lint code
+npm run lint
+```
+
+### Development Workflow
+
+```bash
+# Watch mode for server-side code
+npm run dev:lib
+
+# Start playground (interactive YFM testing)
+npm run playground
+```
+
 ## Contributing
 
 ### Tests
 
-This package features unit tests run by Jest and e2e & visual tests run by Playwright. Playwright tests are located in
-`e2e` sub-package.
+This package features unit tests run by Jest (to be migrated to Vitest) and e2e & visual tests run by Playwright. Playwright tests are located in `e2e` sub-package.
 
 #### Playwright: prerequisites
 
@@ -224,3 +273,7 @@ $ LIMA_INSTANCE=instancename npm run test:playwright
 ```
 
 This ensures the `DOCKER_HOST` is set as necessary.
+
+## Documentation
+
+For detailed information about architecture, development, and contributing, see [AGENTS.md](./AGENTS.md).

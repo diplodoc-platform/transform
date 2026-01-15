@@ -17,7 +17,7 @@ export function isFileExists(file: string) {
         const stats = statSync(file);
 
         return stats.isFile();
-    } catch (e) {
+    } catch {
         return false;
     }
 }
@@ -173,7 +173,7 @@ export function getRelativePath(path: string, toPath: string) {
 export function getRealPath(symlinkPath: string): string {
     try {
         return realpathSync(symlinkPath);
-    } catch (err) {
+    } catch {
         return symlinkPath;
     }
 }

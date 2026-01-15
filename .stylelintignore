@@ -10,3 +10,5 @@ node_modules
 /cache
 /coverage
 /external
+/playground
+/e2e
