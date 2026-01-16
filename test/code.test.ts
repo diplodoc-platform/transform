@@ -2,8 +2,9 @@ import type MarkdownIt from 'markdown-it';
 import type Token from 'markdown-it/lib/token';
 import type Renderer from 'markdown-it/lib/renderer';
 import type {MarkdownItPluginOpts} from '../src/transform/plugins/typings';
+import type {Mock} from 'vitest';
 
-import {type Mock, describe, expect, it, vi} from 'vitest';
+import {describe, expect, it, vi} from 'vitest';
 
 import code from '../src/transform/plugins/code';
 
