@@ -42,51 +42,29 @@ This file contains instructions for AI agents working with the `@diplodoc/transf
 
 - `src/` — source code
   - `transform/` — **Server-side transformation** (Node.js)
-    - `index.ts` — main transform function
-    - `md.ts` — MarkdownIt initialization
+    - Core transformation logic and MarkdownIt initialization
+    - `plugins/` — Built-in plugins and extension integrations (cut, tabs, file, anchors, code, notes, term, table, etc.)
     - `liquid/` — Liquid template engine implementation (deprecated, use `@diplodoc/liquid`)
-    - `plugins/` — Built-in plugins and extension integrations
-      - `cut.ts` — Cut extension integration
-      - `tabs.ts` — Tabs extension integration
-      - `file/` — File extension integration
-      - `anchors/`, `code.ts`, `notes/`, `term/`, `table/`, etc. — Built-in plugins
     - `preprocessors/` — Content preprocessing
-    - `sanitize.ts` — HTML sanitization
     - `yfmlint/` — Custom markdownlint rules (deprecated, use `@diplodoc/yfmlint`)
+    - HTML sanitization and utility functions
   - `js/` — **Client-side runtime** (browser)
-    - `index.ts` — main runtime entry point
-    - `base.ts` — base functionality
-    - `anchor.ts` — anchor handling
-    - `code.ts` — code block handling
-    - `inline-code/` — inline code handling
-    - `term/` — term definitions
-    - `wide-mode/` — wide mode modal
-    - `print/` — print-specific functionality
+    - Interactive components for anchor handling, code blocks, inline code, terms, wide mode, print functionality
+    - Runtime code for browser execution
   - `scss/` — **Styles** (SCSS)
-    - `yfm.scss` — main stylesheet (forwards extension styles)
-    - `base.scss` — base styles
-    - `yfm-base.scss` — YFM-specific base styles
-    - `print.scss` — print styles
-    - `print/` — print-specific styles
-    - Various component styles (`_anchor.scss`, `_code.scss`, `_note.scss`, etc.)
+    - Main stylesheets (forwards extension styles)
+    - Base styles, component styles, and print-specific styles
 - `test/` — **Unit tests** (Jest/Vitest)
-  - Test files for transform functionality
-  - Snapshots for HTML output
-  - Legacy Liquid template tests (deprecated)
-  - Plugin tests
+  - Test files for transform functionality, plugins, and HTML output snapshots
+  - Legacy tests for Liquid and YFMLint (deprecated)
 - `e2e/` — **E2E tests** (Playwright, separate package)
-  - Visual regression tests
-  - Integration tests
+  - Visual regression and integration tests
   - Storybook-based test fixtures
 - `playground/` — **Interactive playground** (separate package)
-  - Published to gh-pages
-  - Interactive YFM syntax testing
-  - Development tool
-- `lib/` — compiled server-side code (generated)
+  - Published to gh-pages for interactive YFM syntax testing
+- `lib/` — compiled server-side code (generated, CommonJS)
 - `dist/` — compiled client-side assets (generated)
-  - `js/` — bundled JavaScript
-  - `css/` — compiled CSS
-  - `scss/` — source SCSS files
+  - Bundled JavaScript, compiled CSS, and source SCSS files
 
 ### Configuration Files
 
