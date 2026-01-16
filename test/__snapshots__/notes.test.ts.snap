@@ -1,14 +1,14 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Alerts should generate token stream 1`] = `
-Array [
+exports[`Alerts > should generate token stream 1`] = `
+[
   Token {
-    "attrs": Array [
-      Array [
+    "attrs": [
+      [
         "class",
         "yfm-note yfm-accent-info",
       ],
-      Array [
+      [
         "note-type",
         "info",
       ],
@@ -19,7 +19,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       0,
       3,
     ],
@@ -30,8 +30,8 @@ Array [
     "type": "yfm_note_open",
   },
   Token {
-    "attrs": Array [
-      Array [
+    "attrs": [
+      [
         "class",
         "yfm-note-title",
       ],
@@ -52,7 +52,7 @@ Array [
   Token {
     "attrs": null,
     "block": false,
-    "children": Array [
+    "children": [
       Token {
         "attrs": null,
         "block": false,
@@ -96,8 +96,8 @@ Array [
     "type": "yfm_note_title_close",
   },
   Token {
-    "attrs": Array [
-      Array [
+    "attrs": [
+      [
         "class",
         "yfm-note-content",
       ],
@@ -108,7 +108,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       2,
       1,
     ],
@@ -141,7 +141,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       2,
       3,
     ],
@@ -154,136 +154,48 @@ Array [
 ]
 `;
 
-exports[`Alerts should render empty note 1`] = `
-<div class="yfm-note yfm-accent-info"
-     note-type="info"
->
-  <div class="yfm-note-content">
-  </div>
-</div>
+exports[`Alerts > should render empty note 1`] = `"<div class=\\"yfm-note yfm-accent-info\\" note-type=\\"info\\"><div class=\\"yfm-note-content\\"></div></div>"`;
+
+exports[`Alerts > should render nested notes 1`] = `
+"<div class=\\"yfm-note yfm-accent-info\\" note-type=\\"info\\"><p class=\\"yfm-note-title\\">Outer title</p>
+<div class=\\"yfm-note-content\\"><p>Outer content</p>
+<div class=\\"yfm-note yfm-accent-info\\" note-type=\\"info\\"><p class=\\"yfm-note-title\\">Inner title</p>
+<div class=\\"yfm-note-content\\"><p>Inner content</p>
+</div></div></div></div>"
 `;
 
-exports[`Alerts should render nested notes 1`] = `
-<div class="yfm-note yfm-accent-info"
-     note-type="info"
->
-  <p class="yfm-note-title">
-    Outer title
-  </p>
-  <div class="yfm-note-content">
-    <p>
-      Outer content
-    </p>
-    <div class="yfm-note yfm-accent-info"
-         note-type="info"
-    >
-      <p class="yfm-note-title">
-        Inner title
-      </p>
-      <div class="yfm-note-content">
-        <p>
-          Inner content
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
+exports[`Alerts > should render note with empty string title 1`] = `
+"<div class=\\"yfm-note yfm-accent-info\\" note-type=\\"info\\"><div class=\\"yfm-note-content\\"><p>Note content with empty string title</p>
+</div></div>"
 `;
 
-exports[`Alerts should render note with empty string title 1`] = `
-<div class="yfm-note yfm-accent-info"
-     note-type="info"
->
-  <div class="yfm-note-content">
-    <p>
-      Note content with empty string title
-    </p>
-  </div>
-</div>
+exports[`Alerts > should render note without title (notesAutotitle: false) 1`] = `
+"<div class=\\"yfm-note yfm-accent-info\\" note-type=\\"info\\"><div class=\\"yfm-note-content\\"><p>Note content without title</p>
+</div></div>"
 `;
 
-exports[`Alerts should render note without title (notesAutotitle: false) 1`] = `
-<div class="yfm-note yfm-accent-info"
-     note-type="info"
->
-  <div class="yfm-note-content">
-    <p>
-      Note content without title
-    </p>
-  </div>
-</div>
+exports[`Alerts > should render note without title (notesAutotitle: true) 1`] = `
+"<div class=\\"yfm-note yfm-accent-info\\" note-type=\\"info\\"><p class=\\"yfm-note-title\\">Примечание</p>
+<div class=\\"yfm-note-content\\"><p>Note content without title</p>
+</div></div>"
 `;
 
-exports[`Alerts should render note without title (notesAutotitle: true) 1`] = `
-<div class="yfm-note yfm-accent-info"
-     note-type="info"
->
-  <p class="yfm-note-title">
-    Примечание
-  </p>
-  <div class="yfm-note-content">
-    <p>
-      Note content without title
-    </p>
-  </div>
-</div>
+exports[`Alerts > should render siblings notes 1`] = `
+"<div class=\\"yfm-note yfm-accent-info\\" note-type=\\"info\\"><p class=\\"yfm-note-title\\">Note title 1</p>
+<div class=\\"yfm-note-content\\"><p>Note content 1</p>
+</div></div><div class=\\"yfm-note yfm-accent-info\\" note-type=\\"info\\"><p class=\\"yfm-note-title\\">Note title 2</p>
+<div class=\\"yfm-note-content\\"><p>Note content 2</p>
+</div></div>"
 `;
 
-exports[`Alerts should render siblings notes 1`] = `
-<div class="yfm-note yfm-accent-info"
-     note-type="info"
->
-  <p class="yfm-note-title">
-    Note title 1
-  </p>
-  <div class="yfm-note-content">
-    <p>
-      Note content 1
-    </p>
-  </div>
-</div>
-<div class="yfm-note yfm-accent-info"
-     note-type="info"
->
-  <p class="yfm-note-title">
-    Note title 2
-  </p>
-  <div class="yfm-note-content">
-    <p>
-      Note content 2
-    </p>
-  </div>
-</div>
+exports[`Alerts > should render simple note 1`] = `
+"<div class=\\"yfm-note yfm-accent-info\\" note-type=\\"info\\"><p class=\\"yfm-note-title\\">Note title</p>
+<div class=\\"yfm-note-content\\"><p>Note content</p>
+</div></div>"
 `;
 
-exports[`Alerts should render simple note 1`] = `
-<div class="yfm-note yfm-accent-info"
-     note-type="info"
->
-  <p class="yfm-note-title">
-    Note title
-  </p>
-  <div class="yfm-note-content">
-    <p>
-      Note content
-    </p>
-  </div>
-</div>
-`;
-
-exports[`Alerts should render title with format 1`] = `
-<div class="yfm-note yfm-accent-info"
-     note-type="info"
->
-  <p class="yfm-note-title">
-    <em>
-      Italic note title
-    </em>
-  </p>
-  <div class="yfm-note-content">
-    <p>
-      Content
-    </p>
-  </div>
-</div>
+exports[`Alerts > should render title with format 1`] = `
+"<div class=\\"yfm-note yfm-accent-info\\" note-type=\\"info\\"><p class=\\"yfm-note-title\\"><em>Italic note title</em></p>
+<div class=\\"yfm-note-content\\"><p>Content</p>
+</div></div>"
 `;

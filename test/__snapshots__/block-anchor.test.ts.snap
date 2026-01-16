@@ -1,155 +1,59 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`block-anchor markdown-it-attrs in enabled does not parse produce an anchor if there is content before markup 1`] = `
-<p>
-  Content
-</p>
+exports[`block-anchor > markdown-it-attrs in enabled > does not parse produce an anchor if there is content before markup 1`] = `
+"<p>Content </p>
+"
 `;
 
-exports[`block-anchor markdown-it-attrs in enabled handles multiple anchors in the input 1`] = `
-<hr id="first-anchor"
-    class="visually-hidden"
->
-<p>
-  Some content
-</p>
-<hr id="second-anchor"
-    class="visually-hidden"
->
-<p>
-  Some more content
-</p>
-<hr id="third-anchor"
-    class="visually-hidden"
->
+exports[`block-anchor > markdown-it-attrs in enabled > handles multiple anchors in the input 1`] = `
+"<hr id=\\"first-anchor\\" class=\\"visually-hidden\\" /><p>Some content</p>
+<hr id=\\"second-anchor\\" class=\\"visually-hidden\\" /><p>Some more content</p>
+<hr id=\\"third-anchor\\" class=\\"visually-hidden\\" />"
 `;
 
-exports[`block-anchor markdown-it-attrs in enabled parses anchors surrounded by other blocks 1`] = `
-<h1 id="heading">
-  <a href="#heading"
-     class="yfm-anchor"
-     aria-hidden="true"
-  >
-    <span class="visually-hidden"
-          data-no-index="true"
-    >
-      Heading
-    </span>
-  </a>
-  Heading
-</h1>
-<hr id="my-anchor"
-    class="visually-hidden"
->
-<p>
-  paragraph with content
-</p>
+exports[`block-anchor > markdown-it-attrs in enabled > parses anchors surrounded by other blocks 1`] = `
+"<h1 id=\\"heading\\"><a href=\\"#heading\\" class=\\"yfm-anchor\\" aria-hidden=\\"true\\"><span class=\\"visually-hidden\\" data-no-index=\\"true\\">Heading</span></a>Heading</h1>
+<hr id=\\"my-anchor\\" class=\\"visually-hidden\\" /><p>paragraph with content</p>
+"
 `;
 
-exports[`block-anchor markdown-it-attrs in enabled parses block anchors 1`] = `
-<p>
-  \${%anchor my-anchor} Content
-</p>
+exports[`block-anchor > markdown-it-attrs in enabled > parses block anchors 1`] = `
+"<p>\${%anchor my-anchor} Content</p>
+"
 `;
 
-exports[`block-anchor markdown-it-attrs in enabled renders block-anchor 1`] = `
-<hr id="my-anchor"
-    class="visually-hidden"
->
+exports[`block-anchor > markdown-it-attrs in enabled > renders block-anchor 1`] = `"<hr id=\\"my-anchor\\" class=\\"visually-hidden\\" />"`;
+
+exports[`block-anchor > markdown-it-attrs in enabled > works with heading anchors 1`] = `
+"<h1 id=\\"heading-anchor\\"><a href=\\"#heading-anchor\\" class=\\"yfm-anchor\\" aria-hidden=\\"true\\"><span class=\\"visually-hidden\\" data-no-index=\\"true\\">Heading</span></a>Heading</h1>
+<hr id=\\"my-anchor\\" class=\\"visually-hidden\\" />"
 `;
 
-exports[`block-anchor markdown-it-attrs in enabled works with heading anchors 1`] = `
-<h1 id="heading-anchor">
-  <a href="#heading-anchor"
-     class="yfm-anchor"
-     aria-hidden="true"
-  >
-    <span class="visually-hidden"
-          data-no-index="true"
-    >
-      Heading
-    </span>
-  </a>
-  Heading
-</h1>
-<hr id="my-anchor"
-    class="visually-hidden"
->
+exports[`block-anchor > markdown-it-attrs is disabled > does not parse produce an anchor if there is content before markup 1`] = `
+"<p>Content  {%anchor my-anchor%}</p>
+"
 `;
 
-exports[`block-anchor markdown-it-attrs is disabled does not parse produce an anchor if there is content before markup 1`] = `
-<p>
-  Content  {%anchor my-anchor%}
-</p>
+exports[`block-anchor > markdown-it-attrs is disabled > handles multiple anchors in the input 1`] = `
+"<hr id=\\"first-anchor\\" class=\\"visually-hidden\\" /><p>Some content</p>
+<hr id=\\"second-anchor\\" class=\\"visually-hidden\\" /><p>Some more content</p>
+<hr id=\\"third-anchor\\" class=\\"visually-hidden\\" />"
 `;
 
-exports[`block-anchor markdown-it-attrs is disabled handles multiple anchors in the input 1`] = `
-<hr id="first-anchor"
-    class="visually-hidden"
->
-<p>
-  Some content
-</p>
-<hr id="second-anchor"
-    class="visually-hidden"
->
-<p>
-  Some more content
-</p>
-<hr id="third-anchor"
-    class="visually-hidden"
->
+exports[`block-anchor > markdown-it-attrs is disabled > parses anchors surrounded by other blocks 1`] = `
+"<h1 id=\\"heading\\"><a href=\\"#heading\\" class=\\"yfm-anchor\\" aria-hidden=\\"true\\"><span class=\\"visually-hidden\\" data-no-index=\\"true\\">Heading</span></a>Heading</h1>
+<hr id=\\"my-anchor\\" class=\\"visually-hidden\\" /><p>paragraph with content</p>
+"
 `;
 
-exports[`block-anchor markdown-it-attrs is disabled parses anchors surrounded by other blocks 1`] = `
-<h1 id="heading">
-  <a href="#heading"
-     class="yfm-anchor"
-     aria-hidden="true"
-  >
-    <span class="visually-hidden"
-          data-no-index="true"
-    >
-      Heading
-    </span>
-  </a>
-  Heading
-</h1>
-<hr id="my-anchor"
-    class="visually-hidden"
->
-<p>
-  paragraph with content
-</p>
+exports[`block-anchor > markdown-it-attrs is disabled > parses block anchors 1`] = `
+"<p>\${%anchor my-anchor} Content</p>
+"
 `;
 
-exports[`block-anchor markdown-it-attrs is disabled parses block anchors 1`] = `
-<p>
-  \${%anchor my-anchor} Content
-</p>
-`;
+exports[`block-anchor > markdown-it-attrs is disabled > renders block-anchor 1`] = `"<hr id=\\"my-anchor\\" class=\\"visually-hidden\\" />"`;
 
-exports[`block-anchor markdown-it-attrs is disabled renders block-anchor 1`] = `
-<hr id="my-anchor"
-    class="visually-hidden"
->
-`;
-
-exports[`block-anchor markdown-it-attrs is disabled works with heading anchors 1`] = `
-<h1 id="heading-anchor">
-  <a href="#heading-anchor"
-     class="yfm-anchor"
-     aria-hidden="true"
-  >
-    <span class="visually-hidden"
-          data-no-index="true"
-    >
-      Heading
-    </span>
-  </a>
-  Heading
-</h1>
-<hr id="my-anchor"
-    class="visually-hidden"
->
+exports[`block-anchor > markdown-it-attrs is disabled > works with heading anchors 1`] = `
+"<h1 id=\\"heading-anchor\\"><a href=\\"#heading-anchor\\" class=\\"yfm-anchor\\" aria-hidden=\\"true\\"><span class=\\"visually-hidden\\" data-no-index=\\"true\\">Heading</span></a>Heading</h1>
+<hr id=\\"my-anchor\\" class=\\"visually-hidden\\" />"
 `;
