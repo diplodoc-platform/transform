@@ -7,7 +7,7 @@
     "baseUrl": ".",
     "declaration": true,
     "target": "ES6",
-    "types": ["node"]
+    "types": ["node", "vitest/globals"]
   },
   "include": ["src/**/*", "test/**/*"],
   "exclude": ["node_modules", "lib", "dist", "e2e", "playground"]
