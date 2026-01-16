@@ -54,7 +54,7 @@ This file contains instructions for AI agents working with the `@diplodoc/transf
   - `scss/` — **Styles** (SCSS)
     - Main stylesheets (forwards extension styles)
     - Base styles, component styles, and print-specific styles
-- `test/` — **Unit tests** (Jest/Vitest)
+- `test/` — **Unit tests** (Jest)
   - Test files for transform functionality, plugins, and HTML output snapshots
   - Legacy tests for Liquid and YFMLint (deprecated)
 - `e2e/` — **E2E tests** (Playwright, separate package)
@@ -71,7 +71,7 @@ This file contains instructions for AI agents working with the `@diplodoc/transf
 - `package.json` — package metadata and dependencies
 - `tsconfig.json` — TypeScript configuration (development, includes test/)
 - `tsconfig.transform.json` — TypeScript configuration (for building lib/)
-- `jest.config.js` — Jest configuration (to be migrated to Vitest)
+- `jest.config.js` — Jest configuration
 - `CHANGELOG.md` — change log (managed by release-please)
 - `CONTRIBUTING.md` — contribution guidelines
 
@@ -121,7 +121,7 @@ This package follows the standard Diplodoc platform tech stack. See `.agents/dev
 - **Language**: TypeScript
 - **Server build**: `tsc` (TypeScript compiler) for `lib/` output
 - **Client build**: Custom esbuild scripts for `dist/` output
-- **Testing**: Jest (to be migrated to Vitest) for unit tests, Playwright for E2E
+- **Testing**: Jest for unit tests, Playwright for E2E
 - **Styling**: SCSS (compiled to CSS via PostCSS)
 - **Dependencies**:
   - `markdown-it` — Markdown parser
@@ -133,7 +133,7 @@ This package follows the standard Diplodoc platform tech stack. See `.agents/dev
 - **Dev Dependencies**:
   - `@diplodoc/lint` — linting infrastructure
   - `@diplodoc/tsconfig` — TypeScript configuration
-  - `jest` / `vitest` — testing framework
+  - `jest` — testing framework
   - `esbuild` — client-side bundling
   - `sass` — SCSS compilation
   - `postcss` — CSS processing
@@ -297,7 +297,7 @@ The package has **multiple testing layers**:
 ### Unit Tests (`test/`)
 
 - **Location**: `test/` directory
-- **Framework**: Jest (to be migrated to Vitest)
+- **Framework**: Jest
 - **Coverage**: Enabled via `jest --coverage`
 - **Test files**: `*.test.ts`
 - **Snapshots**: HTML output snapshots in `__snapshots__/`
@@ -389,7 +389,7 @@ npm run pre-commit
 
 5. **TypeScript Version**: Currently uses TypeScript 4.7.4. Upgrading to TypeScript 5.x should be done as a separate task due to potential breaking changes.
 
-6. **Testing**: Unit tests use Jest (to be migrated to Vitest). E2E tests use Playwright and are in a separate `e2e/` directory.
+6. **Testing**: Unit tests use Jest. E2E tests use Playwright and are in a separate `e2e/` directory.
 
 7. **Playground**: The `playground/` directory is a separate package used for interactive YFM testing. It's published to gh-pages and should not be modified as part of infrastructure updates.
 
