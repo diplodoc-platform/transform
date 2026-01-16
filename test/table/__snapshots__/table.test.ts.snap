@@ -1,32 +1,25 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Table plugin parses table with liquid variables inside 1`] = `
-<table>
-  <tbody>
-    <tr>
-      <td>
-        <p>
-          {{variable | length}} column 1, row 1
-        </p>
-      </td>
-      <td>
-        <p>
-          Cell in column 2, row 1
-        </p>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <p>
-          Cell in column 1, row 2
-        </p>
-      </td>
-      <td>
-        <p>
-          Cell in column 2, row 2
-        </p>
-      </td>
-    </tr>
-  </tbody>
+exports[`Table plugin > parses table with liquid variables inside 1`] = `
+"<table>
+<tbody>
+<tr>
+<td>
+<p>{{variable | length}} column 1, row 1</p>
+</td>
+<td>
+<p>Cell in column 2, row 1</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>Cell in column 1, row 2</p>
+</td>
+<td>
+<p>Cell in column 2, row 2</p>
+</td>
+</tr>
+</tbody>
 </table>
+"
 `;
