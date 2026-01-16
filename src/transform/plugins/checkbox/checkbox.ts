@@ -137,54 +137,62 @@ export const checkboxReplace = function (_md: MarkdownIt, opts?: CheckboxOptions
 
 function parseInlineContent(inlineToken: Token, startLine: number): ParsedCheckbox[] {
     const children = inlineToken.children || [];
+    const lines = splitInlineTokensByBreaks(children);
+    return parseCheckboxesByLines(lines, startLine);
+}
 
+function splitInlineTokensByBreaks(tokens: Token[]): Token[][] {
     const lines: Token[][] = [];
-    {
-        let lineIdx = 0;
-        for (const child of children) {
-            lines[lineIdx] ||= [];
-            lines[lineIdx].push(child);
+    let lineIdx = 0;
+    for (const token of tokens) {
+        lines[lineIdx] ||= [];
+        lines[lineIdx].push(token);
 
-            if (isBreakToken(child)) {
-                lineIdx += 1;
-            }
+        if (isBreakToken(token)) {
+            lineIdx += 1;
         }
     }
 
+    return lines;
+}
+
+function parseCheckboxesByLines(lines: Token[][], startLine: number): ParsedCheckbox[] {
     const checkboxes: ParsedCheckbox[] = [];
-    {
-        let checkboxIdx = -1;
-        for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
-            const line = lines[lineIdx];
-            const first = line?.[0];
-            if (!first) {
-                continue;
-            }
 
-            let match;
-            if (first.type === 'text' && (match = first.content.match(pattern))) {
-                const prevLastToken = checkboxes[checkboxIdx]?.tokens.at(-1);
-                if (prevLastToken && isBreakToken(prevLastToken)) {
-                    checkboxes[checkboxIdx].tokens.splice(-1);
-                }
-
-                checkboxIdx += 1;
-                const value = match[1];
-                const checked = value === 'X' || value === 'x';
-                checkboxes[checkboxIdx] ||= {
-                    tokens: [],
-                    checked,
-                    startLine: startLine + lineIdx,
-                    endLine: startLine + lineIdx + 1,
-                };
-            }
-
-            checkboxes[checkboxIdx].tokens.push(...line);
-            checkboxes[checkboxIdx].endLine = startLine + lineIdx + 1;
+    let checkboxIdx = -1;
+    for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+        const line = lines[lineIdx];
+        const first = line?.[0];
+        if (!first) {
+            continue;
         }
+
+        let match;
+        if (first.type === 'text' && (match = first.content.match(pattern))) {
+            const prevLastToken = checkboxes[checkboxIdx]?.tokens.at(-1);
+            if (prevLastToken && isBreakToken(prevLastToken)) {
+                // remove hanging line breaks
+                checkboxes[checkboxIdx].tokens.splice(-1);
+            }
+
+            checkboxIdx += 1;
+            checkboxes[checkboxIdx] ||= {
+                tokens: [],
+                checked: isChecked(match[1]),
+                startLine: startLine + lineIdx,
+                endLine: startLine + lineIdx + 1,
+            };
+        }
+
+        checkboxes[checkboxIdx].tokens.push(...line);
+        checkboxes[checkboxIdx].endLine = startLine + lineIdx + 1;
     }
 
     return checkboxes;
+}
+
+function isChecked(value: string): boolean {
+    return value === 'X' || value === 'x';
 }
 
 function isBreakToken(token: Token): boolean {
