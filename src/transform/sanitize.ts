@@ -660,7 +660,7 @@ function normalizeCssValue(value: string): string {
     // unicode normalization (NFKC) to prevent homograph attacks
     try {
         normalized = normalized.normalize('NFKC');
-    } catch (_) {
+    } catch {
         // silent fail: logging the value could expose sensitive data
     }
 
@@ -746,10 +746,9 @@ function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) 
 
             dom(element).text(css.stringify(parsedCSS));
         } catch (error) {
-            dom(element).remove();
-
             const errorMessage = error instanceof Error ? error.message : `${error}`;
-            log.info(errorMessage);
+            log.warn(`Failed to parse CSS in style attribute: ${errorMessage}`);
+            dom(element).remove();
         }
     });
 }

@@ -1,34 +1,34 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Liquid substitutions in front matter (formerly metadata) should not fail even when variables contain reserved characters (YAML multiline syntax) 1`] = `
+exports[`Liquid substitutions in front matter (formerly metadata) > should not fail even when variables contain reserved characters ('YAML multiline syntax') 1`] = `
 "---
 multiline: \\">- This should break, right?\\\\n\\\\tRight?\\"
 ---
 Content"
 `;
 
-exports[`Liquid substitutions in front matter (formerly metadata) should not fail even when variables contain reserved characters (curly braces) 1`] = `
+exports[`Liquid substitutions in front matter (formerly metadata) > should not fail even when variables contain reserved characters ('curly braces') 1`] = `
 "---
 braces: '{}'
 ---
 Content"
 `;
 
-exports[`Liquid substitutions in front matter (formerly metadata) should not fail even when variables contain reserved characters (double quotes) 1`] = `
+exports[`Liquid substitutions in front matter (formerly metadata) > should not fail even when variables contain reserved characters ('double quotes') 1`] = `
 "---
 quotes: '\\"When you arise in the morning, think of what a precious privilege it is to be alive - to breathe, to think, to enjoy, to love.\\" — Marcus Aurelius (allegedly)'
 ---
 Content"
 `;
 
-exports[`Liquid substitutions in front matter (formerly metadata) should not fail even when variables contain reserved characters (single quotes) 1`] = `
+exports[`Liquid substitutions in front matter (formerly metadata) > should not fail even when variables contain reserved characters ('single quotes') 1`] = `
 "---
 quotes: This isn't your typical substitution. It has single quotes.
 ---
 Content"
 `;
 
-exports[`Liquid substitutions in front matter (formerly metadata) should not fail even when variables contain reserved characters (square brackets) 1`] = `
+exports[`Liquid substitutions in front matter (formerly metadata) > should not fail even when variables contain reserved characters ('square brackets') 1`] = `
 "---
 brackets: '[]'
 ---

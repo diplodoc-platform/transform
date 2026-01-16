@@ -2,10 +2,13 @@ import type MarkdownIt from 'markdown-it';
 import type Token from 'markdown-it/lib/token';
 import type Renderer from 'markdown-it/lib/renderer';
 import type {MarkdownItPluginOpts} from '../src/transform/plugins/typings';
+import type {Mock} from 'vitest';
+
+import {describe, expect, it, vi} from 'vitest';
 
 import code from '../src/transform/plugins/code';
 
-const getMd = (fence: jest.Mock) => ({
+const getMd = (fence: Mock) => ({
     renderer: {
         rules: {
             fence,
@@ -15,7 +18,7 @@ const getMd = (fence: jest.Mock) => ({
 
 describe('Code', () => {
     it('should call default fence method', () => {
-        const fence = jest.fn();
+        const fence = vi.fn();
         const md = getMd(fence);
         code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
 
@@ -28,12 +31,12 @@ describe('Code', () => {
 
         md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
 
-        expect(fence).toBeCalledWith(tokens, 0, {}, {}, {} as Renderer);
+        expect(fence).toHaveBeenCalledWith(tokens, 0, {}, {}, {} as Renderer);
     });
 
     describe('Line numbering', () => {
         it('should add line numbers to code with showLineNumbers option', () => {
-            const fence = jest.fn().mockReturnValue('<pre><code>line1\nline2\nline3</code></pre>');
+            const fence = vi.fn().mockReturnValue('<pre><code>line1\nline2\nline3</code></pre>');
             const md = getMd(fence);
             code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
 
@@ -52,7 +55,7 @@ describe('Code', () => {
         });
 
         it('should not add line numbers when showLineNumbers option is not present', () => {
-            const fence = jest.fn().mockReturnValue('<pre><code>line1\nline2</code></pre>');
+            const fence = vi.fn().mockReturnValue('<pre><code>line1\nline2</code></pre>');
             const md = getMd(fence);
             code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
 
@@ -71,7 +74,7 @@ describe('Code', () => {
         });
 
         it('should handle code with trailing newline correctly', () => {
-            const fence = jest.fn().mockReturnValue('<pre><code>line1\nline2\n</code></pre>');
+            const fence = vi.fn().mockReturnValue('<pre><code>line1\nline2\n</code></pre>');
             const md = getMd(fence);
             code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
 
@@ -90,7 +93,7 @@ describe('Code', () => {
         });
 
         it('should pad line numbers correctly for multi-digit line counts', () => {
-            const fence = jest
+            const fence = vi
                 .fn()
                 .mockReturnValue(
                     '<pre><code>line1\nline2\nline3\nline4\nline5\nline6\nline7\nline8\nline9\nline10</code></pre>',

@@ -1,6 +1,7 @@
 import {readFile, symlink, unlink} from 'node:fs/promises';
 import {dirname, resolve} from 'path';
 import dedent from 'ts-dedent';
+import {describe, expect, test, vi} from 'vitest';
 
 import transform from '../src/transform';
 import includes from '../src/transform/plugins/includes';
@@ -148,7 +149,7 @@ describe('Includes', () => {
 
     test('Should call notFoundCb for exception', () => {
         const mocksPath = require.resolve('./utils.ts');
-        const cb = jest.fn();
+        const cb = vi.fn();
 
         callPlugin(
             includes,
