@@ -6,20 +6,20 @@
 
 # @diplodoc/transform
 
-Core transformation package for the Diplodoc platform. Converts Yandex Flavored Markdown (YFM) to HTML with support for interactive components, Liquid templates, and extensible plugin architecture.
+Core transformation package for the Diplodoc platform. Converts Yandex Flavored Markdown (YFM) to HTML with support for interactive components and extensible plugin architecture.
 
 Use it in your code to work with text during program execution. For example, to display user-generated content.
 
 ## Features
 
 - **YFM to HTML transformation** — Core markdown processing with YFM extensions
-- **Liquid template support** — Variable substitution, conditions, cycles
 - **Plugin system** — Extensible architecture using extension packages (cut, tabs, file)
 - **Client-side runtime** — Interactive components (tabs, cuts, terms, anchors, etc.)
 - **SCSS styles** — Comprehensive styling system with CSS variables
 - **Multiple output formats** — HTML, metadata, titles, headings
 - **HTML sanitization** — Built-in XSS protection with customizable sanitizer
-- **YFMLint integration** — Custom markdownlint rules for YFM validation
+
+> **Note**: Liquid template support and YFMLint integration are deprecated. Use separate packages (`@diplodoc/liquid` and `@diplodoc/yfmlint`) instead.
 
 ## Installation {#install}
 
