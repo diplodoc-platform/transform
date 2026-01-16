@@ -26,13 +26,13 @@ This file contains instructions for AI agents working with the `@diplodoc/transf
 **Key Features**:
 
 - **YFM to HTML transformation** — Core markdown processing with YFM extensions
-- **Liquid template support** — Variable substitution, conditions, cycles
 - **Plugin system** — Extensible architecture using extension packages
 - **Client-side runtime** — Interactive components (tabs, cuts, terms, etc.)
 - **SCSS styles** — Comprehensive styling system with CSS variables
 - **Multiple output formats** — HTML, metadata, titles, headings
 - **HTML sanitization** — Built-in XSS protection with customizable sanitizer
-- **YFMLint integration** — Custom markdownlint rules for YFM
+
+> **Note**: Liquid template support and YFMLint integration are deprecated in this package. Use separate packages (`@diplodoc/liquid` and `@diplodoc/yfmlint`) instead. The legacy code still exists in `src/transform/liquid/` and `src/transform/yfmlint/` for backward compatibility but should not be used in new projects.
 
 **Primary Use Case**: Core transformation engine for the Diplodoc documentation platform. Used by `@diplodoc/cli` and other tools to process YFM documents into HTML with interactive features.
 
@@ -44,7 +44,7 @@ This file contains instructions for AI agents working with the `@diplodoc/transf
   - `transform/` — **Server-side transformation** (Node.js)
     - `index.ts` — main transform function
     - `md.ts` — MarkdownIt initialization
-    - `liquid/` — Liquid template engine implementation
+    - `liquid/` — Liquid template engine implementation (deprecated, use `@diplodoc/liquid`)
     - `plugins/` — Built-in plugins and extension integrations
       - `cut.ts` — Cut extension integration
       - `tabs.ts` — Tabs extension integration
@@ -52,7 +52,7 @@ This file contains instructions for AI agents working with the `@diplodoc/transf
       - `anchors/`, `code.ts`, `notes/`, `term/`, `table/`, etc. — Built-in plugins
     - `preprocessors/` — Content preprocessing
     - `sanitize.ts` — HTML sanitization
-    - `yfmlint/` — Custom markdownlint rules
+    - `yfmlint/` — Custom markdownlint rules (deprecated, use `@diplodoc/yfmlint`)
   - `js/` — **Client-side runtime** (browser)
     - `index.ts` — main runtime entry point
     - `base.ts` — base functionality
@@ -72,7 +72,7 @@ This file contains instructions for AI agents working with the `@diplodoc/transf
 - `test/` — **Unit tests** (Jest/Vitest)
   - Test files for transform functionality
   - Snapshots for HTML output
-  - Liquid template tests
+  - Legacy Liquid template tests (deprecated)
   - Plugin tests
 - `e2e/` — **E2E tests** (Playwright, separate package)
   - Visual regression tests
@@ -337,9 +337,9 @@ npm test  # coverage is enabled by default
 **Test Structure**:
 
 - Tests for individual plugins
-- Tests for Liquid template engine
 - Tests for HTML sanitization
-- Tests for YFMLint rules
+- Legacy tests for Liquid template engine (deprecated)
+- Legacy tests for YFMLint rules (deprecated)
 - Snapshot tests for HTML output
 
 ### E2E Tests (`e2e/`)
