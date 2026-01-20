@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.66.0](https://github.com/diplodoc-platform/transform/compare/v4.65.3...v4.66.0) (2026-01-20)
+
+
+### Features
+
+* **checkbox:** improve checkboxes parsing ([#818](https://github.com/diplodoc-platform/transform/issues/818)) ([f9edebb](https://github.com/diplodoc-platform/transform/commit/f9edebb2c0057848feed6a9f11375ca89a2abf4c))
+
 ## [4.65.3](https://github.com/diplodoc-platform/transform/compare/v4.65.2...v4.65.3) (2025-12-18)
 
 
