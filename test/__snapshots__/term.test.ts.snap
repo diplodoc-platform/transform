@@ -16,7 +16,7 @@ exports[`Terms Should create term in code with definition template 1`] = `
 <h1>
   Web
 </h1>
-<div class="yfm-clipboard">
+<div class="code-block-container yfm-clipboard">
   <pre>
     <code class="hljs">
       <i class="yfm yfm-term_title"

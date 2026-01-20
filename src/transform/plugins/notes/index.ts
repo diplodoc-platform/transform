@@ -141,6 +141,23 @@ const index: MarkdownItPluginCb<NotesPluginParams> = (
     } catch (e) {
         md.core.ruler.push('notes', plugin);
     }
+
+    md.renderer.rules['yfm_note_open'] = (tokens, idx, _opts, _env, self) => {
+        const token = tokens[idx];
+
+        const containerClassName = 'yfm-note-container';
+
+        return [
+            `<div class="${containerClassName}">`,
+            `<${token.tag}${self.renderAttrs(token)}>`,
+        ].join('\n');
+    };
+
+    md.renderer.rules['yfm_note_close'] = (tokens, idx) => {
+        const token = tokens[idx];
+
+        return [`</${token.tag}>`, '</div>'].join('\n');
+    };
 };
 
 export = index;

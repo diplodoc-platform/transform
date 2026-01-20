@@ -659,6 +659,23 @@ const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
             return true;
         },
     );
+
+    md.renderer.rules['yfm_table_open'] = (tokens, idx, _opts, _env, self) => {
+        const token = tokens[idx];
+
+        const containerClassName = 'yfm-table-container';
+
+        return [
+            `<div class="${containerClassName}">`,
+            `<${token.tag}${self.renderAttrs(token)}>\n`,
+        ].join('\n');
+    };
+
+    md.renderer.rules['yfm_table_close'] = (tokens, idx) => {
+        const token = tokens[idx];
+
+        return [`</${token.tag}>`, '</div>\n'].join('\n');
+    };
 };
 
 export = yfmTable;
