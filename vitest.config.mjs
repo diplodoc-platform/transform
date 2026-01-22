@@ -7,6 +7,7 @@ export default defineConfig({
         exclude: ['node_modules', 'lib', 'dist', 'e2e', 'playground'],
         environment: 'node',
         globals: true,
+        setupFiles: ['./test/setup/snapshot-serializer.ts'],
         snapshotFormat: {
             escapeString: true,
             printBasicPrototype: false,
@@ -17,8 +18,9 @@ export default defineConfig({
         },
         // Coverage configuration
         coverage: {
-            enabled: false,
-            // Can be enabled if needed: provider: 'v8', include: ['src'], exclude: ['src/**/*.test.ts']
+            provider: 'v8',
+            include: ['src/**/*'],
+            exclude: ['src/**/*.test.ts', 'src/**/*.spec.ts', 'test/**/*'],
         },
     },
 });
