@@ -1,91 +1,239 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`md-video-mfr > make sure normal iframe generates properly when empty 1`] = `
-"<p></p>
-"
+<p>
+</p>
 `;
 
 exports[`md-video-mfr > make sure normal iframe generates properly with guid 1`] = `
-"<p><div id=\\"1.2\\" class=\\"mfr mfr-file\\"></div><script>$(document).ready(function () {new mfr.Render(\\"1.2\\", \\"https://mfr.osf.io/render?url=https://osf.io/xxxxx/?action=download%26mode=render\\");    }); </script></p>
-"
+<p>
+  <div id="1.2"
+       class="mfr mfr-file"
+  >
+  </div>
+  <script>
+    $(document).ready(function () {new mfr.Render("1.2", "https://mfr.osf.io/render?url=https://osf.io/xxxxx/?action=download%26mode=render");    });
+  </script>
+</p>
 `;
 
 exports[`md-video-mfr > make sure normal iframe generates properly with guid and extra space 1`] = `
-"<p><div id=\\"1.2\\" class=\\"mfr mfr-file\\"></div><script>$(document).ready(function () {new mfr.Render(\\"1.2\\", \\"https://mfr.osf.io/render?url=https://osf.io/xxxxx/?action=download%26mode=render\\");    }); </script></p>
-"
+<p>
+  <div id="1.2"
+       class="mfr mfr-file"
+  >
+  </div>
+  <script>
+    $(document).ready(function () {new mfr.Render("1.2", "https://mfr.osf.io/render?url=https://osf.io/xxxxx/?action=download%26mode=render");    });
+  </script>
+</p>
 `;
 
 exports[`md-video-mfr > make sure normal iframe generates properly with guid and line break 1`] = `
-"<p><div id=\\"1.2\\" class=\\"mfr mfr-file\\"></div><script>$(document).ready(function () {new mfr.Render(\\"1.2\\", \\"https://mfr.osf.io/render?url=https://osf.io/xxxxx/?action=download%26mode=render\\");    }); </script></p>
-"
+<p>
+  <div id="1.2"
+       class="mfr mfr-file"
+  >
+  </div>
+  <script>
+    $(document).ready(function () {new mfr.Render("1.2", "https://mfr.osf.io/render?url=https://osf.io/xxxxx/?action=download%26mode=render");    });
+  </script>
+</p>
 `;
 
 exports[`md-video-mfr > make sure normal iframe generates properly with guid and two extra spaces 1`] = `
-"<p><div id=\\"1.2\\" class=\\"mfr mfr-file\\"></div><script>$(document).ready(function () {new mfr.Render(\\"1.2\\", \\"https://mfr.osf.io/render?url=https://osf.io/xxxxx/?action=download%26mode=render\\");    }); </script></p>
-"
+<p>
+  <div id="1.2"
+       class="mfr mfr-file"
+  >
+  </div>
+  <script>
+    $(document).ready(function () {new mfr.Render("1.2", "https://mfr.osf.io/render?url=https://osf.io/xxxxx/?action=download%26mode=render");    });
+  </script>
+</p>
 `;
 
 exports[`md-video-mfr > make sure normal iframe generates properly with link 1`] = `
-"<p><div id=\\"1.2\\" class=\\"mfr mfr-file\\"></div><script>$(document).ready(function () {new mfr.Render(\\"1.2\\", \\"https://mfr.osf.io/render?url=https://osf.io/xxxxx/?action=download%26mode=render\\");    }); </script></p>
-"
+<p>
+  <div id="1.2"
+       class="mfr mfr-file"
+  >
+  </div>
+  <script>
+    $(document).ready(function () {new mfr.Render("1.2", "https://mfr.osf.io/render?url=https://osf.io/xxxxx/?action=download%26mode=render");    });
+  </script>
+</p>
 `;
 
 exports[`md-video-mfr > make sure normal iframe generates properly with link and extra space 1`] = `
-"<p><div id=\\"1.2\\" class=\\"mfr mfr-file\\"></div><script>$(document).ready(function () {new mfr.Render(\\"1.2\\", \\"https://mfr.osf.io/render?url=https://osf.io/xxxxx/?action=download%26mode=render\\");    }); </script></p>
-"
+<p>
+  <div id="1.2"
+       class="mfr mfr-file"
+  >
+  </div>
+  <script>
+    $(document).ready(function () {new mfr.Render("1.2", "https://mfr.osf.io/render?url=https://osf.io/xxxxx/?action=download%26mode=render");    });
+  </script>
+</p>
 `;
 
 exports[`md-video-mfr > make sure normal iframe generates properly with link and two extra spaces 1`] = `
-"<p><div id=\\"1.2\\" class=\\"mfr mfr-file\\"></div><script>$(document).ready(function () {new mfr.Render(\\"1.2\\", \\"https://mfr.osf.io/render?url=https://osf.io/xxxxx/?action=download%26mode=render\\");    }); </script></p>
-"
+<p>
+  <div id="1.2"
+       class="mfr mfr-file"
+  >
+  </div>
+  <script>
+    $(document).ready(function () {new mfr.Render("1.2", "https://mfr.osf.io/render?url=https://osf.io/xxxxx/?action=download%26mode=render");    });
+  </script>
+</p>
 `;
 
 exports[`md-video-mfr > make sure normal iframe generates properly with link to local 1`] = `
-"<p><div id=\\"1.2\\" class=\\"mfr mfr-file\\"></div><script>$(document).ready(function () {new mfr.Render(\\"1.2\\", \\"https://localhost:7778/render?url=https://localhost:5000/xxxxx/?action=download%26mode=render\\");    }); </script></p>
-"
+<p>
+  <div id="1.2"
+       class="mfr mfr-file"
+  >
+  </div>
+  <script>
+    $(document).ready(function () {new mfr.Render("1.2", "https://localhost:7778/render?url=https://localhost:5000/xxxxx/?action=download%26mode=render");    });
+  </script>
+</p>
 `;
 
 exports[`md-video-mfr > make sure normal iframe generates properly with link to local ip 1`] = `
-"<p><div id=\\"1.2\\" class=\\"mfr mfr-file\\"></div><script>$(document).ready(function () {new mfr.Render(\\"1.2\\", \\"http://localhost:7778/render?mode=render&amp;url=http://192.168.168.167:5000/y98tn/?action=download%26mode=render%26direct\\");    }); </script></p>
-"
+<p>
+  <div id="1.2"
+       class="mfr mfr-file"
+  >
+  </div>
+  <script>
+    $(document).ready(function () {new mfr.Render("1.2", "http://localhost:7778/render?mode=render&amp;url=http://192.168.168.167:5000/y98tn/?action=download%26mode=render%26direct");    });
+  </script>
+</p>
 `;
 
 exports[`md-video-mfr > make sure normal iframe generates properly with link to staging 1`] = `
-"<p><div id=\\"1.2\\" class=\\"mfr mfr-file\\"></div><script>$(document).ready(function () {new mfr.Render(\\"1.2\\", \\"https://mfr-staging3.osf.io/render?url=https://staging3.osf.io/xxxxx/?action=download%26mode=render\\");    }); </script></p>
-"
+<p>
+  <div id="1.2"
+       class="mfr mfr-file"
+  >
+  </div>
+  <script>
+    $(document).ready(function () {new mfr.Render("1.2", "https://mfr-staging3.osf.io/render?url=https://staging3.osf.io/xxxxx/?action=download%26mode=render");    });
+  </script>
+</p>
 `;
 
 exports[`md-video-vk > make sure normal iframe generates properly when empty 1`] = `
-"<p></p>
-"
+<p>
+</p>
 `;
 
 exports[`md-video-vk > make sure normal iframe generates properly with additional params 1`] = `
-"<p><div class=\\"embed-responsive embed-responsive-16by9\\"><iframe class=\\"embed-responsive-item vk-player\\" type=\\"text/html\\" width=\\"640\\" height=\\"390\\" src=\\"https://vk.com/video_ext.php?oid=-207738372&amp;id=456239060&amp;hd=2&amp;autoplay=1&amp;width=853&amp;height=480\\" frameborder=\\"0\\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div></p>
-"
+<p>
+  <div class="embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item vk-player"
+            type="text/html"
+            width="640"
+            height="390"
+            src="https://vk.com/video_ext.php?oid=-207738372&amp;id=456239060&amp;hd=2&amp;autoplay=1&amp;width=853&amp;height=480"
+            frameborder="0"
+            webkitallowfullscreen
+            mozallowfullscreen
+            allowfullscreen
+    >
+    </iframe>
+  </div>
+</p>
 `;
 
 exports[`md-video-vk > make sure normal iframe generates properly with another sort params 1`] = `
-"<p><div class=\\"embed-responsive embed-responsive-16by9\\"><iframe class=\\"embed-responsive-item vk-player\\" type=\\"text/html\\" width=\\"640\\" height=\\"390\\" src=\\"https://vk.com/video_ext.php?oid=width%3D853&amp;-207738372=&amp;hd=2&amp;autoplay=1&amp;id=456239060&amp;height=480\\" frameborder=\\"0\\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div></p>
-"
+<p>
+  <div class="embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item vk-player"
+            type="text/html"
+            width="640"
+            height="390"
+            src="https://vk.com/video_ext.php?oid=width%3D853&amp;-207738372=&amp;hd=2&amp;autoplay=1&amp;id=456239060&amp;height=480"
+            frameborder="0"
+            webkitallowfullscreen
+            mozallowfullscreen
+            allowfullscreen
+    >
+    </iframe>
+  </div>
+</p>
 `;
 
 exports[`md-video-vk > make sure normal iframe generates properly with id 1`] = `
-"<p><div class=\\"embed-responsive embed-responsive-16by9\\"><iframe class=\\"embed-responsive-item vk-player\\" type=\\"text/html\\" width=\\"640\\" height=\\"390\\" src=\\"https://vk.com/video_ext.php?oid=-207738372&amp;id=456239060\\" frameborder=\\"0\\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div></p>
-"
+<p>
+  <div class="embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item vk-player"
+            type="text/html"
+            width="640"
+            height="390"
+            src="https://vk.com/video_ext.php?oid=-207738372&amp;id=456239060"
+            frameborder="0"
+            webkitallowfullscreen
+            mozallowfullscreen
+            allowfullscreen
+    >
+    </iframe>
+  </div>
+</p>
 `;
 
 exports[`md-video-vk > make sure normal iframe generates properly with id and line break 1`] = `
-"<p><div class=\\"embed-responsive embed-responsive-16by9\\"><iframe class=\\"embed-responsive-item vk-player\\" type=\\"text/html\\" width=\\"640\\" height=\\"390\\" src=\\"https://vk.com/video_ext.php?oid=-207738372&amp;id=456239060\\" frameborder=\\"0\\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div></p>
-"
+<p>
+  <div class="embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item vk-player"
+            type="text/html"
+            width="640"
+            height="390"
+            src="https://vk.com/video_ext.php?oid=-207738372&amp;id=456239060"
+            frameborder="0"
+            webkitallowfullscreen
+            mozallowfullscreen
+            allowfullscreen
+    >
+    </iframe>
+  </div>
+</p>
 `;
 
 exports[`md-video-vk > make sure normal iframe generates properly with id and two extra spaces 1`] = `
-"<p><div class=\\"embed-responsive embed-responsive-16by9\\"><iframe class=\\"embed-responsive-item vk-player\\" type=\\"text/html\\" width=\\"640\\" height=\\"390\\" src=\\"https://vk.com/video_ext.php?oid=-207738372&amp;id=456239060\\" frameborder=\\"0\\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div></p>
-"
+<p>
+  <div class="embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item vk-player"
+            type="text/html"
+            width="640"
+            height="390"
+            src="https://vk.com/video_ext.php?oid=-207738372&amp;id=456239060"
+            frameborder="0"
+            webkitallowfullscreen
+            mozallowfullscreen
+            allowfullscreen
+    >
+    </iframe>
+  </div>
+</p>
 `;
 
 exports[`md-video-vk > make sure normal iframe generates properly with link 1`] = `
-"<p><div class=\\"embed-responsive embed-responsive-16by9\\"><iframe class=\\"embed-responsive-item vk-player\\" type=\\"text/html\\" width=\\"640\\" height=\\"390\\" src=\\"https://vk.com/video_ext.php?oid=-207738372&amp;id=456239060\\" frameborder=\\"0\\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div></p>
-"
+<p>
+  <div class="embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item vk-player"
+            type="text/html"
+            width="640"
+            height="390"
+            src="https://vk.com/video_ext.php?oid=-207738372&amp;id=456239060"
+            frameborder="0"
+            webkitallowfullscreen
+            mozallowfullscreen
+            allowfullscreen
+    >
+    </iframe>
+  </div>
+</p>
 `;

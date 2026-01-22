@@ -7,7 +7,7 @@ export type VideoToken = Token & {
 };
 
 export type VideoServicesOptions = {
-    [service in VideoService]: {
+    [_service in VideoService]: {
         width: number | string;
         height: number | string;
     };

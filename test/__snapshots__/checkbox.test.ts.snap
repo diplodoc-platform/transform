@@ -1,7 +1,7 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`markdown-it-checkbox should generate token stream 1`] = `
-Array [
+exports[`markdown-it-checkbox > should generate token stream 1`] = `
+[
   Token {
     "attrs": null,
     "block": true,
@@ -10,7 +10,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       0,
       1,
     ],
@@ -23,7 +23,7 @@ Array [
   Token {
     "attrs": null,
     "block": true,
-    "children": Array [
+    "children": [
       Token {
         "attrs": null,
         "block": false,
@@ -44,7 +44,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 1,
-    "map": Array [
+    "map": [
       0,
       1,
     ],
@@ -70,8 +70,8 @@ Array [
     "type": "paragraph_close",
   },
   Token {
-    "attrs": Array [
-      Array [
+    "attrs": [
+      [
         "class",
         "checkbox",
       ],
@@ -82,7 +82,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       2,
       3,
     ],
@@ -93,16 +93,16 @@ Array [
     "type": "checkbox_open",
   },
   Token {
-    "attrs": Array [
-      Array [
+    "attrs": [
+      [
         "type",
         "checkbox",
       ],
-      Array [
+      [
         "id",
         "checkbox0",
       ],
-      Array [
+      [
         "disabled",
         "",
       ],
@@ -113,7 +113,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       2,
       3,
     ],
@@ -124,8 +124,8 @@ Array [
     "type": "checkbox_input",
   },
   Token {
-    "attrs": Array [
-      Array [
+    "attrs": [
+      [
         "for",
         "checkbox0",
       ],
@@ -166,7 +166,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       2,
       3,
     ],
@@ -184,7 +184,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       2,
       3,
     ],
@@ -195,8 +195,8 @@ Array [
     "type": "checkbox_close",
   },
   Token {
-    "attrs": Array [
-      Array [
+    "attrs": [
+      [
         "class",
         "checkbox",
       ],
@@ -207,7 +207,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       3,
       4,
     ],
@@ -218,20 +218,20 @@ Array [
     "type": "checkbox_open",
   },
   Token {
-    "attrs": Array [
-      Array [
+    "attrs": [
+      [
         "type",
         "checkbox",
       ],
-      Array [
+      [
         "id",
         "checkbox1",
       ],
-      Array [
+      [
         "disabled",
         "",
       ],
-      Array [
+      [
         "checked",
         "true",
       ],
@@ -242,7 +242,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       3,
       4,
     ],
@@ -253,8 +253,8 @@ Array [
     "type": "checkbox_input",
   },
   Token {
-    "attrs": Array [
-      Array [
+    "attrs": [
+      [
         "for",
         "checkbox1",
       ],
@@ -295,7 +295,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       3,
       4,
     ],
@@ -313,7 +313,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       3,
       4,
     ],
@@ -324,8 +324,8 @@ Array [
     "type": "checkbox_close",
   },
   Token {
-    "attrs": Array [
-      Array [
+    "attrs": [
+      [
         "class",
         "checkbox",
       ],
@@ -336,7 +336,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       5,
       7,
     ],
@@ -347,16 +347,16 @@ Array [
     "type": "checkbox_open",
   },
   Token {
-    "attrs": Array [
-      Array [
+    "attrs": [
+      [
         "type",
         "checkbox",
       ],
-      Array [
+      [
         "id",
         "checkbox2",
       ],
-      Array [
+      [
         "disabled",
         "",
       ],
@@ -367,7 +367,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       5,
       7,
     ],
@@ -378,8 +378,8 @@ Array [
     "type": "checkbox_input",
   },
   Token {
-    "attrs": Array [
-      Array [
+    "attrs": [
+      [
         "for",
         "checkbox2",
       ],
@@ -450,7 +450,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       5,
       7,
     ],
@@ -468,7 +468,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       5,
       7,
     ],
@@ -479,8 +479,8 @@ Array [
     "type": "checkbox_close",
   },
   Token {
-    "attrs": Array [
-      Array [
+    "attrs": [
+      [
         "class",
         "checkbox",
       ],
@@ -491,7 +491,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       7,
       10,
     ],
@@ -502,20 +502,20 @@ Array [
     "type": "checkbox_open",
   },
   Token {
-    "attrs": Array [
-      Array [
+    "attrs": [
+      [
         "type",
         "checkbox",
       ],
-      Array [
+      [
         "id",
         "checkbox3",
       ],
-      Array [
+      [
         "disabled",
         "",
       ],
-      Array [
+      [
         "checked",
         "true",
       ],
@@ -526,7 +526,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       7,
       10,
     ],
@@ -537,8 +537,8 @@ Array [
     "type": "checkbox_input",
   },
   Token {
-    "attrs": Array [
-      Array [
+    "attrs": [
+      [
         "for",
         "checkbox3",
       ],
@@ -639,7 +639,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       7,
       10,
     ],
@@ -657,7 +657,7 @@ Array [
     "hidden": false,
     "info": "",
     "level": 0,
-    "map": Array [
+    "map": [
       7,
       10,
     ],

@@ -1,7 +1,23 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`should highlight code 1`] = `
-"<pre><code class=\\"hljs ts\\"><span class=\\"hljs-keyword\\">const</span> <span class=\\"hljs-attr\\">x</span>: <span class=\\"hljs-built_in\\">string</span> = <span class=\\"hljs-string\\">'y'</span>;
-</code></pre>
-"
+<pre>
+  <code class="hljs ts">
+    <span class="hljs-keyword">
+      const
+    </span>
+    <span class="hljs-attr">
+      x
+    </span>
+    :
+    <span class="hljs-built_in">
+      string
+    </span>
+    =
+    <span class="hljs-string">
+      'y'
+    </span>
+    ;
+  </code>
+</pre>
 `;
