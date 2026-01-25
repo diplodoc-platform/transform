@@ -18,5 +18,4 @@ node_modules
 .eslintrc.js
 .prettierrc.js
 .stylelintrc.js
-jest.config.js
 esbuild/**/*.mjs
