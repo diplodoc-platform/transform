@@ -2,13 +2,13 @@ import type {Dictionary} from 'lodash';
 import type {LintError} from 'markdownlint';
 import type {LogLevels} from '../log';
 
-import {sep} from 'path';
-
 export function errorToString(path: string, error: LintError, sourceMap?: Dictionary<string>) {
+    // Use forward slash for rule moniker separator for cross-platform compatibility
+    // Rule names like 'YFM001/inline-code-length' should use '/' not platform-specific separator
     const ruleMoniker = error.ruleNames
-        ? error.ruleNames.join(sep)
+        ? error.ruleNames.join('/')
         : // @ts-expect-error bad markdownlint typings
-          error.ruleName + sep + error.ruleAlias;
+          error.ruleName + '/' + error.ruleAlias;
     const lineNumber = sourceMap ? sourceMap[error.lineNumber] : error.lineNumber;
 
     return (

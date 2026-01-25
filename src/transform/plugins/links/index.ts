@@ -117,7 +117,9 @@ function getDefaultPublicPath(
     },
     input?: string | null,
 ) {
-    return relative(parse(path || '').dir, input || file || '');
+    const relativePath = relative(parse(path || '').dir, input || file || '');
+    // Normalize path separators to forward slashes for cross-platform compatibility
+    return relativePath.replace(/\\/g, '/');
 }
 
 // eslint-disable-next-line complexity
@@ -174,7 +176,9 @@ function processLink(
             }
 
             if (notFoundCb && needShowError) {
-                notFoundCb(file.replace(root, ''));
+                const relativePath = file.replace(root, '');
+                // Normalize path separators to forward slashes for cross-platform compatibility
+                notFoundCb(relativePath.replace(/\\/g, '/'));
             }
 
             if (needShowError) {

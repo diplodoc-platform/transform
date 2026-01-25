@@ -32,8 +32,8 @@ function replaceImageSrc(
 
     const relativeToRoot = path.replace(root + sep, '');
     const publicSrc = join(assetsPublicPath, relativeToRoot);
-
-    return publicSrc;
+    // Normalize path separators to forward slashes for cross-platform compatibility
+    return publicSrc.replace(/\\/g, '/');
 }
 
 interface InlineOptions {
@@ -52,10 +52,12 @@ function getSvgContent(file: string, from: string, {rawContent, notFoundCb, log,
         return rawContent(file);
     } catch {
         const path = file.replace(root, '');
-        log.error(`SVG ${path} from ${from} not found`);
+        // Normalize path separators to forward slashes for cross-platform compatibility
+        const normalizedPath = path.replace(/\\/g, '/');
+        log.error(`SVG ${normalizedPath} from ${from} not found`);
 
         if (notFoundCb) {
-            notFoundCb(path);
+            notFoundCb(normalizedPath);
         }
 
         return null;

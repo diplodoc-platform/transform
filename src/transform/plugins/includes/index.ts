@@ -91,11 +91,13 @@ function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, 
             } catch (e) {
                 // @ts-ignore for some reason typescript fails here
                 const errPath = e.path?.replace(root, '');
+                // Normalize path separators to forward slashes for cross-platform compatibility
+                const normalizedPath = errPath ? errPath.replace(/\\/g, '/') : errPath;
 
                 if (notFoundCb) {
-                    notFoundCb(errPath);
+                    notFoundCb(normalizedPath);
                 }
-                log.error(`Skip error: ${e} in ${errPath}`);
+                log.error(`Skip error: ${e} in ${normalizedPath}`);
 
                 i++;
             }

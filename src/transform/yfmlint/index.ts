@@ -31,7 +31,11 @@ const lintCache = new Set();
 function yfmlint(opts: Options) {
     let {input} = opts;
     const {plugins: customPlugins, pluginOptions, customLintRules, sourceMap} = opts;
-    const {path = 'input', log} = pluginOptions;
+    const {log} = pluginOptions;
+    let {path = 'input'} = pluginOptions;
+
+    // Normalize path separators to forward slashes for cross-platform compatibility
+    path = path.replace(/\\/g, '/');
 
     pluginOptions.isLintRun = true;
 

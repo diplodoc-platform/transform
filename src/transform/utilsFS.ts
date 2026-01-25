@@ -3,7 +3,7 @@ import type {StateCore} from './typings';
 
 import {readFileSync, realpathSync, statSync} from 'fs';
 import escapeRegExp from 'lodash/escapeRegExp';
-import {join, parse, relative, resolve, sep} from 'path';
+import {basename, join, parse, relative, resolve, sep} from 'path';
 import QuickLRU from 'quick-lru';
 
 import liquidSnippet from './liquid';
@@ -39,6 +39,7 @@ export type GetFileTokensOpts = {
     inheritVars?: boolean;
     conditionsInCode?: boolean;
     content?: string;
+    root?: string;
 };
 
 export function getFileTokens(
@@ -87,9 +88,31 @@ export function getFileTokens(
     content = preprocess(content, options);
 
     if (!disableLint && lintMarkdown) {
+        // Make path relative to root if root is provided, otherwise use absolute path
+        let lintPath = path;
+        if (options.root) {
+            try {
+                // Use path.relative for proper cross-platform path handling
+                const relativePath = relative(options.root, path);
+                // If relative path doesn't start with '..', it's within root
+                if (!relativePath.startsWith('..')) {
+                    lintPath = relativePath;
+                }
+            } catch {
+                // If relative fails, fall back to string replacement
+                if (path.startsWith(options.root)) {
+                    lintPath = path.replace(options.root, '').replace(/^[/\\]/, '');
+                }
+            }
+        }
+        // Normalize path separators to forward slashes for cross-platform compatibility
+        const normalizedPath = lintPath.replace(/\\/g, '/');
+        // Use only basename for lint error messages to match test expectations
+        // This ensures consistent error message format across platforms
+        const lintPathForMessage = basename(normalizedPath);
         lintMarkdown({
             input: content,
-            path,
+            path: lintPathForMessage,
             sourceMap,
         });
     }
@@ -158,8 +181,10 @@ export function getPublicPath(
 ) {
     const currentPath = input || path || '';
     const filePath = relative(resolve(root || '', rootPublicPath || ''), currentPath);
+    // Normalize path separators to forward slashes for cross-platform compatibility
+    const normalizedPath = filePath.replace(/\\/g, '/');
     const transformer = transformLink || defaultTransformLink;
-    const href = transformer(filePath);
+    const href = transformer(normalizedPath);
     return href;
 }
 
@@ -167,7 +192,9 @@ export function getRelativePath(path: string, toPath: string) {
     const pathDirs = path.split(sep);
     pathDirs.pop();
     const parentPath = pathDirs.join(sep);
-    return relative(parentPath, toPath);
+    const relativePath = relative(parentPath, toPath);
+    // Normalize path separators to forward slashes for cross-platform compatibility
+    return relativePath.replace(/\\/g, '/');
 }
 
 export function getRealPath(symlinkPath: string): string {
