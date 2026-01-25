@@ -746,9 +746,10 @@ function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) 
 
             dom(element).text(css.stringify(parsedCSS));
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : `${error}`;
-            log.warn(`Failed to parse CSS in style attribute: ${errorMessage}`);
             dom(element).remove();
+
+            const errorMessage = error instanceof Error ? error.message : `${error}`;
+            log.info(errorMessage);
         }
     });
 }
