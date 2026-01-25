@@ -194,12 +194,9 @@ describe('Includes', () => {
 
         lintMarkdown({input, path: mocksPath});
 
-        const errorMessage = log.get().warn[0];
-        const expectedCondition = errorMessage.includes(
-            'include-lint-test.md: 3: YFM001/inline-code-length',
-        );
+        const warn = log.get().warn[0];
 
-        expect(expectedCondition).toEqual(true);
+        expect(warn).toMatch('include-lint-test.md: 3: YFM001/inline-code-length');
     });
 
     test('Should include file with sharped path', () => {
