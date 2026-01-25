@@ -35,9 +35,9 @@
   "scripts": {
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "npm run lint -- --fix",
-    "bundle": "node scripts/bundle.js",
-    "pages": "node scripts/pages.js",
-    "dev": "node scripts/dev.js",
+    "bundle": "node scripts/bundle.mjs",
+    "pages": "node scripts/pages.mjs",
+    "dev": "node scripts/dev.mjs",
     "typecheck": "tsc --noEmit -p .",
     "prepublishOnly": "npm run bundle"
   },

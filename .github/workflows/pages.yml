@@ -48,8 +48,13 @@ jobs:
       - name: Build package
         run: npm run build
 
+      - name: Install playground dependencies
+        working-directory: playground
+        run: npm ci
+
       - name: Build playground artifacts
-        run: npm run artifact:pages
+        working-directory: playground
+        run: npm run pages
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -57,7 +62,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './pages-build'
+          path: './playground/build'
 
       - name: Deploy to GitHub Pages
         id: deployment
