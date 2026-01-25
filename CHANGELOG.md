@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.67.0](https://github.com/diplodoc-platform/transform/compare/v4.66.0...v4.67.0) (2026-01-25)
+
+
+### Features
+
+* add GitHub Pages deployment workflow for playground ([62edae3](https://github.com/diplodoc-platform/transform/commit/62edae30c9689c840d866d38d884bbb13f203750))
+
+
+### Bug Fixes
+
+* **lint:** resolve linting errors ([e88c983](https://github.com/diplodoc-platform/transform/commit/e88c98354ced3619f4d0d6a4a8f35f7f91da75b7))
+* normalize paths for cross-platform compatibility (Windows) ([565ebcb](https://github.com/diplodoc-platform/transform/commit/565ebcb86bc44a73a5236b09c6189a232844d7a2))
+* **transform:** add vitest/globals to tsconfig types ([183fa61](https://github.com/diplodoc-platform/transform/commit/183fa61312bf5aa1a3f529d473ec9045d965ca61))
+
 ## [4.66.0](https://github.com/diplodoc-platform/transform/compare/v4.65.3...v4.66.0) (2026-01-20)
 
 
