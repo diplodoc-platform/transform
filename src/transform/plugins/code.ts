@@ -8,7 +8,7 @@ const wrapInClipboard = (element: string | undefined, id: number) => {
     return `
     <div class="yfm-clipboard">
         ${element}
-        <button class="yfm-clipboard-button" aria-label="Copy">
+        <button class="yfm-clipboard-button" aria-label="Copy" type="button">
             <svg width="16" height="16" viewBox="0 0 24 24" class="yfm-clipboard-icon" data-animation="${id}">
                 <path
                     fill="currentColor"
