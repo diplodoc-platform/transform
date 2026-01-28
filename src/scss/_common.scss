@@ -136,6 +136,7 @@
     }
 
     p,
+    .checkbox,
     blockquote,
     ul,
     ol,
@@ -176,6 +177,25 @@
 
             box-sizing: border-box;
             padding: 0;
+        }
+    }
+
+    .checkbox {
+        display: flex;
+
+        & > input[type='checkbox'] {
+            align-self: flex-start;
+            top: 3px;
+
+            margin-right: 3px;
+        }
+
+        &:has(+ .checkbox) {
+            margin-bottom: var(--yfm-checkbox-margin-between, 0);
+        }
+
+        & + .checkbox {
+            margin-top: 0;
         }
     }
 
