@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.68.0](https://github.com/diplodoc-platform/transform/compare/v4.67.0...v4.68.0) (2026-01-28)
+
+
+### Features
+
+* **styles:** improve checkbox styles ([#827](https://github.com/diplodoc-platform/transform/issues/827)) ([62249c5](https://github.com/diplodoc-platform/transform/commit/62249c5152dadeed8a9a16130284b5311c0bab5d))
+
 ## [4.67.0](https://github.com/diplodoc-platform/transform/compare/v4.66.0...v4.67.0) (2026-01-25)
 
 
