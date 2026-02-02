@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.68.1](https://github.com/diplodoc-platform/transform/compare/v4.68.0...v4.68.1) (2026-02-02)
+
+
+### Bug Fixes
+
+* fixed code-background ([#830](https://github.com/diplodoc-platform/transform/issues/830)) ([7608274](https://github.com/diplodoc-platform/transform/commit/76082747430cd20fa6388a6e4a1db8d3f604f351))
+
 ## [4.68.0](https://github.com/diplodoc-platform/transform/compare/v4.67.0...v4.68.0) (2026-01-28)
 
 
