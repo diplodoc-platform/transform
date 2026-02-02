@@ -3,7 +3,10 @@
         display: block;
         overflow-x: auto;
         padding: 16px;
-        background: var(--yfm-color-hljs-background, var(--yfm-color-hljs-background-private));
+        background: var(
+            --yfm-color-code-background,
+            var(--yfm-color-hljs-background, var(--yfm-color-hljs-background-private))
+        );
     }
 
     .hljs,
