@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.68.2](https://github.com/diplodoc-platform/transform/compare/v4.68.1...v4.68.2) (2026-02-04)
+
+
+### Bug Fixes
+
+* **checkbox:** wrap inline tokens in inline token for checkbox labels ([#834](https://github.com/diplodoc-platform/transform/issues/834)) ([16e952b](https://github.com/diplodoc-platform/transform/commit/16e952bcb07c2c91c58793172e0b4227c91f7c13))
+
 ## [4.68.1](https://github.com/diplodoc-platform/transform/compare/v4.68.0...v4.68.1) (2026-02-02)
 
 
