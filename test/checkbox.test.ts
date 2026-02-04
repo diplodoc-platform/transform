@@ -106,6 +106,9 @@ describe('markdown-it-checkbox', () => {
         [x] long
         looong
         checkbox3
+        [-] *check*
+        **with**
+        ~~markup~~
         `;
 
         const tokens = new MarkdownIt({breaks: true}).use(plugin).parse(markup, {});
