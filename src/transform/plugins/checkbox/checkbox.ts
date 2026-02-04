@@ -17,9 +17,15 @@ export const CheckboxTokenType = {
 
 type ParsedCheckbox = {
     tokens: Token[];
+    content: string;
     startLine: number;
     endLine: number;
     checked: boolean;
+};
+
+type ContentLine = {
+    tokens: Token[];
+    content: string;
 };
 
 function matchOpenToken(tokens: Token[], i: number) {
@@ -90,7 +96,11 @@ export const checkboxReplace = function (_md: MarkdownIt, opts?: CheckboxOptions
         /**
          * content of label tag
          */
-        nodes.push(...checkbox.tokens);
+        token = new state.Token('inline', '', 0);
+        token.content = checkbox.content;
+        token.children = checkbox.tokens;
+        token.map = [checkbox.startLine, checkbox.endLine];
+        nodes.push(token);
 
         /**
          * closing tags
@@ -123,6 +133,7 @@ export const checkboxReplace = function (_md: MarkdownIt, opts?: CheckboxOptions
                 const first = checkbox.tokens[0];
                 // remove checkbox markup [X]␣ at start of text content
                 first.content = first.content.slice(4);
+                checkbox.content = checkbox.content.trim().slice(4);
                 checkboxTokens.push(...createTokens(state, checkbox));
             }
 
@@ -136,17 +147,22 @@ export const checkboxReplace = function (_md: MarkdownIt, opts?: CheckboxOptions
 };
 
 function parseInlineContent(inlineToken: Token, startLine: number): ParsedCheckbox[] {
-    const children = inlineToken.children || [];
-    const lines = splitInlineTokensByBreaks(children);
+    const lines = splitInlineTokensByBreaks(inlineToken);
     return parseCheckboxesByLines(lines, startLine);
 }
 
-function splitInlineTokensByBreaks(tokens: Token[]): Token[][] {
-    const lines: Token[][] = [];
+function splitInlineTokensByBreaks(inlineToken: Token): ContentLine[] {
+    const tokens = inlineToken.children || [];
+    const contentLines = inlineToken.content.split('\n');
+
+    const lines: ContentLine[] = [];
     let lineIdx = 0;
     for (const token of tokens) {
-        lines[lineIdx] ||= [];
-        lines[lineIdx].push(token);
+        lines[lineIdx] ||= {
+            tokens: [],
+            content: contentLines[lineIdx],
+        };
+        lines[lineIdx].tokens.push(token);
 
         if (isBreakToken(token)) {
             lineIdx += 1;
@@ -156,13 +172,13 @@ function splitInlineTokensByBreaks(tokens: Token[]): Token[][] {
     return lines;
 }
 
-function parseCheckboxesByLines(lines: Token[][], startLine: number): ParsedCheckbox[] {
+function parseCheckboxesByLines(lines: ContentLine[], startLine: number): ParsedCheckbox[] {
     const checkboxes: ParsedCheckbox[] = [];
 
     let checkboxIdx = -1;
     for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
         const line = lines[lineIdx];
-        const first = line?.[0];
+        const first = line?.tokens[0];
         if (!first) {
             continue;
         }
@@ -178,13 +194,15 @@ function parseCheckboxesByLines(lines: Token[][], startLine: number): ParsedChec
             checkboxIdx += 1;
             checkboxes[checkboxIdx] ||= {
                 tokens: [],
+                content: '',
                 checked: isChecked(match[1]),
                 startLine: startLine + lineIdx,
                 endLine: startLine + lineIdx + 1,
             };
         }
 
-        checkboxes[checkboxIdx].tokens.push(...line);
+        checkboxes[checkboxIdx].tokens.push(...line.tokens);
+        checkboxes[checkboxIdx].content += line.content + '\n';
         checkboxes[checkboxIdx].endLine = startLine + lineIdx + 1;
     }
 
