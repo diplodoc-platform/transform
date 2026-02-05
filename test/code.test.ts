@@ -114,5 +114,37 @@ describe('Code', () => {
             expect(result).toContain('<span class="yfm-line-number"> 1</span>line1');
             expect(result).toContain('<span class="yfm-line-number">10</span>line10');
         });
+
+        it('should wrap lines of code to yfm-line spans', () => {
+            const fence = vi.fn(
+                (tokens: Token[], index: number) =>
+                    `<pre><code>${tokens[index].content}</code></pre>`,
+            );
+            const md = getMd(fence);
+            code(
+                md as unknown as MarkdownIt,
+                {codeLineWrapping: true} as unknown as MarkdownItPluginOpts,
+            );
+
+            const tokens = [
+                {
+                    info: 'markdown showLineNumbers',
+                    content: 'line1\nline2\nline3',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(fence).toBeCalled();
+            expect(result).toContain(
+                '<span class="yfm-line-number">1</span><span class="yfm-line">line1</span>',
+            );
+            expect(result).toContain(
+                '<span class="yfm-line-number">2</span><span class="yfm-line">line2</span>',
+            );
+            expect(result).toContain(
+                '<span class="yfm-line-number">3</span><span class="yfm-line">line3</span>',
+            );
+        });
     });
 });

@@ -1,6 +1,7 @@
 import {copyToClipboard, getEventTarget, isCustom} from './utils';
 
-const BUTTON_SELECTOR = '.yfm-clipboard-button';
+const COPY_BUTTON_SELECTOR = '.yfm-clipboard-button';
+const WRAP_BUTTON_SELECTOR = '.yfm-wrapping-button';
 
 function notifySuccess(svgButton: HTMLElement | null) {
     if (!svgButton) {
@@ -20,15 +21,9 @@ function notifySuccess(svgButton: HTMLElement | null) {
 }
 
 function buttonCopyFn(target: HTMLElement) {
-    const parent = target.parentNode;
-
-    if (!parent) {
-        return;
-    }
-
-    const code = parent.querySelector<HTMLElement>('pre code');
-
-    if (!code) {
+    const container = target.parentNode?.parentNode;
+    const code = container?.querySelector<HTMLElement>('pre code');
+    if (!container || !code) {
         return;
     }
 
@@ -45,22 +40,36 @@ function buttonCopyFn(target: HTMLElement) {
         .join('');
 
     copyToClipboard(textContent.trim()).then(() => {
-        notifySuccess(parent.querySelector('.yfm-clipboard-icon'));
+        notifySuccess(container.querySelector('.yfm-clipboard-icon'));
 
         setTimeout(() => target.blur(), 1500);
     });
 }
 
+function buttonWrapFn(target: HTMLElement) {
+    const container = target.parentNode?.parentNode;
+    const code = container?.querySelector<HTMLElement>('pre code');
+    if (!container || !code) {
+        return;
+    }
+
+    code.classList.toggle('wrap');
+
+    setTimeout(() => target.blur(), 500);
+}
+
 if (typeof document !== 'undefined') {
     document.addEventListener('click', (event) => {
-        const target = getEventTarget(event) as HTMLElement;
-
-        const button = target.matches(BUTTON_SELECTOR);
-
-        if (isCustom(event) || !button) {
+        if (isCustom(event)) {
             return;
         }
 
-        buttonCopyFn(target);
+        const target = getEventTarget(event) as HTMLElement;
+
+        if (target.matches(COPY_BUTTON_SELECTOR)) {
+            buttonCopyFn(target);
+        } else if (target.matches(WRAP_BUTTON_SELECTOR)) {
+            buttonWrapFn(target);
+        }
     });
 }

@@ -9,22 +9,26 @@ import code from '../src/transform/plugins/code';
 
 const mocksPath = require.resolve('./utils.ts');
 
-const transformYfm = (text: string, path?: string) => {
+const transformYfm = (text: string, path?: string, opts?: Object) => {
     const {
         result: {html},
     } = transform(text, {
         plugins: [includes, links, code, term],
         path: path || mocksPath,
         root: dirname(path || mocksPath),
+        ...opts,
     });
     return html;
 };
 
 const clearRandomId = (str: string) => {
     const clearRandomId = new RegExp(/<([i\s]+).*?id="([^"]*?)".*?>(.+?)/, 'g');
-    const randomId = clearRandomId.exec(str);
-
-    return randomId ? str.replace(randomId[2], '') : str;
+    let randomId = clearRandomId.exec(str);
+    while (randomId) {
+        str = str.replace(randomId[2], '');
+        randomId = clearRandomId.exec(str);
+    }
+    return str;
 };
 
 describe('Terms', () => {
@@ -48,6 +52,14 @@ describe('Terms', () => {
         const inputPath = resolve(__dirname, './mocks/term/code.md');
         const input = readFileSync(inputPath, 'utf8');
         const result = transformYfm(input, inputPath);
+
+        expect(clearRandomId(result)).toMatchSnapshot();
+    });
+
+    test('should create term in code with line-numbers and line-wrapping', () => {
+        const inputPath = resolve(__dirname, './mocks/term/code-line-numbers.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath, {codeLineWrapping: true});
 
         expect(clearRandomId(result)).toMatchSnapshot();
     });

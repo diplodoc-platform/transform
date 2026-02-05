@@ -103,6 +103,12 @@ export interface OptionsType {
         imgSrc: string,
         opts: unknown,
     ) => string;
+    /**
+     * Show button to toggle line wrapping of code.
+     * @type {boolean}
+     * @default false
+     */
+    codeLineWrapping?: boolean;
 }
 
 export interface OutputType {

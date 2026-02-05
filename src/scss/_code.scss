@@ -1,29 +1,11 @@
 .yfm {
-    &-clipboard {
+    &-code-floating-container {
         position: relative;
 
-        .yfm-clipboard-button {
+        .yfm-code-button {
             min-width: 20px;
             min-height: 20px;
-        }
-
-        &:hover {
-            .yfm-clipboard-button {
-                opacity: 1;
-            }
-        }
-
-        & > pre {
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        &-button {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            z-index: 1;
-            opacity: 0;
+            flex-shrink: 0;
 
             //reset default button style
             background: none;
@@ -32,26 +14,61 @@
             padding: 0;
             font: inherit;
             cursor: pointer;
+        }
 
-            &:focus {
+        &:hover {
+            .yfm-code-floating {
                 opacity: 1;
             }
         }
 
-        &-icon {
-            pointer-events: none;
+        & > pre {
+            border-radius: 10px;
+            overflow: hidden;
+
+            // codeblock has line-wrapping and line-numbers
+            code:has(> .yfm-line) {
+                display: grid;
+                grid-template-columns: auto 1fr;
+            }
+
+            code.wrap {
+                white-space: pre-wrap;
+            }
         }
 
-        &-inline-code {
-            transition: 0.3s;
+        .yfm-code-floating {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 1;
 
-            &:hover {
-                cursor: pointer;
-                background-color: var(
-                    --yfm-color-code-hovered-background,
-                    var(--yfm-color-code-background-hovered-private)
-                );
+            opacity: 0;
+
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 4px;
+
+            &:focus,
+            &:has(> .yfm-code-button:focus) {
+                opacity: 1;
             }
+        }
+
+        .yfm-code-icon {
+            pointer-events: none;
+        }
+    }
+
+    &-clipboard-inline-code {
+        transition: 0.3s;
+
+        &:hover {
+            cursor: pointer;
+            background-color: var(
+                --yfm-color-code-hovered-background,
+                var(--yfm-color-code-background-hovered-private)
+            );
         }
     }
 }
