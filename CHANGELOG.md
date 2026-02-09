@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.68.3](https://github.com/diplodoc-platform/transform/compare/v4.68.2...v4.68.3) (2026-02-09)
+
+
+### Bug Fixes
+
+* crushing in backends DOCSTOOLS-4992 ([78ae3b9](https://github.com/diplodoc-platform/transform/commit/78ae3b9778791f4f2fac69cf54db0eae780e88a3))
+
 ## [4.68.2](https://github.com/diplodoc-platform/transform/compare/v4.68.1...v4.68.2) (2026-02-04)
 
 
