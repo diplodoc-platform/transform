@@ -49,15 +49,26 @@ interface SVGOpts extends MarkdownItPluginOpts {
 
 function getSvgContent(file: string, from: string, {rawContent, notFoundCb, log, root = ''}: Opts) {
     try {
-        return rawContent(file);
+        const content = rawContent(file);
+
+        if (!content || typeof content !== 'string') {
+            return null;
+        }
+
+        return content;
     } catch {
         const path = file.replace(root, '');
         // Normalize path separators to forward slashes for cross-platform compatibility
         const normalizedPath = path.replace(/\\/g, '/');
         log.error(`SVG ${normalizedPath} from ${from} not found`);
 
-        if (notFoundCb) {
-            notFoundCb(normalizedPath);
+        try {
+            if (notFoundCb) {
+                notFoundCb(normalizedPath);
+            }
+        } catch {
+            // notFoundCb may throw in some backends (e.g. memcache)
+            // to signal that the file needs to be fetched
         }
 
         return null;
