@@ -301,6 +301,7 @@ const htmlAttrs = [
     'aria-describedby',
     'data-*',
     'wide-content',
+    'sandbox',
     'sticky-header',
 ];
 
