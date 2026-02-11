@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import esbuild from 'esbuild';
+import esbuild from '@diplodoc/lint/esbuild';
 
 import {copyScssFiles, runChainsWith} from './package-build-configs.mjs';
 

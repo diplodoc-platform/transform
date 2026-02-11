@@ -18,9 +18,12 @@ export default defineConfig({
         },
         // Coverage configuration
         coverage: {
+            all: true,
             provider: 'v8',
-            include: ['src/**/*'],
+            include: ['src/**'],
             exclude: ['src/**/*.test.ts', 'src/**/*.spec.ts', 'test/**/*'],
+            excludeAfterRemap: true,
+            reporter: ['text', 'json', 'html', 'lcov'],
         },
     },
 });
