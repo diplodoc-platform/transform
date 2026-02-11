@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import esbuild from 'esbuild';
+import {build} from '@diplodoc/lint/esbuild';
 
 import {copyScssFiles, runChainsWith} from './package-build-configs.mjs';
 
-const executeBuild = (buildOptions) => esbuild.build(buildOptions);
+const executeBuild = (buildOptions) => build(buildOptions);
 
 await runChainsWith(executeBuild);
 await copyScssFiles();
