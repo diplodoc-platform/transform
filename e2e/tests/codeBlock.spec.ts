@@ -5,14 +5,14 @@ import {expect, test} from '../fixtures/test';
 
 describeStory(stories, 'Base', () => {
     test('code block visual regression', async ({yfmRoot}) => {
-        const codeBlock = yfmRoot.locator('.yfm-clipboard');
+        const codeBlock = yfmRoot.locator('.yfm-code-floating-container');
         await expect(codeBlock).toBeVisible();
 
         expect(await codeBlock.screenshot()).toMatchSnapshot('base-code-block.png');
     });
 
     test('code block visual regression on hover', async ({yfmRoot, page}) => {
-        const codeBlock = yfmRoot.locator('.yfm-clipboard');
+        const codeBlock = yfmRoot.locator('.yfm-code-floating-container');
 
         await expect(codeBlock).toBeVisible();
         await codeBlock.hover();
@@ -22,7 +22,7 @@ describeStory(stories, 'Base', () => {
     });
 
     test('code block visual regression after click copy button', async ({yfmRoot, page}) => {
-        const codeBlock = yfmRoot.locator('.yfm-clipboard');
+        const codeBlock = yfmRoot.locator('.yfm-code-floating-container');
         const copyButton = codeBlock.locator('.yfm-clipboard-button');
 
         await expect(codeBlock).toBeVisible();
