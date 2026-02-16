@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.69.0](https://github.com/diplodoc-platform/transform/compare/v4.68.3...v4.69.0) (2026-02-16)
+
+
+### Features
+
+* **code:** add floating button to toggle text wrapping within code block ([#837](https://github.com/diplodoc-platform/transform/issues/837)) ([f088ef4](https://github.com/diplodoc-platform/transform/commit/f088ef4befec721a0eed19fccb98bd208b48a259))
+
+
+### Bug Fixes
+
+* **styles:** make hr height/margins configurable via CSS vars ([#849](https://github.com/diplodoc-platform/transform/issues/849)) ([37c539d](https://github.com/diplodoc-platform/transform/commit/37c539d3dc552c80c423039195a36dc1c8c8249c))
+* Update infra to v1.13.2 ([d913886](https://github.com/diplodoc-platform/transform/commit/d913886c497afe8113301614d8e4a0d9453666b0))
+
 ## [4.68.3](https://github.com/diplodoc-platform/transform/compare/v4.68.2...v4.68.3) (2026-02-09)
 
 
