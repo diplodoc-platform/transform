@@ -16,3 +16,18 @@ export const Base: MarkdownSnippetStory = {
         `,
     },
 };
+
+export const LongContent: MarkdownSnippetStory = {
+    name: 'Code block with long content',
+    args: {
+        snippet: dedent`
+            ~~~js showLineNumbers
+            export const received = (function factorial(n) { if(n === 0) { return 1; } else { return n * factorial(n - 1); } })(5);
+            export const expected = 120;
+            ~~~
+        `,
+        extraOptions: {
+            codeLineWrapping: true,
+        },
+    },
+};
