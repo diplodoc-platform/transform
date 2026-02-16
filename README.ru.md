@@ -122,6 +122,8 @@ MIT
 - `--yfm-font-line-height-h5`
 - `--yfm-font-size-h6`
 - `--yfm-font-line-height-h6`
+- `--yfm-hr-height`
+- `--yfm-hr-margin`
 
 **code**
 

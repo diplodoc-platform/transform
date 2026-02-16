@@ -276,9 +276,9 @@
 
     hr {
         box-sizing: content-box;
-        height: 0.25em;
+        height: var(--yfm-hr-height, 0.25em);
         padding: 0;
-        margin: 1.5em 0;
+        margin: var(--yfm-hr-margin, 1.5em 0);
         overflow: hidden;
 
         background-color: var(--yfm-color-border, var(--yfm-color-border-private));
