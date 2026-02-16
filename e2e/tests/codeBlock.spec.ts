@@ -5,14 +5,14 @@ import {expect, test} from '../fixtures/test';
 
 describeStory(stories, 'Base', () => {
     test('code block visual regression', async ({yfmRoot}) => {
-        const codeBlock = yfmRoot.locator('.yfm-clipboard');
+        const codeBlock = yfmRoot.locator('.yfm-code-floating-container');
         await expect(codeBlock).toBeVisible();
 
         expect(await codeBlock.screenshot()).toMatchSnapshot('base-code-block.png');
     });
 
     test('code block visual regression on hover', async ({yfmRoot, page}) => {
-        const codeBlock = yfmRoot.locator('.yfm-clipboard');
+        const codeBlock = yfmRoot.locator('.yfm-code-floating-container');
 
         await expect(codeBlock).toBeVisible();
         await codeBlock.hover();
@@ -22,7 +22,7 @@ describeStory(stories, 'Base', () => {
     });
 
     test('code block visual regression after click copy button', async ({yfmRoot, page}) => {
-        const codeBlock = yfmRoot.locator('.yfm-clipboard');
+        const codeBlock = yfmRoot.locator('.yfm-code-floating-container');
         const copyButton = codeBlock.locator('.yfm-clipboard-button');
 
         await expect(codeBlock).toBeVisible();
@@ -30,5 +30,37 @@ describeStory(stories, 'Base', () => {
         await page.waitForTimeout(100);
 
         expect(await codeBlock.screenshot()).toMatchSnapshot('base-code-block-copied.png');
+    });
+});
+
+describeStory(stories, 'LongContent', () => {
+    test('code block visual regression', async ({yfmRoot}) => {
+        const codeBlock = yfmRoot.locator('.yfm-code-floating-container');
+        await expect(codeBlock).toBeVisible();
+
+        expect(await codeBlock.screenshot()).toMatchSnapshot('long-content-code-block.png');
+    });
+
+    test('code block visual regression on hover', async ({yfmRoot, page}) => {
+        const codeBlock = yfmRoot.locator('.yfm-code-floating-container');
+
+        await expect(codeBlock).toBeVisible();
+        await codeBlock.hover();
+        await page.waitForTimeout(50);
+
+        expect(await codeBlock.screenshot()).toMatchSnapshot('long-content-code-block-hover.png');
+    });
+
+    test('code block visual regression after toggle text wrapping', async ({yfmRoot, page}) => {
+        const codeBlock = yfmRoot.locator('.yfm-code-floating-container');
+        const wrappingButton = codeBlock.locator('.yfm-wrapping-button');
+
+        await expect(codeBlock).toBeVisible();
+        await wrappingButton.click();
+        await page.waitForTimeout(100);
+
+        expect(await codeBlock.screenshot()).toMatchSnapshot(
+            'long-content-code-block-text-wrapping.png',
+        );
     });
 });
