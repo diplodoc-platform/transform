@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.69.1](https://github.com/diplodoc-platform/transform/compare/v4.69.0...v4.69.1) (2026-02-17)
+
+
+### Bug Fixes
+
+* **styles:** fixed code print styles ([#853](https://github.com/diplodoc-platform/transform/issues/853)) ([6a2f9e5](https://github.com/diplodoc-platform/transform/commit/6a2f9e51b97345e705d5b835104b3caabcfad281))
+
 ## [4.69.0](https://github.com/diplodoc-platform/transform/compare/v4.68.3...v4.69.0) (2026-02-16)
 
 
