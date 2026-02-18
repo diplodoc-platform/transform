@@ -6,6 +6,7 @@ import links from '../src/transform/plugins/links';
 import term from '../src/transform/plugins/term';
 import includes from '../src/transform/plugins/includes';
 import code from '../src/transform/plugins/code';
+import sup from '../src/transform/plugins/sup';
 
 const mocksPath = require.resolve('./utils.ts');
 
@@ -13,7 +14,7 @@ const transformYfm = (text: string, path?: string, opts?: Object) => {
     const {
         result: {html},
     } = transform(text, {
-        plugins: [includes, links, code, term],
+        plugins: [includes, links, code, sup, term],
         path: path || mocksPath,
         root: dirname(path || mocksPath),
         ...opts,
@@ -117,5 +118,21 @@ describe('Terms', () => {
         expect(result).toContain('yfm-term_title');
         expect(result).not.toContain('href="*notexist"');
         expect(clearRandomId(result)).toMatchSnapshot();
+    });
+
+    test('Should handle term inside superscript', () => {
+        const inputPath = resolve(__dirname, './mocks/term/term-in-superscript.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(result).toContain('yfm-term_title');
+        expect(clearRandomId(result)).toMatchSnapshot();
+    });
+
+    test('Should handle term inside link text without crashing', () => {
+        const inputPath = resolve(__dirname, './mocks/term/term-in-link.md');
+        const input = readFileSync(inputPath, 'utf8');
+
+        expect(() => transformYfm(input, inputPath)).not.toThrow();
     });
 });

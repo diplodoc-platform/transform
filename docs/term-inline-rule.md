@@ -1,6 +1,6 @@
 # ADR-001: Inline rule for term plugin to fix asterisk handling
 
-**Status**: Accepted  
+**Status**: Accepted
 **Date**: 2026-02-18
 
 ## Context
@@ -33,17 +33,34 @@ Add a **custom inline rule** (`term_inline`) that matches `[text](*termId)` duri
 
 4. **`termReplace` core rule** — retained as fallback. Handles lint checks (`__yfm_lint` / `YFM007` for undefined terms) and any edge cases where text-based matching is still needed.
 
+### Critical: `state.pos` contract in silent mode
+
+Markdown-it's `ParserInline.skipToken` calls inline rules with `silent=true` and then checks that `state.pos` was advanced. If the rule returns `true` without advancing `state.pos`, markdown-it throws `Error: inline rule didn't increment state.pos`. This happens when other plugins (e.g. `markdown-it-sup` for `^[?](*term)^`, or `parseLinkLabel` for `[[term](*id)](url)`) call `skipToken` internally.
+
+The inline rule **must** advance `state.pos` unconditionally when returning `true`:
+
+```typescript
+if (!silent) {
+  // create tokens only in non-silent mode
+}
+state.pos = match.endPos; // ALWAYS advance before return true
+return true;
+```
+
 ### Why inline rule works
 
 - Runs during inline tokenization, **before** emphasis and link rules see the characters.
 - Consumes `[`, `text`, `]`, `(`, `*termId`, `)` entirely — the `*` characters never enter the emphasis delimiter stack.
 - Creates term tokens at parse time — they are already in the token stream before any core rule (links, includes, etc.) executes, eliminating plugin ordering issues.
+- Correctly handles `skipToken` calls from other plugins (superscript, link label scanning) by always advancing `state.pos`.
 
 ## Consequences
 
 ### Positive
 
 - `[=*](*eqtimes)` renders correctly — asterisks in term text are no longer mangled by emphasis.
+- `^[?](*term)^` works — term inside superscript no longer crashes via `skipToken`.
+- `[[term](*id)-text](url)` works — term inside link text no longer crashes via `parseLinkLabel`.
 - Full backward compatibility with existing term syntax.
 - No dependency on core rule execution order — immune to interactions with the `links` plugin.
 - Markdown escape sequences (`\*`) in labels are properly unescaped, making output stable regardless of whether Prettier reformats `.md` files.
@@ -54,11 +71,13 @@ Add a **custom inline rule** (`term_inline`) that matches `[text](*termId)` duri
 
 ## Files changed
 
-| File                                   | Change                                                                                                                                      |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/transform/plugins/term/index.ts`  | Added `setTermAttrs`, `matchTermPattern`, `termInlineRule`; registered inline rule; kept `validateLink` override and `termReplace` fallback |
-| `test/term.test.ts`                    | Added tests: asterisk-in-text, regular links coexistence, undefined terms, lint mode; improved `clearRandomId` helper                       |
-| `test/mocks/term/asterisk-in-text.md`  | New mock for the asterisk-in-text scenario                                                                                                  |
-| `test/mocks/term/with-regular-link.md` | New mock for regular link + term coexistence                                                                                                |
-| `test/mocks/term/undefined-term.md`    | New mock for undefined term handling                                                                                                        |
-| `test/__snapshots__/term.test.ts.snap` | Updated snapshots for new tests                                                                                                             |
+| File                                     | Change                                                                                                                                                                 |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/transform/plugins/term/index.ts`    | Added `setTermAttrs`, `matchTermPattern`, `termInlineRule`; registered inline rule; kept `validateLink` override and `termReplace` fallback                            |
+| `test/term.test.ts`                      | Added tests: asterisk-in-text, superscript+term, link+term, regular links coexistence, undefined terms, lint mode; added `sup` plugin; improved `clearRandomId` helper |
+| `test/mocks/term/asterisk-in-text.md`    | New mock for the asterisk-in-text scenario                                                                                                                             |
+| `test/mocks/term/term-in-superscript.md` | New mock for term inside `^..^` superscript                                                                                                                            |
+| `test/mocks/term/term-in-link.md`        | New mock for term inside link text brackets                                                                                                                            |
+| `test/mocks/term/with-regular-link.md`   | New mock for regular link + term coexistence                                                                                                                           |
+| `test/mocks/term/undefined-term.md`      | New mock for undefined term handling                                                                                                                                   |
+| `test/__snapshots__/term.test.ts.snap`   | Updated snapshots for new tests                                                                                                                                        |

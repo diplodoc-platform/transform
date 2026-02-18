@@ -106,19 +106,17 @@ function termInlineRule(state: StateInline, silent: boolean): boolean {
         return false;
     }
 
-    if (silent) {
-        return true;
+    if (!silent) {
+        const labelContent = state.src.slice(state.pos + 1, match.labelEnd).replace(/\\(.)/g, '$1');
+
+        const termOpen = state.push('term_open', 'i', 1);
+        setTermAttrs(termOpen, match.termId);
+
+        const textToken = state.push('text', '', 0);
+        textToken.content = labelContent;
+
+        state.push('term_close', 'i', -1);
     }
-
-    const labelContent = state.src.slice(state.pos + 1, match.labelEnd).replace(/\\(.)/g, '$1');
-
-    const termOpen = state.push('term_open', 'i', 1);
-    setTermAttrs(termOpen, match.termId);
-
-    const textToken = state.push('text', '', 0);
-    textToken.content = labelContent;
-
-    state.push('term_close', 'i', -1);
 
     state.pos = match.endPos;
     return true;
