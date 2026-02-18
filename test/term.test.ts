@@ -79,4 +79,43 @@ describe('Terms', () => {
 
         expect(clearRandomId(result)).toMatchSnapshot();
     });
+
+    test('Should handle asterisk inside term text', () => {
+        const inputPath = resolve(__dirname, './mocks/term/asterisk-in-text.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(clearRandomId(result)).toMatchSnapshot();
+    });
+
+    test('Should preserve regular links and convert term links', () => {
+        const inputPath = resolve(__dirname, './mocks/term/with-regular-link.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(result).toContain('href="https://example.com"');
+        expect(result).toContain('yfm-term_title');
+        expect(clearRandomId(result)).toMatchSnapshot();
+    });
+
+    test('Should strip undefined term links and keep content', () => {
+        const inputPath = resolve(__dirname, './mocks/term/undefined-term.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(result).toContain('yfm-term_title');
+        expect(result).not.toContain('href="*notexist"');
+        expect(result).toContain('undefined');
+        expect(clearRandomId(result)).toMatchSnapshot();
+    });
+
+    test('Should emit lint token for undefined term in lint mode', () => {
+        const inputPath = resolve(__dirname, './mocks/term/undefined-term.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath, {isLintRun: true});
+
+        expect(result).toContain('yfm-term_title');
+        expect(result).not.toContain('href="*notexist"');
+        expect(clearRandomId(result)).toMatchSnapshot();
+    });
 });

@@ -152,6 +152,126 @@ exports[`Terms > Should create term in text with definition template 1`] = `
 </p>
 `;
 
+exports[`Terms > Should emit lint token for undefined term in lint mode 1`] = `
+<p>
+  A
+  <i class="yfm yfm-term_title"
+     term-key=":myterm"
+     role="button"
+     aria-describedby=":myterm_element"
+     tabindex="0"
+     id
+  >
+    defined
+  </i>
+  and an [undefined](*notexist).
+</p>
+<dfn class="yfm yfm-term_dfn"
+     id=":myterm_element"
+     role="dialog"
+>
+  <p>
+    my definition
+  </p>
+</dfn>
+`;
+
+exports[`Terms > Should handle asterisk inside term text 1`] = `
+<p>
+  <i class="yfm yfm-term_title"
+     term-key=":popup1"
+     role="button"
+     aria-describedby=":popup1_element"
+     tabindex="0"
+     id
+  >
+    &lt;=
+  </i>
+  ,
+  <i class="yfm yfm-term_title"
+     term-key=":popup2"
+     role="button"
+     aria-describedby=":popup2_element"
+     tabindex="0"
+     id
+  >
+    =*
+  </i>
+  ,
+</p>
+<dfn class="yfm yfm-term_dfn"
+     id=":popup1_element"
+     role="dialog"
+>
+  <p>
+    Popup 1
+  </p>
+</dfn>
+<dfn class="yfm yfm-term_dfn"
+     id=":popup2_element"
+     role="dialog"
+>
+  <p>
+    Popup 1
+  </p>
+</dfn>
+`;
+
+exports[`Terms > Should preserve regular links and convert term links 1`] = `
+<p>
+  A
+  <a href="https://example.com"
+     target="_blank"
+     rel="noreferrer noopener"
+  >
+    link
+  </a>
+  and a
+  <i class="yfm yfm-term_title"
+     term-key=":myterm"
+     role="button"
+     aria-describedby=":myterm_element"
+     tabindex="0"
+     id
+  >
+    term
+  </i>
+  .
+</p>
+<dfn class="yfm yfm-term_dfn"
+     id=":myterm_element"
+     role="dialog"
+>
+  <p>
+    my definition
+  </p>
+</dfn>
+`;
+
+exports[`Terms > Should strip undefined term links and keep content 1`] = `
+<p>
+  A
+  <i class="yfm yfm-term_title"
+     term-key=":myterm"
+     role="button"
+     aria-describedby=":myterm_element"
+     tabindex="0"
+     id
+  >
+    defined
+  </i>
+  and an [undefined](*notexist).
+</p>
+<dfn class="yfm yfm-term_dfn"
+     id=":myterm_element"
+     role="dialog"
+>
+  <p>
+    my definition
+  </p>
+</dfn>
+`;
+
 exports[`Terms > Term should use content from include 1`] = `
 <dfn class="yfm yfm-term_dfn"
      id=":html_element"
