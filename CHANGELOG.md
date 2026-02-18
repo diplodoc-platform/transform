@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.69.2](https://github.com/diplodoc-platform/transform/compare/v4.69.1...v4.69.2) (2026-02-18)
+
+
+### Bug Fixes
+
+* improve recognise terms DOCSTOOLS-3563 ([30de0b7](https://github.com/diplodoc-platform/transform/commit/30de0b70f4838ecd1d7ccfb6f2a7511657a962d3))
+
 ## [4.69.1](https://github.com/diplodoc-platform/transform/compare/v4.69.0...v4.69.1) (2026-02-17)
 
 
