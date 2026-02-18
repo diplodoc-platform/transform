@@ -217,6 +217,32 @@ exports[`Terms > Should handle asterisk inside term text 1`] = `
 </dfn>
 `;
 
+exports[`Terms > Should handle term inside superscript 1`] = `
+<p>
+  Some text
+  <sup>
+    <i class="yfm yfm-term_title"
+       term-key=":popup1"
+       role="button"
+       aria-describedby=":popup1_element"
+       tabindex="0"
+       id
+    >
+      ?
+    </i>
+  </sup>
+  and more text.
+</p>
+<dfn class="yfm yfm-term_dfn"
+     id=":popup1_element"
+     role="dialog"
+>
+  <p>
+    Popup definition
+  </p>
+</dfn>
+`;
+
 exports[`Terms > Should preserve regular links and convert term links 1`] = `
 <p>
   A
