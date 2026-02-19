@@ -1,7 +1,6 @@
 import type {Lang} from '../typings';
 
-export const CUSTOM_ID_REGEXP = /\[?{ ?#(\S+) ?}]?/g;
-export const CUSTOM_ID_EXCEPTION = '[{#T}]';
+export {CUSTOM_ID_REGEXP, CUSTOM_ID_EXCEPTION} from './custom-id';
 
 export const ANCHOR_TITLES: Record<Lang, string> = {
     ru: 'Скопировать ссылку',

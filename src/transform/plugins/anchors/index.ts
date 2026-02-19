@@ -1,15 +1,14 @@
 import type StateCore from 'markdown-it/lib/rules_core/state_core';
-import type Token from 'markdown-it/lib/token';
 import type {MarkdownItPluginCb} from '../typings';
 
 import {bold} from 'chalk';
 import GithubSlugger from 'github-slugger';
-import {escapeHtml} from 'markdown-it/lib/common/utils';
 import slugify from 'slugify';
 
 import {headingInfo} from '../../utils';
 
-import {ANCHOR_TITLES, CUSTOM_ID_EXCEPTION, CUSTOM_ID_REGEXP} from './constants';
+import {ANCHOR_TITLES} from './constants';
+import {getCustomIds, removeCustomId, removeCustomIds} from './custom-id';
 
 function createAnchorButtonTokens(
     state: StateCore,
@@ -57,43 +56,6 @@ function createAnchorLinkTokens(
 
     return [open, hiddenDesc, close];
 }
-
-const getCustomIds = (content: string) => {
-    const ids: string[] = [];
-
-    content.replace(CUSTOM_ID_REGEXP, (match, customId) => {
-        if (match !== CUSTOM_ID_EXCEPTION) {
-            ids.push(customId);
-        }
-
-        return '';
-    });
-
-    return ids.length ? ids : null;
-};
-
-const removeCustomId = (content: string) => {
-    if (CUSTOM_ID_REGEXP.test(content)) {
-        return content
-            .replace(CUSTOM_ID_REGEXP, (match) => {
-                if (match === CUSTOM_ID_EXCEPTION) {
-                    return match;
-                }
-
-                return '';
-            })
-            .trim();
-    }
-
-    return content;
-};
-
-const removeCustomIds = (token: Token) => {
-    token.content = removeCustomId(token.content);
-    token.children?.forEach((child) => {
-        child.content = removeCustomId(child.content);
-    });
-};
 
 interface Options {
     extractTitle?: boolean;
@@ -223,6 +185,8 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
             md.core.ruler.push('anchors', plugin);
         }
     }
+
+    const {escapeHtml} = md.utils;
 
     md.renderer.rules.anchor_hidden_desc = function (tokens, index) {
         return (
