@@ -4,9 +4,15 @@ import type Renderer from 'markdown-it/lib/renderer';
 import type {MarkdownItPluginOpts} from '../src/transform/plugins/typings';
 import type {Mock} from 'vitest';
 
+import {escapeHtml} from 'markdown-it/lib/common/utils';
 import {describe, expect, it, vi} from 'vitest';
+import dd from 'ts-dedent';
 
 import code from '../src/transform/plugins/code';
+
+// same as in markdown-it
+const fenceRenderFn = (tokens: Token[], index: number) =>
+    `<pre><code>${escapeHtml(tokens[index].content)}</code></pre>\n`;
 
 const getMd = (fence: Mock) => ({
     renderer: {
@@ -115,11 +121,32 @@ describe('Code', () => {
             expect(result).toContain('<span class="yfm-line-number">10</span>line10');
         });
 
-        it('should wrap lines of code to yfm-line spans', () => {
-            const fence = vi.fn(
-                (tokens: Token[], index: number) =>
-                    `<pre><code>${tokens[index].content}</code></pre>`,
+        it('should corretly add line-numbers to code with "$" symbols', () => {
+            const fence = vi.fn(fenceRenderFn);
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: ' showLineNumbers',
+                    content: 'my code\n\n"$"\n',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain(
+                dd`
+                <pre><code><span class="yfm-line-number">1</span>my code
+                <span class="yfm-line-number">2</span>
+                <span class="yfm-line-number">3</span>&quot;$&quot;
+                </code></pre>
+                `,
             );
+        });
+
+        it('should wrap lines of code to yfm-line spans', () => {
+            const fence = vi.fn(fenceRenderFn);
             const md = getMd(fence);
             code(
                 md as unknown as MarkdownIt,
@@ -144,6 +171,33 @@ describe('Code', () => {
             );
             expect(result).toContain(
                 '<span class="yfm-line-number">3</span><span class="yfm-line">line3</span>',
+            );
+        });
+
+        it('should correctly wrap lines of code with "$" symbols', () => {
+            const fence = vi.fn(fenceRenderFn);
+            const md = getMd(fence);
+            code(
+                md as unknown as MarkdownIt,
+                {codeLineWrapping: true} as unknown as MarkdownItPluginOpts,
+            );
+
+            const tokens = [
+                {
+                    info: ' showLineNumbers',
+                    content: 'my code\n\n"$"\n',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain(
+                dd`
+                <pre><code><span class="yfm-line-number">1</span><span class="yfm-line">my code</span>
+                <span class="yfm-line-number">2</span><span class="yfm-line"></span>
+                <span class="yfm-line-number">3</span><span class="yfm-line">&quot;$&quot;</span>
+                </code></pre>
+                `,
             );
         });
     });

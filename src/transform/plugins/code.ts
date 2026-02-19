@@ -135,7 +135,9 @@ const code: MarkdownItPluginCb<CodeOptions> = (md, opts) => {
             if (codeMatch) {
                 const codeContent = codeMatch[1];
                 const codeWithLineNumbers = addLineNumbers(codeContent, {lineWrapping});
-                superCode = superCode.replace(codeContent, codeWithLineNumbers);
+                // Escape $ in replacement string: $$ becomes a literal $ in String.replace()
+                const escapedReplacement = codeWithLineNumbers.replace(/\$/g, '$$$$');
+                superCode = superCode.replace(codeContent, escapedReplacement);
             }
         }
 
