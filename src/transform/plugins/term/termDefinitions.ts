@@ -4,6 +4,33 @@ import type {MarkdownItPluginOpts} from '../typings';
 
 import {BASIC_TERM_REGEXP} from './constants';
 
+const INCLUDE_LINE_RE = /^{%\s*include\s/;
+const NEW_LINE_RE = /^(\r\n|\r|\n)/;
+const TERM_DEF_RE = /^\[\*(\w+)\]:/;
+
+/**
+ * Checks whether the first non-blank line after {@link fromLine} is an
+ * `{% include %}` directive.  Used to allow blank-line gaps between
+ * consecutive includes inside a single term definition.
+ *
+ * @param {StateBlock} state - The markdown-it state block containing parsing information
+ * @param {number} fromLine - The line number from which to start searching for include directives
+ * @param {number} endLine - The last line number to search within
+ * @returns {boolean} Returns true if an include directive is found after blank lines, false otherwise
+ */
+function hasIncludeAfterBlanks(state: StateBlock, fromLine: number, endLine: number): boolean {
+    for (let line = fromLine + 1; line <= endLine; line++) {
+        const start = state.bMarks[line];
+        const end = state.eMarks[line];
+
+        if (start === end) continue;
+
+        const content = state.src.slice(start, end);
+        return INCLUDE_LINE_RE.test(content.trimStart());
+    }
+    return false;
+}
+
 export function termDefinitions(md: MarkdownIt, options: MarkdownItPluginOpts) {
     return (state: StateBlock, startLine: number, endLine: number, silent: boolean) => {
         let ch;
@@ -36,11 +63,12 @@ export function termDefinitions(md: MarkdownIt, options: MarkdownItPluginOpts) {
             }
         }
 
-        const newLineReg = new RegExp(/^(\r\n|\r|\n)/);
-        const termReg = new RegExp(/^\[\*(\w+)\]:/);
         let currentLine = startLine;
 
-        // Allow multiline term definition
+        // Allow multiline term definition.
+        // Blank lines normally terminate the definition, but we look ahead
+        // past them: if the next non-blank line is an {% include %} directive,
+        // we keep scanning so that multiple includes can be part of one term.
         for (; currentLine < endLine; currentLine++) {
             const nextLineStart = state.bMarks[currentLine + 1];
             const nextLineEnd = state.eMarks[currentLine + 1];
@@ -50,8 +78,14 @@ export function termDefinitions(md: MarkdownIt, options: MarkdownItPluginOpts) {
                     ? state.src[nextLineStart]
                     : state.src.slice(nextLineStart, nextLineEnd);
 
-            if (newLineReg.test(nextLine) || termReg.test(nextLine)) {
+            if (TERM_DEF_RE.test(nextLine)) {
                 break;
+            }
+
+            if (NEW_LINE_RE.test(nextLine)) {
+                if (!hasIncludeAfterBlanks(state, currentLine + 1, endLine)) {
+                    break;
+                }
             }
 
             state.line = currentLine + 1;

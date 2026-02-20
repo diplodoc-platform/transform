@@ -135,4 +135,16 @@ describe('Terms', () => {
 
         expect(() => transformYfm(input, inputPath)).not.toThrow();
     });
+
+    test('Should handle term with multiple includes separated by blank lines', () => {
+        const inputPath = resolve(__dirname, './mocks/term/multi-include.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(result).toContain('yfm-term_title');
+        expect(result).toContain('First part of the definition');
+        expect(result).toContain('Second part of the definition');
+        expect(result).toContain('Third part of the definition');
+        expect(result).toContain('Simple definition');
+    });
 });
