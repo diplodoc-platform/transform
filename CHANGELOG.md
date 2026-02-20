@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.70.0](https://github.com/diplodoc-platform/transform/compare/v4.69.3...v4.70.0) (2026-02-20)
+
+
+### Features
+
+* Accept multi includes in terms DOCSTOOLS-5295 ([5a98956](https://github.com/diplodoc-platform/transform/commit/5a989564ed3d49b70b8b07184212ab4fa92a79ae))
+
+
+### Bug Fixes
+
+* **code:** correct handle dollar sign in line-numbered code blocks ([#860](https://github.com/diplodoc-platform/transform/issues/860)) ([781317f](https://github.com/diplodoc-platform/transform/commit/781317f776296f729b0ed0a06c66309af077d22f))
+
 ## [4.69.3](https://github.com/diplodoc-platform/transform/compare/v4.69.2...v4.69.3) (2026-02-18)
 
 
