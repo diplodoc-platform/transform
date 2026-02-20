@@ -17,6 +17,7 @@ import notes from '@diplodoc/transform/lib/plugins/notes';
 import transform from '@diplodoc/transform';
 import inlineCode from '@diplodoc/transform/lib/plugins/inline-code';
 import code from '@diplodoc/transform/lib/plugins/code';
+import term from '@diplodoc/transform/lib/plugins/term';
 
 const transformOptions: OptionsType = {
     lang: 'en',
@@ -38,6 +39,7 @@ const transformOptions: OptionsType = {
         notes,
         inlineCode,
         code,
+        term,
     ],
 };
 
