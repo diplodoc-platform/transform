@@ -21,6 +21,7 @@
 
         .yfm-anchor,
         .yfm-clipboard-anchor {
+            position: relative;
             display: inline-block;
             width: 24px;
             padding-right: 4px;
@@ -37,6 +38,11 @@
             }
 
             &::before {
+                padding: 0 4px;
+
+                border-radius: 3px;
+                background-color: var(--yfm-color-base);
+
                 content: '#';
                 opacity: 0;
             }
