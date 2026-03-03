@@ -122,6 +122,49 @@ function termInlineRule(state: StateInline, silent: boolean): boolean {
     return true;
 }
 
+function collectTermsFromCodeTokens(blockTokens: Token[], reg: RegExp): Set<string> {
+    const referencedTerms = new Set<string>();
+
+    for (const token of blockTokens) {
+        if (token.type === 'fence' && token.content) {
+            let match: RegExpExecArray | null;
+            reg.lastIndex = 0;
+
+            while ((match = reg.exec(token.content))) {
+                referencedTerms.add(':' + match[3]);
+            }
+        }
+    }
+
+    return referencedTerms;
+}
+
+function removeUnreferencedDefinitions(tokens: Token[], referencedTerms: Set<string>): void {
+    let idx = 0;
+
+    while (idx < tokens.length) {
+        const tok = tokens[idx];
+
+        if (tok.type === 'dfn_open') {
+            const id = tok.attrGet('id') || '';
+            const termKey = id.replace(/_element$/, '');
+
+            if (termKey && !referencedTerms.has(termKey)) {
+                let endIdx = idx + 1;
+
+                while (tokens[endIdx].type !== 'dfn_close') {
+                    endIdx++;
+                }
+
+                tokens.splice(idx, endIdx - idx + 1);
+                continue;
+            }
+        }
+
+        idx++;
+    }
+}
+
 const term: MarkdownItPluginCb = (md, options) => {
     const escapeRE = md.utils.escapeRE;
     const arrayReplaceAt = md.utils.arrayReplaceAt;
@@ -150,12 +193,23 @@ const term: MarkdownItPluginCb = (md, options) => {
             return;
         }
 
-        const regTerms = Object.keys(state.env.terms)
-            .map((el) => el.substr(1))
+        const termKeys = Object.keys(state.env.terms);
+
+        if (!termKeys.length) {
+            return;
+        }
+
+        const referencedTerms = new Set<string>();
+
+        const regTerms = termKeys
+            .map((el) => el.slice(1))
             .map(escapeRE)
             .join('|');
         const regText = '\\[([^\\[]+)\\](\\(\\*(' + regTerms + ')\\))';
         const reg = new RegExp(regText, 'g');
+
+        const codeTerms = collectTermsFromCodeTokens(blockTokens, reg);
+        codeTerms.forEach((t) => referencedTerms.add(t));
 
         for (j = 0, l = blockTokens.length; j < l; j++) {
             if (blockTokens[j].type === 'heading_open') {
@@ -210,6 +264,8 @@ const term: MarkdownItPluginCb = (md, options) => {
                     const termTitle = termMatch[1];
                     const termKey = termMatch[3];
 
+                    referencedTerms.add(':' + termKey);
+
                     if (termMatch.index > 0 || termMatch[1].length > 0) {
                         token = new state.Token('text', '', 0);
                         token.content = text.slice(pos, termMatch.index);
@@ -243,6 +299,12 @@ const term: MarkdownItPluginCb = (md, options) => {
                 // replace current node
                 blockTokens[j].children = tokens = arrayReplaceAt(tokens, i, nodes);
             }
+        }
+
+        // Remove definitions without any reference on the page
+        // Skip during linting to allow lint rules to check term definitions
+        if (!isLintRun) {
+            removeUnreferencedDefinitions(state.tokens, referencedTerms);
         }
     }
 
