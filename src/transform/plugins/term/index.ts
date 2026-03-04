@@ -122,6 +122,120 @@ function termInlineRule(state: StateInline, silent: boolean): boolean {
     return true;
 }
 
+const RAW_CODE_TOKEN_TYPES = new Set(['fence', 'code_block', 'yfm_page-constructor']);
+
+function collectRawTermMatches(content: string, reg: RegExp, out: Set<string>) {
+    reg.lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = reg.exec(content))) {
+        out.add(':' + match[3]);
+    }
+}
+
+function collectTermsFromRawContent(tokens: Token[], reg: RegExp, out: Set<string>) {
+    for (const token of tokens) {
+        if (RAW_CODE_TOKEN_TYPES.has(token.type) && token.content) {
+            collectRawTermMatches(token.content, reg, out);
+        }
+
+        if (token.type === 'inline' && token.children) {
+            for (const child of token.children) {
+                if (child.type === 'code_inline' && child.content) {
+                    collectRawTermMatches(child.content, reg, out);
+                }
+            }
+        }
+    }
+}
+
+function collectTermKeysFromInlineChildren(children: Token[], out: Set<string>) {
+    for (const child of children) {
+        if (child.type === 'term_open') {
+            const key = child.attrGet('term-key');
+
+            if (key) {
+                out.add(key);
+            }
+        }
+    }
+}
+
+function collectTermsFromContent(tokens: Token[], out: Set<string>) {
+    let inDfn = false;
+
+    for (const token of tokens) {
+        if (token.type === 'dfn_open') {
+            inDfn = true;
+            continue;
+        }
+
+        if (token.type === 'dfn_close') {
+            inDfn = false;
+            continue;
+        }
+
+        if (!inDfn && token.type === 'inline' && token.children) {
+            collectTermKeysFromInlineChildren(token.children, out);
+        }
+    }
+}
+
+function collectTermsFromDfns(tokens: Token[], out: Set<string>, referencedDfns: Set<string>) {
+    let inReferencedDfn = false;
+
+    for (const token of tokens) {
+        if (token.type === 'dfn_open') {
+            const key = (token.attrGet('id') || '').replace(/_element$/, '');
+
+            inReferencedDfn = Boolean(key) && referencedDfns.has(key);
+            continue;
+        }
+
+        if (token.type === 'dfn_close') {
+            inReferencedDfn = false;
+            continue;
+        }
+
+        if (inReferencedDfn && token.type === 'inline' && token.children) {
+            collectTermKeysFromInlineChildren(token.children, out);
+        }
+    }
+}
+
+function findDfnCloseIdx(tokens: Token[], from: number) {
+    let endIdx = from;
+
+    while (endIdx < tokens.length && tokens[endIdx].type !== 'dfn_close') {
+        endIdx++;
+    }
+
+    return endIdx;
+}
+
+function removeUnreferencedDefinitions(tokens: Token[], referencedTerms: Set<string>) {
+    let idx = 0;
+
+    while (idx < tokens.length) {
+        const tok = tokens[idx];
+
+        if (tok.type === 'dfn_open') {
+            const termKey = (tok.attrGet('id') || '').replace(/_element$/, '');
+
+            if (termKey && !referencedTerms.has(termKey)) {
+                const endIdx = findDfnCloseIdx(tokens, idx + 1);
+
+                if (endIdx < tokens.length) {
+                    tokens.splice(idx, endIdx - idx + 1);
+                    continue;
+                }
+            }
+        }
+
+        idx++;
+    }
+}
+
 const term: MarkdownItPluginCb = (md, options) => {
     const escapeRE = md.utils.escapeRE;
     const arrayReplaceAt = md.utils.arrayReplaceAt;
@@ -150,12 +264,26 @@ const term: MarkdownItPluginCb = (md, options) => {
             return;
         }
 
-        const regTerms = Object.keys(state.env.terms)
-            .map((el) => el.substr(1))
+        const termKeys = Object.keys(state.env.terms);
+
+        if (!termKeys.length) {
+            return;
+        }
+
+        const referencedTerms = new Set<string>();
+
+        const regTerms = termKeys
+            .map((el) => el.slice(1))
             .map(escapeRE)
             .join('|');
         const regText = '\\[([^\\[]+)\\](\\(\\*(' + regTerms + ')\\))';
         const reg = new RegExp(regText, 'g');
+
+        collectTermsFromRawContent(blockTokens, reg, referencedTerms);
+        collectTermsFromContent(blockTokens, referencedTerms);
+
+        // Collect terms transitively referenced inside definitions of referenced terms.
+        collectTermsFromDfns(blockTokens, referencedTerms, referencedTerms);
 
         for (j = 0, l = blockTokens.length; j < l; j++) {
             if (blockTokens[j].type === 'heading_open') {
@@ -210,6 +338,8 @@ const term: MarkdownItPluginCb = (md, options) => {
                     const termTitle = termMatch[1];
                     const termKey = termMatch[3];
 
+                    referencedTerms.add(':' + termKey);
+
                     if (termMatch.index > 0 || termMatch[1].length > 0) {
                         token = new state.Token('text', '', 0);
                         token.content = text.slice(pos, termMatch.index);
@@ -243,6 +373,12 @@ const term: MarkdownItPluginCb = (md, options) => {
                 // replace current node
                 blockTokens[j].children = tokens = arrayReplaceAt(tokens, i, nodes);
             }
+        }
+
+        // Remove definitions without any reference on the page
+        // Skip during linting to allow lint rules to check term definitions
+        if (!isLintRun) {
+            removeUnreferencedDefinitions(state.tokens, referencedTerms);
         }
     }
 

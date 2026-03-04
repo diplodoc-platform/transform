@@ -1,3 +1,6 @@
+import type MarkdownIt from 'markdown-it';
+import type StateCore from 'markdown-it/lib/rules_core/state_core';
+
 import {dirname, resolve} from 'path';
 import {readFileSync} from 'fs';
 
@@ -7,6 +10,8 @@ import term from '../src/transform/plugins/term';
 import includes from '../src/transform/plugins/includes';
 import code from '../src/transform/plugins/code';
 import sup from '../src/transform/plugins/sup';
+import cut from '../src/transform/plugins/cut';
+import tabs from '../src/transform/plugins/tabs';
 
 const mocksPath = require.resolve('./utils.ts');
 
@@ -145,6 +150,122 @@ describe('Terms', () => {
         expect(result).toContain('First part of the definition');
         expect(result).toContain('Second part of the definition');
         expect(result).toContain('Third part of the definition');
-        expect(result).toContain('Simple definition');
+        expect(result).not.toContain('Simple definition');
+    });
+
+    test('Should remove unused term definition when reference is inside false condition', () => {
+        const inputPath = resolve(__dirname, './mocks/term/unused-term.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(result).toContain('id=":html_element"');
+        expect(result).not.toContain('id=":css_element"');
+        expect(clearRandomId(result)).toMatchSnapshot();
+    });
+
+    test('Should keep term definition when reference is only in fenced code block', () => {
+        const inputPath = resolve(__dirname, './mocks/term/code.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(result).toContain('id=":html_element"');
+    });
+
+    test('Should keep term definition when reference is only in indented code block', () => {
+        const inputPath = resolve(__dirname, './mocks/term/code-block.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(result).toContain('id=":html_element"');
+    });
+
+    test('Should keep term definition when reference is only in inline code', () => {
+        const inputPath = resolve(__dirname, './mocks/term/code-inline.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(result).toContain('id=":html_element"');
+    });
+
+    test('Should keep term definitions when references are inside interactive elements', () => {
+        const inputPath = resolve(__dirname, './mocks/term/interactive-elements.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const {
+            result: {html},
+        } = transform(input, {
+            plugins: [includes, links, code, cut, tabs, term],
+            path: inputPath,
+            root: dirname(inputPath),
+        });
+
+        expect(html).toContain('id=":html_element"');
+        expect(html).toContain('id=":css_element"');
+        expect(html).toContain('id=":js_element"');
+        expect(html).toContain('id=":ts_element"');
+
+        expect(html).toContain('term-key=":html"');
+        expect(html).toContain('term-key=":css"');
+        expect(html).toContain('term-key=":js"');
+        expect(html).toContain('term-key=":ts"');
+    });
+
+    test('Should handle document without any terms', () => {
+        const input = '# Hello\n\nThis is a document without any terms.';
+        const result = transformYfm(input);
+
+        expect(result).toContain('<h1>Hello</h1>');
+        expect(result).toContain('This is a document without any terms.');
+        expect(result).not.toContain('dfn');
+        expect(result).not.toContain('term-key');
+    });
+
+    test('Should handle document with term definition but no references', () => {
+        const input = '[*unused]: This term is never referenced.\n\n# Hello\n\nNo terms here.';
+        const result = transformYfm(input);
+
+        expect(result).not.toContain('id=":unused_element"');
+        expect(result).toContain('<h1>Hello</h1>');
+    });
+
+    test('Should keep term definition when reference is inside a page-constructor block', () => {
+        const pcPlugin = (md: MarkdownIt) => {
+            md.core.ruler.before('termReplace', 'mock_page_constructor', (state: StateCore) => {
+                const token = new state.Token('yfm_page-constructor', 'div', 0);
+                token.content = 'title: The [HTML](*html) specification';
+                state.tokens.push(token);
+            });
+        };
+
+        const input = [
+            '[*html]: The HyperText Markup Language.',
+            '',
+            '[*unused]: Never referenced.',
+            '',
+            '# Test',
+            '',
+            'No direct term references here.',
+        ].join('\n');
+
+        const {
+            result: {html},
+        } = transform(input, {
+            plugins: [term, pcPlugin],
+            path: mocksPath,
+            root: dirname(mocksPath),
+        });
+
+        expect(html).toContain('id=":html_element"');
+        expect(html).not.toContain('id=":unused_element"');
+    });
+
+    test('Should keep term definition referenced transitively through another term definition', () => {
+        const inputPath = resolve(__dirname, './mocks/term/transitive-term.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(result).toContain('id=":html_element"');
+        expect(result).toContain('id=":css_element"');
+        expect(result).not.toContain('id=":unused_element"');
+        expect(clearRandomId(result)).toMatchSnapshot();
     });
 });
