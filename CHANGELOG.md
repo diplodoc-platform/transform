@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.70.1](https://github.com/diplodoc-platform/transform/compare/v4.70.0...v4.70.1) (2026-03-04)
+
+
+### Bug Fixes
+
+* removed definitions without any reference ([#868](https://github.com/diplodoc-platform/transform/issues/868)) ([f3e4f0a](https://github.com/diplodoc-platform/transform/commit/f3e4f0a9570213cd817f3a6ee4c624b7016302b7))
+
 ## [4.70.0](https://github.com/diplodoc-platform/transform/compare/v4.69.3...v4.70.0) (2026-02-20)
 
 
