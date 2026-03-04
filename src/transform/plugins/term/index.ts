@@ -149,47 +149,68 @@ function collectTermsFromRawContent(tokens: Token[], reg: RegExp, out: Set<strin
     }
 }
 
-// Collect terms from processed inline tokens by walking term_open children.
-// - Without referencedDfns: collects from regular content, skips dfn blocks.
-// - With referencedDfns: collects only from dfn blocks of referenced terms (transitive pass).
-function collectTermsFromTokens(tokens: Token[], out: Set<string>, referencedDfns?: Set<string>) {
-    let shouldCollect = !referencedDfns;
+function collectTermKeysFromInlineChildren(children: Token[], out: Set<string>) {
+    for (const child of children) {
+        if (child.type === 'term_open') {
+            const key = child.attrGet('term-key');
+
+            if (key) {
+                out.add(key);
+            }
+        }
+    }
+}
+
+function collectTermsFromContent(tokens: Token[], out: Set<string>) {
+    let inDfn = false;
 
     for (const token of tokens) {
         if (token.type === 'dfn_open') {
-            if (referencedDfns) {
-                const key = (token.attrGet('id') || '').replace(/_element$/, '');
-
-                shouldCollect = Boolean(key) && referencedDfns.has(key);
-            } else {
-                shouldCollect = false;
-            }
-
+            inDfn = true;
             continue;
         }
 
         if (token.type === 'dfn_close') {
-            shouldCollect = !referencedDfns;
-
+            inDfn = false;
             continue;
         }
 
-        if (!shouldCollect) {
-            continue;
-        }
-
-        if (token.type === 'inline' && token.children) {
-            for (const child of token.children) {
-                if (child.type === 'term_open') {
-                    const key = child.attrGet('term-key');
-
-                    if (key) {
-                        out.add(key);
-                    }
-                }
-            }
+        if (!inDfn && token.type === 'inline' && token.children) {
+            collectTermKeysFromInlineChildren(token.children, out);
         }
     }
+}
+
+function collectTermsFromDfns(tokens: Token[], out: Set<string>, referencedDfns: Set<string>) {
+    let inReferencedDfn = false;
+
+    for (const token of tokens) {
+        if (token.type === 'dfn_open') {
+            const key = (token.attrGet('id') || '').replace(/_element$/, '');
+
+            inReferencedDfn = Boolean(key) && referencedDfns.has(key);
+            continue;
+        }
+
+        if (token.type === 'dfn_close') {
+            inReferencedDfn = false;
+            continue;
+        }
+
+        if (inReferencedDfn && token.type === 'inline' && token.children) {
+            collectTermKeysFromInlineChildren(token.children, out);
+        }
+    }
+}
+
+function findDfnCloseIdx(tokens: Token[], from: number) {
+    let endIdx = from;
+
+    while (endIdx < tokens.length && tokens[endIdx].type !== 'dfn_close') {
+        endIdx++;
+    }
+
+    return endIdx;
 }
 
 function removeUnreferencedDefinitions(tokens: Token[], referencedTerms: Set<string>) {
@@ -199,15 +220,10 @@ function removeUnreferencedDefinitions(tokens: Token[], referencedTerms: Set<str
         const tok = tokens[idx];
 
         if (tok.type === 'dfn_open') {
-            const id = tok.attrGet('id') || '';
-            const termKey = id.replace(/_element$/, '');
+            const termKey = (tok.attrGet('id') || '').replace(/_element$/, '');
 
             if (termKey && !referencedTerms.has(termKey)) {
-                let endIdx = idx + 1;
-
-                while (endIdx < tokens.length && tokens[endIdx].type !== 'dfn_close') {
-                    endIdx++;
-                }
+                const endIdx = findDfnCloseIdx(tokens, idx + 1);
 
                 if (endIdx < tokens.length) {
                     tokens.splice(idx, endIdx - idx + 1);
@@ -264,10 +280,10 @@ const term: MarkdownItPluginCb = (md, options) => {
         const reg = new RegExp(regText, 'g');
 
         collectTermsFromRawContent(blockTokens, reg, referencedTerms);
-        collectTermsFromTokens(blockTokens, referencedTerms);
+        collectTermsFromContent(blockTokens, referencedTerms);
 
         // Collect terms transitively referenced inside definitions of referenced terms.
-        collectTermsFromTokens(blockTokens, referencedTerms, referencedTerms);
+        collectTermsFromDfns(blockTokens, referencedTerms, referencedTerms);
 
         for (j = 0, l = blockTokens.length; j < l; j++) {
             if (blockTokens[j].type === 'heading_open') {
