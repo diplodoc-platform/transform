@@ -59,6 +59,13 @@ exports[`Terms > Should create term in code with definition template 1`] = `
     </button>
   </div>
 </div>
+<p>
+  Use the
+  <code>
+    [HTML](*html)
+  </code>
+  syntax.
+</p>
 <dfn class="yfm yfm-term_dfn"
      id=":html_element"
      role="dialog"
