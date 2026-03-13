@@ -299,6 +299,7 @@ const htmlAttrs = [
     'aria-hidden',
     'referrerpolicy',
     'aria-describedby',
+    'aria-controls',
     'data-*',
     'wide-content',
     'sticky-header',

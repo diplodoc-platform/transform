@@ -113,7 +113,7 @@ exports[`Terms > Should create term in table with definition template 1`] = `
         <i class="yfm yfm-term_title"
            term-key=":html"
            role="button"
-           aria-describedby=":html_element"
+           aria-controls=":html_element"
            tabindex="0"
            id
         >
@@ -149,7 +149,7 @@ exports[`Terms > Should create term in text with definition template 1`] = `
   <i class="yfm yfm-term_title"
      term-key=":html"
      role="button"
-     aria-describedby=":html_element"
+     aria-controls=":html_element"
      tabindex="0"
      id
   >
@@ -165,7 +165,7 @@ exports[`Terms > Should emit lint token for undefined term in lint mode 1`] = `
   <i class="yfm yfm-term_title"
      term-key=":myterm"
      role="button"
-     aria-describedby=":myterm_element"
+     aria-controls=":myterm_element"
      tabindex="0"
      id
   >
@@ -188,7 +188,7 @@ exports[`Terms > Should handle asterisk inside term text 1`] = `
   <i class="yfm yfm-term_title"
      term-key=":popup1"
      role="button"
-     aria-describedby=":popup1_element"
+     aria-controls=":popup1_element"
      tabindex="0"
      id
   >
@@ -198,7 +198,7 @@ exports[`Terms > Should handle asterisk inside term text 1`] = `
   <i class="yfm yfm-term_title"
      term-key=":popup2"
      role="button"
-     aria-describedby=":popup2_element"
+     aria-controls=":popup2_element"
      tabindex="0"
      id
   >
@@ -231,7 +231,7 @@ exports[`Terms > Should handle term inside superscript 1`] = `
     <i class="yfm yfm-term_title"
        term-key=":popup1"
        role="button"
-       aria-describedby=":popup1_element"
+       aria-controls=":popup1_element"
        tabindex="0"
        id
     >
@@ -259,7 +259,7 @@ exports[`Terms > Should keep term definition referenced transitively through ano
   <i class="yfm yfm-term_title"
      term-key=":html"
      role="button"
-     aria-describedby=":html_element"
+     aria-controls=":html_element"
      tabindex="0"
      id
   >
@@ -284,7 +284,7 @@ exports[`Terms > Should keep term definition referenced transitively through ano
     <i class="yfm yfm-term_title"
        term-key=":css"
        role="button"
-       aria-describedby=":css_element"
+       aria-controls=":css_element"
        tabindex="0"
        id
     >
@@ -308,7 +308,7 @@ exports[`Terms > Should preserve regular links and convert term links 1`] = `
   <i class="yfm yfm-term_title"
      term-key=":myterm"
      role="button"
-     aria-describedby=":myterm_element"
+     aria-controls=":myterm_element"
      tabindex="0"
      id
   >
@@ -335,7 +335,7 @@ exports[`Terms > Should remove unused term definition when reference is inside f
   <i class="yfm yfm-term_title"
      term-key=":html"
      role="button"
-     aria-describedby=":html_element"
+     aria-controls=":html_element"
      tabindex="0"
      id
   >
@@ -363,7 +363,7 @@ exports[`Terms > Should strip undefined term links and keep content 1`] = `
   <i class="yfm yfm-term_title"
      term-key=":myterm"
      role="button"
-     aria-describedby=":myterm_element"
+     aria-controls=":myterm_element"
      tabindex="0"
      id
   >
@@ -402,7 +402,7 @@ exports[`Terms > Term should use content from include 1`] = `
   <i class="yfm yfm-term_title"
      term-key=":html"
      role="button"
-     aria-describedby=":html_element"
+     aria-controls=":html_element"
      tabindex="0"
      id
   >
@@ -466,7 +466,7 @@ exports[`Terms > Term should use escape regexp like chars 1`] = `
   <i class="yfm yfm-term_title"
      term-key=":*"
      role="button"
-     aria-describedby=":*_element"
+     aria-controls=":*_element"
      tabindex="0"
      id
   >

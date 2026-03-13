@@ -12,7 +12,7 @@ function setTermAttrs(token: Token, termKey: string): void {
     token.attrSet('class', 'yfm yfm-term_title');
     token.attrSet('term-key', ':' + termKey);
     token.attrSet('role', 'button');
-    token.attrSet('aria-describedby', ':' + termKey + '_element');
+    token.attrSet('aria-controls', ':' + termKey + '_element');
     token.attrSet('tabindex', '0');
     token.attrSet('id', generateID());
 }
