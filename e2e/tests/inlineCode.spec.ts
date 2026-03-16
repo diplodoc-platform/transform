@@ -23,7 +23,8 @@ describeStory(stories, 'Base', () => {
         const anchorButton = yfmRoot.getByRole('button');
         await anchorButton.click();
 
-        const tooltip = page.locator('div[id="tooltip_inline_clipboard_dialog"]');
+        const tooltipId = await anchorButton.getAttribute('data-tooltip-id');
+        const tooltip = page.locator(`div[id="${tooltipId}"]`);
         const classes = await tooltip.getAttribute('class');
 
         expect(classes).toContain('open');
@@ -36,7 +37,8 @@ describeStory(stories, 'Base', () => {
         const anchorButton = yfmRoot.getByRole('button');
         await anchorButton.click();
 
-        const tooltip = page.locator('div[id="tooltip_inline_clipboard_dialog"]');
+        const tooltipId = await anchorButton.getAttribute('data-tooltip-id');
+        const tooltip = page.locator(`div[id="${tooltipId}"]`);
         await expect(tooltip).toBeVisible();
 
         await new Promise((r) => setTimeout(r, 1100));

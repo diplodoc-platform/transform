@@ -27,7 +27,7 @@ exports[`block-anchor > markdown-it-attrs in enabled > handles multiple anchors 
 exports[`block-anchor > markdown-it-attrs in enabled > parses anchors surrounded by other blocks 1`] = `
 <h1 id="heading">
   <a href="#heading"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
@@ -61,7 +61,7 @@ exports[`block-anchor > markdown-it-attrs in enabled > renders block-anchor 1`] 
 exports[`block-anchor > markdown-it-attrs in enabled > works with heading anchors 1`] = `
 <h1 id="heading-anchor">
   <a href="#heading-anchor"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
@@ -104,7 +104,7 @@ exports[`block-anchor > markdown-it-attrs is disabled > handles multiple anchors
 exports[`block-anchor > markdown-it-attrs is disabled > parses anchors surrounded by other blocks 1`] = `
 <h1 id="heading">
   <a href="#heading"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
@@ -138,7 +138,7 @@ exports[`block-anchor > markdown-it-attrs is disabled > renders block-anchor 1`]
 exports[`block-anchor > markdown-it-attrs is disabled > works with heading anchors 1`] = `
 <h1 id="heading-anchor">
   <a href="#heading-anchor"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"

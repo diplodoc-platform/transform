@@ -6,6 +6,15 @@ import {getSnippetMeta} from '../../fixtures/utils/storyMeta';
 
 export default {...getSnippetMeta(), title: 'Builtins/Anchor/ClipboardAnchor'};
 
+export const Common: MarkdownSnippetStory = {
+    name: 'Common Clipboard Anchor',
+    args: {
+        snippet: dedent`
+        ## Title {#test-id}
+        `,
+    },
+};
+
 export const Base: MarkdownSnippetStory = {
     name: 'Base Clipboard Anchor',
     args: {
