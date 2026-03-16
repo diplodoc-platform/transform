@@ -3,7 +3,7 @@
 exports[`Anchors > should add anchor with auto naming, using entire heading text 1`] = `
 <h2 id="lorem-ipsum-dolor-sit-amet">
   <a href="link.html#lorem-ipsum-dolor-sit-amet"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
@@ -32,7 +32,7 @@ exports[`Anchors > should add anchor with auto naming, using entire heading text
 exports[`Anchors > should add id for heading with allowed chars in fragment (RFC 3986)  1`] = `
 <h2 id="a-c5percentdollarandabc_;xx,=3/bbb">
   <a href="link.html#a-c5percentdollarandabc_;xx,=3/bbb"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
@@ -61,7 +61,7 @@ exports[`Anchors > should add multiple anchors 1`] = `
 exports[`Anchors > should add multiple anchors when included 1`] = `
 <h2 id="test0">
   <a href="link.html#test0"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
@@ -78,7 +78,7 @@ exports[`Anchors > should add multiple anchors when included 1`] = `
 <h1 id="test1">
   <a id="test3"
      href="link.html#test3"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
@@ -89,7 +89,7 @@ exports[`Anchors > should add multiple anchors when included 1`] = `
   </a>
   <a id="test2"
      href="link.html#test2"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
@@ -99,7 +99,7 @@ exports[`Anchors > should add multiple anchors when included 1`] = `
     </span>
   </a>
   <a href="link.html#test1"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
@@ -118,7 +118,7 @@ exports[`Anchors > should add multiple anchors when included 1`] = `
 exports[`Anchors > should add single anchor 1`] = `
 <h2 id="test1">
   <a href="link.html#test1"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
@@ -137,7 +137,7 @@ exports[`Anchors > should add single anchor 1`] = `
 exports[`Anchors > should add single anchor when included 1`] = `
 <h2 id="test0">
   <a href="link.html#test0"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
@@ -153,7 +153,7 @@ exports[`Anchors > should add single anchor when included 1`] = `
 </p>
 <h1 id="test1">
   <a href="link.html#test1"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
@@ -172,7 +172,7 @@ exports[`Anchors > should add single anchor when included 1`] = `
 exports[`Anchors > should add single anchor with auto naming 1`] = `
 <h2 id="test">
   <a href="link.html#test"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
@@ -191,7 +191,7 @@ exports[`Anchors > should add single anchor with auto naming 1`] = `
 exports[`Anchors > should be removed fences after transliteration 1`] = `
 <h2 id="test">
   <a href="link.html#test"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
@@ -212,7 +212,7 @@ exports[`Anchors > should be removed fences after transliteration 1`] = `
 exports[`Anchors > should be transliterated correctly 1`] = `
 <h2 id="maksimalnyj-razmer-diskov">
   <a href="link.html#maksimalnyj-razmer-diskov"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
@@ -234,7 +234,7 @@ exports[`Anchors > should include content by anchor in sharped path file 1`] = `
 </p>
 <h2 id="anchor">
   <a href="link.html#anchor"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
@@ -256,7 +256,7 @@ exports[`Anchors > should include content by anchor in sharped path file 1`] = `
 exports[`Anchors > should remove quotes from id 1`] = `
 <h2 id="heading-with-quotes">
   <a href="link.html#heading-with-quotes"
-     class="yfm-anchor"
+     class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
