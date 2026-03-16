@@ -100,6 +100,9 @@
     visibility: hidden;
     width: 30px;
     height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+    flex-shrink: 0;
     z-index: 100;
     padding: 6px;
     box-sizing: content-box;
