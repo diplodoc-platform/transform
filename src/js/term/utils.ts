@@ -130,7 +130,23 @@ export function openDefinition(target: HTMLElement) {
 
     const termId = target.getAttribute('id');
     const termKey = target.getAttribute('term-key');
-    const definitionElement = document.getElementById(termKey + '_element');
+
+    // Check if term is in modal window
+    const isInModal = target.closest('.wide-container');
+
+    let definitionElement: HTMLElement | null;
+
+    if (isInModal) {
+        // Find definition in modal window
+        const modalContent = target.closest('.wide-content');
+        if (!modalContent) {
+            return;
+        }
+        definitionElement = modalContent.querySelector(`[id="${termKey}_element"]`) as HTMLElement;
+    } else {
+        // Find definition in normal document
+        definitionElement = document.getElementById(termKey + '_element');
+    }
 
     const isSameTerm = openedDefinition && termId === openedDefinition.getAttribute('term-id');
     if (isSameTerm) {
@@ -222,5 +238,22 @@ export function trapFocus(element: HTMLElement) {
 export function getTermByDefinition(definition: HTMLElement) {
     const termId = definition.getAttribute('term-id');
 
-    return termId ? document.getElementById(termId) : null;
+    if (!termId) {
+        return null;
+    }
+
+    // Check if definition is in modal window
+    const isInModal = definition.closest('.wide-container');
+
+    if (isInModal) {
+        // Find term in modal window
+        const modalContent = definition.closest('.wide-content');
+        if (!modalContent) {
+            return null;
+        }
+        return modalContent.querySelector(`[id="${termId}"]`) as HTMLElement;
+    }
+
+    // Find term in normal document
+    return document.getElementById(termId);
 }
