@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.70.2](https://github.com/diplodoc-platform/transform/compare/v4.70.1...v4.70.2) (2026-03-16)
+
+
+### Bug Fixes
+
+* suppres read term definition on focus term ([3b3ad6f](https://github.com/diplodoc-platform/transform/commit/3b3ad6fb7d9ade57bf27ca991b65c1df6224d525))
+
 ## [4.70.1](https://github.com/diplodoc-platform/transform/compare/v4.70.0...v4.70.1) (2026-03-04)
 
 
