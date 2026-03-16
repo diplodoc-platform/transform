@@ -4,9 +4,8 @@ import {createTooltipFactory} from '../tooltip';
 import {copyToClipboard, getEventTarget, isCustom} from '../utils';
 import {COPIED_LANG_TOKEN} from '../constant';
 
-import {INLINE_CODE} from './constant';
-
-const CLASS_INLINE_CODE = INLINE_CODE.replace('.', '');
+const CLASS_INLINE_CODE = 'yfm-clipboard-inline-code';
+const INLINE_CODE = `.${CLASS_INLINE_CODE}`;
 
 const tooltip = createTooltipFactory({
     // NOTE: Add additional className for backward capability
