@@ -46,7 +46,7 @@ function createAnchorLinkTokens(
         open.attrSet('id', id);
     }
     open.attrSet('href', href + '#' + id);
-    open.attrSet('class', 'yfm-anchor');
+    open.attrSet('class', 'yfm-anchor yfm-clipboard-anchor');
     open.attrSet('aria-hidden', 'true');
 
     // SEO: render invisible heading title because link must have text content.
