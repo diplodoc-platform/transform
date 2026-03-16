@@ -78,7 +78,27 @@ const container = () => {
         /* used to stretch single tbody to 100% */
         tbody?.classList?.add('wide-thead-content');
 
-        content.replaceChildren(cloned);
+        // Find all term titles in the cloned table
+        const termTitles = cloned.querySelectorAll('.yfm-term_title');
+
+        // Collect all term definitions that are referenced in the table
+        const termDefinitions: HTMLElement[] = [];
+
+        termTitles.forEach((termTitle) => {
+            const termKey = termTitle.getAttribute('term-key');
+            if (termKey) {
+                // Find the original definition in the document
+                const originalDefinition = document.getElementById(termKey + '_element');
+                if (originalDefinition) {
+                    // Clone the definition
+                    const clonedDefinition = originalDefinition.cloneNode(true) as HTMLElement;
+                    termDefinitions.push(clonedDefinition);
+                }
+            }
+        });
+
+        // Add all cloned definitions to the content
+        content.replaceChildren(cloned, ...termDefinitions);
     };
 
     toolbar.append(title, close);
