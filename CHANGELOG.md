@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.70.3](https://github.com/diplodoc-platform/transform/compare/v4.70.2...v4.70.3) (2026-03-17)
+
+
+### Bug Fixes
+
+* disable change size of icon 'wide' DOCSTOOLS-5270 ([5367ca2](https://github.com/diplodoc-platform/transform/commit/5367ca226a10022fce7b59d40daf6199f0c64c5a))
+* Restoring missing scrolls in modal table DOCSTOOLS-5208 ([bf4584f](https://github.com/diplodoc-platform/transform/commit/bf4584f3148e774e425ac92d6c8063b16557982a))
+* show popup in modal tables DOCSTOOLS-5265 ([c091ef1](https://github.com/diplodoc-platform/transform/commit/c091ef137182a28c8219605689cf001e1e05a16d))
+
 ## [4.70.2](https://github.com/diplodoc-platform/transform/compare/v4.70.1...v4.70.2) (2026-03-16)
 
 
