@@ -130,6 +130,7 @@ export function openDefinition(target: HTMLElement) {
 
     const termId = target.getAttribute('id');
     const termKey = target.getAttribute('term-key');
+    const definitionId = `${termKey}_element`;
 
     // Check if term is in modal window
     const isInModal = target.closest('.wide-container');
@@ -142,10 +143,10 @@ export function openDefinition(target: HTMLElement) {
         if (!modalContent) {
             return;
         }
-        definitionElement = modalContent.querySelector(`[id="${termKey}_element"]`) as HTMLElement;
+        definitionElement = modalContent.querySelector(`[id="${definitionId}"]`) as HTMLElement;
     } else {
         // Find definition in normal document
-        definitionElement = document.getElementById(termKey + '_element');
+        definitionElement = document.getElementById(definitionId);
     }
 
     const isSameTerm = openedDefinition && termId === openedDefinition.getAttribute('term-id');
