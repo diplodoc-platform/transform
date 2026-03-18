@@ -208,6 +208,7 @@
         overflow: auto;
         position: relative;
         z-index: 1;
+        scrollbar-width: thin;
 
         box-sizing: border-box;
         border: 1px solid var(--yfm-color-table-border, var(--yfm-color-table-border-private));
