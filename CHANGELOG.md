@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.70.4](https://github.com/diplodoc-platform/transform/compare/v4.70.3...v4.70.4) (2026-03-18)
+
+
+### Bug Fixes
+
+* scrollbars in tables ([c804d48](https://github.com/diplodoc-platform/transform/commit/c804d48cf8318efc1b1f5cb7ca59365680876f26))
+
 ## [4.70.3](https://github.com/diplodoc-platform/transform/compare/v4.70.2...v4.70.3) (2026-03-17)
 
 
