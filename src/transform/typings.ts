@@ -144,6 +144,15 @@ export interface MarkdownItPluginOpts {
         enabled: boolean;
         maxFileSize: number;
     };
+    /**
+     * When true, term definitions continue past blank lines until the next
+     * `[*key]:` or end of block. Designed for documents where all term
+     * definitions are placed at the end of the file.
+     *
+     * When false (default), a blank line terminates the definition unless
+     * the next non-blank line is an `{% include %}` directive.
+     */
+    multilineTermDefinitions?: boolean;
 }
 
 export type MarkdownItPluginCb<T extends {} = {}> = {

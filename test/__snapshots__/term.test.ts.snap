@@ -484,6 +484,114 @@ exports[`Terms > Term should use escape regexp like chars 1`] = `
 </dfn>
 `;
 
+exports[`Terms > multilineTermDefinitions > Should consume all content until EOF for a single term 1`] = `
+<h1>
+  Page
+</h1>
+<p>
+  Check the
+  <i class="yfm yfm-term_title"
+     term-key=":api"
+     role="button"
+     aria-controls=":api_element"
+     tabindex="0"
+     id
+  >
+    API
+  </i>
+  .
+</p>
+<dfn class="yfm yfm-term_dfn"
+     id=":api_element"
+     role="dialog"
+>
+  <p>
+    API (Application Programming Interface) is a set of
+    <br>
+    definitions and protocols.
+  </p>
+  <p>
+    Extra details about the API:
+  </p>
+  <ul>
+    <li>
+      REST
+    </li>
+    <li>
+      GraphQL
+    </li>
+  </ul>
+  <p>
+    More information follows.
+  </p>
+</dfn>
+`;
+
+exports[`Terms > multilineTermDefinitions > Should consume multiline content across blank lines for multiple terms 1`] = `
+<h1>
+  Documentation
+</h1>
+<p>
+  Uses
+  <i class="yfm yfm-term_title"
+     term-key=":api"
+     role="button"
+     aria-controls=":api_element"
+     tabindex="0"
+     id
+  >
+    API
+  </i>
+  and
+  <i class="yfm yfm-term_title"
+     term-key=":sdk"
+     role="button"
+     aria-controls=":sdk_element"
+     tabindex="0"
+     id
+  >
+    SDK
+  </i>
+  .
+</p>
+<dfn class="yfm yfm-term_dfn"
+     id=":api_element"
+     role="dialog"
+>
+  <p>
+    API (Application Programming Interface) is a set of
+    <br>
+    definitions and protocols for building and
+    <br>
+    integrating software.
+  </p>
+  <p>
+    Additional API info:
+  </p>
+  <ul>
+    <li>
+      REST API
+    </li>
+    <li>
+      GraphQL API
+    </li>
+    <li>
+      gRPC
+    </li>
+  </ul>
+</dfn>
+<dfn class="yfm yfm-term_dfn"
+     id=":sdk_element"
+     role="dialog"
+>
+  <p>
+    SDK (Software Development Kit) is a collection of
+    <br>
+    development tools for building applications.
+  </p>
+</dfn>
+`;
+
 exports[`Terms > should create term in code with line-numbers and line-wrapping 1`] = `
 <dfn class="yfm yfm-term_dfn"
      id=":html_element"

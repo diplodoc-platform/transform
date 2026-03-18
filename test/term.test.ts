@@ -227,6 +227,82 @@ describe('Terms', () => {
         expect(result).toContain('<h1>Hello</h1>');
     });
 
+    describe('multilineTermDefinitions', () => {
+        const transformMultiline = (text: string, path?: string, opts?: Object) => {
+            const {
+                result: {html},
+            } = transform(text, {
+                plugins: [includes, links, code, sup, term],
+                path: path || mocksPath,
+                root: dirname(path || mocksPath),
+                multilineTermDefinitions: true,
+                ...opts,
+            });
+            return html;
+        };
+
+        test('Should consume multiline content across blank lines for multiple terms', () => {
+            const inputPath = resolve(__dirname, './mocks/term/multiline-basic.md');
+            const input = readFileSync(inputPath, 'utf8');
+            const result = transformMultiline(input, inputPath);
+
+            expect(result).toContain('term-key=":api"');
+            expect(result).toContain('term-key=":sdk"');
+            expect(result).toContain('id=":api_element"');
+            expect(result).toContain('id=":sdk_element"');
+            expect(result).toContain('REST API');
+            expect(result).toContain('GraphQL API');
+            expect(result).toContain('gRPC');
+            expect(clearRandomId(result)).toMatchSnapshot();
+        });
+
+        test('Should consume all content until EOF for a single term', () => {
+            const inputPath = resolve(__dirname, './mocks/term/multiline-single.md');
+            const input = readFileSync(inputPath, 'utf8');
+            const result = transformMultiline(input, inputPath);
+
+            expect(result).toContain('term-key=":api"');
+            expect(result).toContain('id=":api_element"');
+            expect(result).toContain('Extra details');
+            expect(result).toContain('More information follows');
+            expect(clearRandomId(result)).toMatchSnapshot();
+        });
+
+        test('Should NOT consume multiline content when option is disabled (backward compat)', () => {
+            const inputPath = resolve(__dirname, './mocks/term/multiline-basic.md');
+            const input = readFileSync(inputPath, 'utf8');
+
+            const resultDefault = transformYfm(input, inputPath);
+            const resultMultiline = transformMultiline(input, inputPath);
+
+            const apiDfnRe = /id=":api_element"[^]*?<\/dfn>/;
+
+            const apiDfnDefault = resultDefault.match(apiDfnRe)?.[0] ?? '';
+            const apiDfnMultiline = resultMultiline.match(apiDfnRe)?.[0] ?? '';
+
+            expect(apiDfnDefault).not.toContain('gRPC');
+            expect(apiDfnMultiline).toContain('gRPC');
+        });
+
+        test('Should handle single-line term definitions the same as before', () => {
+            const input = [
+                '# Hello',
+                '',
+                'The [HTML](*html) spec.',
+                '',
+                '[*html]: HyperText Markup Language',
+            ].join('\n');
+
+            const resultDefault = transformYfm(input);
+            const resultMultiline = transformMultiline(input);
+
+            expect(resultDefault).toContain('id=":html_element"');
+            expect(resultMultiline).toContain('id=":html_element"');
+            expect(resultDefault).toContain('term-key=":html"');
+            expect(resultMultiline).toContain('term-key=":html"');
+        });
+    });
+
     test('Should keep term definition when reference is inside a page-constructor block', () => {
         const pcPlugin = (md: MarkdownIt) => {
             md.core.ruler.before('termReplace', 'mock_page_constructor', (state: StateCore) => {
