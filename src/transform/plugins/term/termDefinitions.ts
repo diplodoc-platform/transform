@@ -6,24 +6,38 @@ import {BASIC_TERM_REGEXP} from './constants';
 
 const INCLUDE_LINE_RE = /^{%\s*include\s/;
 const NEW_LINE_RE = /^(\r\n|\r|\n)/;
-const TERM_DEF_RE = /^\[\*(\w+)\]:/;
+const TERM_DEF_RE = /^\[\*([^[\]]+)\]:/;
+
+/**
+ * @param state - markdown-it block state
+ * @param line - line number to read
+ * @returns raw source text of the given line
+ */
+function getNextLineContent(state: StateBlock, line: number): string {
+    const start = state.bMarks[line];
+    const end = state.eMarks[line];
+
+    return start === end ? state.src[start] : state.src.slice(start, end);
+}
 
 /**
  * Checks whether the first non-blank line after {@link fromLine} is an
  * `{% include %}` directive.  Used to allow blank-line gaps between
  * consecutive includes inside a single term definition.
  *
- * @param {StateBlock} state - The markdown-it state block containing parsing information
- * @param {number} fromLine - The line number from which to start searching for include directives
- * @param {number} endLine - The last line number to search within
- * @returns {boolean} Returns true if an include directive is found after blank lines, false otherwise
+ * @param state - markdown-it block state
+ * @param fromLine - line number from which to start searching
+ * @param endLine - last line number to search within
+ * @returns true if the first non-blank line is an include directive
  */
 function hasIncludeAfterBlanks(state: StateBlock, fromLine: number, endLine: number): boolean {
     for (let line = fromLine + 1; line <= endLine; line++) {
         const start = state.bMarks[line];
         const end = state.eMarks[line];
 
-        if (start === end) continue;
+        if (start === end) {
+            continue;
+        }
 
         const content = state.src.slice(start, end);
         return INCLUDE_LINE_RE.test(content.trimStart());
@@ -31,7 +45,51 @@ function hasIncludeAfterBlanks(state: StateBlock, fromLine: number, endLine: num
     return false;
 }
 
+/**
+ * Scans forward from {@link startLine} to find where the current term
+ * definition ends.
+ *
+ * When `multilineTermDefinitions` is enabled, the definition continues
+ * past blank lines and stops only at the next `[*key]:` or end of block.
+ * Otherwise blank lines terminate the definition unless followed by an
+ * `{% include %}` directive (legacy behaviour).
+ *
+ * @param state - markdown-it block state
+ * @param startLine - line where the current definition starts
+ * @param endLine - last line of the block
+ * @param multiline - whether multiline mode is enabled
+ * @returns line number where the definition ends
+ */
+function findDefinitionEnd(
+    state: StateBlock,
+    startLine: number,
+    endLine: number,
+    multiline: boolean,
+): number {
+    let currentLine = startLine;
+
+    for (; currentLine < endLine; currentLine++) {
+        const nextLine = getNextLineContent(state, currentLine + 1);
+
+        if (TERM_DEF_RE.test(nextLine)) {
+            break;
+        }
+
+        if (!multiline && NEW_LINE_RE.test(nextLine)) {
+            if (!hasIncludeAfterBlanks(state, currentLine + 1, endLine)) {
+                break;
+            }
+        }
+
+        state.line = currentLine + 1;
+    }
+
+    return currentLine;
+}
+
 export function termDefinitions(md: MarkdownIt, options: MarkdownItPluginOpts) {
+    const multiline = options.multilineTermDefinitions === true;
+
     return (state: StateBlock, startLine: number, endLine: number, silent: boolean) => {
         let ch;
         let labelEnd;
@@ -63,33 +121,7 @@ export function termDefinitions(md: MarkdownIt, options: MarkdownItPluginOpts) {
             }
         }
 
-        let currentLine = startLine;
-
-        // Allow multiline term definition.
-        // Blank lines normally terminate the definition, but we look ahead
-        // past them: if the next non-blank line is an {% include %} directive,
-        // we keep scanning so that multiple includes can be part of one term.
-        for (; currentLine < endLine; currentLine++) {
-            const nextLineStart = state.bMarks[currentLine + 1];
-            const nextLineEnd = state.eMarks[currentLine + 1];
-
-            const nextLine =
-                nextLineStart === nextLineEnd
-                    ? state.src[nextLineStart]
-                    : state.src.slice(nextLineStart, nextLineEnd);
-
-            if (TERM_DEF_RE.test(nextLine)) {
-                break;
-            }
-
-            if (NEW_LINE_RE.test(nextLine)) {
-                if (!hasIncludeAfterBlanks(state, currentLine + 1, endLine)) {
-                    break;
-                }
-            }
-
-            state.line = currentLine + 1;
-        }
+        const currentLine = findDefinitionEnd(state, startLine, endLine, multiline);
 
         max = state.eMarks[currentLine];
 
@@ -165,12 +197,18 @@ function processTermDefinition(
         state.env.terms[':' + label] = title;
     }
 
+    const fromInclude = Array.isArray(state.env.includes) && state.env.includes.length > 0;
+
     token = new state.Token('dfn_open', 'dfn', 1);
     token.attrSet('class', 'yfm yfm-term_dfn');
     token.attrSet('id', ':' + label + '_element');
     token.attrSet('role', 'dialog');
     token.attrSet('aria-live', 'polite');
     token.attrSet('aria-modal', 'true');
+
+    if (fromInclude) {
+        token.attrSet('from-include', 'true');
+    }
 
     state.tokens.push(token);
 
