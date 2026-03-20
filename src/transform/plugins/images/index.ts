@@ -147,6 +147,7 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                 const imageOpts = {
                     width: image.attrGet('width'),
                     height: image.attrGet('height'),
+                    title: image.attrGet('title'),
                 };
 
                 const from = state.env.path || opts.path;
@@ -223,6 +224,13 @@ function replaceSvgContent(content: string | null, options: ImageOptions) {
     }
     if ((!width && options.width) || (!height && options.height)) {
         content = content.replace(/.*?<svg([^>]*)>/, `<svg${svgRoot}>`);
+    }
+
+    // title
+    const hasTitle = /<title>.*?<\/title>/i.test(content);
+    if (!hasTitle && options.title) {
+        // Insert title tag after the opening svg tag
+        content = content.replace(/(<svg[^>]*>)/, `$1<title>${options.title}</title>`);
     }
 
     // randomize ids

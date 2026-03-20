@@ -85,4 +85,79 @@ describe('Images plugin', () => {
 
         unlinkSync(imagePath);
     });
+
+    test('should add title tag to inline SVG when title attribute is provided', () => {
+        const imagePath = resolve(dirname(mocksPath), 'test-title.svg');
+        const svgContent =
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="red" /></svg>';
+
+        writeFileSync(imagePath, svgContent);
+
+        const html = transformYfm('![test](./test-title.svg){title="My SVG Title" inline=true}');
+
+        expect(html).toContain('<title>My SVG Title</title>');
+        expect(html).toContain('<svg');
+
+        unlinkSync(imagePath);
+    });
+
+    test('should not add title tag to inline SVG when it already exists', () => {
+        const imagePath = resolve(dirname(mocksPath), 'test-existing-title.svg');
+        const svgContent =
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><title>Existing Title</title><circle cx="50" cy="50" r="40" fill="red" /></svg>';
+
+        writeFileSync(imagePath, svgContent);
+
+        const html = transformYfm(
+            '![test](./test-existing-title.svg){title="New Title" inline=true}',
+        );
+
+        expect(html).toContain('<title>Existing Title</title>');
+        expect(html).not.toContain('<title>New Title</title>');
+
+        unlinkSync(imagePath);
+    });
+
+    test('should not add title tag to inline SVG when title attribute is not provided', () => {
+        const imagePath = resolve(dirname(mocksPath), 'test-no-title.svg');
+        const svgContent =
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="red" /></svg>';
+
+        writeFileSync(imagePath, svgContent);
+
+        const html = transformYfm('![test](./test-no-title.svg){inline=true}');
+
+        expect(html).not.toContain('<title>');
+
+        unlinkSync(imagePath);
+    });
+
+    test('should add title tag to inline SVG when title is provided in markdown syntax', () => {
+        const imagePath = resolve(dirname(mocksPath), 'test-md-title.svg');
+        const svgContent =
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="red" /></svg>';
+
+        writeFileSync(imagePath, svgContent);
+
+        const html = transformYfm('![test](./test-md-title.svg "My SVG Title"){inline=true}');
+
+        expect(html).toContain('<title>My SVG Title</title>');
+        expect(html).toContain('<svg');
+
+        unlinkSync(imagePath);
+    });
+
+    test('should not add title tag to inline SVG when only alt text is provided', () => {
+        const imagePath = resolve(dirname(mocksPath), 'test-alt-only.svg');
+        const svgContent =
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="red" /></svg>';
+
+        writeFileSync(imagePath, svgContent);
+
+        const html = transformYfm('![My SVG Title](./test-alt-only.svg){inline=true}');
+
+        expect(html).not.toContain('<title>');
+
+        unlinkSync(imagePath);
+    });
 });
