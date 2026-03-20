@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.71.0](https://github.com/diplodoc-platform/transform/compare/v4.70.4...v4.71.0) (2026-03-20)
+
+
+### Features
+
+* add anchor link copying to clipboard on click ([b207d85](https://github.com/diplodoc-platform/transform/commit/b207d854ea0c79dd9b21f8dfccbfaa4c504f9248))
+* add common tooltip implementation ([5cd2a57](https://github.com/diplodoc-platform/transform/commit/5cd2a57886c2e89d739b9cc2068e7e1c3d0680ab))
+* remove old tooltip implementation from inline code ([b173689](https://github.com/diplodoc-platform/transform/commit/b1736896a34674b31bc5290063edc23ea0450946))
+* use new tooltip implementation for inline code ([1763a50](https://github.com/diplodoc-platform/transform/commit/1763a503d162c8a6ce03a4abc615be480f9d796a))
+
 ## [4.70.4](https://github.com/diplodoc-platform/transform/compare/v4.70.3...v4.70.4) (2026-03-18)
 
 
