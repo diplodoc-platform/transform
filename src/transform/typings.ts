@@ -174,4 +174,5 @@ export type CssWhiteList = {[property: string]: boolean};
 export type ImageOptions = {
     width: string | undefined | null;
     height: string | undefined | null;
+    title: string | undefined | null;
 };
