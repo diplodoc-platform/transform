@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.72.0](https://github.com/diplodoc-platform/transform/compare/v4.71.0...v4.72.0) (2026-03-23)
+
+
+### Features
+
+* Extend termDefinition on any content ([c03651f](https://github.com/diplodoc-platform/transform/commit/c03651f5f9f020cb22693ceae16072fa9b5e44a6))
+
+
+### Bug Fixes
+
+* add title for svg inlined DOCSTOOLS-5520 ([2d98ac2](https://github.com/diplodoc-platform/transform/commit/2d98ac238f4ae5cbcc81474fd4ba3c17bea8d882))
+
 ## [4.71.0](https://github.com/diplodoc-platform/transform/compare/v4.70.4...v4.71.0) (2026-03-20)
 
 
