@@ -201,4 +201,87 @@ describe('Code', () => {
             );
         });
     });
+
+    describe('Multiline hljs spans', () => {
+        it('should handle hljs span crossing multiple lines', () => {
+            const fence = vi
+                .fn()
+                .mockReturnValue(
+                    '<pre><code>before <span class="hljs-string">\'line1\nline2\nline3\'</span> after</code></pre>',
+                );
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: 'sql showLineNumbers',
+                    content: '',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain(
+                '<span class="yfm-line-number">1</span>before <span class="hljs-string">\'line1</span>',
+            );
+            expect(result).toContain(
+                '<span class="yfm-line-number">2</span><span class="hljs-string">line2</span>',
+            );
+            expect(result).toContain(
+                '<span class="yfm-line-number">3</span><span class="hljs-string">line3\'</span> after',
+            );
+        });
+
+        it('should handle nested multiline hljs spans', () => {
+            const fence = vi
+                .fn()
+                .mockReturnValue(
+                    '<pre><code><span class="hljs-section"><span class="hljs-keyword">line1\nline2</span></span></code></pre>',
+                );
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: 'sql showLineNumbers',
+                    content: '',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain(
+                '<span class="yfm-line-number">1</span><span class="hljs-section"><span class="hljs-keyword">line1</span></span>',
+            );
+            expect(result).toContain(
+                '<span class="yfm-line-number">2</span><span class="hljs-section"><span class="hljs-keyword">line2</span></span>',
+            );
+        });
+
+        it('should not alter already-balanced single-line spans', () => {
+            const fence = vi
+                .fn()
+                .mockReturnValue(
+                    '<pre><code><span class="hljs-keyword">select</span> foo\n<span class="hljs-keyword">from</span> bar</code></pre>',
+                );
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: 'sql showLineNumbers',
+                    content: '',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain(
+                '<span class="yfm-line-number">1</span><span class="hljs-keyword">select</span> foo',
+            );
+            expect(result).toContain(
+                '<span class="yfm-line-number">2</span><span class="hljs-keyword">from</span> bar',
+            );
+        });
+    });
 });
