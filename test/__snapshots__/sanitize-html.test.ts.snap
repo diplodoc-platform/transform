@@ -1,5 +1,28 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Sanitize HTML utility > css variables > should filter invalid css variable value 1`] = `
+<style>
+  :root {
+  --height: 100%;
+}
+
+.block {
+  width: var(--width);
+  height: var(--height);
+}
+</style>
+`;
+
+exports[`Sanitize HTML utility > css variables > should not sanitize property if it is css variable declaration 1`] = `
+<style>
+  :root {
+  --_Example-Variable: #000;
+}
+</style>
+`;
+
+exports[`Sanitize HTML utility > css variables > should sanitize invalid css variable property 1`] = `""`;
+
 exports[`Sanitize HTML utility > rewrite default sanitize options > should filter style attribute 1`] = `
 <div size="13px">
 </div>

@@ -494,9 +494,10 @@ const svgAttrs = [
     'use',
 ];
 
+const CSS_VAR_DECLARATION_RE = /^--[a-zA-Z0-9_-]+$/;
+
 const defaultCssWhitelist = {
     ...cssfilter.whiteList,
-    '--method': true,
 };
 
 const yfmHtmlAttrs = ['note-type', 'term-key'];
@@ -724,24 +725,28 @@ function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) 
                         return false;
                     }
 
-                    const prop = String(declaration.property).toLowerCase();
+                    const rawProp = String(declaration.property);
+                    const prop = rawProp.toLowerCase();
                     const val = String(declaration.value);
 
                     if (!isSafeCssValue(prop, val)) {
                         return false;
                     }
 
+                    const isCssVariable = CSS_VAR_DECLARATION_RE.test(rawProp);
                     const isWhiteListed = Boolean(cssWhiteList[prop]);
 
-                    if (isWhiteListed) {
-                        declaration.value = cssfilter.safeAttrValue(prop, val);
+                    if (!isWhiteListed && !isCssVariable) {
+                        return false;
                     }
+
+                    declaration.value = cssfilter.safeAttrValue(prop, val);
 
                     if (!declaration.value) {
                         return false;
                     }
 
-                    return isWhiteListed;
+                    return true;
                 });
             });
 

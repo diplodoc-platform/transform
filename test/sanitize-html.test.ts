@@ -155,6 +155,37 @@ describe('Sanitize HTML utility', () => {
         });
     });
 
+    describe('css variables', () => {
+        it('should not sanitize property if it is css variable declaration', () => {
+            const sanitizeOptions = {...defaultOptions};
+            const content = `<style>:root {--_Example-Variable: #000;}</style>`;
+
+            const result = html(content, {
+                sanitizeOptions,
+            });
+
+            expect(result).toMatchSnapshot();
+        });
+
+        it('should sanitize invalid css variable property', () => {
+            const sanitizeOptions = {...defaultOptions};
+            const content = `<style>:root {--evil}body{background:url(https://evil.com)}: red}</style>`;
+
+            const result = html(content, {sanitizeOptions});
+
+            expect(result).toMatchSnapshot();
+        });
+
+        it('should filter invalid css variable value', () => {
+            const sanitizeOptions = {...defaultOptions};
+            const content = `<style>:root {--width: expression(alert('XSS'));--height: 100%;}.block{width:var(--width);height: var(--height);}</style>`;
+
+            const result = html(content, {sanitizeOptions});
+
+            expect(result).toMatchSnapshot();
+        });
+    });
+
     it('transform should not sanitize html if needToSanitizeHtml is false', () => {
         expect(html('<img src=a onerror=alert(1)>', {needToSanitizeHtml: false})).toMatchSnapshot();
     });
