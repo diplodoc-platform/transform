@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.73.0](https://github.com/diplodoc-platform/transform/compare/v4.72.0...v4.73.0) (2026-04-01)
+
+
+### Features
+
+* add support for css variables inside the style tag ([#898](https://github.com/diplodoc-platform/transform/issues/898)) ([4ffcb30](https://github.com/diplodoc-platform/transform/commit/4ffcb30cac6205616f508a4593c15643863ea928))
+
 ## [4.72.0](https://github.com/diplodoc-platform/transform/compare/v4.71.0...v4.72.0) (2026-03-23)
 
 
