@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.73.1](https://github.com/diplodoc-platform/transform/compare/v4.73.0...v4.73.1) (2026-04-02)
+
+
+### Bug Fixes
+
+* **code:** ensure each line has balanced span tags when adding line numbers ([#897](https://github.com/diplodoc-platform/transform/issues/897)) ([ff104a3](https://github.com/diplodoc-platform/transform/commit/ff104a364a6e5aad46a97d361af8d0176e9d8c91))
+
 ## [4.73.0](https://github.com/diplodoc-platform/transform/compare/v4.72.0...v4.73.0) (2026-04-01)
 
 
