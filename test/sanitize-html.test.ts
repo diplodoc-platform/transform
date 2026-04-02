@@ -99,10 +99,10 @@ describe('Sanitize HTML utility', () => {
 
     describe('rewrite default sanitize options', () => {
         it('should not sanitize form tag if form is allowed', () => {
-            const sanitizeOptions = Object.assign({}, defaultOptions);
-
-            // @ts-ignore
-            sanitizeOptions.allowedTags = sanitizeOptions.allowedTags.concat(['form']);
+            const sanitizeOptions = {
+                ...defaultOptions,
+                allowedTags: (defaultOptions.allowedTags || []).concat(['form']),
+            };
 
             expect(
                 html('<form action="/do_something"><button>do</button></form>', {
@@ -112,12 +112,11 @@ describe('Sanitize HTML utility', () => {
         });
 
         it('should filter style tag', () => {
-            const sanitizeOptions = Object.assign({}, defaultOptions);
-
-            // @ts-ignore
-            sanitizeOptions.allowedTags = sanitizeOptions.allowedTags.filter(
-                (tag: string) => tag !== 'style',
-            );
+            const allowedTags = defaultOptions.allowedTags || [];
+            const sanitizeOptions = {
+                ...defaultOptions,
+                allowedTags: allowedTags.filter((tag: string) => tag !== 'style'),
+            };
 
             expect(
                 html('<style> h2 {color: red;} </style>', {
@@ -127,12 +126,15 @@ describe('Sanitize HTML utility', () => {
         });
 
         it('should filter style attribute', () => {
-            const sanitizeOptions = Object.assign({}, defaultOptions);
-
-            // @ts-ignore
-            sanitizeOptions.allowedAttributes['*'] = sanitizeOptions.allowedAttributes['*'].filter(
-                (attr: string) => attr !== 'style',
-            );
+            const allowedAttributesMap = defaultOptions.allowedAttributes || {};
+            const allowedAttributes = allowedAttributesMap['*'] || [];
+            const sanitizeOptions = {
+                ...defaultOptions,
+                allowedAttributes: {
+                    ...defaultOptions.allowedAttributes,
+                    '*': allowedAttributes.filter((attr) => attr !== 'style'),
+                },
+            };
 
             expect(
                 html('<div style="color: red;" size="13px"></div>', {
@@ -142,10 +144,13 @@ describe('Sanitize HTML utility', () => {
         });
 
         it('should not sanitize property if it is passed in cssWhiteList', () => {
-            const sanitizeOptions = Object.assign({}, defaultOptions);
-
-            // @ts-ignore
-            sanitizeOptions.cssWhiteList['position'] = true;
+            const sanitizeOptions = {
+                ...defaultOptions,
+                cssWhiteList: {
+                    ...defaultOptions.cssWhiteList,
+                    position: true,
+                },
+            };
 
             expect(
                 html('<style>h2 {color: red; position:fixed;}</style>', {
@@ -179,6 +184,24 @@ describe('Sanitize HTML utility', () => {
         it('should filter invalid css variable value', () => {
             const sanitizeOptions = {...defaultOptions};
             const content = `<style>:root {--width: expression(alert('XSS'));--height: 100%;}.block{width:var(--width);height: var(--height);}</style>`;
+
+            const result = html(content, {sanitizeOptions});
+
+            expect(result).toMatchSnapshot();
+        });
+
+        it('should not sanitize property if it is css variable declaration in style attr', () => {
+            const sanitizeOptions = {...defaultOptions};
+            const content = `<div style="--_Example-Variable: #000;"></div>`;
+
+            const result = html(content, {sanitizeOptions});
+
+            expect(result).toMatchSnapshot();
+        });
+
+        it('should filter invalid css variable value in style attr', () => {
+            const sanitizeOptions = {...defaultOptions};
+            const content = `<div style="--width: expression(alert('XSS'));--height: 100%;width:var(--width);height: var(--height);"></div>`;
 
             const result = html(content, {sanitizeOptions});
 

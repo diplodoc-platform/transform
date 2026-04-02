@@ -13,12 +13,22 @@ exports[`Sanitize HTML utility > css variables > should filter invalid css varia
 </style>
 `;
 
+exports[`Sanitize HTML utility > css variables > should filter invalid css variable value in style attr 1`] = `
+<div style="--height:100%;width:var(--width);height:var(--height)">
+</div>
+`;
+
 exports[`Sanitize HTML utility > css variables > should not sanitize property if it is css variable declaration 1`] = `
 <style>
   :root {
   --_Example-Variable: #000;
 }
 </style>
+`;
+
+exports[`Sanitize HTML utility > css variables > should not sanitize property if it is css variable declaration in style attr 1`] = `
+<div style="--_Example-Variable:#000">
+</div>
 `;
 
 exports[`Sanitize HTML utility > css variables > should sanitize invalid css variable property 1`] = `""`;

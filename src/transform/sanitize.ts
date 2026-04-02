@@ -763,6 +763,22 @@ function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) 
 function sanitizeStyleAttrs(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) {
     const options = {
         whiteList: cssWhiteList,
+        safeAttrValue: (name: string, value: string) => {
+            if (!isSafeCssValue(name, value)) {
+                return null;
+            }
+
+            return cssfilter.safeAttrValue(name, value);
+        },
+        onIgnoreAttr: (name: string, value: string) => {
+            const isCssVariable = CSS_VAR_DECLARATION_RE.test(name);
+
+            if (isCssVariable) {
+                return `${name}:${value}`;
+            }
+
+            return null;
+        },
     };
     const cssSanitizer = new cssfilter.FilterCSS(options);
 
