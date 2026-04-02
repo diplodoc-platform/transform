@@ -89,17 +89,48 @@ function termReplace(str: string, env: EnvTerm, escape: (str: string) => string)
     return termCode || str;
 }
 
-function addLineNumbers(code: string, {lineWrapping}: {lineWrapping: boolean}): string {
-    const lines = code.split('\n');
-    const lineCount = lines.length;
-    const maxDigits = String(lineCount).length;
+const SPAN_TAG_RE = /<span[^>]*>|<\/span>/g;
 
-    // Remove trailing empty line if it exists
+/**
+ * Balances hljs span tags within each line so that every line is a
+ * self-contained HTML fragment with no unclosed or unopened spans.
+ *
+ * highlight.js can produce spans that cross multiple lines (e.g. multiline strings).
+ * Before:
+ *   `['<span class="hljs-string">\'line1', 'line2\'</span>']`
+ * After:
+ *   `['<span class="hljs-string">\'line1</span>', '<span class="hljs-string">line2\'</span>']`
+ */
+function balanceSpansPerLine(lines: string[]): string[] {
+    const openTagStack: string[] = [];
+
+    return lines.map((line) => {
+        const prefix = openTagStack.join('');
+
+        SPAN_TAG_RE.lastIndex = 0;
+        let match: RegExpExecArray | null;
+        while ((match = SPAN_TAG_RE.exec(line)) !== null) {
+            if (match[0] === '</span>') {
+                openTagStack.pop();
+            } else {
+                openTagStack.push(match[0]);
+            }
+        }
+
+        const suffix = '</span>'.repeat(openTagStack.length);
+        return prefix + line + suffix;
+    });
+}
+
+function addLineNumbers(code: string, {lineWrapping}: {lineWrapping: boolean}): string {
     const hasTrailingNewline = code.endsWith('\n');
+    const lines = code.split('\n');
     const linesToProcess = hasTrailingNewline ? lines.slice(0, -1) : lines;
+    const normalized = balanceSpansPerLine(linesToProcess);
+    const maxDigits = String(normalized.length).length;
 
     return (
-        linesToProcess
+        normalized
             .map((line, index) => {
                 const lineNumber = String(index + 1).padStart(maxDigits, ' ');
                 return lineWrapping
