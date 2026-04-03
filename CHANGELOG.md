@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.73.2](https://github.com/diplodoc-platform/transform/compare/v4.73.1...v4.73.2) (2026-04-03)
+
+
+### Bug Fixes
+
+* filter invalid values in style attr ([#904](https://github.com/diplodoc-platform/transform/issues/904)) ([5066b79](https://github.com/diplodoc-platform/transform/commit/5066b79adecf8203c523afd5ee46bb903a071b97))
+
 ## [4.73.1](https://github.com/diplodoc-platform/transform/compare/v4.73.0...v4.73.1) (2026-04-02)
 
 
