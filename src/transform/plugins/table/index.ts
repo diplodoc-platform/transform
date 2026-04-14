@@ -574,6 +574,11 @@ function parseHeaderRows(rawAttrs: TableAttrs, log: Logger): number | null {
     return parsed;
 }
 
+function parseColWidth(rawAttrs: TableAttrs): string[] | null {
+    const widthsValue = rawAttrs['widths'];
+    return widthsValue?.trim() ? widthsValue.split(/\s+/).filter(Boolean) : null;
+}
+
 function applyCellAttrs(token: Token, rawAttrs: TableAttrs, log: Logger): void {
     if ('align' in rawAttrs) {
         const value = rawAttrs['align'];
@@ -763,10 +768,24 @@ const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
                 token.attrSet('data-header-rows', String(headerRows));
             }
 
+            const maxRowLength = Math.max(...rows.map((row) => row.cols.length));
+
+            const widths = parseColWidth(tableAttrs);
+            if (widths) {
+                token.meta.widths = widths;
+
+                if(maxRowLength > 0) {
+                    token = state.push('yfm_colgroup_open', 'colgroup', 1);
+                    for (let w = 0; w < maxRowLength; w++) {
+                        token = state.push('yfm_col', 'col', 0);
+                        token.attrSet('style', `width: ${w < widths.length ? widths[w] : 'auto'}`);
+                    }
+                    token = state.push('yfm_colgroup_close', 'colgroup', -1);
+                }
+            }
+
             token = state.push('yfm_tbody_open', 'tbody', 1);
             token.map = [startLine + 1, endOfTable - 1];
-
-            const maxRowLength = Math.max(...rows.map((row) => row.cols.length));
 
             // cellsMaps is a 2-D map of all td_open tokens in the table.
             // cellsMap is used to access the table cells by [row][column] coordinates
