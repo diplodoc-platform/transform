@@ -97,3 +97,21 @@ export const WithHeaderRowsAndCellBg: MarkdownSnippetStory = {
             `,
     },
 };
+
+export const WithColWidths: MarkdownSnippetStory = {
+    name: 'With column widths',
+    args: {
+        snippet: dedent`
+            #|
+            |:{widths="150px 200px 250px"}
+            ||
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam consectetur ex a nisi volutpat, consequat imperdiet lorem viverra. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+            |
+            Nullam faucibus elementum ipsum sit amet ultricies. Aenean venenatis, nulla eleifend sagittis laoreet, augue velit rutrum metus, non faucibus orci erat nec ligula. Mauris justo est, egestas vel nisi vel, faucibus gravida neque.
+            |
+            Fusce consequat turpis id efficitur mollis. Vivamus facilisis, lorem non commodo gravida, erat lorem tempor dui, dapibus malesuada dui turpis quis augue. Maecenas quis lorem neque. Nunc eget dui ac ligula ornare convallis non id urna.
+            ||
+            |#
+            `,
+    },
+};
