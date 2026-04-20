@@ -13,6 +13,7 @@ import getHeadings from './headings';
 import sanitizeHtml, {defaultOptions, sanitizeStyles} from './sanitize';
 import {olAttrConversion} from './plugins/ol-attr-conversion';
 import {DEFAULT_LANG} from './constants';
+import {createIDGeneratorByStrategy} from './plugins/utils';
 
 function initMarkdownIt(options: OptionsType) {
     const {
@@ -80,6 +81,7 @@ function getPluginOptions(options: OptionsType) {
             enabled: true,
             maxFileSize: 2 * 1024 * 1024,
         },
+        generateID,
         ...customOptions
     } = options;
 
@@ -93,6 +95,7 @@ function getPluginOptions(options: OptionsType) {
         log,
         lang,
         svgInline,
+        generateID: generateID ?? createIDGeneratorByStrategy('random'),
     } as MarkdownItPluginOpts;
 }
 

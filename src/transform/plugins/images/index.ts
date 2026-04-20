@@ -1,6 +1,7 @@
 import type Token from 'markdown-it/lib/token';
 import type {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
 import type {ImageOptions, StateCore} from '../../typings';
+import type {IDGenerator} from '../utils';
 
 import {join, sep} from 'path';
 import {bold} from 'chalk';
@@ -9,6 +10,7 @@ import {readFileSync} from 'fs';
 
 import {isFileExists, resolveRelativePath} from '../../utilsFS';
 import {filterTokens, getSrcTokenAttr, isExternalHref} from '../../utils';
+import {generateID as globalGenerateID} from '../utils';
 
 const sanitizeAttribute = (value: string): string => value.replace(/(\d*[%a-z]{0,5}).*/gi, '$1');
 
@@ -166,7 +168,10 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                             );
                         } else {
                             const svgToken = new state.Token('image_svg', '', 0);
-                            svgToken.attrSet('content', replaceSvgContent(svgContent, imageOpts));
+                            svgToken.attrSet(
+                                'content',
+                                replaceSvgContent(svgContent, imageOpts, opts.generateID),
+                            );
                             childrenTokens[index] = svgToken;
                         }
                     }
@@ -193,7 +198,11 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
     };
 };
 
-function replaceSvgContent(content: string | null, options: ImageOptions) {
+function replaceSvgContent(
+    content: string | null,
+    options: ImageOptions,
+    generateID: IDGenerator = globalGenerateID,
+) {
     if (!content) {
         return '';
     }
@@ -239,7 +248,7 @@ function replaceSvgContent(content: string | null, options: ImageOptions) {
             {
                 name: 'prefixIds',
                 params: {
-                    prefix: 'rnd-' + Math.floor(Math.random() * 1e9).toString(16),
+                    prefix: generateID('svg'),
                     prefixClassNames: false,
                 },
             },

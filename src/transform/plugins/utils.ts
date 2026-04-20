@@ -3,6 +3,8 @@ import type {Logger} from '../log';
 
 import {bold} from 'chalk';
 import {platform} from 'process';
+export type {IDGenerator, IDGeneratorStrategy} from '@diplodoc/utils';
+export {createIDGenerator, createIDGeneratorByStrategy} from '@diplodoc/utils';
 
 export type MatchTokenFunction = (
     tokens: Token[],
@@ -34,8 +36,19 @@ export const nestedCloseTokenIdxFactory =
 
 export const сarriage = platform === 'win32' ? '\r\n' : '\n';
 
-export function generateID() {
-    return Math.random().toString(36).substr(2, 8);
+/**
+ * Generates a legacy random ID.
+ * @deprecated Use `options.generateID` from plugin context instead.
+ * Fallback preserves legacy random behavior without shared counter state.
+ * @param prefix - Optional prefix to prepend to the generated ID.
+ * @returns Random ID string, optionally prefixed with `${prefix}-`.
+ */
+export function generateID(prefix?: string): string {
+    if (!prefix) {
+        return Math.random().toString(36).substr(2, 8);
+    }
+
+    return `${prefix}-${Math.random().toString(36).substr(2, 8)}`;
 }
 
 export function append<T extends Record<string, []>, Key extends keyof T>(
