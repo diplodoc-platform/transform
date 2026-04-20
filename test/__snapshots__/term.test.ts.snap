@@ -9,7 +9,7 @@ exports[`Terms > Should create term in code with definition template 1`] = `
     <code class="hljs">
       <i class="yfm yfm-term_title"
          term-key=":html"
-         id
+         id="html"
       >
         HTML
       </i>
@@ -115,7 +115,7 @@ exports[`Terms > Should create term in table with definition template 1`] = `
            role="button"
            aria-controls=":html_element"
            tabindex="0"
-           id
+           id="html"
         >
           HTML
         </i>
@@ -151,7 +151,7 @@ exports[`Terms > Should create term in text with definition template 1`] = `
      role="button"
      aria-controls=":html_element"
      tabindex="0"
-     id
+     id="html"
   >
     HTML
   </i>
@@ -167,7 +167,7 @@ exports[`Terms > Should emit lint token for undefined term in lint mode 1`] = `
      role="button"
      aria-controls=":myterm_element"
      tabindex="0"
-     id
+     id="myterm"
   >
     defined
   </i>
@@ -190,7 +190,7 @@ exports[`Terms > Should handle asterisk inside term text 1`] = `
      role="button"
      aria-controls=":popup1_element"
      tabindex="0"
-     id
+     id="popup1"
   >
     &lt;=
   </i>
@@ -200,7 +200,7 @@ exports[`Terms > Should handle asterisk inside term text 1`] = `
      role="button"
      aria-controls=":popup2_element"
      tabindex="0"
-     id
+     id="popup2"
   >
     =*
   </i>
@@ -233,7 +233,7 @@ exports[`Terms > Should handle term inside superscript 1`] = `
        role="button"
        aria-controls=":popup1_element"
        tabindex="0"
-       id
+       id="popup1"
     >
       ?
     </i>
@@ -261,7 +261,7 @@ exports[`Terms > Should keep term definition referenced transitively through ano
      role="button"
      aria-controls=":html_element"
      tabindex="0"
-     id
+     id="html"
   >
     HTML
   </i>
@@ -286,7 +286,7 @@ exports[`Terms > Should keep term definition referenced transitively through ano
        role="button"
        aria-controls=":css_element"
        tabindex="0"
-       id
+       id="css"
     >
       CSS
     </i>
@@ -310,7 +310,7 @@ exports[`Terms > Should preserve regular links and convert term links 1`] = `
      role="button"
      aria-controls=":myterm_element"
      tabindex="0"
-     id
+     id="myterm"
   >
     term
   </i>
@@ -337,7 +337,7 @@ exports[`Terms > Should remove unused term definition when reference is inside f
      role="button"
      aria-controls=":html_element"
      tabindex="0"
-     id
+     id="html"
   >
     HTML
   </i>
@@ -365,7 +365,7 @@ exports[`Terms > Should strip undefined term links and keep content 1`] = `
      role="button"
      aria-controls=":myterm_element"
      tabindex="0"
-     id
+     id="myterm"
   >
     defined
   </i>
@@ -404,7 +404,7 @@ exports[`Terms > Term should use content from include 1`] = `
      role="button"
      aria-controls=":html_element"
      tabindex="0"
-     id
+     id="html"
   >
     HTML
   </i>
@@ -468,7 +468,7 @@ exports[`Terms > Term should use escape regexp like chars 1`] = `
      role="button"
      aria-controls=":*_element"
      tabindex="0"
-     id
+     id="*"
   >
     *
   </i>
@@ -495,7 +495,7 @@ exports[`Terms > multilineTermDefinitions > Should consume all content until EOF
      role="button"
      aria-controls=":api_element"
      tabindex="0"
-     id
+     id="api"
   >
     API
   </i>
@@ -538,7 +538,7 @@ exports[`Terms > multilineTermDefinitions > Should consume multiline content acr
      role="button"
      aria-controls=":api_element"
      tabindex="0"
-     id
+     id="api"
   >
     API
   </i>
@@ -548,7 +548,7 @@ exports[`Terms > multilineTermDefinitions > Should consume multiline content acr
      role="button"
      aria-controls=":sdk_element"
      tabindex="0"
-     id
+     id="sdk"
   >
     SDK
   </i>
@@ -629,7 +629,7 @@ exports[`Terms > should create term in code with line-numbers and line-wrapping 
       <span class="yfm-line">
         <i class="yfm yfm-term_title"
            term-key=":js"
-           id
+           id="js"
         >
           JS
         </i>
@@ -641,7 +641,7 @@ exports[`Terms > should create term in code with line-numbers and line-wrapping 
       <span class="yfm-line">
         <i class="yfm yfm-term_title"
            term-key=":css"
-           id
+           id="css"
         >
           CSS
         </i>
@@ -653,7 +653,7 @@ exports[`Terms > should create term in code with line-numbers and line-wrapping 
       <span class="yfm-line">
         <i class="yfm yfm-term_title"
            term-key=":html"
-           id
+           id="html"
         >
           HTML
         </i>

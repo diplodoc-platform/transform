@@ -5,6 +5,7 @@ import type DefaultStateCore from 'markdown-it/lib/rules_core/state_core';
 import type {SanitizeFunction, SanitizeOptions} from './sanitize';
 import type {LogLevels, Logger} from './log';
 import type {ChangelogItem} from './plugins/changelog/types';
+import type {IDGenerator} from './plugins/utils';
 
 export interface MarkdownIt extends DefaultMarkdownIt {
     assets?: string[];
@@ -109,6 +110,15 @@ export interface OptionsType {
      * @default false
      */
     codeLineWrapping?: boolean;
+    /**
+     * Custom ID generator factory to use for this transform call.
+     * If provided, it will be called once per file to create a per-file isolated generator.
+     * If not provided, a new {@link IDGenerator} is created via {@link createIDGenerator}
+     * (deterministic per-file counters).
+     *
+     * Pass `() => () => Math.random().toString(36).substr(2, 8)` to restore legacy random behavior.
+     */
+    generateID?: IDGenerator;
 }
 
 export interface OutputType {
@@ -134,6 +144,7 @@ export interface MarkdownItPluginOpts {
     root: string;
     rootPublicPath: string;
     isLintRun: boolean;
+    generateID?: IDGenerator;
     cache?: CacheContext;
     conditionsInCode?: boolean;
     vars?: Record<string, string>;

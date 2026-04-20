@@ -1,8 +1,9 @@
 /* eslint-disable max-len */
 
 import type {MarkdownItPluginCb} from './typings';
+import type {IDGenerator} from './utils';
 
-import {generateID} from './utils';
+import {generateID as globalGenerateID} from './utils';
 
 const wrapInFloatingContainer = (
     element: string | undefined,
@@ -72,7 +73,12 @@ interface EnvTerm {
     };
 }
 
-function termReplace(str: string, env: EnvTerm, escape: (str: string) => string): string {
+function termReplace(
+    str: string,
+    env: EnvTerm,
+    escape: (str: string) => string,
+    generateID: IDGenerator,
+): string {
     const regTerms = Object.keys(env.terms)
         .map((el) => el.slice(1))
         .map(escape)
@@ -83,7 +89,7 @@ function termReplace(str: string, env: EnvTerm, escape: (str: string) => string)
     const termCode = str.replace(
         reg,
         (_match: string, p1: string, _p2: string, p3: string) =>
-            `<i class="yfm yfm-term_title" term-key=":${p3}" id="${generateID()}">${p1}</i>`,
+            `<i class="yfm yfm-term_title" term-key=":${p3}" id="${generateID(p3)}">${p1}</i>`,
     );
 
     return termCode || str;
@@ -100,6 +106,8 @@ const SPAN_TAG_RE = /<span[^>]*>|<\/span>/g;
  *   `['<span class="hljs-string">\'line1', 'line2\'</span>']`
  * After:
  *   `['<span class="hljs-string">\'line1</span>', '<span class="hljs-string">line2\'</span>']`
+ * @param lines - Highlighted HTML split into separate lines.
+ * @returns Lines with balanced `<span>` tags on each line.
  */
 function balanceSpansPerLine(lines: string[]): string[] {
     const openTagStack: string[] = [];
@@ -152,6 +160,7 @@ type CodeOptions = {
 
 const code: MarkdownItPluginCb<CodeOptions> = (md, opts) => {
     const lineWrapping = opts?.codeLineWrapping || false;
+    const generateID = opts.generateID ?? globalGenerateID;
 
     const superCodeRenderer = md.renderer.rules.fence;
     md.renderer.rules.fence = function (tokens, idx, options, env, self) {
@@ -173,7 +182,9 @@ const code: MarkdownItPluginCb<CodeOptions> = (md, opts) => {
         }
 
         const superCodeWithTerms =
-            superCode && env?.terms ? termReplace(superCode, env, md.utils.escapeRE) : superCode;
+            superCode && env?.terms
+                ? termReplace(superCode, env, md.utils.escapeRE, generateID)
+                : superCode;
 
         return wrapInFloatingContainer(superCodeWithTerms, idx, {lineWrapping});
     };

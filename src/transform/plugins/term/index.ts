@@ -2,19 +2,20 @@ import type StateCore from 'markdown-it/lib/rules_core/state_core';
 import type StateInline from 'markdown-it/lib/rules_inline/state_inline';
 import type Token from 'markdown-it/lib/token';
 import type {MarkdownItPluginCb} from '../typings';
+import type {IDGenerator} from '../utils';
 
-import {generateID} from '../utils';
+import {generateID as globalGenerateID} from '../utils';
 
 import {termDefinitions} from './termDefinitions';
 import {BASIC_TERM_REGEXP} from './constants';
 
-function setTermAttrs(token: Token, termKey: string): void {
+function setTermAttrs(token: Token, termKey: string, generateID: IDGenerator): void {
     token.attrSet('class', 'yfm yfm-term_title');
     token.attrSet('term-key', ':' + termKey);
     token.attrSet('role', 'button');
     token.attrSet('aria-controls', ':' + termKey + '_element');
     token.attrSet('tabindex', '0');
-    token.attrSet('id', generateID());
+    token.attrSet('id', generateID(termKey));
 }
 
 interface TermMatch {
@@ -88,38 +89,41 @@ function matchTermPattern(src: string, start: number, max: number): TermMatch | 
 }
 
 /**
- * Inline rule that matches [text](*termId) for defined terms.
+ * Creates an inline rule that matches [text](*termId) for defined terms.
  * Runs before the link rule so that * characters inside the
  * pattern are consumed and never trigger emphasis.
  *
- * @param state - inline parser state
- * @param silent - if true, only validate without creating tokens
- * @returns true if the pattern was matched
+ * @param generateID - per-file isolated ID generator
+ * @returns inline rule function for markdown-it
  */
-function termInlineRule(state: StateInline, silent: boolean): boolean {
-    if (state.src.charCodeAt(state.pos) !== 0x5b /* [ */ || !state.env.terms) {
-        return false;
-    }
+function termInlineRuleFactory(generateID: IDGenerator) {
+    return function termInlineRule(state: StateInline, silent: boolean): boolean {
+        if (state.src.charCodeAt(state.pos) !== 0x5b /* [ */ || !state.env.terms) {
+            return false;
+        }
 
-    const match = matchTermPattern(state.src, state.pos, state.posMax);
-    if (!match || !state.env.terms[':' + match.termId]) {
-        return false;
-    }
+        const match = matchTermPattern(state.src, state.pos, state.posMax);
+        if (!match || !state.env.terms[':' + match.termId]) {
+            return false;
+        }
 
-    if (!silent) {
-        const labelContent = state.src.slice(state.pos + 1, match.labelEnd).replace(/\\(.)/g, '$1');
+        if (!silent) {
+            const labelContent = state.src
+                .slice(state.pos + 1, match.labelEnd)
+                .replace(/\\(.)/g, '$1');
 
-        const termOpen = state.push('term_open', 'i', 1);
-        setTermAttrs(termOpen, match.termId);
+            const termOpen = state.push('term_open', 'i', 1);
+            setTermAttrs(termOpen, match.termId, generateID);
 
-        const textToken = state.push('text', '', 0);
-        textToken.content = labelContent;
+            const textToken = state.push('text', '', 0);
+            textToken.content = labelContent;
 
-        state.push('term_close', 'i', -1);
-    }
+            state.push('term_close', 'i', -1);
+        }
 
-    state.pos = match.endPos;
-    return true;
+        state.pos = match.endPos;
+        return true;
+    };
 }
 
 const RAW_CODE_TOKEN_TYPES = new Set(['fence', 'code_block', 'yfm_page-constructor']);
@@ -252,6 +256,7 @@ const term: MarkdownItPluginCb = (md, options) => {
     const arrayReplaceAt = md.utils.arrayReplaceAt;
 
     const {isLintRun} = options;
+    const generateID = options.generateID ?? globalGenerateID;
 
     // Prevent * URLs from being parsed as regular links (backward compatibility)
     const defaultLinkValidation = md.validateLink;
@@ -264,7 +269,7 @@ const term: MarkdownItPluginCb = (md, options) => {
     };
 
     // Inline rule: handles [text](*termId) before emphasis can interfere with *
-    md.inline.ruler.before('link', 'term_inline', termInlineRule);
+    md.inline.ruler.before('link', 'term_inline', termInlineRuleFactory(generateID));
 
     function termReplace(state: StateCore) {
         let i, j, l, tokens, token, text, nodes, pos, termMatch, currentToken;
@@ -358,7 +363,7 @@ const term: MarkdownItPluginCb = (md, options) => {
                     }
 
                     token = new state.Token('term_open', 'i', 1);
-                    setTermAttrs(token, termKey);
+                    setTermAttrs(token, termKey, generateID);
                     nodes.push(token);
 
                     token = new state.Token('text', '', 0);

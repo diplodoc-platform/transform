@@ -28,10 +28,14 @@ const transformYfm = (text: string, path?: string, opts?: Object) => {
 };
 
 const clearRandomId = (str: string) => {
+    // Remove random suffix from IDs like "popup2-t4hrphl5" -> "popup2"
     const clearRandomId = new RegExp(/<([i\s]+).*?id="([^"]*?)".*?>(.+?)/, 'g');
     let randomId = clearRandomId.exec(str);
     while (randomId) {
-        str = str.replace(randomId[2], '');
+        const idValue = randomId[2];
+        // Keep prefix, remove random suffix (everything after the last hyphen including the hyphen)
+        const prefix = idValue.replace(/-[^-]+$/, '');
+        str = str.replace(idValue, prefix);
         randomId = clearRandomId.exec(str);
     }
     return str;
