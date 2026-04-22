@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.73.3](https://github.com/diplodoc-platform/transform/compare/v4.73.2...v4.73.3) (2026-04-22)
+
+
+### Bug Fixes
+
+* custom naming and id in anchors DOCSTOOLS-3760 ([30566a0](https://github.com/diplodoc-platform/transform/commit/30566a0dbda5b5495283bcb0f20c34d70df68bb3))
+* terms from included not worked DOCSTOOLS-5709 ([e76ddbc](https://github.com/diplodoc-platform/transform/commit/e76ddbc33e945a65d35ced7e01e3b0493c7d8c5f))
+
 ## [4.73.2](https://github.com/diplodoc-platform/transform/compare/v4.73.1...v4.73.2) (2026-04-03)
 
 
