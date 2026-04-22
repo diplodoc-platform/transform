@@ -6,6 +6,7 @@ import MarkdownIt from 'markdown-it';
 import transform from '../../src/transform';
 import table from '../../src/transform/plugins/table';
 import includes from '../../src/transform/plugins/includes';
+import {log} from '../../src/transform/log';
 
 const transformYfm = (text: string, opts?: YfmTablePluginOptions) => {
     const {
@@ -1997,5 +1998,87 @@ describe('cell attrs', () => {
         const tokens = parseTokens('#|\n||:{} ::{c="1"} A ||\n|#');
         const tdOpens = findTokens(tokens, 'yfm_td_open');
         expect(tdOpens[0]?.meta?.rawAttrs).toEqual({c: '1'});
+    });
+});
+
+describe('cell align attribute', () => {
+    const parseTokens = (text: string, opts?: YfmTablePluginOptions) => {
+        const md = new MarkdownIt();
+        md.use(table, opts ?? {});
+        return md.parse(text, {});
+    };
+
+    it('align="center" adds cell-align-center class on td', () => {
+        const tokens = parseTokens('#|\n||::{align="center"} A ||\n|#');
+        const tdOpens = tokens.filter((t: {type: string}) => t.type === 'yfm_td_open');
+        expect(tdOpens[0]?.attrGet('class')).toBe('cell-align-center');
+    });
+
+    it('align="top-left" adds cell-align-top-left class on td', () => {
+        const tokens = parseTokens('#|\n||::{align="top-left"} A ||\n|#');
+        const tdOpens = tokens.filter((t: {type: string}) => t.type === 'yfm_td_open');
+        expect(tdOpens[0]?.attrGet('class')).toBe('cell-align-top-left');
+    });
+
+    it('align="unknown-value" adds class on td and emits warn', () => {
+        const {
+            result: {html},
+            logs,
+        } = transform('#|\n||::{align="unknown-value"} A ||\n|#', {
+            plugins: [table],
+            enableMarkdownAttrs: false,
+        });
+        expect(html).toContain('<td data-align="unknown-value" class="cell-align-unknown-value">');
+        expect(logs.warn.some((w: string) => w.includes('Unknown table cell align value'))).toBe(
+            true,
+        );
+    });
+
+    it('align="center" with unknown key "class" — only align is applied, unknown keys ignored', () => {
+        const tokens = parseTokens('#|\n||::{align="center" class="foo"} A ||\n|#');
+        const tdOpens = tokens.filter((t: {type: string}) => t.type === 'yfm_td_open');
+        const tdClass = tdOpens[0]?.attrGet('class') ?? '';
+        expect(tdClass).toContain('cell-align-center');
+        expect(tdClass).not.toContain('foo');
+    });
+
+    it('align does not appear as an HTML attribute on td', () => {
+        const tokens = parseTokens('#|\n||::{align="center"} A ||\n|#');
+        const tdOpens = tokens.filter((t: {type: string}) => t.type === 'yfm_td_open');
+        expect(tdOpens[0]?.attrGet('align')).toBeNull();
+    });
+});
+
+describe('deprecated cell-align class', () => {
+    beforeEach(() => {
+        log.clear();
+    });
+
+    it('|| Text {.cell-align-center} || emits deprecation warn and still applies class on td', () => {
+        const {
+            result: {html},
+            logs,
+        } = transform('#|\n|| Text {.cell-align-center} ||\n|#', {
+            plugins: [table],
+            enableMarkdownAttrs: false,
+        });
+        expect(html).toContain('<td class="cell-align-center">');
+        expect(
+            logs.warn.some((w: string) => w.includes('.cell-align-* class in cell content')),
+        ).toBe(true);
+    });
+
+    it('|| Text {.other-class} || does not emit deprecation warn', () => {
+        const {
+            result: {html},
+            logs,
+        } = transform('#|\n|| Text {.other-class} ||\n|#', {
+            plugins: [table],
+            enableMarkdownAttrs: false,
+        });
+        expect(html).toContain('<td class="other-class">');
+        expect(
+            logs.warn.some((w: string) => w.includes('.cell-align-* class in cell content')),
+        ).toBe(false);
     });
 });
