@@ -1,12 +1,13 @@
 import type StateBlock from 'markdown-it/lib/rules_block/state_block';
 import type Token from 'markdown-it/lib/token';
 import type {MarkdownItPluginCb} from '../typings';
-import type {YfmTablePluginOptions} from './types';
+import type {TableAttrs, YfmTablePluginOptions} from './types';
 
-import {AttrsParser} from '@diplodoc/utils';
+import {AttrsParser, parseMdAttrs} from '@diplodoc/utils';
 
 const pluginName = 'yfm_table';
 const pipeChar = 0x7c; // |
+const colonChar = 0x3a; // :
 const apostropheChar = 0x60; // `
 const hashChar = 0x23; // #
 const backSlashChar = 0x5c; // \
@@ -229,6 +230,63 @@ interface RowPositions {
     rows: [number, number, [Stats, Stats][]][];
     endOfTable: number | null;
     pos: number;
+    tableAttrs: TableAttrs;
+}
+
+/**
+ * Parses table options from lines between #| and the first || or |#.
+ *
+ * Option line format: `|:{key="value" key2="value2"}`
+ * Multiple option lines are supported; results are merged.
+ */
+function parseTableAttrs(state: StateBlock, iter: StateIterator): TableAttrs {
+    const options: TableAttrs = {};
+    const {src} = state;
+    const utils = state.md.utils;
+
+    let parsing = true;
+
+    while (parsing) {
+        const lineEnd = iter.lineEnds;
+
+        // Skip leading whitespace to find first non-space char
+        let first = iter.pos;
+        while (first < lineEnd && utils.isSpace(src.charCodeAt(first))) {
+            first++;
+        }
+
+        // Skip empty lines
+        if (first >= lineEnd) {
+            iter.next(lineEnd - iter.pos + 1);
+            continue;
+        }
+
+        // Stop if we hit row start || or table close |#
+        if (isRowOrder(src, first) || isCloseTableOrder(src, first)) {
+            parsing = false;
+            continue;
+        }
+
+        // Option line must start with |:
+        if (src.charCodeAt(first) !== pipeChar || src.charCodeAt(first + 1) !== colonChar) {
+            parsing = false;
+            continue;
+        }
+
+        const result = parseMdAttrs(state.md, src, first + 2, lineEnd);
+        if (!result) {
+            parsing = false;
+            continue;
+        }
+
+        for (const [key, values] of Object.entries(result.attrs)) {
+            options[key] = values[values.length - 1];
+        }
+
+        iter.next(lineEnd - iter.pos + 1);
+    }
+
+    return options;
 }
 
 // eslint-disable-next-line complexity
@@ -246,6 +304,8 @@ function getTableRowPositions(
     let rowStart: number | null = null;
 
     const iter = new StateIterator(state, startPosition + openTableOrder.length, startLine);
+
+    const tableAttrs = parseTableAttrs(state, iter);
 
     const rows: [number, number, typeof currentRow][] = [];
 
@@ -378,7 +438,7 @@ function getTableRowPositions(
 
     const {pos} = iter;
 
-    return {rows, endOfTable, pos};
+    return {rows, endOfTable, pos, tableAttrs};
 }
 
 function extractAttributes(state: StateBlock, pos: number): Record<string, string[]> {
@@ -539,7 +599,7 @@ const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
                 return true;
             }
 
-            const {rows, endOfTable, pos} = getTableRowPositions(
+            const {rows, endOfTable, pos, tableAttrs} = getTableRowPositions(
                 state,
                 startPosition,
                 endPosition,
@@ -575,6 +635,8 @@ const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
             }
 
             token.map = [startLine, endOfTable];
+            token.meta = token.meta || {};
+            token.meta.rawAttrs = tableAttrs;
 
             token = state.push('yfm_tbody_open', 'tbody', 1);
             token.map = [startLine + 1, endOfTable - 1];

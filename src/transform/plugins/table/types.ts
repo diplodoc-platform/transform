@@ -1,3 +1,5 @@
+export type TableAttrs = Record<string, string>;
+
 export type YfmTablePluginOptions = {
     /**
      * Sets whether to interpret the pipe symbol inside the code block as a table separator.
