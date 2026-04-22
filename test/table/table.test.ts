@@ -1,6 +1,7 @@
 import type {YfmTablePluginOptions} from '../../src/transform/plugins/table/types';
 
 import dd from 'ts-dedent';
+import MarkdownIt from 'markdown-it';
 
 import transform from '../../src/transform';
 import table from '../../src/transform/plugins/table';
@@ -1766,5 +1767,54 @@ describe('table with includes', () => {
                 '</tbody>\n' +
                 '</table>\n',
         );
+    });
+});
+
+describe('table attrs', () => {
+    const parseTokens = (text: string, opts?: YfmTablePluginOptions) => {
+        const md = new MarkdownIt();
+        md.use(table, opts ?? {});
+        return md.parse(text, {});
+    };
+
+    const findToken = (tokens: ReturnType<typeof parseTokens>, type: string) =>
+        tokens.find((t: {type: string}) => t.type === type);
+
+    it('parses single |:{key="value"} line into rawAttrs on yfm_table_open', () => {
+        const tokens = parseTokens('#|\n|:{key="value"}\n||A||\n|#');
+        const tableOpen = findToken(tokens, 'yfm_table_open');
+        expect(tableOpen?.meta?.rawAttrs).toEqual({key: 'value'});
+    });
+
+    it('later |:{...} lines override earlier ones for same key', () => {
+        const tokens = parseTokens('#|\n|:{key="first"}\n|:{key="second"}\n||A||\n|#');
+        const tableOpen = findToken(tokens, 'yfm_table_open');
+        expect(tableOpen?.meta?.rawAttrs).toEqual({key: 'second'});
+    });
+
+    it('empty |:{} results in rawAttrs === {}', () => {
+        const tokens = parseTokens('#|\n|:{}\n||A||\n|#');
+        const tableOpen = findToken(tokens, 'yfm_table_open');
+        expect(tableOpen?.meta?.rawAttrs).toEqual({});
+    });
+
+    it('no attr lines results in rawAttrs === {}', () => {
+        const tokens = parseTokens('#|\n||A||\n|#');
+        const tableOpen = findToken(tokens, 'yfm_table_open');
+        expect(tableOpen?.meta?.rawAttrs).toEqual({});
+    });
+
+    it('|:{...} attrs do not appear in generated HTML', () => {
+        const html = transformYfm('#|\n|:{key="value"}\n||A||\n|#');
+        expect(html).not.toContain('|:{');
+        expect(html).not.toContain('key="value"');
+        expect(html).not.toContain('key=&quot;value&quot;');
+        expect(html).toContain('<table>');
+    });
+
+    it('duplicate key in single |:{...} line — last value wins', () => {
+        const tokens = parseTokens('#|\n|:{key="first" key="second"}\n||A||\n|#');
+        const tableOpen = findToken(tokens, 'yfm_table_open');
+        expect(tableOpen?.meta?.rawAttrs).toEqual({key: 'second'});
     });
 });
