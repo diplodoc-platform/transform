@@ -148,28 +148,81 @@ describe('Anchors', () => {
         ).toMatchSnapshot();
     });
 
+    describe('headings with angle brackets (text_special tokens)', () => {
+        it('should generate distinct ids for headings differing only by angle bracket content', () => {
+            const result = html(
+                dedent`
+                ## !inherit:<key>
+
+                Content 1
+
+                ## !inherit
+
+                Content 2
+            `,
+                {disableCommonAnchors: true},
+            );
+            expect(result).toContain('id="inheritlesskeygreater"');
+            expect(result).toContain('id="inherit"');
+        });
+
+        it('should include angle bracket content in auto-generated slug', () => {
+            const result = html(
+                dedent`
+                ## Column <type> naming rules
+
+                Content
+            `,
+                {disableCommonAnchors: true},
+            );
+            expect(result).toContain('id="column-lesstypegreater-naming-rules"');
+        });
+    });
+
     describe('with extract title', () => {
-        const transformWithTitle = (text: string) => {
+        const transformWithTitle = (text: string, opts?: Partial<transform.Options>) => {
             const {
-                result: {html, title},
+                result: {html, title, meta},
             } = transform(text, {
                 plugins: [includes, anchors],
                 path: mocksPath,
                 root: dirname(mocksPath),
                 extractTitle: true,
                 enableMarkdownAttrs: false,
+                ...opts,
             });
-            return [html, title];
+            return {html, title, meta};
         };
 
         it('should not add an anchor for level 1 heading', () => {
-            const result = transformWithTitle(dedent`
+            const {html, title} = transformWithTitle(dedent`
                 # Test {#test1}
 
                 Content
             `);
-            expect(result[0]).toMatchSnapshot();
-            expect(result[1]).toBe('Test');
+            expect(html).toMatchSnapshot();
+            expect(title).toBe('Test');
+        });
+
+        it('should set custom id on heading_open token when extractTitle is true', () => {
+            const {html} = transformWithTitle(dedent`
+                # Page title {#custom-page-id}
+
+                ## Section {#section-id}
+
+                Content
+            `);
+            expect(html).not.toContain('Page title');
+            expect(html).toContain('id="section-id"');
+        });
+
+        it('should extract title with angle brackets via text_special tokens', () => {
+            const {title} = transformWithTitle(dedent`
+                # Config <key> reference
+
+                Content
+            `);
+            expect(title).toBe('Config <key> reference');
         });
     });
 
