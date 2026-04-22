@@ -226,8 +226,10 @@ class StateIterator {
     }
 }
 
+type RowData = {start: number; end: number; cols: [Stats, Stats][]; rawAttrs: TableAttrs};
+
 interface RowPositions {
-    rows: [number, number, [Stats, Stats][]][];
+    rows: RowData[];
     endOfTable: number | null;
     pos: number;
     tableAttrs: TableAttrs;
@@ -302,12 +304,13 @@ function getTableRowPositions(
     let currentRow: [Stats, Stats][] = [];
     let colStart: Stats | null = null;
     let rowStart: number | null = null;
+    let currentRowAttrs: TableAttrs = {};
 
     const iter = new StateIterator(state, startPosition + openTableOrder.length, startLine);
 
     const tableAttrs = parseTableAttrs(state, iter);
 
-    const rows: [number, number, typeof currentRow][] = [];
+    const rows: RowData[] = [];
 
     let isInsideCode = false;
     let isInsideMath = false;
@@ -319,11 +322,17 @@ function getTableRowPositions(
             currentRow.push([colStart, iter.stats()]);
         }
         if (currentRow.length && rowStart) {
-            rows.push([rowStart, iter.line, currentRow]);
+            rows.push({
+                start: rowStart,
+                end: iter.line,
+                cols: currentRow,
+                rawAttrs: currentRowAttrs,
+            });
         }
         currentRow = [];
         colStart = null;
         rowStart = null;
+        currentRowAttrs = {};
     };
 
     while (iter.pos <= endPosition) {
@@ -416,6 +425,8 @@ function getTableRowPositions(
             } else {
                 iter.next(rowStartOrder.length);
                 rowStart = iter.line;
+
+                currentRowAttrs = parseInlineAttrs(state, iter, 1);
                 colStart = iter.stats();
             }
 
@@ -439,6 +450,26 @@ function getTableRowPositions(
     const {pos} = iter;
 
     return {rows, endOfTable, pos, tableAttrs};
+}
+
+function parseInlineAttrs(state: StateBlock, iter: StateIterator, prefixLen: number): TableAttrs {
+    const result: TableAttrs = {};
+    if (
+        iter.pos > iter.lineEnds ||
+        state.src.charCodeAt(iter.pos) !== colonChar ||
+        state.src.charCodeAt(iter.pos + 1) !== curlyBraceOpen
+    ) {
+        return result;
+    }
+    const parsed = parseMdAttrs(state.md, state.src, iter.pos + prefixLen, iter.lineEnds);
+    if (!parsed) {
+        return result;
+    }
+    for (const [key, values] of Object.entries(parsed.attrs)) {
+        result[key] = values[0];
+    }
+    iter.next(parsed.pos - iter.pos);
+    return result;
 }
 
 function extractAttributes(state: StateBlock, pos: number): Record<string, string[]> {
@@ -641,7 +672,7 @@ const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
             token = state.push('yfm_tbody_open', 'tbody', 1);
             token.map = [startLine + 1, endOfTable - 1];
 
-            const maxRowLength = Math.max(...rows.map(([, , cols]) => cols.length));
+            const maxRowLength = Math.max(...rows.map((row) => row.cols.length));
 
             // cellsMaps is a 2-D map of all td_open tokens in the table.
             // cellsMap is used to access the table cells by [row][column] coordinates
@@ -652,13 +683,20 @@ const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
             const contentMap: string[][] = [];
 
             for (let i = 0; i < rows.length; i++) {
-                const [rowLineStarts, rowLineEnds, cols] = rows[i];
+                const {
+                    start: rowLineStarts,
+                    end: rowLineEnds,
+                    cols,
+                    rawAttrs: rowRawAttrs,
+                } = rows[i];
                 cellsMap.push([]);
                 contentMap.push([]);
                 const rowLength = cols.length;
 
                 token = state.push('yfm_tr_open', 'tr', 1);
                 token.map = [rowLineStarts, rowLineEnds];
+                token.meta = token.meta || {};
+                token.meta.rawAttrs = rowRawAttrs;
 
                 for (let j = 0; j < cols.length; j++) {
                     const [begin, end] = cols[j];
