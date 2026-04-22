@@ -1818,3 +1818,58 @@ describe('table attrs', () => {
         expect(tableOpen?.meta?.rawAttrs).toEqual({key: 'second'});
     });
 });
+
+describe('row attrs', () => {
+    const parseTokens = (text: string, opts?: YfmTablePluginOptions) => {
+        const md = new MarkdownIt();
+        md.use(table, opts ?? {});
+        return md.parse(text, {});
+    };
+
+    const findTokens = (tokens: ReturnType<typeof parseTokens>, type: string) =>
+        tokens.filter((t: {type: string}) => t.type === type);
+
+    it('||:{key="value"} sets rawAttrs on yfm_tr_open', () => {
+        const tokens = parseTokens('#|\n||:{key="value"} A | B ||\n|#');
+        const trOpen = findTokens(tokens, 'yfm_tr_open')[0];
+        expect(trOpen?.meta?.rawAttrs).toEqual({key: 'value'});
+    });
+
+    it('||:{} sets empty rawAttrs on yfm_tr_open', () => {
+        const tokens = parseTokens('#|\n||:{} A | B ||\n|#');
+        const trOpen = findTokens(tokens, 'yfm_tr_open')[0];
+        expect(trOpen?.meta?.rawAttrs).toEqual({});
+    });
+
+    it('|| without attrs sets empty rawAttrs', () => {
+        const tokens = parseTokens('#|\n|| A | B ||\n|#');
+        const trOpen = findTokens(tokens, 'yfm_tr_open')[0];
+        expect(trOpen?.meta?.rawAttrs).toEqual({});
+    });
+
+    it('multiple rows each get their own rawAttrs', () => {
+        const tokens = parseTokens('#|\n||:{r="1"} A ||\n||:{r="2"} B ||\n|#');
+        const trOpens = findTokens(tokens, 'yfm_tr_open');
+        expect(trOpens[0]?.meta?.rawAttrs).toEqual({r: '1'});
+        expect(trOpens[1]?.meta?.rawAttrs).toEqual({r: '2'});
+    });
+
+    it('|| :{...} with space after || does not parse as row attrs', () => {
+        const tokens = parseTokens('#|\n|| :{key="v"} A | B ||\n|#');
+        const trOpen = findTokens(tokens, 'yfm_tr_open')[0];
+        expect(trOpen?.meta?.rawAttrs).toEqual({});
+    });
+
+    it('||:{...} on next line after || does not parse as row attrs', () => {
+        const tokens = parseTokens('#|\n||\n:{key="v"} A | B ||\n|#');
+        const trOpen = findTokens(tokens, 'yfm_tr_open')[0];
+        expect(trOpen?.meta?.rawAttrs).toEqual({});
+    });
+
+    it('||:{key="v"} does not leak :{...} into cell content HTML', () => {
+        const html = transformYfm('#|\n||:{key="v"} A | B ||\n|#');
+        expect(html).not.toContain(':{');
+        expect(html).not.toContain('key=&quot;v&quot;');
+        expect(html).toContain('<td>\n<p>A</p>\n</td>');
+    });
+});
