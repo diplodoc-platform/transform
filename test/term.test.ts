@@ -227,6 +227,15 @@ describe('Terms', () => {
         expect(result).toContain('<h1>Hello</h1>');
     });
 
+    test('Should keep dfn when term reference [text](*key) was split by emphasis parsing (Bug 10)', () => {
+        const input =
+            '[*api]: Application Programming Interface\n\n# Docs\n\nUses [API](*api) for work.';
+        const result = transformYfm(input);
+
+        expect(result).toContain('id=":api_element"');
+        expect(result).toContain('term-key=":api"');
+    });
+
     describe('multilineTermDefinitions', () => {
         const transformMultiline = (text: string, path?: string, opts?: Object) => {
             const {

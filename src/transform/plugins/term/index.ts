@@ -139,10 +139,21 @@ function collectTermsFromRawContent(tokens: Token[], reg: RegExp, out: Set<strin
             collectRawTermMatches(token.content, reg, out);
         }
 
-        if (token.type === 'inline' && token.children) {
-            for (const child of token.children) {
-                if (child.type === 'code_inline' && child.content) {
-                    collectRawTermMatches(child.content, reg, out);
+        if (token.type === 'inline') {
+            // Scan the raw inline content to catch term references that
+            // may have been split across child tokens by emphasis parsing.
+            // When term definitions come from includes resolved after inline
+            // parsing, term_inline fails and `(*key)` gets fragmented by
+            // the `*` emphasis delimiter — making per-child scanning miss them.
+            if (token.content) {
+                collectRawTermMatches(token.content, reg, out);
+            }
+
+            if (token.children) {
+                for (const child of token.children) {
+                    if (child.type === 'code_inline' && child.content) {
+                        collectRawTermMatches(child.content, reg, out);
+                    }
                 }
             }
         }
@@ -386,7 +397,15 @@ const term: MarkdownItPluginCb = (md, options) => {
         alt: ['paragraph', 'reference'],
     });
 
-    md.core.ruler.after('linkify', 'termReplace', termReplace);
+    // Register termReplace after text_join so that emphasis-split text
+    // tokens (e.g. [text](*key) where * opens a delimiter) are merged
+    // before the term regex runs.  Without this, terms defined in
+    // included files (resolved after inline parsing) would be missed.
+    try {
+        md.core.ruler.after('text_join', 'termReplace', termReplace);
+    } catch {
+        md.core.ruler.after('linkify', 'termReplace', termReplace);
+    }
 };
 
 export = term;
