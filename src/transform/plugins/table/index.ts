@@ -1,6 +1,7 @@
 import type StateBlock from 'markdown-it/lib/rules_block/state_block';
 import type Token from 'markdown-it/lib/token';
 import type {MarkdownItPluginCb} from '../typings';
+import type {Logger} from '../../log';
 import type {TableAttrs, YfmTablePluginOptions} from './types';
 
 import {AttrsParser, parseMdAttrs} from '@diplodoc/utils';
@@ -522,9 +523,10 @@ function extractAttributes(state: StateBlock, pos: number): Record<string, strin
  *
  * @param {Token} contentToken - Search the content of this token for the class.
  * @param {Token} tdOpenToken - Parent td_open token. Extracted class is applied to this token.
+ * @param {Logger} log - Logger instance for deprecation warnings.
  * @returns {void}
  */
-function extractAndApplyClassFromToken(contentToken: Token, tdOpenToken: Token): void {
+function extractAndApplyClassFromToken(contentToken: Token, tdOpenToken: Token, log: Logger): void {
     // Regex to find class attribute in any position within brackets
     const blockRegex = /\s*\{[^}]*}$/;
     const allAttrs = contentToken.content.match(blockRegex);
@@ -536,6 +538,11 @@ function extractAndApplyClassFromToken(contentToken: Token, tdOpenToken: Token):
     const attrsClass = attrs?.class?.join(' ');
 
     if (attrsClass) {
+        if (attrsClass.split(' ').some((c) => c.startsWith('cell-align-'))) {
+            log.warn(
+                `Deprecated: use align="..." inside cell attributes "::{align=\\"...\\"}" instead of .cell-align-* class in cell content "{ }"`,
+            );
+        }
         tdOpenToken.attrSet('class', attrsClass);
         // remove the class from the token so that it's not propagated to tr or table level
         let replacedContent = allAttrs[0].replace(`.${attrsClass}`, '');
@@ -543,6 +550,30 @@ function extractAndApplyClassFromToken(contentToken: Token, tdOpenToken: Token):
             replacedContent = '';
         }
         contentToken.content = contentToken.content.replace(allAttrs[0], replacedContent);
+    }
+}
+
+const VALID_ALIGN_VALUES: ReadonlySet<string> = new Set([
+    'top-left',
+    'top-center',
+    'top-right',
+    'center',
+    'bottom-left',
+    'bottom-right',
+]);
+
+function applyCellAttrs(token: Token, rawAttrs: TableAttrs, log: Logger): void {
+    if ('align' in rawAttrs) {
+        const value = rawAttrs['align'];
+        if (!VALID_ALIGN_VALUES.has(value)) {
+            log.warn(`Unknown table cell align value: "${value}"`);
+        }
+        token.meta = token.meta || {};
+        token.meta.align = value;
+        token.attrSet('data-align', value);
+        if (value) {
+            token.attrJoin('class', `cell-align-${value}`);
+        }
     }
 }
 
@@ -740,6 +771,7 @@ const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
                     token.map = [begin.line, end.line];
                     token.meta = token.meta || {};
                     token.meta.rawAttrs = cellRawAttrs;
+                    applyCellAttrs(token, cellRawAttrs, opts.log);
 
                     const oldTshift = state.tShift[begin.line];
                     const oldEMark = state.eMarks[end.line];
@@ -768,7 +800,11 @@ const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
                     state.eMarks[end.line] = oldEMark;
 
                     const rowTokens = cellsMap[cellsMap.length - 1];
-                    extractAndApplyClassFromToken(contentToken, rowTokens[rowTokens.length - 1]);
+                    extractAndApplyClassFromToken(
+                        contentToken,
+                        rowTokens[rowTokens.length - 1],
+                        opts.log,
+                    );
                 }
 
                 if (rowLength < maxRowLength) {
