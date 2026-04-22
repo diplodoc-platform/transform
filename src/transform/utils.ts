@@ -57,7 +57,7 @@ export function headingInfo(tokens: Token[], idx: number) {
     while (inlineToken.children && i < inlineToken.children.length) {
         const token = inlineToken.children[i];
 
-        if (token.type === 'text') {
+        if (token.type === 'text' || token.type === 'text_special') {
             title += token.content;
         }
 
