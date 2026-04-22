@@ -1873,3 +1873,129 @@ describe('row attrs', () => {
         expect(html).toContain('<td>\n<p>A</p>\n</td>');
     });
 });
+
+describe('cell attrs', () => {
+    const parseTokens = (text: string, opts?: YfmTablePluginOptions) => {
+        const md = new MarkdownIt();
+        md.use(table, opts ?? {});
+        return md.parse(text, {});
+    };
+
+    const findTokens = (tokens: ReturnType<typeof parseTokens>, type: string) =>
+        tokens.filter((t: {type: string}) => t.type === type);
+
+    it('|::{key="v"} sets rawAttrs on second yfm_td_open', () => {
+        const tokens = parseTokens('#|\n|| A |::{key="v"} B ||\n|#');
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(tdOpens[0]?.meta?.rawAttrs).toEqual({});
+        expect(tdOpens[1]?.meta?.rawAttrs).toEqual({key: 'v'});
+    });
+
+    it('||::{key="v"} sets rawAttrs on first yfm_td_open (no row attrs)', () => {
+        const tokens = parseTokens('#|\n||::{key="v"} A | B ||\n|#');
+        const trOpen = findTokens(tokens, 'yfm_tr_open')[0];
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(trOpen?.meta?.rawAttrs).toEqual({});
+        expect(tdOpens[0]?.meta?.rawAttrs).toEqual({key: 'v'});
+        expect(tdOpens[1]?.meta?.rawAttrs).toEqual({});
+    });
+
+    it('||:{r="1"} ::{c="1"} A sets both row and first-cell attrs', () => {
+        const tokens = parseTokens('#|\n||:{r="1"} ::{c="1"} A | B ||\n|#');
+        const trOpen = findTokens(tokens, 'yfm_tr_open')[0];
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(trOpen?.meta?.rawAttrs).toEqual({r: '1'});
+        expect(tdOpens[0]?.meta?.rawAttrs).toEqual({c: '1'});
+        expect(tdOpens[1]?.meta?.rawAttrs).toEqual({});
+    });
+
+    it('||:{r="1"}::{c="1"} A — no space between row and cell attrs', () => {
+        const tokens = parseTokens('#|\n||:{r="1"}::{c="1"} A | B ||\n|#');
+        const trOpen = findTokens(tokens, 'yfm_tr_open')[0];
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(trOpen?.meta?.rawAttrs).toEqual({r: '1'});
+        expect(tdOpens[0]?.meta?.rawAttrs).toEqual({c: '1'});
+    });
+
+    it('||:{r="1"}   \t::{c="1"} A — multiple spaces/tabs between row and cell attrs', () => {
+        const tokens = parseTokens('#|\n||:{r="1"}   \t::{c="1"} A | B ||\n|#');
+        const trOpen = findTokens(tokens, 'yfm_tr_open')[0];
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(trOpen?.meta?.rawAttrs).toEqual({r: '1'});
+        expect(tdOpens[0]?.meta?.rawAttrs).toEqual({c: '1'});
+    });
+
+    it('|| A |::{} B sets empty rawAttrs on second cell', () => {
+        const tokens = parseTokens('#|\n|| A |::{} B ||\n|#');
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(tdOpens[1]?.meta?.rawAttrs).toEqual({});
+    });
+
+    it('|| A | B — no cell attrs sets empty rawAttrs on all cells', () => {
+        const tokens = parseTokens('#|\n|| A | B ||\n|#');
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(tdOpens[0]?.meta?.rawAttrs).toEqual({});
+        expect(tdOpens[1]?.meta?.rawAttrs).toEqual({});
+    });
+
+    it('| ::{k="v"} space before ::{ — does not parse as cell attrs for second cell', () => {
+        const tokens = parseTokens('#|\n|| A | ::{k="v"} B ||\n|#');
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(tdOpens[1]?.meta?.rawAttrs).toEqual({});
+    });
+
+    it('|| A |\\n::{k="v"} B — newline before ::{ does not parse as cell attrs', () => {
+        const tokens = parseTokens('#|\n|| A |\n::{k="v"} B ||\n|#');
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(tdOpens[1]?.meta?.rawAttrs).toEqual({});
+    });
+
+    it('||:{r="1"}\\n::{c="1"} — cell attrs on next line not parsed', () => {
+        const tokens = parseTokens('#|\n||:{r="1"}\n::{c="1"} G | H ||\n|#');
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(tdOpens[0]?.meta?.rawAttrs).toEqual({});
+    });
+
+    it('|::{...} does not leak ::{...} into cell content HTML', () => {
+        const html = transformYfm('#|\n|| A |::{key="v"} B ||\n|#');
+        expect(html).not.toContain('::{');
+        expect(html).not.toContain('key=&quot;v&quot;');
+        expect(html).toContain('<td>\n<p>B</p>\n</td>');
+    });
+
+    it('cell with ::{...} and colspan > works correctly', () => {
+        const html = transformYfm('#|\n||::{k="v"} A | > ||\n|#');
+        expect(html).toContain('colspan="2"');
+        expect(html).not.toContain('::{');
+    });
+
+    it('::{k="v"} on colspan > cell — first cell gets rawAttrs, colspan applied', () => {
+        const tokens = parseTokens('#|\n||::{k="v"} A |::{k2="v2"} > ||\n|#');
+        // clearTokens removes the > cell from output tokens
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(tdOpens[0]?.meta?.rawAttrs).toEqual({k: 'v'});
+        expect(tdOpens[0]?.attrGet('colspan')).toBe('2');
+        // only 1 td_open survives after clearTokens removes the > cell
+        expect(tdOpens).toHaveLength(1);
+    });
+
+    it('|| ::{k="v"} A — space before ::{ without row attrs does not parse as cell attrs', () => {
+        const tokens = parseTokens('#|\n|| ::{k="v"} A ||\n|#');
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(tdOpens[0]?.meta?.rawAttrs).toEqual({});
+    });
+
+    it('||:{r="1"} ::{c="1"} A — space before ::{ with row attrs parses correctly', () => {
+        const tokens = parseTokens('#|\n||:{r="1"} ::{c="1"} A ||\n|#');
+        const trOpen = findTokens(tokens, 'yfm_tr_open')[0];
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(trOpen?.meta?.rawAttrs).toEqual({r: '1'});
+        expect(tdOpens[0]?.meta?.rawAttrs).toEqual({c: '1'});
+    });
+
+    it('||:{} ::{c="1"} A — empty row attrs syntax present, space before ::{ is allowed', () => {
+        const tokens = parseTokens('#|\n||:{} ::{c="1"} A ||\n|#');
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(tdOpens[0]?.meta?.rawAttrs).toEqual({c: '1'});
+    });
+});

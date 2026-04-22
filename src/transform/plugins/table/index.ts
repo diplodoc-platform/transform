@@ -226,7 +226,8 @@ class StateIterator {
     }
 }
 
-type RowData = {start: number; end: number; cols: [Stats, Stats][]; rawAttrs: TableAttrs};
+type CellData = {start: Stats; end: Stats; rawAttrs: TableAttrs};
+type RowData = {start: number; end: number; cols: CellData[]; rawAttrs: TableAttrs};
 
 interface RowPositions {
     rows: RowData[];
@@ -301,8 +302,9 @@ function getTableRowPositions(
 ): RowPositions {
     let endOfTable = null;
     let tableLevel = 0;
-    let currentRow: [Stats, Stats][] = [];
+    let currentRow: CellData[] = [];
     let colStart: Stats | null = null;
+    let pendingCellAttrs: TableAttrs = {};
     let rowStart: number | null = null;
     let currentRowAttrs: TableAttrs = {};
 
@@ -319,7 +321,8 @@ function getTableRowPositions(
 
     const addRow = () => {
         if (colStart) {
-            currentRow.push([colStart, iter.stats()]);
+            currentRow.push({start: colStart, end: iter.stats(), rawAttrs: pendingCellAttrs});
+            pendingCellAttrs = {};
         }
         if (currentRow.length && rowStart) {
             rows.push({
@@ -426,7 +429,35 @@ function getTableRowPositions(
                 iter.next(rowStartOrder.length);
                 rowStart = iter.line;
 
-                currentRowAttrs = parseInlineAttrs(state, iter, 1);
+                const hasRowAttrs =
+                    iter.pos <= iter.lineEnds &&
+                    state.src.charCodeAt(iter.pos) === colonChar &&
+                    state.src.charCodeAt(iter.pos + 1) === curlyBraceOpen;
+                if (hasRowAttrs) {
+                    currentRowAttrs = parseInlineAttrs(state, iter, 1);
+                } else {
+                    currentRowAttrs = {};
+                }
+
+                // skip spaces/tabs on same line only if row attrs were present, then check for first-cell attrs ::{...}
+                if (hasRowAttrs) {
+                    while (
+                        iter.pos <= iter.lineEnds &&
+                        state.md.utils.isSpace(state.src.charCodeAt(iter.pos))
+                    ) {
+                        iter.next(1);
+                    }
+                }
+                if (
+                    iter.pos <= iter.lineEnds &&
+                    state.src.charCodeAt(iter.pos) === colonChar &&
+                    state.src.charCodeAt(iter.pos + 1) === colonChar
+                ) {
+                    pendingCellAttrs = parseInlineAttrs(state, iter, 2);
+                } else {
+                    pendingCellAttrs = {};
+                }
+
                 colStart = iter.stats();
             }
 
@@ -437,9 +468,20 @@ function getTableRowPositions(
 
         if (isCellOrder(state.src, iter.pos)) {
             if (colStart) {
-                currentRow.push([colStart, iter.stats()]);
+                currentRow.push({start: colStart, end: iter.stats(), rawAttrs: pendingCellAttrs});
+                pendingCellAttrs = {};
             }
             iter.next(cellStartOrder.length);
+            // check for cell attrs ::{...} immediately after | (no spaces allowed)
+            if (
+                iter.pos <= iter.lineEnds &&
+                state.src.charCodeAt(iter.pos) === colonChar &&
+                state.src.charCodeAt(iter.pos + 1) === colonChar
+            ) {
+                pendingCellAttrs = parseInlineAttrs(state, iter, 2);
+            } else {
+                pendingCellAttrs = {};
+            }
             colStart = iter.stats();
             continue;
         }
@@ -454,13 +496,6 @@ function getTableRowPositions(
 
 function parseInlineAttrs(state: StateBlock, iter: StateIterator, prefixLen: number): TableAttrs {
     const result: TableAttrs = {};
-    if (
-        iter.pos > iter.lineEnds ||
-        state.src.charCodeAt(iter.pos) !== colonChar ||
-        state.src.charCodeAt(iter.pos + 1) !== curlyBraceOpen
-    ) {
-        return result;
-    }
     const parsed = parseMdAttrs(state.md, state.src, iter.pos + prefixLen, iter.lineEnds);
     if (!parsed) {
         return result;
@@ -699,10 +734,12 @@ const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
                 token.meta.rawAttrs = rowRawAttrs;
 
                 for (let j = 0; j < cols.length; j++) {
-                    const [begin, end] = cols[j];
+                    const {start: begin, end, rawAttrs: cellRawAttrs} = cols[j];
                     token = state.push('yfm_td_open', 'td', 1);
                     cellsMap[i].push(token);
                     token.map = [begin.line, end.line];
+                    token.meta = token.meta || {};
+                    token.meta.rawAttrs = cellRawAttrs;
 
                     const oldTshift = state.tShift[begin.line];
                     const oldEMark = state.eMarks[end.line];
