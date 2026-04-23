@@ -543,7 +543,7 @@ function extractAndApplyClassFromToken(contentToken: Token, tdOpenToken: Token, 
                 `Deprecated: use align="..." inside cell attributes "::{align=\\"...\\"}" instead of .cell-align-* class in cell content "{ }"`,
             );
         }
-        tdOpenToken.attrSet('class', attrsClass);
+        tdOpenToken.attrJoin('class', attrsClass);
         // remove the class from the token so that it's not propagated to tr or table level
         let replacedContent = allAttrs[0].replace(`.${attrsClass}`, '');
         if (replacedContent.trim() === '{}') {
@@ -573,6 +573,16 @@ function applyCellAttrs(token: Token, rawAttrs: TableAttrs, log: Logger): void {
         token.attrSet('data-align', value);
         if (value) {
             token.attrJoin('class', `cell-align-${value}`);
+        }
+    }
+
+    if ('bg' in rawAttrs) {
+        const value = rawAttrs['bg'];
+        token.meta = token.meta || {};
+        token.meta.bg = value;
+        token.attrSet('data-bg', value);
+        if (value) {
+            token.attrJoin('class', `cell-bg-${value}`);
         }
     }
 }

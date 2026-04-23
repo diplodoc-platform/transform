@@ -2082,3 +2082,80 @@ describe('deprecated cell-align class', () => {
         ).toBe(false);
     });
 });
+
+describe('cell bg attribute', () => {
+    const parseTokens = (text: string, opts?: YfmTablePluginOptions) => {
+        const md = new MarkdownIt();
+        md.use(table, opts ?? {});
+        return md.parse(text, {});
+    };
+
+    it('||::{bg="red"} A || sets meta.bg and meta.rawAttrs on yfm_td_open', () => {
+        const tokens = parseTokens('#|\n||::{bg="red"} A ||\n|#');
+        const tdOpens = tokens.filter((t: {type: string}) => t.type === 'yfm_td_open');
+        expect(tdOpens[0]?.meta?.bg).toBe('red');
+        expect(tdOpens[0]?.meta?.rawAttrs).toEqual({bg: 'red'});
+    });
+
+    it('|| A || (no bg) — meta.bg is undefined', () => {
+        const tokens = parseTokens('#|\n|| A ||\n|#');
+        const tdOpens = tokens.filter((t: {type: string}) => t.type === 'yfm_td_open');
+        expect(tdOpens[0]?.meta?.bg).toBeUndefined();
+    });
+
+    it('adds cell-bg-<value> class on td token', () => {
+        const tokens = parseTokens('#|\n||::{bg="red"} A ||\n|#');
+        const tdOpens = tokens.filter((t: {type: string}) => t.type === 'yfm_td_open');
+        expect(tdOpens[0]?.attrGet('class')).toBe('cell-bg-red');
+    });
+
+    it('adds data-bg="<value>" attribute on td token', () => {
+        const tokens = parseTokens('#|\n||::{bg="red"} A ||\n|#');
+        const tdOpens = tokens.filter((t: {type: string}) => t.type === 'yfm_td_open');
+        expect(tdOpens[0]?.attrGet('data-bg')).toBe('red');
+    });
+
+    it('||::{bg=""} A || — empty value: only data-bg set, no cell-bg- class', () => {
+        const tokens = parseTokens('#|\n||::{bg=""} A ||\n|#');
+        const tdOpens = tokens.filter((t: {type: string}) => t.type === 'yfm_td_open');
+        expect(tdOpens[0]?.meta?.bg).toBe('');
+        expect(tdOpens[0]?.attrGet('data-bg')).toBe('');
+        expect(tdOpens[0]?.attrGet('class') ?? '').not.toContain('cell-bg-');
+    });
+
+    it('bg + align: both classes present on td token', () => {
+        const tokens = parseTokens('#|\n||::{bg="red" align="center"} A ||\n|#');
+        const tdOpens = tokens.filter((t: {type: string}) => t.type === 'yfm_td_open');
+        const cls = tdOpens[0]?.attrGet('class') ?? '';
+        expect(cls).toContain('cell-align-center');
+        expect(cls).toContain('cell-bg-red');
+    });
+
+    it('bg + deprecated {.cell-align-center}: both classes present on td', () => {
+        const html = transformYfm('#|\n||::{bg="red"} A {.cell-align-center} ||\n|#');
+        expect(html).toContain('cell-align-center');
+        expect(html).toContain('cell-bg-red');
+    });
+
+    it('cells without bg are not affected', () => {
+        const tokens = parseTokens('#|\n|| A ||\n|#');
+        const tdOpens = tokens.filter((t: {type: string}) => t.type === 'yfm_td_open');
+        expect(tdOpens[0]?.attrGet('class')).toBeNull();
+        expect(tdOpens[0]?.attrGet('data-bg')).toBeNull();
+    });
+
+    it('multiple cells with different bg values', () => {
+        const tokens = parseTokens('#|\n||::{bg="red"} A |::{bg="blue"} B ||\n|#');
+        const tdOpens = tokens.filter((t: {type: string}) => t.type === 'yfm_td_open');
+        expect(tdOpens[0]?.attrGet('class')).toBe('cell-bg-red');
+        expect(tdOpens[0]?.attrGet('data-bg')).toBe('red');
+        expect(tdOpens[1]?.attrGet('class')).toBe('cell-bg-blue');
+        expect(tdOpens[1]?.attrGet('data-bg')).toBe('blue');
+    });
+
+    it('::{bg} does not leak into cell content HTML', () => {
+        const html = transformYfm('#|\n||::{bg="red"} Text ||\n|#');
+        expect(html).not.toContain('::{');
+        expect(html).toContain('<p>Text</p>');
+    });
+});
