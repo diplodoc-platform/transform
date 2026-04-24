@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.74.0](https://github.com/diplodoc-platform/transform/compare/v4.73.3...v4.74.0) (2026-04-24)
+
+
+### Features
+
+* Use generateID method from utils DOCSTOOLS-5561 ([1a745a9](https://github.com/diplodoc-platform/transform/commit/1a745a9e74a099bfaabbdcf13aef81b67eefe5c1))
+
 ## [4.73.3](https://github.com/diplodoc-platform/transform/compare/v4.73.2...v4.73.3) (2026-04-22)
 
 
