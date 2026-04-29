@@ -2159,3 +2159,196 @@ describe('cell bg attribute', () => {
         expect(html).toContain('<p>Text</p>');
     });
 });
+
+describe('table header-rows attribute', () => {
+    beforeEach(() => {
+        log.clear();
+    });
+
+    const parseTokens = (text: string, opts?: YfmTablePluginOptions) => {
+        const md = new MarkdownIt();
+        md.use(table, opts ?? {});
+        return md.parse(text, {});
+    };
+
+    const findTokens = (tokens: ReturnType<typeof parseTokens>, type: string) =>
+        tokens.filter((t: {type: string}) => t.type === type);
+
+    const findToken = (tokens: ReturnType<typeof parseTokens>, type: string) =>
+        tokens.find((t: {type: string}) => t.type === type);
+
+    // 3-row, 3-col table with header-rows="1"
+    const table3x3 =
+        '#|\n|:{header-rows="1"}\n|| A | B | C ||\n|| D | E | F ||\n|| G | H | I ||\n|#';
+
+    it('first row cell-open tokens have tag="th", others have "td"', () => {
+        const tokens = parseTokens(table3x3);
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(tdOpens[0]?.tag).toBe('th');
+        expect(tdOpens[1]?.tag).toBe('th');
+        expect(tdOpens[2]?.tag).toBe('th');
+        expect(tdOpens[3]?.tag).toBe('td');
+        expect(tdOpens[4]?.tag).toBe('td');
+        expect(tdOpens[5]?.tag).toBe('td');
+    });
+
+    it('token.type stays yfm_td_open for all cells including header', () => {
+        const tokens = parseTokens(table3x3);
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(tdOpens.length).toBe(9);
+    });
+
+    it('header cell-open tokens have scope="col", body cells do not', () => {
+        const tokens = parseTokens(table3x3);
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(tdOpens[0]?.attrGet('scope')).toBe('col');
+        expect(tdOpens[1]?.attrGet('scope')).toBe('col');
+        expect(tdOpens[2]?.attrGet('scope')).toBe('col');
+        expect(tdOpens[3]?.attrGet('scope')).toBeNull();
+    });
+
+    it('cell-close tokens in header row have tag="th"', () => {
+        const tokens = parseTokens(table3x3);
+        const tdCloses = findTokens(tokens, 'yfm_td_close');
+        expect(tdCloses[0]?.tag).toBe('th');
+        expect(tdCloses[3]?.tag).toBe('td');
+    });
+
+    it('first yfm_tr_open has data-header="true", others do not', () => {
+        const tokens = parseTokens(table3x3);
+        const trOpens = findTokens(tokens, 'yfm_tr_open');
+        expect(trOpens[0]!.attrGet('data-header')).toBe('true');
+        expect(trOpens[1]!.attrGet('data-header')).toBeNull();
+        expect(trOpens[2]!.attrGet('data-header')).toBeNull();
+    });
+
+    it('yfm_table_open has data-header-rows="1"', () => {
+        const tokens = parseTokens(table3x3);
+        const tableOpen = findToken(tokens, 'yfm_table_open');
+        expect(tableOpen?.attrGet('data-header-rows')).toBe('1');
+    });
+
+    it('yfm_table_open.meta.headerRows === 1', () => {
+        const tokens = parseTokens(table3x3);
+        const tableOpen = findToken(tokens, 'yfm_table_open');
+        expect(tableOpen?.meta?.headerRows).toBe(1);
+    });
+
+    it('header-rows="2" makes first 2 rows th, third row td', () => {
+        const text =
+            '#|\n|:{header-rows="2"}\n|| A | B | C ||\n|| D | E | F ||\n|| G | H | I ||\n|#';
+        const tokens = parseTokens(text);
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        const trOpens = findTokens(tokens, 'yfm_tr_open');
+        expect(tdOpens[0]?.tag).toBe('th');
+        expect(tdOpens[5]?.tag).toBe('th');
+        expect(tdOpens[6]?.tag).toBe('td');
+        expect(trOpens[0]?.attrGet('data-header')).toBe('true');
+        expect(trOpens[1]?.attrGet('data-header')).toBe('true');
+        expect(trOpens[2]?.attrGet('data-header')).toBeNull();
+    });
+
+    it('header-rows + align: header cell has tag="th", scope="col", cell-align-center class', () => {
+        const text =
+            '#|\n|:{header-rows="1"}\n||::{align="center"} Name | Age ||\n|| Alice | 30 ||\n|#';
+        const tokens = parseTokens(text);
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        expect(tdOpens[0]?.tag).toBe('th');
+        expect(tdOpens[0]?.attrGet('scope')).toBe('col');
+        expect(tdOpens[0]?.attrGet('class')).toContain('cell-align-center');
+    });
+
+    it('header-rows + deprecated {.cell-align-center}: tag="th", scope="col", class has cell-align-center', () => {
+        const {
+            result: {html},
+        } = transform(
+            '#|\n|:{header-rows="1"}\n|| A {.cell-align-center} | B ||\n|| C | D ||\n|#',
+            {
+                plugins: [table],
+                enableMarkdownAttrs: false,
+            },
+        );
+        expect(html).toContain('<th');
+        expect(html).toContain('scope="col"');
+        expect(html).toContain('cell-align-center');
+    });
+
+    it('clamp: header-rows="99" with 2 rows makes all cells th and both tr data-header, no warn', () => {
+        const {
+            result: {html},
+            logs,
+        } = transform('#|\n|:{header-rows="99"}\n|| A | B ||\n|| C | D ||\n|#', {
+            plugins: [table],
+            enableMarkdownAttrs: false,
+        });
+        expect(html).toContain('<th');
+        expect(html).not.toContain('<td');
+        expect(html).toContain('data-header="true"');
+        expect(logs.warn.some((w: string) => w.includes('header-rows'))).toBe(false);
+    });
+
+    it('auto-generated empty cells in header row get tag="th" and scope="col"', () => {
+        // row 1 has 2 cols, row 2 has 3 cols — row 1 gets padded to 3
+        const text = '#|\n|:{header-rows="1"}\n|| A | B ||\n|| C | D | E ||\n|#';
+        const tokens = parseTokens(text);
+        const tdOpens = findTokens(tokens, 'yfm_td_open');
+        // first 3 are header row (2 real + 1 auto-generated)
+        expect(tdOpens[0]?.tag).toBe('th');
+        expect(tdOpens[1]?.tag).toBe('th');
+        expect(tdOpens[2]?.tag).toBe('th');
+        expect(tdOpens[2]?.attrGet('scope')).toBe('col');
+        // next 3 are body row
+        expect(tdOpens[3]?.tag).toBe('td');
+    });
+
+    it('other rawAttrs are preserved alongside header-rows', () => {
+        const text = '#|\n|:{header-rows="1" class="data-table"}\n|| A ||\n|#';
+        const tokens = parseTokens(text);
+        const tableOpen = findToken(tokens, 'yfm_table_open');
+        expect(tableOpen?.meta?.rawAttrs).toEqual({'header-rows': '1', class: 'data-table'});
+        expect(tableOpen?.attrGet('data-header-rows')).toBe('1');
+    });
+
+    // invalid values — warn + ignore
+    const invalidCases: Array<[string, string]> = [
+        ['0', 'header-rows="0"'],
+        ['-1', 'header-rows="-1"'],
+        ['abc', 'header-rows="abc"'],
+        ['1.5', 'header-rows="1.5"'],
+        ['3px', 'header-rows="3px"'],
+        ['', 'header-rows=""'],
+    ];
+
+    it.each(invalidCases)(
+        'header-rows="%s" is invalid: no th, no data-header-rows, warn emitted',
+        (value) => {
+            const {
+                result: {html},
+                logs,
+            } = transform(`#|\n|:{header-rows="${value}"}\n|| A | B ||\n|| C | D ||\n|#`, {
+                plugins: [table],
+                enableMarkdownAttrs: false,
+            });
+            expect(html).not.toContain('<th');
+            expect(html).not.toContain('data-header-rows');
+            expect(html).not.toContain('data-header=');
+            expect(
+                logs.warn.some((w: string) => w.includes('Invalid table header-rows value')),
+            ).toBe(true);
+        },
+    );
+
+    it('table without header-rows: all cells td, no data-header-rows, no data-header, no warn', () => {
+        const {
+            result: {html},
+            logs,
+        } = transform('#|\n|| A | B ||\n|| C | D ||\n|#', {
+            plugins: [table],
+            enableMarkdownAttrs: false,
+        });
+        expect(html).not.toContain('<th');
+        expect(html).not.toContain('data-header-rows');
+        expect(html).not.toContain('data-header=');
+        expect(logs.warn.some((w: string) => w.includes('header-rows'))).toBe(false);
+    });
+});

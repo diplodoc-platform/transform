@@ -63,6 +63,18 @@
     }
 }
 
+.yfm table tr[data-header] {
+    & > th,
+    & > td {
+        &:not([class^='cell-bg-']) {
+            background: var(
+                --yfm-color-table-head-background,
+                var(--yfm-color-table-head-background-private)
+            );
+        }
+    }
+}
+
 .yfm table[sticky-header] {
     position: relative;
 

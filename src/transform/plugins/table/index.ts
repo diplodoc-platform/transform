@@ -562,6 +562,18 @@ const VALID_ALIGN_VALUES: ReadonlySet<string> = new Set([
     'bottom-right',
 ]);
 
+function parseHeaderRows(rawAttrs: TableAttrs, log: Logger): number | null {
+    if (!('header-rows' in rawAttrs)) return null;
+    const raw = rawAttrs['header-rows'];
+    const trimmed = raw.trim();
+    const parsed = Number.parseInt(trimmed, 10);
+    if (!Number.isInteger(parsed) || parsed <= 0 || String(parsed) !== trimmed) {
+        log.warn(`Invalid table header-rows value: "${raw}"`);
+        return null;
+    }
+    return parsed;
+}
+
 function applyCellAttrs(token: Token, rawAttrs: TableAttrs, log: Logger): void {
     if ('align' in rawAttrs) {
         const value = rawAttrs['align'];
@@ -745,6 +757,12 @@ const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
             token.meta = token.meta || {};
             token.meta.rawAttrs = tableAttrs;
 
+            const headerRows = parseHeaderRows(tableAttrs, opts.log);
+            if (headerRows !== null) {
+                token.meta.headerRows = headerRows;
+                token.attrSet('data-header-rows', String(headerRows));
+            }
+
             token = state.push('yfm_tbody_open', 'tbody', 1);
             token.map = [startLine + 1, endOfTable - 1];
 
@@ -769,18 +787,27 @@ const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
                 contentMap.push([]);
                 const rowLength = cols.length;
 
+                const isHeaderRow = headerRows !== null && i < headerRows;
+                const cellTag = isHeaderRow ? 'th' : 'td';
+
                 token = state.push('yfm_tr_open', 'tr', 1);
                 token.map = [rowLineStarts, rowLineEnds];
                 token.meta = token.meta || {};
                 token.meta.rawAttrs = rowRawAttrs;
+                if (isHeaderRow) {
+                    token.attrSet('data-header', 'true');
+                }
 
                 for (let j = 0; j < cols.length; j++) {
                     const {start: begin, end, rawAttrs: cellRawAttrs} = cols[j];
-                    token = state.push('yfm_td_open', 'td', 1);
+                    token = state.push('yfm_td_open', cellTag, 1);
                     cellsMap[i].push(token);
                     token.map = [begin.line, end.line];
                     token.meta = token.meta || {};
                     token.meta.rawAttrs = cellRawAttrs;
+                    if (isHeaderRow) {
+                        token.attrSet('scope', 'col');
+                    }
                     applyCellAttrs(token, cellRawAttrs, opts.log);
 
                     const oldTshift = state.tShift[begin.line];
@@ -801,7 +828,7 @@ const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
                     const content = contentToken.content.trim() || contentToken.markup.trim();
                     contentMap[i].push(content);
 
-                    token = state.push('yfm_td_close', 'td', -1);
+                    token = state.push('yfm_td_close', cellTag, -1);
                     state.tokens[state.tokens.length - 1].map = [end.line, end.line + 1];
 
                     state.lineMax = oldLineMax;
@@ -820,8 +847,11 @@ const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
                 if (rowLength < maxRowLength) {
                     const emptyCellsCount = maxRowLength - rowLength;
                     for (let k = 0; k < emptyCellsCount; k++) {
-                        token = state.push('yfm_td_open', 'td', 1);
-                        token = state.push('yfm_td_close', 'td', -1);
+                        token = state.push('yfm_td_open', cellTag, 1);
+                        if (isHeaderRow) {
+                            token.attrSet('scope', 'col');
+                        }
+                        token = state.push('yfm_td_close', cellTag, -1);
                     }
                 }
 
