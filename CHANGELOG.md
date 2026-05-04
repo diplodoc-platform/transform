@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.74.1](https://github.com/diplodoc-platform/transform/compare/v4.74.0...v4.74.1) (2026-05-04)
+
+
+### Bug Fixes
+
+* delete attrs ([#918](https://github.com/diplodoc-platform/transform/issues/918)) ([75916f1](https://github.com/diplodoc-platform/transform/commit/75916f1bc8700d7f8ebb374772bebb0158f8ca31))
+
 ## [4.74.0](https://github.com/diplodoc-platform/transform/compare/v4.73.3...v4.74.0) (2026-04-24)
 
 
