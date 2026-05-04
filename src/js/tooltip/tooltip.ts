@@ -79,12 +79,12 @@ export function createTooltipFactory(options: TooltipOptions = {}) {
     const show = (reference: HTMLElement, text: string) => {
         hide();
 
-        const tooltip = createTooltipElement({text, className: additionalClassName});
+        const tooltip = createTooltipElement({className: additionalClassName});
         const update = updateTooltipPosition.bind(null, options, reference, tooltip);
 
         state.currentId = tooltip.id;
 
-        attachTooltip(tooltip, reference);
+        attachTooltip(tooltip, reference, text);
 
         state.unsubscribe = subscribeToScroll(reference, update);
 
@@ -142,7 +142,7 @@ export function createTooltipFactory(options: TooltipOptions = {}) {
 }
 
 function createTooltipElement(options: TooltipElementOptions) {
-    const {text, className} = options;
+    const {className} = options;
 
     const id = generateId();
     const tooltip = document.createElement('div');
@@ -150,15 +150,13 @@ function createTooltipElement(options: TooltipElementOptions) {
     tooltip.id = id;
     tooltip.className = className ? `${TOOLTIP_BASE_CLASS} ${className}` : TOOLTIP_BASE_CLASS;
 
-    tooltip.setAttribute('role', 'tooltip');
+    tooltip.setAttribute('role', 'status');
     tooltip.setAttribute('aria-live', 'polite');
-
-    tooltip.textContent = text;
 
     return tooltip;
 }
 
-function attachTooltip(tooltip: HTMLElement, reference: HTMLElement) {
+function attachTooltip(tooltip: HTMLElement, reference: HTMLElement, text: string) {
     const container = document.querySelector(PAGE_CONTAINER_SELECTOR) || document.body;
     const ariaLive = reference.getAttribute('aria-live');
 
@@ -169,6 +167,8 @@ function attachTooltip(tooltip: HTMLElement, reference: HTMLElement) {
     }
 
     container.appendChild(tooltip);
+
+    tooltip.textContent = text;
 }
 
 function detachTooltip(tooltip: HTMLElement) {

@@ -46,7 +46,6 @@ export interface TooltipContext {
 }
 
 export interface TooltipElementOptions {
-    text: string;
     className?: string;
 }
 
