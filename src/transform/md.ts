@@ -66,7 +66,7 @@ function initMarkdownIt(options: OptionsType) {
     // Init render to HTML compiler
     const compile = initCompiler(md, options, env);
 
-    return {parse, compile, env};
+    return {parse, compile, env, md};
 }
 
 function getPluginOptions(options: OptionsType) {

@@ -121,6 +121,15 @@ export interface OptionsType {
     generateID?: IDGenerator;
 }
 
+export interface LandingSerializationResult {
+    kind: 'landing';
+    title?: string;
+    headings: Heading[];
+    meta?: object;
+    assets?: unknown[];
+    tokens: Token[];
+}
+
 export interface OutputType {
     result: {
         html: string;

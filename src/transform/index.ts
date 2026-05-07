@@ -1,31 +1,20 @@
 import type Token from 'markdown-it/lib/token';
-import type {EnvType, OptionsType, OutputType} from './typings';
-
-import {bold} from 'chalk';
+import type {
+    EnvType,
+    OptionsType,
+    OutputType,
+    LandingSerializationResult as LandingSerializationResultType,
+} from './typings';
+import type {TransformRuntime as RuntimeType} from './runtime';
+import type {
+    PageConstructorSerializationResult as PageConstructorSerializationResultType,
+    SerializePageConstructorOptions as SerializePageConstructorOptionsType,
+} from './page-constructor';
 
 import {log} from './log';
-import liquidDocument from './liquid';
-import initMarkdownIt from './md';
-
-function applyLiquid(input: string, options: OptionsType) {
-    const {
-        vars = {},
-        path,
-        conditionsInCode = false,
-        disableLiquid = false,
-        isLiquided = false,
-    } = options;
-
-    return disableLiquid || isLiquided
-        ? input
-        : liquidDocument(input, vars, path, {conditionsInCode});
-}
-
-function handleError(error: unknown, path?: string): never {
-    log.error(`Error occurred${path ? ` in ${bold(path)}` : ''}`);
-
-    throw error;
-}
+import {createTransformRuntime} from './runtime';
+import {serializeLanding as serializeLandingImpl} from './serialize';
+import {serializePageConstructor as serializePageConstructorImpl} from './page-constructor';
 
 function emitResult(html: string, env: EnvType): OutputType {
     return {
@@ -39,24 +28,25 @@ type TokensOptionsType = OptionsType & {tokens: true};
 function transform(originInput: string, options: TokensOptionsType): Token[];
 function transform(originInput: string, options?: OptionsType): OutputType;
 function transform(originInput: string, options: OptionsType = {}): OutputType | Token[] {
-    const input = applyLiquid(originInput, options);
-    const {parse, compile, env} = initMarkdownIt(options);
+    const runtime = createTransformRuntime(originInput, options);
 
-    try {
-        const tokens = parse(input);
-        if (options.tokens === true) {
-            return tokens;
-        }
-        return emitResult(compile(tokens), env);
-    } catch (error) {
-        handleError(error, options.path);
+    if (options.tokens === true) {
+        return runtime.tokens;
     }
+
+    return emitResult(runtime.compile(), runtime.env);
 }
 
-export = transform;
-
-// eslint-disable-next-line @typescript-eslint/no-namespace, @typescript-eslint/no-redeclare -- backward compatibility
 namespace transform {
     export type Options = OptionsType;
     export type Output = OutputType;
+    export const createRuntime = createTransformRuntime;
+    export const serializeLanding = serializeLandingImpl;
+    export const serializePageConstructor = serializePageConstructorImpl;
+    export type TransformRuntime = RuntimeType;
+    export type LandingSerializationResult = LandingSerializationResultType;
+    export type PageConstructorSerializationResult = PageConstructorSerializationResultType;
+    export type SerializePageConstructorOptions = SerializePageConstructorOptionsType;
 }
+
+export = transform;
