@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.75.1](https://github.com/diplodoc-platform/transform/compare/v4.75.0...v4.75.1) (2026-05-13)
+
+
+### Bug Fixes
+
+* fixed terms in includes ([#923](https://github.com/diplodoc-platform/transform/issues/923)) ([0de5793](https://github.com/diplodoc-platform/transform/commit/0de57938457b6caf197ada0527568f080ae7ad49))
+
 ## [4.75.0](https://github.com/diplodoc-platform/transform/compare/v4.74.1...v4.75.0) (2026-05-13)
 
 
