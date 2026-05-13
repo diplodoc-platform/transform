@@ -11,6 +11,7 @@ import {
     PAGE_CONTAINER_SELECTOR,
     TOOLTIP_BASE_CLASS,
     TOOLTIP_DATA_ATTR,
+    TOOLTIP_LIVE_REGION_CLASS,
     TOOLTIP_OPEN_CLASS,
 } from './constant';
 import {
@@ -32,6 +33,7 @@ interface TooltipState {
 export function createTooltipFactory(options: TooltipOptions = {}) {
     const {closeDelay = 1_000, additionalClassName} = options;
     let initialized = false;
+    let liveRegion: HTMLElement | null = null;
 
     const state: TooltipState = {
         currentId: null,
@@ -74,6 +76,10 @@ export function createTooltipFactory(options: TooltipOptions = {}) {
 
             state.currentId = null;
         }
+
+        if (liveRegion) {
+            liveRegion.textContent = '';
+        }
     };
 
     const show = (reference: HTMLElement, text: string) => {
@@ -85,6 +91,10 @@ export function createTooltipFactory(options: TooltipOptions = {}) {
         state.currentId = tooltip.id;
 
         attachTooltip(tooltip, reference, text);
+
+        if (liveRegion) {
+            liveRegion.textContent = text;
+        }
 
         state.unsubscribe = subscribeToScroll(reference, update);
 
@@ -115,6 +125,10 @@ export function createTooltipFactory(options: TooltipOptions = {}) {
         if (!initialized) {
             initialized = true;
 
+            liveRegion = document.createElement('div');
+            liveRegion.className = TOOLTIP_LIVE_REGION_CLASS;
+            liveRegion.setAttribute('aria-live', 'assertive');
+            document.body.appendChild(liveRegion);
             window.addEventListener('scroll', handleUpdate);
             window.addEventListener('resize', handleUpdate);
         }
@@ -150,24 +164,14 @@ function createTooltipElement(options: TooltipElementOptions) {
     tooltip.id = id;
     tooltip.className = className ? `${TOOLTIP_BASE_CLASS} ${className}` : TOOLTIP_BASE_CLASS;
 
-    tooltip.setAttribute('role', 'status');
-    tooltip.setAttribute('aria-live', 'polite');
-
     return tooltip;
 }
 
 function attachTooltip(tooltip: HTMLElement, reference: HTMLElement, text: string) {
     const container = document.querySelector(PAGE_CONTAINER_SELECTOR) || document.body;
-    const ariaLive = reference.getAttribute('aria-live');
 
     reference.setAttribute(TOOLTIP_DATA_ATTR, tooltip.id);
-
-    if (ariaLive) {
-        tooltip.setAttribute('aria-live', ariaLive);
-    }
-
     container.appendChild(tooltip);
-
     tooltip.textContent = text;
 }
 

@@ -8,6 +8,8 @@ export const TOOLTIP_OPEN_CLASS = 'open';
 
 export const TOOLTIP_DATA_ATTR = 'data-tooltip-id';
 
+export const TOOLTIP_LIVE_REGION_CLASS = 'yfm-tooltip-live-region';
+
 export const DEFAULT_OFFSET_VALUES: OffsetValues = {mainAxis: 5};
 
 export const OPPOSITE_SIDES: Record<Side, Side> = {
