@@ -1,3 +1,4 @@
+.yfm table th,
 .yfm table td {
     &.cell-align-top-left,
     &.cell-align-bottom-left {
@@ -60,6 +61,18 @@
         position: absolute;
         inset: 0;
         z-index: -1;
+    }
+}
+
+.yfm table tr[data-header] {
+    & > th,
+    & > td {
+        &:not([class*='cell-bg-']) {
+            background: var(
+                --yfm-color-table-head-background,
+                var(--yfm-color-table-head-background-private)
+            );
+        }
     }
 }
 
