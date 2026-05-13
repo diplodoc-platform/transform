@@ -87,8 +87,8 @@ export const WithHeaderRowsAndCellBg: MarkdownSnippetStory = {
             #|
             |:{header-rows="3"}
             ||::{bg="red"} A | B | C ||
-            || D |::{bg="green"} E | F ||
-            || G | H |::{bg="blue"} I ||
+            || D |::{bg="green" align="top-left"} E | F ||
+            || G | H |::{bg="blue"} I {.cell-align-bottom-left}||
             || J | K | L ||
             || M | N | O ||
             || P | Q | R ||
