@@ -251,6 +251,15 @@ function removeUnreferencedDefinitions(tokens: Token[], referencedTerms: Set<str
     }
 }
 
+/**
+ * Eagerly initialize env.terms before the includes core rule runs
+ */
+function termInit(state: StateCore) {
+    if (!state.env.terms) {
+        state.env.terms = {};
+    }
+}
+
 const term: MarkdownItPluginCb = (md, options) => {
     const escapeRE = md.utils.escapeRE;
     const arrayReplaceAt = md.utils.arrayReplaceAt;
@@ -404,13 +413,6 @@ const term: MarkdownItPluginCb = (md, options) => {
     md.block.ruler.before('reference', 'termDefinitions', termDefinitions(md, options), {
         alt: ['paragraph', 'reference'],
     });
-
-    // Eagerly initialize env.terms before includes resolve.
-    function termInit(state: StateCore) {
-        if (!state.env.terms) {
-            state.env.terms = {};
-        }
-    }
 
     try {
         md.core.ruler.before('includes', 'termInit', termInit);
