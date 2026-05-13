@@ -1,5 +1,22 @@
 # Changelog
 
+## [4.75.0](https://github.com/diplodoc-platform/transform/compare/v4.74.1...v4.75.0) (2026-05-13)
+
+
+### Features
+
+* **table:** add align attribute for cells ([71593f1](https://github.com/diplodoc-platform/transform/commit/71593f163568cdf415be9e658430a56c4b58a892))
+* **table:** add bg attribute for cells ([#915](https://github.com/diplodoc-platform/transform/issues/915)) ([753cde3](https://github.com/diplodoc-platform/transform/commit/753cde33422bc39bf910e5244275f0d99ed3c687))
+* **table:** add header-rows table attribute ([#922](https://github.com/diplodoc-platform/transform/issues/922)) ([01a04d8](https://github.com/diplodoc-platform/transform/commit/01a04d8f86694654b51eddd4a408d3a0c4f1f0a0))
+* **table:** implement cell-level attributes syntax ([0d1d4c2](https://github.com/diplodoc-platform/transform/commit/0d1d4c2c7c95cd14843b3d7b0b8026e6f1737e61))
+* **table:** implement row-level attributes syntax ([e5d8c0f](https://github.com/diplodoc-platform/transform/commit/e5d8c0f4900e3923d2cded4c54ec2d4df5acace8))
+* **table:** implement table-lebel attributes syntax ([8335594](https://github.com/diplodoc-platform/transform/commit/8335594b8cf548fffbe37f0be9804d58bee2189d))
+
+
+### Bug Fixes
+
+* add assertive ([#921](https://github.com/diplodoc-platform/transform/issues/921)) ([1e3c742](https://github.com/diplodoc-platform/transform/commit/1e3c74235c085f7a69f647fad32eff2e25d551d3))
+
 ## [4.74.1](https://github.com/diplodoc-platform/transform/compare/v4.74.0...v4.74.1) (2026-05-04)
 
 
