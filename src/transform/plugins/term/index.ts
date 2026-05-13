@@ -251,6 +251,15 @@ function removeUnreferencedDefinitions(tokens: Token[], referencedTerms: Set<str
     }
 }
 
+/**
+ * Eagerly initialize env.terms before the includes core rule runs
+ */
+function termInit(state: StateCore) {
+    if (!state.env.terms) {
+        state.env.terms = {};
+    }
+}
+
 const term: MarkdownItPluginCb = (md, options) => {
     const escapeRE = md.utils.escapeRE;
     const arrayReplaceAt = md.utils.arrayReplaceAt;
@@ -391,9 +400,12 @@ const term: MarkdownItPluginCb = (md, options) => {
             }
         }
 
-        // Remove definitions without any reference on the page
-        // Skip during linting to allow lint rules to check term definitions
-        if (!isLintRun) {
+        // Remove definitions without any reference on the page.
+        // Skip during linting to allow lint rules to check term definitions.
+        // Skip when inside an include sub-parse (env.includes is non-empty)
+        const insideInclude = Array.isArray(state.env.includes) && state.env.includes.length > 0;
+
+        if (!isLintRun && !insideInclude) {
             removeUnreferencedDefinitions(state.tokens, referencedTerms);
         }
     }
@@ -401,6 +413,10 @@ const term: MarkdownItPluginCb = (md, options) => {
     md.block.ruler.before('reference', 'termDefinitions', termDefinitions(md, options), {
         alt: ['paragraph', 'reference'],
     });
+
+    try {
+        md.core.ruler.before('includes', 'termInit', termInit);
+    } catch {}
 
     // Register termReplace after text_join so that emphasis-split text
     // tokens (e.g. [text](*key) where * opens a delimiter) are merged
