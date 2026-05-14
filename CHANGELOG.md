@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.75.2](https://github.com/diplodoc-platform/transform/compare/v4.75.1...v4.75.2) (2026-05-14)
+
+
+### Bug Fixes
+
+* **table:** make log optional in plugin options ([ec21ebe](https://github.com/diplodoc-platform/transform/commit/ec21ebea1b7722aa11e70ec954e4b37b8abd795d))
+
 ## [4.75.1](https://github.com/diplodoc-platform/transform/compare/v4.75.0...v4.75.1) (2026-05-13)
 
 
