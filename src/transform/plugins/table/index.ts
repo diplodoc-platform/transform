@@ -526,7 +526,11 @@ function extractAttributes(state: StateBlock, pos: number): Record<string, strin
  * @param {Logger} log - Logger instance for deprecation warnings.
  * @returns {void}
  */
-function extractAndApplyClassFromToken(contentToken: Token, tdOpenToken: Token, log: Logger): void {
+function extractAndApplyClassFromToken(
+    contentToken: Token,
+    tdOpenToken: Token,
+    log?: Logger,
+): void {
     // Regex to find class attribute in any position within brackets
     const blockRegex = /\s*\{[^}]*}$/;
     const allAttrs = contentToken.content.match(blockRegex);
@@ -539,7 +543,7 @@ function extractAndApplyClassFromToken(contentToken: Token, tdOpenToken: Token, 
 
     if (attrsClass) {
         if (attrsClass.split(' ').some((c) => c.startsWith('cell-align-'))) {
-            log.warn(
+            log?.warn(
                 `Deprecated: use align="..." inside cell attributes "::{align=\\"...\\"}" instead of .cell-align-* class in cell content "{ }"`,
             );
         }
@@ -562,23 +566,23 @@ const VALID_ALIGN_VALUES: ReadonlySet<string> = new Set([
     'bottom-right',
 ]);
 
-function parseHeaderRows(rawAttrs: TableAttrs, log: Logger): number | null {
+function parseHeaderRows(rawAttrs: TableAttrs, log?: Logger): number | null {
     if (!('header-rows' in rawAttrs)) return null;
     const raw = rawAttrs['header-rows'];
     const trimmed = raw.trim();
     const parsed = Number.parseInt(trimmed, 10);
     if (!Number.isInteger(parsed) || parsed <= 0 || String(parsed) !== trimmed) {
-        log.warn(`Invalid table header-rows value: "${raw}"`);
+        log?.warn(`Invalid table header-rows value: "${raw}"`);
         return null;
     }
     return parsed;
 }
 
-function applyCellAttrs(token: Token, rawAttrs: TableAttrs, log: Logger): void {
+function applyCellAttrs(token: Token, rawAttrs: TableAttrs, log?: Logger): void {
     if ('align' in rawAttrs) {
         const value = rawAttrs['align'];
         if (!VALID_ALIGN_VALUES.has(value)) {
-            log.warn(`Unknown table cell align value: "${value}"`);
+            log?.warn(`Unknown table cell align value: "${value}"`);
         }
         token.meta = token.meta || {};
         token.meta.align = value;
@@ -757,7 +761,7 @@ const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
             token.meta = token.meta || {};
             token.meta.rawAttrs = tableAttrs;
 
-            const headerRows = parseHeaderRows(tableAttrs, opts.log);
+            const headerRows = parseHeaderRows(tableAttrs, opts?.log);
             if (headerRows !== null) {
                 token.meta.headerRows = headerRows;
                 token.attrSet('data-header-rows', String(headerRows));
@@ -808,7 +812,7 @@ const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
                     if (isHeaderRow) {
                         token.attrSet('scope', 'col');
                     }
-                    applyCellAttrs(token, cellRawAttrs, opts.log);
+                    applyCellAttrs(token, cellRawAttrs, opts?.log);
 
                     const oldTshift = state.tShift[begin.line];
                     const oldEMark = state.eMarks[end.line];
@@ -840,7 +844,7 @@ const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
                     extractAndApplyClassFromToken(
                         contentToken,
                         rowTokens[rowTokens.length - 1],
-                        opts.log,
+                        opts?.log,
                     );
                 }
 
