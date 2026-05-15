@@ -1,4 +1,4 @@
-import esbuild from '@diplodoc/lint/esbuild';
+import esbuild from '@diplodoc/infra/esbuild';
 
 import {runChainsWith} from './package-build-configs.mjs';
 
