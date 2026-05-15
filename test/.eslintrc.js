@@ -1,3 +1,3 @@
 module.exports = {
-    extends: require.resolve('@diplodoc/lint/eslint-config/client'),
+    extends: require.resolve('@diplodoc/infra/eslint-config/client'),
 };
