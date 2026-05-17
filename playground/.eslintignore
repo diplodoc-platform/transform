@@ -1,0 +1,12 @@
+.idea
+.vscode
+.history
+.env
+.DS_Store
+node_modules
+/bundle
+/pages-build
+/build
+/cache
+.eslintrc.js
+.prettierrc.js

@@ -1,6 +1,6 @@
 import {mkdir, rm, writeFile} from 'node:fs/promises';
 import {join, resolve} from 'node:path';
-import {build} from 'esbuild';
+import {build} from '@diplodoc/infra/esbuild';
 
 import {generateHTML} from '../src/index.html.mjs';
 

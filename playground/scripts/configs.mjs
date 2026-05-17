@@ -1,5 +1,5 @@
 import {readFileSync} from 'node:fs';
-import {sassPlugin} from 'esbuild-sass-plugin';
+import {sassPlugin} from '@diplodoc/infra/esbuild';
 import autoprefixer from 'autoprefixer';
 import postcssPresetEnv from 'postcss-preset-env';
 import postcss from 'postcss';

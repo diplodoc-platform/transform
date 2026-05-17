@@ -1,6 +1,6 @@
 import {mkdir, rm} from 'fs/promises';
 import {join} from 'path';
-import {build} from 'esbuild';
+import {build} from '@diplodoc/infra/esbuild';
 
 import {dependencies, devDependencies, peerDependencies} from '../package.json';
 
