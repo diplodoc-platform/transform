@@ -392,6 +392,50 @@ describe('Conditions', () => {
                     ),
                 ).toEqual('Prefix Inline if Postfix');
             });
+
+            test("Should support 'not' with falsy value", () => {
+                expect(
+                    conditions(
+                        'Prefix{% if not yandex %} Inline if {% endif %}Postfix',
+                        {user: {name: 'Alice'}},
+                        '',
+                        {sourceMap: {}},
+                    ),
+                ).toEqual('Prefix Inline if Postfix');
+            });
+
+            test("Should support 'not' with explicit false", () => {
+                expect(
+                    conditions(
+                        'Prefix{% if not foo %} Inline if {% endif %}Postfix',
+                        {foo: false},
+                        '',
+                        {sourceMap: {}},
+                    ),
+                ).toEqual('Prefix Inline if Postfix');
+            });
+
+            test("Should support 'not' with comparison", () => {
+                expect(
+                    conditions(
+                        "Prefix{% if not user.name == 'Bob' %} Inline if {% endif %}Postfix",
+                        {user: {name: 'Alice'}},
+                        '',
+                        {sourceMap: {}},
+                    ),
+                ).toEqual('Prefix Inline if Postfix');
+            });
+
+            test("Should support 'not' combined with 'and'", () => {
+                expect(
+                    conditions(
+                        'Prefix{% if user and not banned %} Inline if {% endif %}Postfix',
+                        {user: {name: 'Alice'}, banned: false},
+                        '',
+                        {sourceMap: {}},
+                    ),
+                ).toEqual('Prefix Inline if Postfix');
+            });
         });
 
         describe('Negaive', () => {
@@ -489,6 +533,28 @@ describe('Conditions', () => {
                         'Prefix{% if user.age < 18 or user.age >= 21 %} Inline if {% else %} else ' +
                             '{% endif %}Postfix',
                         {user: {age: 20}},
+                        '',
+                        {sourceMap: {}},
+                    ),
+                ).toEqual('Prefix else Postfix');
+            });
+
+            test("Should support 'not' with truthy value", () => {
+                expect(
+                    conditions(
+                        'Prefix{% if not user %} Inline if {% else %} else {% endif %}Postfix',
+                        {user: {name: 'Alice'}},
+                        '',
+                        {sourceMap: {}},
+                    ),
+                ).toEqual('Prefix else Postfix');
+            });
+
+            test("Should support 'not' with comparison", () => {
+                expect(
+                    conditions(
+                        "Prefix{% if not user.name == 'Alice' %} Inline if {% else %} else {% endif %}Postfix",
+                        {user: {name: 'Alice'}},
                         '',
                         {sourceMap: {}},
                     ),

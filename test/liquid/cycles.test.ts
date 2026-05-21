@@ -161,6 +161,92 @@ describe('Cycles', () => {
         });
     });
 
+    describe('loop object', () => {
+        test('loop.last with not', () => {
+            expect(
+                liquidSnippet(
+                    `
+{% for user in users %}
+    {{user}}{% if not loop.last %},{% endif %}
+{% endfor %}
+`.replace(/\n|\r|\s{2}/g, ''),
+                    vars,
+                    '',
+                ),
+            ).toEqual('Alice,Ivan,Petr');
+        });
+
+        test('loop.first', () => {
+            expect(
+                liquidSnippet(
+                    `
+{% for user in users %}
+    {% if loop.first %}{{user}}{% endif %}
+{% endfor %}
+`.replace(/\n|\r|\s{2}/g, ''),
+                    vars,
+                    '',
+                ),
+            ).toEqual('Alice');
+        });
+
+        test('loop.order and loop.length', () => {
+            expect(
+                liquidSnippet(
+                    '{% for user in users %}{{loop.order}}/{{loop.length}}:{{user}}{% if not loop.last %};{% endif %}{% endfor %}',
+                    vars,
+                    '',
+                ),
+            ).toEqual('1/3:Alice;2/3:Ivan;3/3:Petr');
+        });
+
+        test('loop.index is 0-based', () => {
+            expect(
+                liquidSnippet(
+                    `
+{% for user in users %}
+    {{loop.index}}:{{user}}|
+{% endfor %}
+`.replace(/\n|\r|\s{2}/g, ''),
+                    vars,
+                    '',
+                ),
+            ).toEqual('0:Alice|1:Ivan|2:Petr|');
+        });
+
+        test('loop.index in condition', () => {
+            expect(
+                liquidSnippet(
+                    `
+{% for user in users %}
+    {% if loop.index == 2 %}{{user}}{% endif %}
+{% endfor %}
+`.replace(/\n|\r|\s{2}/g, ''),
+                    vars,
+                    '',
+                ),
+            ).toEqual('Petr');
+        });
+
+        test('nested loops have own loop object', () => {
+            expect(
+                liquidSnippet(
+                    `
+{% for u1 in users %}
+    [
+        {% for u2 in users %}
+            {{u2}}{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ]{% if not loop.last %};{% endif %}
+{% endfor %}
+`.replace(/\n|\r|\s{2}/g, ''),
+                    vars,
+                    '',
+                ),
+            ).toEqual('[Alice,Ivan,Petr];[Alice,Ivan,Petr];[Alice,Ivan,Petr]');
+        });
+    });
+
     describe('with code blocks', () => {
         test('code block before cycle block', () => {
             expect(

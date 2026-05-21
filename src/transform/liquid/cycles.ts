@@ -96,9 +96,20 @@ function inlineConditions({
         log.error(`${bold(forTag.collectionName)} is undefined or not iterable`);
     }
 
-    collection.forEach((item) => {
-        const newVars = {...vars, [forTag.variableName]: item};
-        res += applyLiquid(forTemplate, newVars, path).trimRight();
+    collection.forEach((item, index) => {
+        const length = collection.length;
+        const newVars = {
+            ...vars,
+            [forTag.variableName]: item,
+            loop: {
+                first: index === 0,
+                last: index === length - 1,
+                index,
+                order: index + 1,
+                length,
+            },
+        };
+        res += applyLiquid(forTemplate, newVars, path).trimEnd();
     });
 
     const contentLinesTotal = res.split('\n').length - 1;
