@@ -114,6 +114,21 @@ export function evalExp(
 
     try {
         for (let i = 0; i < operatorREs.length; i++) {
+            // `not` precedence sits between `and`/`or` and comparison operators,
+            // matching Python/Jinja2: `not a == b` → `not (a == b)`, `not a and b` → `(not a) and b`.
+            if (i === 2) {
+                const notMatch = exp.match(/^\s*not\s+(.+)$/);
+                if (notMatch) {
+                    const value = evalExp(notMatch[1], scope, strict);
+
+                    if (value === NoValue) {
+                        return NoValue;
+                    }
+
+                    return !isTruthy(value);
+                }
+            }
+
             const operatorRE = operatorREs[i];
             const match = exp.match(operatorRE);
             if (match) {
