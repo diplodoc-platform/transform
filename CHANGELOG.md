@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.75.3](https://github.com/diplodoc-platform/transform/compare/v4.75.2...v4.75.3) (2026-05-28)
+
+
+### Bug Fixes
+
+* **deps:** updated node to 24 ([#933](https://github.com/diplodoc-platform/transform/issues/933)) ([94cc99f](https://github.com/diplodoc-platform/transform/commit/94cc99f857bdbbf7a8c910c337c58efd51f75476))
+
 ## [4.75.2](https://github.com/diplodoc-platform/transform/compare/v4.75.1...v4.75.2) (2026-05-14)
 
 
