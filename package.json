@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "@diplodoc/cut-extension": "^1.1.1",
-    "@diplodoc/file-extension": "^0.2.2",
+    "@diplodoc/file-extension": "^0.2.4",
     "@diplodoc/tabs-extension": "^3.10.1",
     "@diplodoc/utils": "^2.2.3",
     "chalk": "^4.1.2",
