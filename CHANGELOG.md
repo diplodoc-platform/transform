@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.75.4](https://github.com/diplodoc-platform/transform/compare/v4.75.3...v4.75.4) (2026-05-28)
+
+
+### Bug Fixes
+
+* **deps:** Update @diplodoc/cut-extension@1.1.3 ([#940](https://github.com/diplodoc-platform/transform/issues/940)) ([4bc6be1](https://github.com/diplodoc-platform/transform/commit/4bc6be10ca2924ff99659b1cf68288dfaa58ba1c))
+* **deps:** Update @diplodoc/file-extension@0.2.4 ([#939](https://github.com/diplodoc-platform/transform/issues/939)) ([3a92edc](https://github.com/diplodoc-platform/transform/commit/3a92edc9ec47f11ef3af9dcd71c8d1fa240c12ef))
+* **deps:** Update @diplodoc/tabs-extension@3.10.1 ([#938](https://github.com/diplodoc-platform/transform/issues/938)) ([d5411f4](https://github.com/diplodoc-platform/transform/commit/d5411f408e1ab712a462cb90e6aa3f57cf949528))
+* **deps:** Update @diplodoc/utils@2.2.3 ([#936](https://github.com/diplodoc-platform/transform/issues/936)) ([a604677](https://github.com/diplodoc-platform/transform/commit/a6046779bb836439b16be8cdf2b2b7baa6767060))
+
 ## [4.75.3](https://github.com/diplodoc-platform/transform/compare/v4.75.2...v4.75.3) (2026-05-28)
 
 
