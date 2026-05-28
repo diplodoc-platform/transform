@@ -30,11 +30,7 @@ jobs:
 
       - name: Install latest npm (>= 11.5.1)
         run: |
-          CURRENT_NPM_VERSION=$(npm -v)
-          if [ "$(printf '%s\n' "11.5.1" "$CURRENT_NPM_VERSION" | sort -V | head -n1)" != "11.5.1" ]; then
-            npm install --prefix=$HOME -g npm@11.5.1
-            echo "$HOME/.local/bin" >> $GITHUB_PATH
-          fi
+          [ "$(printf '%s\n' "11.5.1" "$(npm -v)" | sort -V | head -n1)" = "11.5.1" ] || npm install -g npm@11.5.1
         shell: bash
 
       - name: Install dependencies
