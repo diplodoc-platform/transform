@@ -2,7 +2,7 @@
   "name": "@diplodoc/transform-e2e-tests",
   "private": true,
   "scripts": {
-    "test": "npx playwright test --config playwright/playwright.config.ts --update-snapshots=changed && git config user.name \"github-actions[bot]\" && git config user.email \"41898282+github-actions[bot]@users.noreply.github.com\" && git add tests/__screenshots__ && (git diff --cached --quiet || git commit -m \"fix: update e2e snapshots\") && git push origin HEAD:${GITHUB_HEAD_REF:-node-fix}",
+    "test": "npx playwright test --config playwright/playwright.config.ts",
     "playwright:docker": "./playwright/playwright-docker-linux",
     "playwright:docker:ui": "npm run playwright:docker -- --ui-port 8082 --ui-host 0.0.0.0",
     "build-storybook": "storybook build",
