@@ -92,6 +92,8 @@ const operatorREs = lexical.operators.map(
         ),
 );
 
+const notRE = /^\s*not\s+(.+)$/;
+
 export function evalExp(
     exp: string,
     scope: Record<string, unknown>,
@@ -117,7 +119,7 @@ export function evalExp(
             // `not` precedence sits between `and`/`or` and comparison operators,
             // matching Python/Jinja2: `not a == b` → `not (a == b)`, `not a and b` → `(not a) and b`.
             if (i === 2) {
-                const notMatch = exp.match(/^\s*not\s+(.+)$/);
+                const notMatch = exp.match(notRE);
                 if (notMatch) {
                     const value = evalExp(notMatch[1], scope, strict);
 
