@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.75.5](https://github.com/diplodoc-platform/transform/compare/v4.75.4...v4.75.5) (2026-05-29)
+
+
+### Bug Fixes
+
+* fixed playwright ([#943](https://github.com/diplodoc-platform/transform/issues/943)) ([ead268e](https://github.com/diplodoc-platform/transform/commit/ead268e7e31ff4176673158dd13c9c42cd7d19a3))
+
 ## [4.75.4](https://github.com/diplodoc-platform/transform/compare/v4.75.3...v4.75.4) (2026-05-28)
 
 
