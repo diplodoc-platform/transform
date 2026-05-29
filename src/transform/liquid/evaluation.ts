@@ -92,7 +92,7 @@ const operatorREs = lexical.operators.map(
         ),
 );
 
-const notRE = /^\s*not\s+(.+)$/;
+const notPrefixRE = /^\s*not\s+/;
 
 export function evalExp(
     exp: string,
@@ -119,9 +119,10 @@ export function evalExp(
             // `not` precedence sits between `and`/`or` and comparison operators,
             // matching Python/Jinja2: `not a == b` → `not (a == b)`, `not a and b` → `(not a) and b`.
             if (i === 2) {
-                const notMatch = exp.match(notRE);
+                const notMatch = exp.match(notPrefixRE);
                 if (notMatch) {
-                    const value = evalExp(notMatch[1], scope, strict);
+                    const rest = exp.slice(notMatch[0].length);
+                    const value = evalExp(rest, scope, strict);
 
                     if (value === NoValue) {
                         return NoValue;
