@@ -1,0 +1,47 @@
+name: Update e2e snapshots
+
+on:
+  push:
+    branches: [node-fix]
+
+permissions:
+  contents: write
+
+jobs:
+  update_snapshots:
+    name: Update screenshots
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+      - name: Install latest npm (>= 11.5.1)
+        run: |
+          [ "$(printf '%s\n' "11.5.1" "$(npm -v)" | sort -V | head -n1)" = "11.5.1" ] || npm install -g npm@11.5.1
+        shell: bash
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Install test dependencies
+        working-directory: ./e2e
+        run: npm ci
+      - name: Install Playwright browsers
+        working-directory: ./e2e
+        run: npx playwright install --with-deps
+      - name: Update snapshots
+        working-directory: ./e2e
+        run: npm run test -- --update-snapshots=changed
+      - name: Commit snapshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add e2e/tests/__screenshots__
+          git diff --cached --quiet || git commit -m "fix: update e2e snapshots"
+          git push
