@@ -193,7 +193,11 @@ describe('Cycles', () => {
         test('loop.index and loop.length', () => {
             expect(
                 liquidSnippet(
-                    '{% for user in users %}{{loop.index}}/{{loop.length}}:{{user}}{% if not loop.last %};{% endif %}{% endfor %}',
+                    `
+{% for user in users %}
+    {{loop.index}}/{{loop.length}}:{{user}}{% if not loop.last %};{% endif %}
+{% endfor %}
+`.replace(/\n|\r|\s{2}/g, ''),
                     vars,
                     '',
                 ),
@@ -242,6 +246,66 @@ describe('Cycles', () => {
             ).toEqual('Ivan');
         });
 
+        test('loop.last directly', () => {
+            expect(
+                liquidSnippet(
+                    `
+{% for user in users %}
+    {{user}}{% if loop.last %}!{% endif %}
+{% endfor %}
+`.replace(/\n|\r|\s{2}/g, ''),
+                    vars,
+                    '',
+                ),
+            ).toEqual('AliceIvanPetr!');
+        });
+
+        test('loop.first and loop.last combined as brackets', () => {
+            expect(
+                liquidSnippet(
+                    `
+{% for user in users %}
+    {% if loop.first %}[{% endif %}
+    {{user}}
+    {% if loop.last %}]{% else %},{% endif %}
+{% endfor %}
+`.replace(/\n|\r|\s{2}/g, ''),
+                    vars,
+                    '',
+                ),
+            ).toEqual('[Alice,Ivan,Petr]');
+        });
+
+        test('single-element collection: loop.first and loop.last both true', () => {
+            expect(
+                liquidSnippet(
+                    `
+{% for u in only %}
+    {% if loop.first %}F{% endif %}
+    {{u}}
+    {% if loop.last %}L{% endif %}
+{% endfor %}
+`.replace(/\n|\r|\s{2}/g, ''),
+                    {only: ['x']},
+                    '',
+                ),
+            ).toEqual('FxL');
+        });
+
+        test('loop.index0 in condition', () => {
+            expect(
+                liquidSnippet(
+                    `
+{% for user in users %}
+    {% if loop.index0 == 0 %}{{user}}{% endif %}
+{% endfor %}
+`.replace(/\n|\r|\s{2}/g, ''),
+                    vars,
+                    '',
+                ),
+            ).toEqual('Alice');
+        });
+
         test('nested loops have own loop object', () => {
             expect(
                 liquidSnippet(
@@ -258,6 +322,50 @@ describe('Cycles', () => {
                     '',
                 ),
             ).toEqual('[Alice,Ivan,Petr];[Alice,Ivan,Petr];[Alice,Ivan,Petr]');
+        });
+    });
+
+    describe('with other tags', () => {
+        test('for with inner if accessing item field', () => {
+            expect(
+                liquidSnippet(
+                    `
+{% for project in projects %}
+    {% if project.projectName == "Second project" %}{{project.projectName}}{% endif %}
+{% endfor %}
+`.replace(/\n|\r|\s{2}/g, ''),
+                    vars,
+                    '',
+                ),
+            ).toEqual('Second project');
+        });
+
+        test('for over deeply nested dot property path', () => {
+            expect(
+                liquidSnippet(
+                    `
+{% for item in nested.deep.list %}
+    {{item}}{% if not loop.last %},{% endif %}
+{% endfor %}
+`.replace(/\n|\r|\s{2}/g, ''),
+                    {nested: {deep: {list: ['a', 'b', 'c']}}},
+                    '',
+                ),
+            ).toEqual('a,b,c');
+        });
+
+        test('for + if + loop.index for picking specific iteration', () => {
+            expect(
+                liquidSnippet(
+                    `
+{% for user in users %}
+    {% if loop.index == loop.length %}last:{{user}}{% endif %}
+{% endfor %}
+`.replace(/\n|\r|\s{2}/g, ''),
+                    vars,
+                    '',
+                ),
+            ).toEqual('last:Petr');
         });
     });
 
@@ -278,6 +386,21 @@ describe('Cycles', () => {
                     conditionsInCode: true,
                 }),
             ).toEqual('```\nAlice Ivan Petr\n```');
+        });
+
+        test('loop variables inside code block with conditionsInCode', () => {
+            expect(
+                liquidSnippet(
+                    `
+\`\`\`
+{% for user in users %}{{loop.index}}:{{user}}{% if not loop.last %},{% endif %}{% endfor %}
+\`\`\`
+`.replace(/\n|\r|\s{2}/g, ''),
+                    vars,
+                    '',
+                    {conditionsInCode: true},
+                ),
+            ).toEqual('```1:Alice,2:Ivan,3:Petr```');
         });
     });
 });
