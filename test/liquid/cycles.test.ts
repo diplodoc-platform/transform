@@ -190,22 +190,36 @@ describe('Cycles', () => {
             ).toEqual('Alice');
         });
 
-        test('loop.order and loop.length', () => {
+        test('loop.index and loop.length', () => {
             expect(
                 liquidSnippet(
-                    '{% for user in users %}{{loop.order}}/{{loop.length}}:{{user}}{% if not loop.last %};{% endif %}{% endfor %}',
+                    '{% for user in users %}{{loop.index}}/{{loop.length}}:{{user}}{% if not loop.last %};{% endif %}{% endfor %}',
                     vars,
                     '',
                 ),
             ).toEqual('1/3:Alice;2/3:Ivan;3/3:Petr');
         });
 
-        test('loop.index is 0-based', () => {
+        test('loop.index is 1-based', () => {
             expect(
                 liquidSnippet(
                     `
 {% for user in users %}
     {{loop.index}}:{{user}}|
+{% endfor %}
+`.replace(/\n|\r|\s{2}/g, ''),
+                    vars,
+                    '',
+                ),
+            ).toEqual('1:Alice|2:Ivan|3:Petr|');
+        });
+
+        test('loop.index0 is 0-based', () => {
+            expect(
+                liquidSnippet(
+                    `
+{% for user in users %}
+    {{loop.index0}}:{{user}}|
 {% endfor %}
 `.replace(/\n|\r|\s{2}/g, ''),
                     vars,
@@ -225,7 +239,7 @@ describe('Cycles', () => {
                     vars,
                     '',
                 ),
-            ).toEqual('Petr');
+            ).toEqual('Ivan');
         });
 
         test('nested loops have own loop object', () => {
