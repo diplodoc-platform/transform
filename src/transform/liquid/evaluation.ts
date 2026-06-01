@@ -117,7 +117,7 @@ export function evalExp(
     try {
         for (let i = 0; i < operatorREs.length; i++) {
             // `not` precedence sits between `and`/`or` and comparison operators,
-            // matching Python/Jinja2: `not a == b` → `not (a == b)`, `not a and b` → `(not a) and b`.
+            // matching Python/Jinja2 or Jinja/Nunjucks: `not a == b` → `not (a == b)`, `not a and b` → `(not a) and b`.
             if (i === 2) {
                 const notMatch = exp.match(notPrefixRE);
                 if (notMatch) {

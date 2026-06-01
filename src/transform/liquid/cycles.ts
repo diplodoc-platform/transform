@@ -96,16 +96,19 @@ function inlineConditions({
         log.error(`${bold(forTag.collectionName)} is undefined or not iterable`);
     }
 
-    collection.forEach((item, index) => {
-        const length = collection.length;
+    const length = collection.length;
+    collection.forEach((item, index0) => {
+        const index = index0 + 1;
+
         const newVars = {
             ...vars,
             [forTag.variableName]: item,
+            // matching Python/Jinja2 or Jinja/Nunjucks
             loop: {
-                first: index === 0,
-                last: index === length - 1,
+                first: index0 === 0,
+                last: index === length,
+                index0,
                 index,
-                order: index + 1,
                 length,
             },
         };
