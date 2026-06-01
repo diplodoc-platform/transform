@@ -68,9 +68,21 @@ jobs:
         id: package
 
       - name: Install latest npm (>= 11.5.1)
-        run: |
-          [ "$(printf '%s\n' "11.5.1" "$(npm -v)" | sort -V | head -n1)" = "11.5.1" ] || npm install -g npm@11.5.1
         shell: bash
+        run: |
+          REQUIRED=11.5.1
+          if [ "$(printf '%s\n' "$REQUIRED" "$(npm -v)" | sort -V | head -n1)" = "$REQUIRED" ]; then
+            echo "npm $(npm -v) is up-to-date (>= $REQUIRED)"
+            exit 0
+          fi
+          # Use a user-writable prefix so this works in PRs from forks where
+          # the default global prefix may be read-only. Prepend its bin dir to
+          # PATH via $GITHUB_PATH so subsequent steps pick up the new npm.
+          NPM_PREFIX="$RUNNER_TEMP/npm-global"
+          mkdir -p "$NPM_PREFIX"
+          npm install --prefix "$NPM_PREFIX" -g "npm@$REQUIRED"
+          echo "$NPM_PREFIX/bin" >> "$GITHUB_PATH"
+          "$NPM_PREFIX/bin/npm" -v
 
       - name: Install dependencies
         if: inputs.release_type != 'deprecate'
