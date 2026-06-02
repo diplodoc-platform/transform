@@ -51,7 +51,6 @@ jobs:
           fi
           echo "$NPM_BIN_DIR" >> "$GITHUB_PATH"
           "$NPM_BIN_DIR"/npm -v 2>/dev/null || "$NPM_BIN_DIR"/npm.cmd -v
-
       - name: Install dependencies
         run: npm ci
 
