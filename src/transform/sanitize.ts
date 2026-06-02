@@ -302,6 +302,7 @@ const htmlAttrs = [
     'aria-controls',
     'data-*',
     'wide-content',
+    'sandbox',
     'sticky-header',
 ];
 
