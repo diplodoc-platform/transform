@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.76.0](https://github.com/diplodoc-platform/transform/compare/v4.75.5...v4.76.0) (2026-06-02)
+
+
+### Features
+
+* common rules ([73b8f8f](https://github.com/diplodoc-platform/transform/commit/73b8f8f624bed92696bf5465b5010e85cc8c8605))
+* cycle info object ([e6a3d7d](https://github.com/diplodoc-platform/transform/commit/e6a3d7d506f6cc264994ebca5993d4b7751a94e3))
+
 ## [4.75.5](https://github.com/diplodoc-platform/transform/compare/v4.75.4...v4.75.5) (2026-05-29)
 
 
