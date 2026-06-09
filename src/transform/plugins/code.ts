@@ -158,6 +158,8 @@ type CodeOptions = {
     codeLineWrapping?: boolean;
 };
 
+const SHOW_LINE_NUMBERS_RE = /\s+showLineNumbers\b/g;
+
 const code: MarkdownItPluginCb<CodeOptions> = (md, opts) => {
     const lineWrapping = opts?.codeLineWrapping || false;
     const generateID = opts.generateID ?? globalGenerateID;
@@ -166,6 +168,10 @@ const code: MarkdownItPluginCb<CodeOptions> = (md, opts) => {
     md.renderer.rules.fence = function (tokens, idx, options, env, self) {
         const token = tokens[idx];
         const showLineNumbers = token.info.includes('showLineNumbers');
+
+        if (showLineNumbers) {
+            token.info = token.info.replace(SHOW_LINE_NUMBERS_RE, '');
+        }
 
         let superCode = superCodeRenderer?.(tokens, idx, options, env, self);
 
