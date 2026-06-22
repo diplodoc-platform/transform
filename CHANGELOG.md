@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.76.1](https://github.com/diplodoc-platform/transform/compare/v4.76.0...v4.76.1) (2026-06-22)
+
+
+### Bug Fixes
+
+* fix version svgo 3.3.2 ([5cd7b73](https://github.com/diplodoc-platform/transform/commit/5cd7b73aded046722e0e10f570a5c86edac2d627))
+
 ## [4.76.0](https://github.com/diplodoc-platform/transform/compare/v4.75.5...v4.76.0) (2026-06-02)
 
 
