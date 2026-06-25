@@ -14,6 +14,9 @@
             padding: 0;
             font: inherit;
             cursor: pointer;
+            transition:
+                opacity 0.1s ease-out,
+                color 0.15s linear;
         }
 
         &:hover {
@@ -24,7 +27,7 @@
 
         & > pre {
             border-radius: 10px;
-            overflow: hidden;
+            overflow: visible;
 
             // codeblock has line-wrapping and line-numbers
             code:has(> .yfm-line) {
@@ -34,6 +37,7 @@
 
             code.wrap {
                 white-space: pre-wrap;
+                overflow-x: hidden;
             }
         }
 
@@ -44,6 +48,7 @@
             z-index: 1;
 
             opacity: 0;
+            transition: opacity 0.1s ease-out;
 
             display: flex;
             flex-wrap: nowrap;
