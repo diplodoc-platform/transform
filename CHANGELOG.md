@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.76.2](https://github.com/diplodoc-platform/transform/compare/v4.76.1...v4.76.2) (2026-06-26)
+
+
+### Bug Fixes
+
+* enable scroll visibility, add transition in code block ([6068eef](https://github.com/diplodoc-platform/transform/commit/6068eefbe15ee0fa37ec0a4e93373b7851cf068b))
+
 ## [4.76.1](https://github.com/diplodoc-platform/transform/compare/v4.76.0...v4.76.1) (2026-06-22)
 
 
