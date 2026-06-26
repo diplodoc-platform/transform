@@ -1,10 +1,17 @@
-**русский** | [english](https://github.com/yandex-cloud/yfm-transform/blob/master/README.md)
+[english](https://github.com/diplodoc-platform/transform/blob/master/README.md) | **русский**
 
 ---
 
 [![NPM version](https://img.shields.io/npm/v/@diplodoc/transform.svg?style=flat)](https://www.npmjs.org/package/@diplodoc/transform)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=diplodoc-platform_transform&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=diplodoc-platform_transform)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=diplodoc-platform_transform&metric=coverage)](https://sonarcloud.io/summary/new_code?id=diplodoc-platform_transform)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=diplodoc-platform_transform&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=diplodoc-platform_transform)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=diplodoc-platform_transform&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=diplodoc-platform_transform)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=diplodoc-platform_transform&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=diplodoc-platform_transform)
 
-[@diplodoc/transform](https://www.npmjs.com/package/@diplodoc/transform) — пакет для трансформации Yandex Flavored Markdown в HTML.
+# Diplodoc transform
+
+Пакет для трансформации Yandex Flavored Markdown в HTML.
 
 Используйте его в своем коде для работы с текстом во время выполнения программы. Например, чтобы отображать пользовательский контент.
 
