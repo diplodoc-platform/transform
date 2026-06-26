@@ -54,7 +54,7 @@ jobs:
       (github.event_name == 'workflow_dispatch' && inputs.release_type == 'deprecate')
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
