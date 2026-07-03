@@ -1,5 +1,5 @@
 {
-  "extends": "@diplodoc/tsconfig",
+  "extends": "@diplodoc/infra/tsconfig.json",
   "compilerOptions": {
     "lib": ["DOM", "ES6"],
     "outDir": "lib",

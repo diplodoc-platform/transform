@@ -9,6 +9,7 @@
     "storybook": "storybook dev -p 6006"
   },
   "devDependencies": {
+    "@diplodoc/infra": "2.1.0",
     "@chromatic-com/storybook": "^3.2.6",
     "@playwright/test": "^1.60.0",
     "@rsbuild/plugin-node-polyfill": "^1.4.2",
