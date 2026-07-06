@@ -300,6 +300,8 @@ const htmlAttrs = [
     'referrerpolicy',
     'aria-describedby',
     'aria-controls',
+    'aria-labelledby',
+    'aria-selected',
     'data-*',
     'wide-content',
     'sticky-header',
