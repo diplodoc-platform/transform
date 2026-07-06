@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.76.4](https://github.com/diplodoc-platform/transform/compare/v4.76.3...v4.76.4) (2026-07-06)
+
+
+### Bug Fixes
+
+* add style to code block buttons ([863d07e](https://github.com/diplodoc-platform/transform/commit/863d07efd70e81c614de2a305a6fbd776ded2651))
+
 ## [4.76.3](https://github.com/diplodoc-platform/transform/compare/v4.76.2...v4.76.3) (2026-07-06)
 
 
