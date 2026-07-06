@@ -11,16 +11,16 @@ const wrapInFloatingContainer = (
     {lineWrapping}: {lineWrapping: boolean},
 ) => {
     const wrappingButton = lineWrapping
-        ? `<button role="button" class="yfm-code-button yfm-wrapping-button" aria-label="Toggle line wrapping">
-                <svg width="16" height="16" viewBox="0 0 16 16" class="yfm-code-icon yfm-wrapping-icon" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        fill="currentColor"
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
-                        d="M2.47 11.28a.75.75 0 0 1 0-1.06l3-3a.75.75 0 0 1 1.06 1.06L4.81 10H9a3.25 3.25 0 0 0 0-6.5H8A.75.75 0 0 1 8 2h1a4.75 4.75 0 1 1 0 9.5H4.81l1.72 1.72a.75.75 0 1 1-1.06 1.06z"
-                    />
+        ? `<button role="button" class="g-button g-button_view_flat g-button_size_m g-button_pin_round-round g-md-viewer-code-button yfm-code-button yfm-wrapping-button" tabindex="-1" type="button" aria-label="Toggle line wrapping"aria-pressed="false" data-tabindex="0">
+            <span class="g-button__icon">
+            <span class="g-button__icon-inner"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" class="g-icon" fill="currentColor" stroke="none" aria-hidden="true">
+                <svg class="yfm-code-icon yfm-wrapping-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 16">
+                    <path fill="currentColor" fill-rule="evenodd" d="M2.47 11.28a.75.75 0 0 1 0-1.06l3-3a.75.75 0 0 1 1.06 1.06L4.81 10H9a3.25 3.25 0 0 0 0-6.5H8A.75.75 0 0 1 8 2h1a4.75 4.75 0 1 1 0 9.5H4.81l1.72 1.72a.75.75 0 1 1-1.06 1.06z" clip-rule="evenodd">
+                    </path>
                 </svg>
-            </button>`
+            </span>
+            </span>
+        </button>`
         : '';
 
     return `
@@ -28,7 +28,9 @@ const wrapInFloatingContainer = (
         ${element}
         <div class="yfm-code-floating">
             ${wrappingButton}
-            <button role="button" class="yfm-code-button yfm-clipboard-button" aria-label="Copy">
+            <button role="button" class="g-button g-button_view_flat g-button_size_m g-button_pin_round-round g-md-viewer-code-button  yfm-code-button yfm-clipboard-button" aria-label="Copy">
+                <span class="g-button__icon g-clipboard-button__icon">
+                <span class="g-button__icon-inner">
                 <svg width="16" height="16" viewBox="0 0 24 24" class="yfm-code-icon yfm-clipboard-icon" data-animation="${id}">
                     <path
                         fill="currentColor"
@@ -61,6 +63,8 @@ const wrapInFloatingContainer = (
                         />
                     </path>
                 </svg>
+                </span>
+                </span>
             </button>
         </div>
     </div>

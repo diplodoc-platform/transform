@@ -18,44 +18,48 @@ exports[`Terms > Should create term in code with definition template 1`] = `
   </pre>
   <div class="yfm-code-floating">
     <button role="button"
-            class="yfm-code-button yfm-clipboard-button"
+            class="g-button g-button_view_flat g-button_size_m g-button_pin_round-round g-md-viewer-code-button  yfm-code-button yfm-clipboard-button"
     >
-      <svg width="16"
-           height="16"
-           viewbox="0 0 24 24"
-           class="yfm-code-icon yfm-clipboard-icon"
-           data-animation="3"
-      >
-        <path fill="currentColor"
-              d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"
-        >
-        </path>
-        <path stroke="currentColor"
-              fill="transparent"
-              stroke-width="1.5"
-              d="M9.5 13l3 3l5 -5"
-              visibility="hidden"
-        >
-          <animate id="visibileAnimation-3"
-                   attributename="visibility"
-                   from="hidden"
-                   to="visible"
-                   dur="0.2s"
-                   fill="freeze"
-                   begin
+      <span class="g-button__icon g-clipboard-button__icon">
+        <span class="g-button__icon-inner">
+          <svg width="16"
+               height="16"
+               viewbox="0 0 24 24"
+               class="yfm-code-icon yfm-clipboard-icon"
+               data-animation="3"
           >
-          </animate>
-          <animate id="hideAnimation-3"
-                   attributename="visibility"
-                   from="visible"
-                   to="hidden"
-                   dur="1s"
-                   begin="visibileAnimation-3.end+1"
-                   fill="freeze"
-          >
-          </animate>
-        </path>
-      </svg>
+            <path fill="currentColor"
+                  d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"
+            >
+            </path>
+            <path stroke="currentColor"
+                  fill="transparent"
+                  stroke-width="1.5"
+                  d="M9.5 13l3 3l5 -5"
+                  visibility="hidden"
+            >
+              <animate id="visibileAnimation-3"
+                       attributename="visibility"
+                       from="hidden"
+                       to="visible"
+                       dur="0.2s"
+                       fill="freeze"
+                       begin
+              >
+              </animate>
+              <animate id="hideAnimation-3"
+                       attributename="visibility"
+                       from="visible"
+                       to="hidden"
+                       dur="1s"
+                       begin="visibileAnimation-3.end+1"
+                       fill="freeze"
+              >
+              </animate>
+            </path>
+          </svg>
+        </span>
+      </span>
     </button>
   </div>
 </div>
@@ -421,44 +425,48 @@ exports[`Terms > Term should use escape regexp like chars 1`] = `
   </pre>
   <div class="yfm-code-floating">
     <button role="button"
-            class="yfm-code-button yfm-clipboard-button"
+            class="g-button g-button_view_flat g-button_size_m g-button_pin_round-round g-md-viewer-code-button  yfm-code-button yfm-clipboard-button"
     >
-      <svg width="16"
-           height="16"
-           viewbox="0 0 24 24"
-           class="yfm-code-icon yfm-clipboard-icon"
-           data-animation="0"
-      >
-        <path fill="currentColor"
-              d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"
-        >
-        </path>
-        <path stroke="currentColor"
-              fill="transparent"
-              stroke-width="1.5"
-              d="M9.5 13l3 3l5 -5"
-              visibility="hidden"
-        >
-          <animate id="visibileAnimation-0"
-                   attributename="visibility"
-                   from="hidden"
-                   to="visible"
-                   dur="0.2s"
-                   fill="freeze"
-                   begin
+      <span class="g-button__icon g-clipboard-button__icon">
+        <span class="g-button__icon-inner">
+          <svg width="16"
+               height="16"
+               viewbox="0 0 24 24"
+               class="yfm-code-icon yfm-clipboard-icon"
+               data-animation="0"
           >
-          </animate>
-          <animate id="hideAnimation-0"
-                   attributename="visibility"
-                   from="visible"
-                   to="hidden"
-                   dur="1s"
-                   begin="visibileAnimation-0.end+1"
-                   fill="freeze"
-          >
-          </animate>
-        </path>
-      </svg>
+            <path fill="currentColor"
+                  d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"
+            >
+            </path>
+            <path stroke="currentColor"
+                  fill="transparent"
+                  stroke-width="1.5"
+                  d="M9.5 13l3 3l5 -5"
+                  visibility="hidden"
+            >
+              <animate id="visibileAnimation-0"
+                       attributename="visibility"
+                       from="hidden"
+                       to="visible"
+                       dur="0.2s"
+                       fill="freeze"
+                       begin
+              >
+              </animate>
+              <animate id="hideAnimation-0"
+                       attributename="visibility"
+                       from="visible"
+                       to="hidden"
+                       dur="1s"
+                       begin="visibileAnimation-0.end+1"
+                       fill="freeze"
+              >
+              </animate>
+            </path>
+          </svg>
+        </span>
+      </span>
     </button>
   </div>
 </div>
@@ -663,62 +671,80 @@ exports[`Terms > should create term in code with line-numbers and line-wrapping 
   </pre>
   <div class="yfm-code-floating">
     <button role="button"
-            class="yfm-code-button yfm-wrapping-button"
+            class="g-button g-button_view_flat g-button_size_m g-button_pin_round-round g-md-viewer-code-button yfm-code-button yfm-wrapping-button"
+            tabindex="-1"
+            type="button"
+            data-tabindex="0"
     >
-      <svg width="16"
-           height="16"
-           viewbox="0 0 16 16"
-           class="yfm-code-icon yfm-wrapping-icon"
-           fill="none"
-           xmlns="http://www.w3.org/2000/svg"
-      >
-        <path fill="currentColor"
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M2.47 11.28a.75.75 0 0 1 0-1.06l3-3a.75.75 0 0 1 1.06 1.06L4.81 10H9a3.25 3.25 0 0 0 0-6.5H8A.75.75 0 0 1 8 2h1a4.75 4.75 0 1 1 0 9.5H4.81l1.72 1.72a.75.75 0 1 1-1.06 1.06z"
-        >
-        </path>
-      </svg>
+      <span class="g-button__icon">
+        <span class="g-button__icon-inner">
+          <svg xmlns="http://www.w3.org/2000/svg"
+               width="16"
+               height="16"
+               class="g-icon"
+               fill="currentColor"
+               stroke="none"
+               aria-hidden="true"
+          >
+            <svg class="yfm-code-icon yfm-wrapping-icon"
+                 xmlns="http://www.w3.org/2000/svg"
+                 fill="none"
+                 viewbox="0 0 16 16"
+            >
+              <path fill="currentColor"
+                    fill-rule="evenodd"
+                    d="M2.47 11.28a.75.75 0 0 1 0-1.06l3-3a.75.75 0 0 1 1.06 1.06L4.81 10H9a3.25 3.25 0 0 0 0-6.5H8A.75.75 0 0 1 8 2h1a4.75 4.75 0 1 1 0 9.5H4.81l1.72 1.72a.75.75 0 1 1-1.06 1.06z"
+                    clip-rule="evenodd"
+              >
+              </path>
+            </svg>
+          </svg>
+        </span>
+      </span>
     </button>
     <button role="button"
-            class="yfm-code-button yfm-clipboard-button"
+            class="g-button g-button_view_flat g-button_size_m g-button_pin_round-round g-md-viewer-code-button  yfm-code-button yfm-clipboard-button"
     >
-      <svg width="16"
-           height="16"
-           viewbox="0 0 24 24"
-           class="yfm-code-icon yfm-clipboard-icon"
-           data-animation="18"
-      >
-        <path fill="currentColor"
-              d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"
-        >
-        </path>
-        <path stroke="currentColor"
-              fill="transparent"
-              stroke-width="1.5"
-              d="M9.5 13l3 3l5 -5"
-              visibility="hidden"
-        >
-          <animate id="visibileAnimation-18"
-                   attributename="visibility"
-                   from="hidden"
-                   to="visible"
-                   dur="0.2s"
-                   fill="freeze"
-                   begin
+      <span class="g-button__icon g-clipboard-button__icon">
+        <span class="g-button__icon-inner">
+          <svg width="16"
+               height="16"
+               viewbox="0 0 24 24"
+               class="yfm-code-icon yfm-clipboard-icon"
+               data-animation="18"
           >
-          </animate>
-          <animate id="hideAnimation-18"
-                   attributename="visibility"
-                   from="visible"
-                   to="hidden"
-                   dur="1s"
-                   begin="visibileAnimation-18.end+1"
-                   fill="freeze"
-          >
-          </animate>
-        </path>
-      </svg>
+            <path fill="currentColor"
+                  d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"
+            >
+            </path>
+            <path stroke="currentColor"
+                  fill="transparent"
+                  stroke-width="1.5"
+                  d="M9.5 13l3 3l5 -5"
+                  visibility="hidden"
+            >
+              <animate id="visibileAnimation-18"
+                       attributename="visibility"
+                       from="hidden"
+                       to="visible"
+                       dur="0.2s"
+                       fill="freeze"
+                       begin
+              >
+              </animate>
+              <animate id="hideAnimation-18"
+                       attributename="visibility"
+                       from="visible"
+                       to="hidden"
+                       dur="1s"
+                       begin="visibileAnimation-18.end+1"
+                       fill="freeze"
+              >
+              </animate>
+            </path>
+          </svg>
+        </span>
+      </span>
     </button>
   </div>
 </div>
