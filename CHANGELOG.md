@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.76.5](https://github.com/diplodoc-platform/transform/compare/v4.76.4...v4.76.5) (2026-07-07)
+
+
+### Bug Fixes
+
+* edit click on codeblock buttons ([5bcb3a1](https://github.com/diplodoc-platform/transform/commit/5bcb3a1d6c94f2bd56cacd2c65215139d1c3c51a))
+* update snapshots ([ff4c0f3](https://github.com/diplodoc-platform/transform/commit/ff4c0f383c227b9c02f3fbbb144cd1b5e1b47ea2))
+
 ## [4.76.4](https://github.com/diplodoc-platform/transform/compare/v4.76.3...v4.76.4) (2026-07-06)
 
 
