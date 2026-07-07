@@ -2,6 +2,7 @@ import {copyToClipboard, getEventTarget, isCustom} from './utils';
 
 const COPY_BUTTON_SELECTOR = '.yfm-clipboard-button';
 const WRAP_BUTTON_SELECTOR = '.yfm-wrapping-button';
+const FLOATING_CONTAINER_SELECTOR = '.yfm-code-floating-container';
 
 function notifySuccess(svgButton: HTMLElement | null) {
     if (!svgButton) {
@@ -21,9 +22,11 @@ function notifySuccess(svgButton: HTMLElement | null) {
 }
 
 function buttonCopyFn(target: HTMLElement) {
-    const container = target.parentNode?.parentNode;
+    const button = target.closest<HTMLElement>(COPY_BUTTON_SELECTOR);
+    const container = button?.closest<HTMLElement>(FLOATING_CONTAINER_SELECTOR);
     const code = container?.querySelector<HTMLElement>('pre code');
-    if (!container || !code) {
+
+    if (!button || !container || !code) {
         return;
     }
 
@@ -47,13 +50,14 @@ function buttonCopyFn(target: HTMLElement) {
 }
 
 function buttonWrapFn(target: HTMLElement) {
-    const container = target.parentNode?.parentNode;
+    const button = target.closest<HTMLElement>(WRAP_BUTTON_SELECTOR);
+    const container = button?.closest<HTMLElement>(FLOATING_CONTAINER_SELECTOR);
     const code = container?.querySelector<HTMLElement>('pre code');
-    if (!container || !code) {
+    if (!button || !container || !code) {
         return;
     }
-
     code.classList.toggle('wrap');
+    button.setAttribute('aria-pressed', String(code.classList.contains('wrap')));
 
     setTimeout(() => target.blur(), 500);
 }
@@ -66,9 +70,9 @@ if (typeof document !== 'undefined') {
 
         const target = getEventTarget(event) as HTMLElement;
 
-        if (target.matches(COPY_BUTTON_SELECTOR)) {
+        if (target.closest(COPY_BUTTON_SELECTOR)) {
             buttonCopyFn(target);
-        } else if (target.matches(WRAP_BUTTON_SELECTOR)) {
+        } else if (target.closest(WRAP_BUTTON_SELECTOR)) {
             buttonWrapFn(target);
         }
     });
