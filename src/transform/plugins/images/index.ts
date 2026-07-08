@@ -209,8 +209,8 @@ function replaceSvgContent(
     // monoline
     content = content.replace(/>\r?\n</g, '><').replace(/\r?\n/g, ' ');
 
-    // remove <?xml...?>
-    content = content.replace(/<\?xml.*?\?>.*?(<svg.*)/g, '$1');
+    // remove XML processing instructions (<?xml?>, <?plantuml?>, etc.) — invalid in HTML
+    content = content.replace(/<\?[^?]*\?>/g, '');
 
     // width, height
     let svgRoot = content.replace(/.*?<svg([^>]*)>.*/g, '$1');
@@ -255,7 +255,16 @@ function replaceSvgContent(
         ],
     }).data;
 
-    return content;
+    return escapeMarkdownCharsInSvgTextNodes(content);
+}
+
+// Asterisks in SVG text nodes break markdown emphasis parsing when SVG is embedded in .md
+// (e.g. merge-svg): SAI_POLICER_STAT_*</text> opens <em> until the next * in *_PPS.
+function escapeMarkdownCharsInSvgTextNodes(content: string): string {
+    return content.replace(/<text([^>]*)>([^<]*)<\/text>/gi, (_match, attrs, text) => {
+        const escaped = text.replace(/\*/g, '&#42;');
+        return `<text${attrs}>${escaped}</text>`;
+    });
 }
 
 // Create an object that is the index function with an additional replaceSvgContent property

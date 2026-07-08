@@ -791,6 +791,15 @@ function sanitizeStyleAttrs(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList)
             return;
         }
 
+        // cssfilter whitelist is HTML-oriented and strips SVG presentation attrs (stroke, etc.)
+        if (dom(element).closest('svg').length > 0) {
+            if (!isSafeCssValue('style', styleAttrValue)) {
+                dom(element).removeAttr('style');
+            }
+
+            return;
+        }
+
         dom(element).attr('style', cssSanitizer.process(styleAttrValue));
     });
 }

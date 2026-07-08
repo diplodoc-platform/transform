@@ -244,5 +244,16 @@ describe('Sanitize HTML utility', () => {
             expect(html(content)).toContain('<use href="#pattern-id"></use>');
             expect(html(content)).not.toContain('<use href="https://example.com"></use>');
         });
+
+        it('should preserve SVG presentation styles used by diagram arrows', () => {
+            const content =
+                '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0,0 L10,10" fill="none" style="stroke:#000000;stroke-width:1;"/><polygon fill="#000000" points="0,0 1,1 2,2" style="stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:10;"/></svg>';
+
+            const result = sanitizeHtml(content);
+
+            expect(result).toContain('stroke:#000000');
+            expect(result).toContain('stroke-width:1');
+            expect(result).toContain('stroke-linejoin:miter');
+        });
     });
 });
