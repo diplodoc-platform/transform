@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.76.7](https://github.com/diplodoc-platform/transform/compare/v4.76.6...v4.76.7) (2026-07-08)
+
+
+### Bug Fixes
+
+* default enabled line wrapping and support wrap syntax ([28b76c2](https://github.com/diplodoc-platform/transform/commit/28b76c24b561522287eb9539df24cb711d1a8a2e))
+* update e2e snapshots ([2ec3c10](https://github.com/diplodoc-platform/transform/commit/2ec3c10efe90b3d93453b181c9d27daa4506156f))
+
 ## [4.76.6](https://github.com/diplodoc-platform/transform/compare/v4.76.5...v4.76.6) (2026-07-08)
 
 
