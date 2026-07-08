@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.76.6](https://github.com/diplodoc-platform/transform/compare/v4.76.5...v4.76.6) (2026-07-08)
+
+
+### Bug Fixes
+
+* **svg:** Add encode "*" in svg ([c3f33c4](https://github.com/diplodoc-platform/transform/commit/c3f33c4bcbd70ac9629a12923049ea33eba8ee3b))
+* **svg:** remove xml processing instruction in svg DOCSTOOLS-6054 ([c3f33c4](https://github.com/diplodoc-platform/transform/commit/c3f33c4bcbd70ac9629a12923049ea33eba8ee3b))
+
 ## [4.76.5](https://github.com/diplodoc-platform/transform/compare/v4.76.4...v4.76.5) (2026-07-07)
 
 
