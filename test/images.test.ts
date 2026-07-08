@@ -160,4 +160,42 @@ describe('Images plugin', () => {
 
         unlinkSync(imagePath);
     });
+
+    test('should escape asterisks in SVG text nodes for markdown embedding', () => {
+        const svgContent =
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="0" y="10">SAI_POLICER_STAT_*</text><text x="0" y="20">*_PPS</text></svg>';
+
+        const inlined = images.replaceSvgContent(svgContent, {
+            width: undefined,
+            height: undefined,
+            title: undefined,
+        });
+
+        expect(inlined).toContain('SAI_POLICER_STAT_&#42;');
+        expect(inlined).toContain('&#42;_PPS');
+
+        const md = new MarkdownIt({html: true});
+        const rendered = md.render(inlined);
+
+        expect(rendered).not.toContain('<em>');
+        expect(rendered).toContain('SAI_POLICER_STAT_');
+        expect(rendered).toContain('_PPS');
+    });
+
+    test('should remove XML processing instructions from inline SVG', () => {
+        const imagePath = resolve(dirname(mocksPath), 'test-pi.svg');
+        const svgContent =
+            '<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><?plantuml 1.0?><circle cx="50" cy="50" r="40" fill="red" /><?plantuml-src abc123?></svg>';
+
+        writeFileSync(imagePath, svgContent);
+
+        const html = transformYfm('![test](./test-pi.svg){inline=true}');
+
+        expect(html).not.toContain('<?xml');
+        expect(html).not.toContain('<?plantuml');
+        expect(html).not.toContain('<?plantuml-src');
+        expect(html).toContain('<circle');
+
+        unlinkSync(imagePath);
+    });
 });
