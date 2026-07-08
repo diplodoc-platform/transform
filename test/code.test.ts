@@ -284,4 +284,129 @@ describe('Code', () => {
             );
         });
     });
+
+    describe('Line wrapping and Floating container', () => {
+        it('should add "wrap" class to code tag when "wrap" is in token info', () => {
+            const fence = vi.fn().mockReturnValue('<pre><code>some code</code></pre>');
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: 'javascript wrap',
+                    content: 'some code',
+                },
+            ] as Token[];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain('<code class="wrap">');
+            expect(result).toContain('class="yfm-code-floating-container"');
+        });
+
+        it('should append "wrap" to existing classes in code tag', () => {
+            const fence = vi
+                .fn()
+                .mockReturnValue('<pre><code class="hljs language-js">some code</code></pre>');
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: 'javascript wrap',
+                    content: 'some code',
+                },
+            ] as Token[];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain('<code class="hljs language-js wrap">');
+        });
+
+        it('should NOT render wrapping button if codeLineWrapping option is false', () => {
+            const fence = vi.fn().mockReturnValue('<pre><code>some code</code></pre>');
+            const md = getMd(fence);
+
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: 'javascript wrap',
+                    content: 'some code',
+                },
+            ] as Token[];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain('yfm-clipboard-button');
+            expect(result).not.toContain('yfm-wrapping-button');
+        });
+
+        it('should render wrapping button if codeLineWrapping option is true', () => {
+            const fence = vi.fn().mockReturnValue('<pre><code>some code</code></pre>');
+            const md = getMd(fence);
+
+            code(
+                md as unknown as MarkdownIt,
+                {codeLineWrapping: true} as unknown as MarkdownItPluginOpts,
+            );
+
+            const tokens = [
+                {
+                    info: 'javascript',
+                    content: 'some code',
+                },
+            ] as Token[];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain('yfm-wrapping-button');
+            expect(result).toContain('aria-label="Toggle line wrapping"');
+            expect(result).toContain('aria-pressed="true"');
+        });
+
+        it('should correctly pass token index as animation ID to floating container', () => {
+            const fence = vi.fn().mockReturnValue('<pre><code>code</code></pre>');
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {info: '', content: ''},
+                {info: '', content: ''},
+            ] as Token[];
+
+            const result = md.renderer.rules.fence(tokens, 1, {}, {}, {} as Renderer);
+
+            expect(result).toContain('data-animation="1"');
+            expect(result).toContain('id="visibileAnimation-1"');
+            expect(result).toContain('id="hideAnimation-1"');
+            expect(result).toContain('begin="visibileAnimation-1.end+1"');
+        });
+
+        it('should combine showLineNumbers, wrap info, and codeLineWrapping plugin option seamlessly', () => {
+            const fence = vi
+                .fn()
+                .mockReturnValue('<pre><code class="hljs">line1\nline2</code></pre>');
+            const md = getMd(fence);
+            code(
+                md as unknown as MarkdownIt,
+                {codeLineWrapping: true} as unknown as MarkdownItPluginOpts,
+            );
+
+            const tokens = [
+                {
+                    info: 'javascript showLineNumbers wrap',
+                    content: 'line1\nline2',
+                },
+            ] as Token[];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain('<code class="hljs wrap">');
+            expect(result).toContain(
+                '<span class="yfm-line-number">1</span><span class="yfm-line">line1</span>',
+            );
+            expect(result).toContain('yfm-wrapping-button');
+        });
+    });
 });
