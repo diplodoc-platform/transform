@@ -3,6 +3,7 @@ import {copyToClipboard, getEventTarget, isCustom} from './utils';
 const COPY_BUTTON_SELECTOR = '.yfm-clipboard-button';
 const WRAP_BUTTON_SELECTOR = '.yfm-wrapping-button';
 const FLOATING_CONTAINER_SELECTOR = '.yfm-code-floating-container';
+const SELECTED_WRAP_BUTTON = 'g-button_selected';
 
 function notifySuccess(svgButton: HTMLElement | null) {
     if (!svgButton) {
@@ -56,8 +57,10 @@ function buttonWrapFn(target: HTMLElement) {
     if (!button || !container || !code) {
         return;
     }
-    code.classList.toggle('wrap');
-    button.setAttribute('aria-pressed', String(code.classList.contains('wrap')));
+    const hasWrap = code.classList.toggle('wrap');
+
+    button.classList.toggle(SELECTED_WRAP_BUTTON, hasWrap);
+    button.setAttribute('aria-pressed', String(hasWrap));
 
     setTimeout(() => target.blur(), 500);
 }
