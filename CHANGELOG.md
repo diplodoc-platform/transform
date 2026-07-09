@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.76.8](https://github.com/diplodoc-platform/transform/compare/v4.76.7...v4.76.8) (2026-07-09)
+
+
+### Bug Fixes
+
+* disable default active wrap button ([2810b7e](https://github.com/diplodoc-platform/transform/commit/2810b7e214db786bca86452c129f62af88a4cc23))
+* update e2e codeblock snapshots ([09e7439](https://github.com/diplodoc-platform/transform/commit/09e7439e3b3afed7725d1cf76df5bc0abdacc651))
+
 ## [4.76.7](https://github.com/diplodoc-platform/transform/compare/v4.76.6...v4.76.7) (2026-07-08)
 
 
