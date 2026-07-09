@@ -192,7 +192,7 @@ describe('Code', () => {
             const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
 
             expect(result).toContain(
-                '<pre><code class="wrap">' +
+                '<pre><code>' +
                     '<span class="yfm-line-number">1</span><span class="yfm-line">my code</span>\n' +
                     '<span class="yfm-line-number">2</span><span class="yfm-line"></span>\n' +
                     '<span class="yfm-line-number">3</span><span class="yfm-line">&quot;$&quot;</span>\n' +
@@ -361,7 +361,7 @@ describe('Code', () => {
 
             expect(result).toContain('yfm-wrapping-button');
             expect(result).toContain('aria-label="Toggle line wrapping"');
-            expect(result).toContain('aria-pressed="true"');
+            expect(result).toContain('aria-pressed="false"');
         });
 
         it('should correctly pass token index as animation ID to floating container', () => {

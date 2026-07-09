@@ -10,10 +10,8 @@ const wrapInFloatingContainer = (
     id: number,
     lineWrapping: boolean,
 ) => {
-    const activeClass = lineWrapping ? ' g-button_selected' : '';
-    const ariaPressed = lineWrapping ? 'true' : 'false';
     const wrappingButton = lineWrapping
-        ? `<button role="button" class="g-button g-button_view_flat g-button_size_m g-button_pin_round-round g-md-viewer-code-button yfm-code-button yfm-wrapping-button${activeClass}" tabindex="-1" type="button" aria-label="Toggle line wrapping" aria-pressed="${ariaPressed}" data-tabindex="0">
+        ? `<button role="button" class="g-button g-button_view_flat g-button_size_m g-button_pin_round-round g-md-viewer-code-button yfm-code-button yfm-wrapping-button" tabindex="-1" type="button" aria-label="Toggle line wrapping" aria-pressed="false" data-tabindex="0">
             <span class="g-button__icon">
             <span class="g-button__icon-inner"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" class="g-icon" fill="currentColor" stroke="none" aria-hidden="true">
                 <svg class="yfm-code-icon yfm-wrapping-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 16">
@@ -174,7 +172,7 @@ const code: MarkdownItPluginCb<CodeOptions> = (md, opts) => {
         const showLineNumbers = token.info.includes('showLineNumbers');
         const wrapLines = token.info.includes('wrap');
 
-        const shouldWrap = lineWrapping || wrapLines;
+        const shouldWrap = wrapLines;
 
         let superCode = superCodeRenderer?.(tokens, idx, options, env, self);
 
