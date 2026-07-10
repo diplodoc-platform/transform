@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.76.9](https://github.com/diplodoc-platform/transform/compare/v4.76.8...v4.76.9) (2026-07-10)
+
+
+### Bug Fixes
+
+* update snapshots ([58c8141](https://github.com/diplodoc-platform/transform/commit/58c8141a5dd63ab4ea3cc1bc6f06c66b4d3b5700))
+* updated top position of code floating ([4e17acd](https://github.com/diplodoc-platform/transform/commit/4e17acda4aa7e9267e34be36ff4a8fbc83270df8))
+
 ## [4.76.8](https://github.com/diplodoc-platform/transform/compare/v4.76.7...v4.76.8) (2026-07-09)
 
 
