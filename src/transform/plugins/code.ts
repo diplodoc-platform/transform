@@ -3,6 +3,8 @@
 import type {MarkdownItPluginCb} from './typings';
 import type {IDGenerator} from './utils';
 
+import {escapeHtml} from 'markdown-it/lib/common/utils';
+
 import {generateID as globalGenerateID} from './utils';
 
 const wrapInFloatingContainer = (
@@ -134,7 +136,57 @@ function balanceSpansPerLine(lines: string[]): string[] {
     });
 }
 
-function addLineNumbers(code: string, {lineWrapping}: {lineWrapping: boolean}): string {
+/**
+ * Strips the prompt prefix from the raw fence content BEFORE it reaches the highlighter.
+ *
+ * @param content - Raw fence content.
+ * @param prompt - Raw prompt string (e.g. `$`, `#`, `>>>`).
+ * @returns Stripped content (same number of lines) and a per-line prompt flag array.
+ */
+function stripPrompt(content: string, prompt: string): {content: string; flags: boolean[]} {
+    const hasTrailingNewline = content.endsWith('\n');
+    const lines = content.split('\n');
+    const linesToProcess = hasTrailingNewline ? lines.slice(0, -1) : lines;
+
+    const flags: boolean[] = [];
+    const stripped = linesToProcess.map((line) => {
+        const trimmed = line.trimStart();
+        const leadingWs = line.slice(0, line.length - trimmed.length);
+
+        if (trimmed.startsWith(prompt + ' ')) {
+            flags.push(true);
+            return leadingWs + trimmed.slice(prompt.length + 1);
+        }
+
+        if (trimmed === prompt) {
+            flags.push(true);
+            return leadingWs;
+        }
+
+        flags.push(false);
+        return line;
+    });
+
+    return {
+        content: stripped.join('\n') + (hasTrailingNewline ? '\n' : ''),
+        flags,
+    };
+}
+
+function postProcessCode(
+    code: string,
+    {
+        showLineNumbers,
+        lineWrapping,
+        promptFlags,
+        promptEscaped,
+    }: {
+        showLineNumbers: boolean;
+        lineWrapping: boolean;
+        promptFlags?: boolean[];
+        promptEscaped?: string;
+    },
+): string {
     const hasTrailingNewline = code.endsWith('\n');
     const lines = code.split('\n');
     const linesToProcess = hasTrailingNewline ? lines.slice(0, -1) : lines;
@@ -144,13 +196,51 @@ function addLineNumbers(code: string, {lineWrapping}: {lineWrapping: boolean}): 
     return (
         normalized
             .map((line, index) => {
-                const lineNumber = String(index + 1).padStart(maxDigits, ' ');
-                return lineWrapping
-                    ? `<span class="yfm-line-number">${lineNumber}</span><span class="yfm-line">${line}</span>`
-                    : `<span class="yfm-line-number">${lineNumber}</span>${line}`;
+                // The prompt was already stripped from the raw content before
+                // highlighting, so `line` here is the highlighted command only.
+                // Re-insert the prompt as a dedicated, non-selectable span after
+                // any leading whitespace. `promptFlags` marks which lines carried
+                // a prompt in the original source.
+                if (promptFlags?.[index] && promptEscaped !== undefined) {
+                    const trimmed = line.trimStart();
+                    const leadingWs = line.slice(0, line.length - trimmed.length);
+                    line =
+                        `${leadingWs}` +
+                        `<span class="yfm-code-prompt" aria-hidden="true">${promptEscaped} </span>` +
+                        `${trimmed}`;
+                }
+
+                if (showLineNumbers) {
+                    const lineNumber = String(index + 1).padStart(maxDigits, ' ');
+                    line = lineWrapping
+                        ? `<span class="yfm-line-number">${lineNumber}</span><span class="yfm-line">${line}</span>`
+                        : `<span class="yfm-line-number">${lineNumber}</span>${line}`;
+                }
+
+                return line;
             })
             .join('\n') + (hasTrailingNewline ? '\n' : '')
     );
+}
+
+/**
+ * @param info - Raw fence info string (e.g. `js showLineNumbers prompt="$"`).
+ * @returns Parsed flags and the optional prompt value.
+ */
+function parseFenceInfo(info: string): {
+    showLineNumbers: boolean;
+    wrapLines: boolean;
+    prompt?: string;
+} {
+    const promptMatch = /(?:^|\s)prompt=(?:"([^"]*)"|'([^']*)')/.exec(info);
+    const prompt = promptMatch?.[1] ?? promptMatch?.[2];
+    const rest = promptMatch ? info.replace(promptMatch[0], ' ') : info;
+
+    return {
+        showLineNumbers: /\bshowLineNumbers\b/.test(rest),
+        wrapLines: /\bwrap\b/.test(rest),
+        prompt,
+    };
 }
 
 type CodeOptions = {
@@ -164,36 +254,69 @@ type CodeOptions = {
 
 const code: MarkdownItPluginCb<CodeOptions> = (md, opts) => {
     const lineWrapping = opts?.codeLineWrapping || false;
-    const generateID = opts.generateID ?? globalGenerateID;
+    const generateID = opts?.generateID ?? globalGenerateID;
 
     const superCodeRenderer = md.renderer.rules.fence;
     md.renderer.rules.fence = function (tokens, idx, options, env, self) {
         const token = tokens[idx];
-        const showLineNumbers = token.info.includes('showLineNumbers');
-        const wrapLines = token.info.includes('wrap');
-
+        const {showLineNumbers, prompt, wrapLines} = parseFenceInfo(token.info);
         const shouldWrap = wrapLines;
+
+        // Strip the prompt prefix from the raw content BEFORE handing it
+        // to the highlighter, so language grammars never misinterpret prompt
+        // symbols (e.g. `#` as a shell comment, `$` as a variable). The prompt is
+        // re-inserted as a span in postProcessCode, driven by `promptFlags`.
+        let promptFlags: boolean[] | undefined;
+        let promptEscaped: string | undefined;
+        const originalContent = token.content;
+        if (prompt) {
+            const stripped = stripPrompt(token.content, prompt);
+            token.content = stripped.content;
+            promptFlags = stripped.flags;
+            promptEscaped = escapeHtml(prompt);
+        }
 
         let superCode = superCodeRenderer?.(tokens, idx, options, env, self);
 
-        if (superCode && showLineNumbers) {
+        // Restore the original content so the mutation does not leak to other
+        // consumers of the token.
+        token.content = originalContent;
+
+        if (superCode && (showLineNumbers || prompt)) {
             // Extract the code content from the pre/code tags
             const codeMatch = superCode.match(/<pre[^>]*><code[^>]*>([\s\S]*?)<\/code><\/pre>/);
             if (codeMatch) {
                 const codeContent = codeMatch[1];
-                const codeWithLineNumbers = addLineNumbers(codeContent, {lineWrapping});
+                const processedCode = postProcessCode(codeContent, {
+                    showLineNumbers,
+                    lineWrapping,
+                    promptFlags,
+                    promptEscaped,
+                });
                 // Escape $ in replacement string: $$ becomes a literal $ in String.replace()
-                const escapedReplacement = codeWithLineNumbers.replace(/\$/g, '$$$$');
+                const escapedReplacement = processedCode.replace(/\$/g, '$$$$');
                 superCode = superCode.replace(codeContent, escapedReplacement);
             }
         }
 
-        if (superCode && shouldWrap) {
-            superCode = superCode.replace(/<code([^>]*)>/, (_match, attrs) => {
-                if (attrs.includes('class=')) {
-                    return `<code${attrs.replace(/class="([^"]*)"/, 'class="$1 wrap"')}>`;
+        // Attach the raw prompt value as a data attribute on <code> so that the
+        // copy widget can strip it from the plain-text content without relying on
+        // any class names or DOM structure introduced by the plugin.
+        if (superCode && (prompt || shouldWrap)) {
+            superCode = superCode.replace(/(<pre[^>]*><code)([^>]*)>/, (_match, open, attrs) => {
+                // Add the wrap class
+                if (shouldWrap) {
+                    attrs = /class="[^"]*"/.test(attrs)
+                        ? attrs.replace(/class="([^"]*)"/, 'class="$1 wrap"')
+                        : ` class="wrap"${attrs}`;
                 }
-                return `<code class="wrap"${attrs}>`;
+
+                // Add the data-prompt attribute
+                if (prompt) {
+                    attrs = ` data-prompt="${escapeHtml(prompt)}"${attrs}`;
+                }
+
+                return `${open}${attrs}>`;
             });
         }
 

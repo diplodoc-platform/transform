@@ -15,6 +15,12 @@ const fenceRenderFn = (tokens: Token[], index: number) =>
     `<pre><code>${escapeHtml(tokens[index].content)}</code></pre>\n`;
 
 const getMd = (fence: Mock) => ({
+    // The plugin uses md.utils.escapeHtml when a prompt is present and
+    // md.utils.escapeRE for term replacement; provide real implementations.
+    utils: {
+        escapeHtml,
+        escapeRE: (str: string) => str,
+    },
     renderer: {
         rules: {
             fence,
@@ -406,6 +412,267 @@ describe('Code', () => {
                 '<span class="yfm-line-number">1</span><span class="yfm-line">line1</span>',
             );
             expect(result).toContain('yfm-wrapping-button');
+        });
+    });
+
+    describe('Prompt', () => {
+        it('should wrap the prompt prefix in a non-selectable span', () => {
+            const fence = vi.fn(fenceRenderFn);
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: 'bash prompt="$"',
+                    content: '$ npm install\nadded 1 package\n',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain(
+                '<span class="yfm-code-prompt" aria-hidden="true">$ </span>npm install',
+            );
+        });
+
+        it('should leave lines without the prompt untouched', () => {
+            const fence = vi.fn(fenceRenderFn);
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: 'bash prompt="$"',
+                    content: '$ npm install\nadded 1 package\n',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain('added 1 package');
+            expect(result).not.toContain(
+                '<span class="yfm-code-prompt" aria-hidden="true">$ </span>added',
+            );
+        });
+
+        it('should add the raw prompt value as a data-prompt attribute on <code>', () => {
+            const fence = vi.fn(fenceRenderFn);
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: 'bash prompt="$"',
+                    content: '$ ls\n',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain('data-prompt="$"');
+        });
+
+        it('should preserve leading whitespace before an indented prompt', () => {
+            const fence = vi.fn(fenceRenderFn);
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: 'bash prompt="$"',
+                    content: '  $ echo hi\n',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain(
+                '  <span class="yfm-code-prompt" aria-hidden="true">$ </span>echo hi',
+            );
+        });
+
+        it('should handle a line consisting solely of the prompt', () => {
+            const fence = vi.fn(fenceRenderFn);
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: 'bash prompt="$"',
+                    content: '$\n',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain('<span class="yfm-code-prompt" aria-hidden="true">$ </span>');
+        });
+
+        it('should escape HTML special characters in the prompt', () => {
+            const fence = vi.fn(fenceRenderFn);
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: 'python prompt=">>>"',
+                    content: '>>> print(1)\n',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain(
+                '<span class="yfm-code-prompt" aria-hidden="true">&gt;&gt;&gt; </span>print(1)',
+            );
+            expect(result).toContain('data-prompt="&gt;&gt;&gt;"');
+        });
+
+        it('should wrap a multi-character sql prompt', () => {
+            const fence = vi.fn(fenceRenderFn);
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: 'sql prompt="sql>"',
+                    content: 'sql> SELECT 1;\nsql> SELECT 2;\n',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain(
+                '<span class="yfm-code-prompt" aria-hidden="true">sql&gt; </span>SELECT 1;',
+            );
+            expect(result).toContain(
+                '<span class="yfm-code-prompt" aria-hidden="true">sql&gt; </span>SELECT 2;',
+            );
+            expect(result).toContain('data-prompt="sql&gt;"');
+        });
+
+        it('should wrap the >>> prompt on every input line and leave output lines untouched', () => {
+            const fence = vi.fn(fenceRenderFn);
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: 'python prompt=">>>"',
+                    content: '>>> a = 1\n>>> print(a)\n1\n',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain(
+                '<span class="yfm-code-prompt" aria-hidden="true">&gt;&gt;&gt; </span>a = 1',
+            );
+            expect(result).toContain(
+                '<span class="yfm-code-prompt" aria-hidden="true">&gt;&gt;&gt; </span>print(a)',
+            );
+            // The plain output line must stay as-is, without a prompt span.
+            expect(result).toContain('\n1\n');
+            expect(result).not.toContain(
+                '<span class="yfm-code-prompt" aria-hidden="true">&gt;&gt;&gt; </span>1',
+            );
+        });
+
+        it('should combine prompt spans with line numbers', () => {
+            const fence = vi.fn(fenceRenderFn);
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: 'bash prompt="$" showLineNumbers',
+                    content: '$ ls\noutput\n',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain(
+                '<span class="yfm-line-number">1</span><span class="yfm-code-prompt" aria-hidden="true">$ </span>ls',
+            );
+            expect(result).toContain('<span class="yfm-line-number">2</span>output');
+        });
+
+        it('should not add prompt markup when no prompt is specified', () => {
+            const fence = vi.fn(fenceRenderFn);
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: 'bash',
+                    content: '$ ls\n',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).not.toContain('yfm-code-prompt');
+            expect(result).not.toContain('data-prompt');
+        });
+
+        it('should accept a prompt wrapped in single quotes', () => {
+            const fence = vi.fn(fenceRenderFn);
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: "bash prompt='$'",
+                    content: '$ npm install\nadded 1 package\n',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain(
+                '<span class="yfm-code-prompt" aria-hidden="true">$ </span>npm install',
+            );
+            expect(result).toContain('data-prompt="$"');
+        });
+
+        it('should accept a multi-character prompt wrapped in single quotes', () => {
+            const fence = vi.fn(fenceRenderFn);
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: "python prompt='>>>'",
+                    content: '>>> print(1)\n',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain(
+                '<span class="yfm-code-prompt" aria-hidden="true">&gt;&gt;&gt; </span>print(1)',
+            );
+            expect(result).toContain('data-prompt="&gt;&gt;&gt;"');
+        });
+    });
+
+    describe('Flag detection (word boundaries)', () => {
+        it('should not treat showLineNumbers as a flag when it is part of a larger word', () => {
+            const fence = vi.fn(fenceRenderFn);
+            const md = getMd(fence);
+            code(md as unknown as MarkdownIt, {} as MarkdownItPluginOpts);
+
+            const tokens = [
+                {
+                    info: 'jsshowLineNumbers',
+                    content: 'line1\nline2',
+                },
+            ];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).not.toContain('yfm-line-number');
         });
     });
 });

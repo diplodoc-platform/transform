@@ -65,6 +65,12 @@
         .yfm-code-icon {
             pointer-events: none;
         }
+
+        .yfm-code-prompt {
+            color: var(--yfm-color-hljs-comment-private);
+            pointer-events: none;
+            user-select: none;
+        }
     }
 
     &-clipboard-inline-code {
