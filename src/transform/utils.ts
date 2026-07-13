@@ -1,6 +1,6 @@
 import type Token from 'markdown-it/lib/token';
 
-import url from 'url';
+import {formatHref, parseHref} from '@diplodoc/utils';
 
 export function isLocalUrl(url: string) {
     return !/^(?:[a-z]+:)?\/\//i.test(url);
@@ -105,8 +105,8 @@ export function getSrcTokenAttr(token: Token) {
 export const PAGE_LINK_REGEXP = /\.(md|ya?ml)$/i;
 
 export function defaultTransformLink(href: string) {
-    const parsed = url.parse(href);
-    href = url.format({
+    const parsed = parseHref(href);
+    href = formatHref({
         ...parsed,
         pathname: parsed.pathname?.replace(PAGE_LINK_REGEXP, '.html'),
     });
