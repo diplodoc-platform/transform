@@ -4,7 +4,7 @@ import type {CacheContext, StateCore} from '../../typings';
 import type {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
 import type {MarkdownItIncluded} from '../includes/types';
 
-import url from 'url';
+import {formatHref, parseHref} from '@diplodoc/utils';
 import {bold} from 'chalk';
 import path, {isAbsolute, parse, relative, resolve} from 'path';
 
@@ -153,7 +153,7 @@ function processLink(
         return;
     }
 
-    const {pathname, hash} = url.parse(originalHref);
+    const {pathname, hash} = parseHref(originalHref);
     let file;
     let fileExists;
     let isPageFile;
@@ -219,8 +219,8 @@ function processLink(
 
     const patchedHref =
         !isAbsolute(originalHref) && !originalHref.includes('//')
-            ? url.format({
-                  ...url.parse(originalHref),
+            ? formatHref({
+                  ...parseHref(originalHref),
                   pathname: getPublicPath(opts, file),
               })
             : originalHref;

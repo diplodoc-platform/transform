@@ -1,6 +1,6 @@
 import MarkdownIt from 'markdown-it';
 import {sep} from 'path';
-import url from 'url';
+import {parseHref} from '@diplodoc/utils';
 
 import {PAGE_LINK_REGEXP, getHrefTokenAttr, isLocalUrl} from '../../utils';
 import {getSinglePageAnchorId, resolveRelativePath} from '../../utilsFS';
@@ -62,7 +62,7 @@ const collect = (input: string, options: Options) => {
                     continue;
                 }
 
-                const {pathname, hash} = url.parse(href);
+                const {pathname, hash} = parseHref(href);
                 if (pathname) {
                     const isPageFile = PAGE_LINK_REGEXP.test(pathname);
                     if (isPageFile) {
