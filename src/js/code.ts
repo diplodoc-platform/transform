@@ -31,17 +31,34 @@ function buttonCopyFn(target: HTMLElement) {
         return;
     }
 
-    // Get all text nodes and filter out line numbers
-    const textContent = Array.from(code.childNodes)
-        .filter((node) => {
-            // Skip line number spans
-            if (node instanceof HTMLElement && node.classList.contains('yfm-line-number')) {
-                return false;
-            }
-            return true;
-        })
-        .map((node) => node.textContent)
-        .join('');
+    // Strip line-number decorations (class-based, no semantic alternative).
+    const clone = code.cloneNode(true) as HTMLElement;
+
+    clone.querySelectorAll('.yfm-line-number').forEach((el) => el.remove());
+    let textContent = clone.textContent ?? '';
+
+    // Strip prompt prefix from each line using the raw value stored in data-prompt.
+    // This avoids any dependency on how (or whether) the prompt is wrapped in the DOM.
+    // Leading whitespace before the prompt is preserved so indented commands keep
+    // their indentation level in the copied text.
+    const promptValue = code.dataset.prompt;
+    if (promptValue) {
+        const prefix = promptValue + ' ';
+        textContent = textContent
+            .split('\n')
+            .map((line) => {
+                const trimmed = line.trimStart();
+                const leadingWs = line.slice(0, line.length - trimmed.length);
+                if (trimmed.startsWith(prefix)) {
+                    return leadingWs + trimmed.slice(prefix.length);
+                }
+                if (trimmed === promptValue) {
+                    return leadingWs;
+                }
+                return line;
+            })
+            .join('\n');
+    }
 
     copyToClipboard(textContent.trim()).then(() => {
         notifySuccess(container.querySelector('.yfm-clipboard-icon'));
