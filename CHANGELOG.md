@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.77.0](https://github.com/diplodoc-platform/transform/compare/v4.76.10...v4.77.0) (2026-07-14)
+
+
+### Features
+
+* **code:** exclude prompt from code block clipboard copy [#2615](https://github.com/diplodoc-platform/transform/issues/2615) ([e63a070](https://github.com/diplodoc-platform/transform/commit/e63a0700a7515735ebc8b63f6acac1755a8e3249))
+
 ## [4.76.10](https://github.com/diplodoc-platform/transform/compare/v4.76.9...v4.76.10) (2026-07-14)
 
 
