@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.76.10](https://github.com/diplodoc-platform/transform/compare/v4.76.9...v4.76.10) (2026-07-14)
+
+
+### Bug Fixes
+
+* remove node url DOCSTOOLS-6242 ([9201796](https://github.com/diplodoc-platform/transform/commit/9201796c029ec7bf4b4a5fb8b88da0e2f587fe8f))
+
 ## [4.76.9](https://github.com/diplodoc-platform/transform/compare/v4.76.8...v4.76.9) (2026-07-10)
 
 
