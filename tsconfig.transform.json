@@ -4,7 +4,6 @@
     "lib": ["DOM", "ES2018"],
     "outDir": "lib",
     "module": "commonjs",
-    "baseUrl": ".",
     "declaration": true,
     "isolatedModules": true,
     "noImplicitAny": true,

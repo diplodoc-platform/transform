@@ -1,4 +1,4 @@
-import type {Lang} from 'src/transform/typings';
+import type {Lang} from '../../transform/typings';
 
 import {createTooltipFactory} from '../tooltip';
 import {copyToClipboard, getEventTarget, isCustom} from '../utils';
