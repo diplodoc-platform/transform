@@ -112,6 +112,40 @@ describe('Links plugin', () => {
         expect(result).toEqual('<p><a href="/link/">Absolute link</a></p>\n');
     });
 
+    test('Should not treat mailto link ending in .md as a page link', () => {
+        const result = callPlugin(
+            links,
+            tokenize(['[centru@datepersonale.md](mailto:centru@datepersonale.md)']),
+            {
+                path: mocksPath,
+                root: dirname(mocksPath),
+                log: log,
+                getPublicPath,
+            },
+        );
+
+        const inlineTokens = result.find((token) => token.type === 'inline')?.children || [];
+        const linkToken = inlineTokens.find((token) => token.type === 'link_open');
+
+        expect(linkToken?.attrGet('href')).toEqual('mailto:centru@datepersonale.md');
+        expect(linkToken?.attrGet('target')).toEqual('_blank');
+    });
+
+    test('Should not treat tel link as a page link', () => {
+        const result = callPlugin(links, tokenize(['[+123456](tel:+123456)']), {
+            path: mocksPath,
+            root: dirname(mocksPath),
+            log: log,
+            getPublicPath,
+        });
+
+        const inlineTokens = result.find((token) => token.type === 'inline')?.children || [];
+        const linkToken = inlineTokens.find((token) => token.type === 'link_open');
+
+        expect(linkToken?.attrGet('href')).toEqual('tel:+123456');
+        expect(linkToken?.attrGet('target')).toEqual('_blank');
+    });
+
     describe('transformLink', () => {
         test('Should call the "transformLink" callback for local link', () => {
             const inputPath = resolve(__dirname, './mocks/relative-link.md');

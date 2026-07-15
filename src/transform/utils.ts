@@ -3,7 +3,10 @@ import type Token from 'markdown-it/lib/token';
 import {formatHref, parseHref} from '@diplodoc/utils';
 
 export function isLocalUrl(url: string) {
-    return !/^(?:[a-z]+:)?\/\//i.test(url);
+    // A URL is local unless it has an external scheme: either `scheme://...`
+    // / `//host...` (protocol-relative), or an opaque scheme URI without
+    // a slash-slash part (e.g. `mailto:`, `tel:`, `custom:`).
+    return !isExternalHref(url);
 }
 
 export function findBlockTokens(tokens: Token[], id: string) {
