@@ -1,4 +1,4 @@
-import type {Lang} from 'src/transform/typings';
+import type {Lang} from '../transform/typings';
 
 export const COPIED_LANG_TOKEN: Record<Lang, string> = {
     ru: 'Скопировано',

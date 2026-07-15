@@ -1,5 +1,5 @@
 import type Token from 'markdown-it/lib/token';
-import type {Logger} from 'src/transform/log';
+import type {Logger} from '../../log';
 import type {CacheContext, StateCore} from '../../typings';
 import type {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
 import type {MarkdownItIncluded} from '../includes/types';
