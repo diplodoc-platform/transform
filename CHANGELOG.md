@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.77.1](https://github.com/diplodoc-platform/transform/compare/v4.77.0...v4.77.1) (2026-07-16)
+
+
+### Bug Fixes
+
+* remove `baseUrl`, use relative imports ([#990](https://github.com/diplodoc-platform/transform/issues/990)) ([0ca6c41](https://github.com/diplodoc-platform/transform/commit/0ca6c41bd1b944352f2215b369a4251b1675712a))
+* set terms to off screen when is hidden for exclude from layout height DOCSTOOLS-6267 ([ec8c1d9](https://github.com/diplodoc-platform/transform/commit/ec8c1d97715e0efb31a951ba309a5c62bcde25d6))
+
 ## [4.77.0](https://github.com/diplodoc-platform/transform/compare/v4.76.10...v4.77.0) (2026-07-14)
 
 
