@@ -21,6 +21,14 @@
         visibility: hidden;
         opacity: 0;
 
+        // Keep the closed definition off-screen so its (still laid-out) box
+        // does not extend the page's scrollable area. Inline top/left set by
+        // setDefinitionPosition() are cleared in closeDefinition() to restore
+        // these values. Negative-direction overflow does not create a
+        // scrollable region, while the box stays measurable for positioning.
+        top: -9999px;
+        left: -9999px;
+
         padding: 10px;
 
         background-color: var(
