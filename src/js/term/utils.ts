@@ -178,6 +178,16 @@ export function openDefinition(target: HTMLElement) {
 
 export function closeDefinition(definition: HTMLElement) {
     definition.classList.remove(openClass);
+
+    // Restore the off-screen position declared in CSS so the (still laid-out)
+    // definition box does not extend the page's scrollable area. Inline
+    // top/left were set by setDefinitionPosition() while the definition was
+    // open; without this reset they would keep the box in the document flow.
+    definition.style.top = '';
+    definition.style.left = '';
+    definition.removeAttribute('relativeX');
+    definition.removeAttribute('relativeY');
+
     const term = getTermByDefinition(definition);
     const termParent = termParentElement(term);
 
