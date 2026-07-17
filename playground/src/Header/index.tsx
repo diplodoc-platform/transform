@@ -11,7 +11,7 @@ function Header({activeTab, items, handleSetInputAreaTabActive}) {
                     activeTab={activeTab}
                     items={items}
                     onSelectTab={handleSetInputAreaTabActive}
-                    wrapTo={(_item, node) => <div className="header__tab">{node}</div>}
+                    wrapTo={(item, node) => <div className="header__tab" key={item.id}>{node}</div>}
                 />
             </div>
         </div>

@@ -1,11 +1,13 @@
-import type {PageContent} from 'node_modules/@gravity-ui/page-constructor/build/esm/index';
+import type {PageContent} from '@gravity-ui/page-constructor';
 
 import {useCallback, useState} from 'react';
 import {Editor} from '@gravity-ui/page-constructor/editor';
 import {contentTransformer} from '@gravity-ui/page-constructor/server';
-import {memoizeLast} from 'src/PageConstructorEditor/utils';
-import {deleteQuery, persist, prefill} from 'src/utils';
 import {ErrorBoundary} from 'react-error-boundary';
+
+import {deleteQuery, persist, prefill} from '../utils';
+
+import {memoizeLast} from './utils';
 
 const contentTransformerMemoized = memoizeLast(contentTransformer);
 

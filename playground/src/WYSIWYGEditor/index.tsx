@@ -1,6 +1,7 @@
 import type {Extension} from '@doc-tools/yfm-editor';
 
 import React, {useEffect, useState} from 'react';
+import ReactDOMClient from 'react-dom/client';
 import {cloneDeep} from 'lodash';
 import {
     BasePreset,
@@ -20,8 +21,10 @@ import {deleteElementById, deleteQuery, persist, prefill} from '../utils';
 
 import {YfmPreset} from './yfmPreset';
 
+Toaster.injectReactDOMClient(ReactDOMClient);
+
 function WYSIWYGEditor() {
-    const toaster = new Toaster();
+    const [toaster] = useState(() => new Toaster());
     const wToolbarConfig = cloneDeep(wysiwygToolbarConfigs.wToolbarConfig);
     const mToolbarConfig = cloneDeep(markupToolbarConfigs.mToolbarConfig);
     const wToolbarConfigWithoutColor = deleteElementById(wToolbarConfig, 'colorify');
