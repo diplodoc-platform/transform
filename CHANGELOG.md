@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.77.2](https://github.com/diplodoc-platform/transform/compare/v4.77.1...v4.77.2) (2026-07-20)
+
+
+### Bug Fixes
+
+* enable styles for warp buttons with wrap class ([47c974f](https://github.com/diplodoc-platform/transform/commit/47c974f1cdff21f0409dafd36d621f68f5e077e9))
+
 ## [4.77.1](https://github.com/diplodoc-platform/transform/compare/v4.77.0...v4.77.1) (2026-07-16)
 
 
