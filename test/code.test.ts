@@ -413,6 +413,50 @@ describe('Code', () => {
             );
             expect(result).toContain('yfm-wrapping-button');
         });
+
+        it('should render wrapping button as selected when "wrap" is present in token info', () => {
+            const fence = vi.fn().mockReturnValue('<pre><code>some code</code></pre>');
+            const md = getMd(fence);
+
+            code(
+                md as unknown as MarkdownIt,
+                {codeLineWrapping: true} as unknown as MarkdownItPluginOpts,
+            );
+
+            const tokens = [
+                {
+                    info: 'javascript wrap',
+                    content: 'some code',
+                },
+            ] as Token[];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain('aria-pressed="true"');
+            expect(result).toContain('g-button_selected');
+        });
+
+        it('should render wrapping button as NOT selected when "wrap" is absent from token info', () => {
+            const fence = vi.fn().mockReturnValue('<pre><code>some code</code></pre>');
+            const md = getMd(fence);
+
+            code(
+                md as unknown as MarkdownIt,
+                {codeLineWrapping: true} as unknown as MarkdownItPluginOpts,
+            );
+
+            const tokens = [
+                {
+                    info: 'javascript',
+                    content: 'some code',
+                },
+            ] as Token[];
+
+            const result = md.renderer.rules.fence(tokens, 0, {}, {}, {} as Renderer);
+
+            expect(result).toContain('aria-pressed="false"');
+            expect(result).not.toContain('g-button_selected');
+        });
     });
 
     describe('Prompt', () => {
