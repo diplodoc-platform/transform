@@ -671,7 +671,7 @@ exports[`Terms > should create term in code with line-numbers and line-wrapping 
   </pre>
   <div class="yfm-code-floating">
     <button role="button"
-            class="g-button g-button_view_flat g-button_size_m g-button_pin_round-round g-md-viewer-code-button yfm-code-button yfm-wrapping-button"
+            class=" g-button g-button_view_flat g-button_size_m g-button_pin_round-round g-md-viewer-code-button yfm-code-button yfm-wrapping-button"
             tabindex="-1"
             type="button"
             data-tabindex="0"
