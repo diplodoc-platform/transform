@@ -8,12 +8,9 @@
     max-height: calc(100vh - 230px);
   }
 
-  .pc-device-emulation-mobile__frame_device_tablet {
-    height: 100%;
-  }
-
+  .pc-device-emulation-mobile__frame_device_tablet,
   .pc-device-emulation-mobile__frame_device_mobile {
-    height: 100%;
+    max-height: calc(100vh - 230px);
   }
 
   --g-tabs-item-height: 100%;

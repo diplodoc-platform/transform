@@ -1,10 +1,10 @@
-import {useTabs} from 'src/useTabs';
-import SplitViewEditor from 'src/SplitViewEditor';
-import PageConstructorEditor from 'src/PageConstructorEditor';
-import WYSIWYGEditor from 'src/WYSIWYGEditor';
-import Header from 'src/Header';
 import {PageConstructor, PageConstructorProvider} from '@gravity-ui/page-constructor';
 
+import {useTabs} from '../useTabs';
+import SplitViewEditor from '../SplitViewEditor';
+import PageConstructorEditor from '../PageConstructorEditor';
+import WYSIWYGEditor from '../WYSIWYGEditor';
+import Header from '../Header';
 import {restore} from '../utils';
 
 import './index.scss';

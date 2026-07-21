@@ -10,3 +10,4 @@ node_modules
 /cache
 .eslintrc.js
 .prettierrc.js
+/www
