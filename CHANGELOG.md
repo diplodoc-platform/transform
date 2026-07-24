@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.77.5](https://github.com/diplodoc-platform/transform/compare/v4.77.4...v4.77.5) (2026-07-24)
+
+
+### Bug Fixes
+
+* **deps:** Update @diplodoc/tabs-extension@3.10.4 ([#1012](https://github.com/diplodoc-platform/transform/issues/1012)) ([55303f9](https://github.com/diplodoc-platform/transform/commit/55303f9486fc607fbbbb2ae1bfea563550c3dbe3))
+
 ## [4.77.4](https://github.com/diplodoc-platform/transform/compare/v4.77.3...v4.77.4) (2026-07-24)
 
 
