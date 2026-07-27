@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.77.6](https://github.com/diplodoc-platform/transform/compare/v4.77.5...v4.77.6) (2026-07-27)
+
+
+### Bug Fixes
+
+* edit button classes setiings ([b8c500a](https://github.com/diplodoc-platform/transform/commit/b8c500a12b1255ec15839a74688a9154a63f9ff2))
+
 ## [4.77.5](https://github.com/diplodoc-platform/transform/compare/v4.77.4...v4.77.5) (2026-07-24)
 
 
