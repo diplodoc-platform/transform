@@ -39,7 +39,9 @@ describe('Images plugin', () => {
 
         const html = transformYfm('![тест](./русские-символы.png)');
 
-        expect(html).toEqual('<p><img src="/русские-символы.png" alt="тест" /></p>\n');
+        expect(html).toEqual(
+            '<p><img src="/русские-символы.png" alt="тест" data-gallery="true" /></p>\n',
+        );
         expect(log.isEmpty()).toEqual(true);
 
         unlinkSync(imagePath);
@@ -169,6 +171,7 @@ describe('Images plugin', () => {
             width: undefined,
             height: undefined,
             title: undefined,
+            gallery: null,
         });
 
         expect(inlined).toContain('SAI_POLICER_STAT_&#42;');
