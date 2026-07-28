@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.77.7](https://github.com/diplodoc-platform/transform/compare/v4.77.6...v4.77.7) (2026-07-28)
+
+
+### Bug Fixes
+
+* **deps:** Update @diplodoc/file-extension@0.2.5 ([#1023](https://github.com/diplodoc-platform/transform/issues/1023)) ([7527da5](https://github.com/diplodoc-platform/transform/commit/7527da5b475acb7b5783a2bfd4ae8e6db4517aca))
+
 ## [4.77.6](https://github.com/diplodoc-platform/transform/compare/v4.77.5...v4.77.6) (2026-07-27)
 
 
