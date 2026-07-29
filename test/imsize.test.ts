@@ -52,18 +52,18 @@ describe('imsize inline attributes {key=value}', () => {
     });
 
     test('sets gallery=true via inline attribute', () => {
-        const result = md.render('![test](img.png){gallery=true}');
-        expect(result).toContain('gallery="true"');
+        const result = md.render('![test](img.png){data-gallery=true}');
+        expect(result).toContain('data-gallery="true"');
     });
 
     test('sets gallery=false via inline attribute', () => {
-        const result = md.render('![test](img.png){gallery=false}');
-        expect(result).toContain('gallery="false"');
+        const result = md.render('![test](img.png){data-gallery=false}');
+        expect(result).toContain('data-gallery="false"');
     });
 
     test('invalid gallery value is ignored', () => {
-        const result = md.render('![test](img.png){gallery=yes}');
-        expect(result).not.toContain('gallery=');
+        const result = md.render('![test](img.png){data-gallery=yes}');
+        expect(result).not.toContain('data-gallery=');
     });
 
     test('single-quoted attribute value', () => {
@@ -106,12 +106,12 @@ describe('imsize inline attributes {key=value}', () => {
 
     test('all inline attributes combined', () => {
         const result = md.render(
-            '![test](img.png){width=100 height=200 inline=true gallery=false}',
+            '![test](img.png){width=100 height=200 inline=true data-gallery=false}',
         );
         expect(result).toContain('width="100"');
         expect(result).toContain('height="200"');
         expect(result).toContain('inline="true"');
-        expect(result).toContain('gallery="false"');
+        expect(result).toContain('data-gallery="false"');
     });
 });
 
