@@ -164,7 +164,6 @@ export interface MarkdownItPluginOpts {
      * the next non-blank line is an `{% include %}` directive.
      */
     multilineTermDefinitions?: boolean;
-    gallery?: boolean;
 }
 
 export type MarkdownItPluginCb<T extends {} = {}> = {
@@ -196,5 +195,5 @@ export type ImageOptions = {
     width: string | undefined | null;
     height: string | undefined | null;
     title: string | undefined | null;
-    gallery: string | null;
+    dataAttrs: Record<string, string>;
 };

@@ -14,26 +14,9 @@ import {generateID as globalGenerateID} from '../utils';
 
 const sanitizeAttribute = (value: string): string => value.replace(/(\d*[%a-z]{0,5}).*/gi, '$1');
 
-const GALLERY_IMAGE_SIZE_THRESHOLD = 150;
-
-function isGallerySize(
-    width: string | null | undefined,
-    height: string | null | undefined,
-): boolean {
-    const w = width ? Number.parseFloat(width) : Number.NaN;
-    const h = height ? Number.parseFloat(height) : Number.NaN;
-
-    if (w <= GALLERY_IMAGE_SIZE_THRESHOLD || h <= GALLERY_IMAGE_SIZE_THRESHOLD) {
-        return false;
-    }
-
-    return true;
-}
-
 interface ImageOpts extends MarkdownItPluginOpts {
     assetsPublicPath: string;
     inlineSvg?: boolean;
-    gallery?: boolean;
 }
 
 function replaceImageSrc(
@@ -126,7 +109,6 @@ const getRawFile = (path: string) => {
 
 const index: MarkdownItPluginCb<Opts> = (md, opts) => {
     const {
-        gallery,
         rawContent = getRawFile,
         calcPath = resolveRelativePath,
         replaceImageSrc: replaceImage = replaceImageSrc,
@@ -162,26 +144,25 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                     return;
                 }
 
-                const galleryAttr = image.attrGet('gallery');
-                const hasTextSiblings = childrenTokens.some(
-                    (t) => t !== image && t.type === 'text' && t.content.trim() !== '',
-                );
                 const width = image.attrGet('width');
                 const height = image.attrGet('height');
 
-                const isGalleryEnabled = gallery ?? true;
-                let effectiveGallery: 'true' | 'false';
-
-                if (galleryAttr === 'true') {
-                    effectiveGallery = 'true';
-                } else if (
-                    galleryAttr === 'false' ||
-                    hasTextSiblings ||
-                    !isGallerySize(width, height)
-                ) {
-                    effectiveGallery = 'false';
-                } else {
-                    effectiveGallery = isGalleryEnabled ? 'true' : 'false';
+                const dataAttrs: Record<string, string> = {};
+                const isValidAttr = (v: string) => v === 'true' || v === 'false';
+                if (image.attrs) {
+                    for (const [key, value] of image.attrs) {
+                        if (key === 'gallery' && isValidAttr(value)) {
+                            dataAttrs['data-gallery'] = value; // alias: gallery= → data-gallery=
+                        } else if (key.startsWith('data-')) {
+                            if (key !== 'data-gallery' || isValidAttr(value)) {
+                                dataAttrs[key] = value; // data-gallery validated, others pass-through
+                            }
+                        }
+                    }
+                    image.attrs = image.attrs.filter(
+                        ([key, value]) =>
+                            key !== 'gallery' && (key !== 'data-gallery' || isValidAttr(value)),
+                    );
                 }
 
                 const forceInlineSvg = image.attrGet('inline') === 'true';
@@ -190,7 +171,7 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                     width,
                     height,
                     title: image.attrGet('title'),
-                    gallery: effectiveGallery,
+                    dataAttrs,
                 };
 
                 const from = state.env.path || opts.path;
@@ -221,7 +202,9 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                 if (childrenTokens[index].type === 'image') {
                     image.attrSet('src', replaceImage(state, from, file, imgSrc, opts));
                     image.attrSet('yfm_patched', '1');
-                    image.attrSet('data-gallery', effectiveGallery);
+                    for (const [key, value] of Object.entries(dataAttrs)) {
+                        image.attrSet(key, value);
+                    }
                 }
             });
         });
@@ -277,8 +260,10 @@ function replaceSvgContent(
         content = content.replace(/.*?<svg([^>]*)>/, `<svg${svgRoot}>`);
     }
 
-    if (options.gallery) {
-        svgRoot = `${svgRoot} data-gallery="${sanitizeAttribute(options.gallery.toString())}"`;
+    if (options.dataAttrs) {
+        for (const [key, value] of Object.entries(options.dataAttrs)) {
+            svgRoot = `${svgRoot} ${key}="${sanitizeAttribute(value)}"`;
+        }
         content = content.replace(/.*?<svg([^>]*)>/, `<svg${svgRoot}>`);
     }
 
@@ -317,10 +302,8 @@ function escapeMarkdownCharsInSvgTextNodes(content: string): string {
 // Create an object that is the index function with an additional replaceSvgContent property
 const imagesPlugin: typeof index & {
     replaceSvgContent: typeof replaceSvgContent;
-    isGallerySize: typeof isGallerySize;
 } = Object.assign(index, {
     replaceSvgContent,
-    isGallerySize,
 });
 
 export = imagesPlugin;

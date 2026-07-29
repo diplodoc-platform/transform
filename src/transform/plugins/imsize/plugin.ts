@@ -32,7 +32,6 @@ export const imageWithSize = (md: MarkdownIt, opts?: ImsizeOptions): ParserInlin
         let title = '';
         let width = '';
         let height = '';
-        let gallery = '';
 
         const oldPos = state.pos;
         const max = state.posMax;
@@ -230,8 +229,10 @@ export const imageWithSize = (md: MarkdownIt, opts?: ImsizeOptions): ParserInlin
                     if (result.inline !== '') {
                         token.attrs.push([ImsizeAttr.Inline, result.inline]);
                     }
-                    if (result.gallery !== '') {
-                        gallery = result.gallery;
+                    if (result.dataAttrs) {
+                        for (const [key, value] of Object.entries(result.dataAttrs)) {
+                            token.attrs.push([key, value]);
+                        }
                     }
 
                     pos = bracePos + 1;
@@ -248,10 +249,6 @@ export const imageWithSize = (md: MarkdownIt, opts?: ImsizeOptions): ParserInlin
 
             if (height !== '') {
                 token.attrs.push([ImsizeAttr.Height, height]);
-            }
-
-            if (gallery !== '') {
-                token.attrs.push([ImsizeAttr.Gallery, gallery]);
             }
 
             if (opts?.enableInlineStyling) {
@@ -292,22 +289,30 @@ function parseInlineAttributes(attrsStr: string): {
     width: string;
     height: string;
     inline: string;
-    gallery: string;
+    dataAttrs: Record<string, string>;
 } {
-    // Parse key=value pairs
-    const attrRegex = /(\w+)=(?:'([^']*)'|"([^"]*)"|([^\s}]+))/g;
-    //const attrRegex = /(\w+)=(?:'([^']*)'|"([^"]*)"|(\S+))/g;
-    const result: {width: string; height: string; inline: string; gallery: string} = {
+    // Parse key=value pairs\
+    const attrRegex = /([\w-]+)=(?:'([^']*)'|"([^"]*)"|(\S+))/g;
+    const result: {
+        width: string;
+        height: string;
+        inline: string;
+        dataAttrs: Record<string, string>;
+    } = {
         width: '',
         height: '',
         inline: '',
-        gallery: '',
+        dataAttrs: {},
     };
     let match;
 
     while ((match = attrRegex.exec(attrsStr)) !== null) {
         const key = match[1];
-        const value = match[2] || match[3] || match[4];
+        let value = match[2] || match[3] || match[4];
+
+        if (value && value.endsWith('}')) {
+            value = value.slice(0, -1);
+        }
 
         switch (key) {
             case 'width':
@@ -316,7 +321,20 @@ function parseInlineAttributes(attrsStr: string): {
                 result[key] = value;
                 break;
             case 'gallery':
-                result.gallery = value === 'true' || value === 'false' ? value : '';
+                if (value === 'true' || value === 'false') {
+                    result.dataAttrs['data-gallery'] = value;
+                }
+                break;
+            default:
+                if (key.startsWith('data-')) {
+                    if (key === 'data-gallery') {
+                        if (value === 'true' || value === 'false') {
+                            result.dataAttrs[key] = value;
+                        }
+                    } else {
+                        result.dataAttrs[key] = value;
+                    }
+                }
                 break;
         }
     }
