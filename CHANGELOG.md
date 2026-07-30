@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.77.9](https://github.com/diplodoc-platform/transform/compare/v4.77.8...v4.77.9) (2026-07-30)
+
+
+### Bug Fixes
+
+* add gallery attr and filters in image plugin ([4b7e720](https://github.com/diplodoc-platform/transform/commit/4b7e72065c9d0dd9ac2776cadcfc512ae632d118))
+
 ## [4.77.8](https://github.com/diplodoc-platform/transform/compare/v4.77.7...v4.77.8) (2026-07-29)
 
 
