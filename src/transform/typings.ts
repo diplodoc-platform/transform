@@ -195,5 +195,5 @@ export type ImageOptions = {
     width: string | undefined | null;
     height: string | undefined | null;
     title: string | undefined | null;
-    dataAttrs: Record<string, string>;
+    dataAttrs?: Record<string, string>;
 };

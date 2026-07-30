@@ -285,57 +285,44 @@ export const imageWithSize = (md: MarkdownIt, opts?: ImsizeOptions): ParserInlin
     };
 };
 
-function parseInlineAttributes(attrsStr: string): {
+type ParsedAttrs = {
     width: string;
     height: string;
     inline: string;
-    dataAttrs: Record<string, string>;
-} {
-    // Parse key=value pairs\
+    dataAttrs?: Record<string, string>;
+};
+
+function resolveDataAttr(key: string, value: string): [string, string] | null {
+    const isGalleryValid = value === 'true' || value === 'false';
+    if (key === 'gallery') return isGalleryValid ? ['data-gallery', value] : null;
+    if (key === 'data-gallery') return isGalleryValid ? [key, value] : null;
+    if (key.startsWith('data-')) return [key, value];
+    return null;
+}
+
+function parseInlineAttributes(attrsStr: string): ParsedAttrs {
+    // Parse key=value pairs
     const attrRegex = /([\w-]+)=(?:'([^']*)'|"([^"]*)"|(\S+))/g;
-    const result: {
-        width: string;
-        height: string;
-        inline: string;
-        dataAttrs: Record<string, string>;
-    } = {
-        width: '',
-        height: '',
-        inline: '',
-        dataAttrs: {},
-    };
+    const result: ParsedAttrs = {width: '', height: '', inline: '', dataAttrs: {}};
     let match;
 
     while ((match = attrRegex.exec(attrsStr)) !== null) {
         const key = match[1];
         let value = match[2] || match[3] || match[4];
 
-        if (value && value.endsWith('}')) {
+        if (value?.endsWith('}')) {
             value = value.slice(0, -1);
         }
 
-        switch (key) {
-            case 'width':
-            case 'height':
-            case 'inline':
-                result[key] = value;
-                break;
-            case 'gallery':
-                if (value === 'true' || value === 'false') {
-                    result.dataAttrs['data-gallery'] = value;
-                }
-                break;
-            default:
-                if (key.startsWith('data-')) {
-                    if (key === 'data-gallery') {
-                        if (value === 'true' || value === 'false') {
-                            result.dataAttrs[key] = value;
-                        }
-                    } else {
-                        result.dataAttrs[key] = value;
-                    }
-                }
-                break;
+        if (key === 'width' || key === 'height' || key === 'inline') {
+            result[key] = value;
+            continue;
+        }
+
+        const resolved = resolveDataAttr(key, value);
+        if (resolved) {
+            result.dataAttrs = result.dataAttrs || {};
+            result.dataAttrs[resolved[0]] = resolved[1];
         }
     }
     return result;

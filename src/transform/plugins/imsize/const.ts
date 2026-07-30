@@ -6,5 +6,4 @@ export enum ImsizeAttr {
     Height = 'height',
     Style = 'style',
     Inline = 'inline',
-    Gallery = 'gallery',
 }
