@@ -13,6 +13,14 @@ import {filterTokens, getSrcTokenAttr, isExternalHref} from '../../utils';
 import {generateID as globalGenerateID} from '../utils';
 
 const sanitizeAttribute = (value: string): string => value.replace(/(\d*[%a-z]{0,5}).*/gi, '$1');
+const sanitizeHTMLAttr = (value: string): string => {
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+};
 
 interface ImageOpts extends MarkdownItPluginOpts {
     assetsPublicPath: string;
@@ -103,6 +111,27 @@ function shouldBeInlined(token: Token, opts: InlineOptions) {
     return shouldInlineSvg;
 }
 
+function isGalleryValid(value: string): boolean {
+    return value === 'true' || value === 'false';
+}
+
+function collectDataAttrs(image: Token): Record<string, string> {
+    const result: Record<string, string> = {};
+    if (!image.attrs) return result;
+
+    for (const [key, value] of image.attrs) {
+        if (key === 'gallery' && isGalleryValid(value)) {
+            result['data-gallery'] = value;
+        } else if (key.startsWith('data-') && (key !== 'data-gallery' || isGalleryValid(value))) {
+            result[key] = value;
+        }
+    }
+    image.attrs = image.attrs.filter(
+        ([key, value]) => key !== 'gallery' && (key !== 'data-gallery' || isGalleryValid(value)),
+    );
+    return result;
+}
+
 const getRawFile = (path: string) => {
     return readFileSync(path, 'utf8').toString();
 };
@@ -122,90 +151,63 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
     }
     md.assets = [];
 
-    const plugin = (state: StateCore) => {
-        const tokens = state.tokens;
+    function processImageToken(
+        image: Token,
+        tokenIndex: number,
+        childrenTokens: Token[],
+        state: StateCore,
+    ): void {
+        if (image.attrGet('yfm_patched')) return;
 
-        filterTokens(tokens, 'inline', (inline, {commented}) => {
-            if (commented || !inline.children) {
-                return;
-            }
+        const imgSrc = getSrcTokenAttr(image);
+        if (isExternalHref(imgSrc)) return;
 
-            const childrenTokens = inline.children || [];
+        const dataAttrs = collectDataAttrs(image);
+        const forceInlineSvg = image.attrGet('inline') === 'true';
+        const imageOpts = {
+            width: image.attrGet('width'),
+            height: image.attrGet('height'),
+            title: image.attrGet('title'),
+            dataAttrs,
+        };
 
-            filterTokens(childrenTokens, 'image', (image, {commented, index}) => {
-                const didPatch = image.attrGet('yfm_patched') || false;
+        const from = state.env.path || opts.path;
+        const file = calcPath(from, imgSrc);
 
-                if (didPatch || commented) {
-                    return;
-                }
-
-                const imgSrc = getSrcTokenAttr(image);
-                if (isExternalHref(imgSrc)) {
-                    return;
-                }
-
-                const width = image.attrGet('width');
-                const height = image.attrGet('height');
-
-                const dataAttrs: Record<string, string> = {};
-                const isValidAttr = (v: string) => v === 'true' || v === 'false';
-                if (image.attrs) {
-                    for (const [key, value] of image.attrs) {
-                        if (key === 'gallery' && isValidAttr(value)) {
-                            dataAttrs['data-gallery'] = value; // alias: gallery= → data-gallery=
-                        } else if (key.startsWith('data-')) {
-                            if (key !== 'data-gallery' || isValidAttr(value)) {
-                                dataAttrs[key] = value; // data-gallery validated, others pass-through
-                            }
-                        }
-                    }
-                    image.attrs = image.attrs.filter(
-                        ([key, value]) =>
-                            key !== 'gallery' && (key !== 'data-gallery' || isValidAttr(value)),
+        if (shouldBeInlined(image, opts.svgInline)) {
+            const svgContent = getSvgContent(file, from, {...opts, rawContent});
+            if (svgContent) {
+                if (svgContent.length > opts.svgInline.maxFileSize && !forceInlineSvg) {
+                    image.attrSet(
+                        'YFM011',
+                        `Svg size: ${svgContent.length}; Config size: ${opts.svgInline.maxFileSize}; Src: ${bold(file)}`,
                     );
+                } else {
+                    const svgToken = new state.Token('image_svg', '', 0);
+                    svgToken.attrSet(
+                        'content',
+                        replaceSvgContent(svgContent, imageOpts, opts.generateID),
+                    );
+                    childrenTokens[tokenIndex] = svgToken;
                 }
+            }
+        }
 
-                const forceInlineSvg = image.attrGet('inline') === 'true';
-                const shouldInlineSvg = shouldBeInlined(image, opts.svgInline);
-                const imageOpts = {
-                    width,
-                    height,
-                    title: image.attrGet('title'),
-                    dataAttrs,
-                };
+        if (childrenTokens[tokenIndex].type === 'image') {
+            image.attrSet('src', replaceImage(state, from, file, imgSrc, opts));
+            image.attrSet('yfm_patched', '1');
+            for (const [key, value] of Object.entries(dataAttrs)) {
+                image.attrSet(key, value);
+            }
+        }
+    }
 
-                const from = state.env.path || opts.path;
-                const file = calcPath(from, imgSrc);
-
-                if (shouldInlineSvg) {
-                    const svgContent = getSvgContent(file, from, {
-                        ...opts,
-                        rawContent,
-                    });
-                    if (svgContent) {
-                        if (svgContent.length > opts.svgInline.maxFileSize && !forceInlineSvg) {
-                            image.attrSet(
-                                'YFM011',
-                                `Svg size: ${svgContent.length}; Config size: ${opts.svgInline.maxFileSize}; Src: ${bold(file)}`,
-                            );
-                        } else {
-                            const svgToken = new state.Token('image_svg', '', 0);
-                            svgToken.attrSet(
-                                'content',
-                                replaceSvgContent(svgContent, imageOpts, opts.generateID),
-                            );
-                            childrenTokens[index] = svgToken;
-                        }
-                    }
-                }
-
-                if (childrenTokens[index].type === 'image') {
-                    image.attrSet('src', replaceImage(state, from, file, imgSrc, opts));
-                    image.attrSet('yfm_patched', '1');
-                    for (const [key, value] of Object.entries(dataAttrs)) {
-                        image.attrSet(key, value);
-                    }
-                }
+    const plugin = (state: StateCore) => {
+        filterTokens(state.tokens, 'inline', (inline, {commented}) => {
+            if (commented || !inline.children) return;
+            const childrenTokens = inline.children;
+            filterTokens(childrenTokens, 'image', (image, {commented, index}) => {
+                if (!commented) processImageToken(image, index, childrenTokens, state);
             });
         });
     };
@@ -257,14 +259,14 @@ function replaceSvgContent(
         svgRoot = `${svgRoot} height="${sanitizedHeight}"`;
     }
     if ((!width && options.width) || (!height && options.height)) {
-        content = content.replace(/.*?<svg([^>]*)>/, `<svg${svgRoot}>`);
+        content = content.replace(/<svg([^>]*)>/, `<svg${svgRoot}>`);
     }
 
     if (options.dataAttrs) {
         for (const [key, value] of Object.entries(options.dataAttrs)) {
-            svgRoot = `${svgRoot} ${key}="${sanitizeAttribute(value)}"`;
+            svgRoot = `${svgRoot} ${key}="${sanitizeHTMLAttr(value)}"`;
         }
-        content = content.replace(/.*?<svg([^>]*)>/, `<svg${svgRoot}>`);
+        content = content.replace(/<svg([^>]*)>/, `<svg${svgRoot}>`);
     }
 
     // title
