@@ -294,8 +294,10 @@ type ParsedAttrs = {
 
 function resolveDataAttr(key: string, value: string): [string, string] | null {
     const isGalleryValid = value === 'true' || value === 'false';
+
     if (key === 'gallery') return isGalleryValid ? ['data-gallery', value] : null;
     if (key === 'data-gallery') return isGalleryValid ? [key, value] : null;
+    if (key === 'gallery-src') return value !== '' ? ['data-gallery-src', value] : null;
     if (key.startsWith('data-')) return [key, value];
     return null;
 }
