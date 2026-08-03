@@ -115,19 +115,76 @@ function isGalleryValid(value: string): boolean {
     return value === 'true' || value === 'false';
 }
 
-function collectDataAttrs(image: Token): Record<string, string> {
+function resolveGallerySrcAttr(
+    key: string,
+    value: string,
+    state: StateCore,
+    from: string,
+    calcPath: (root: string, path: string) => string,
+    replaceImage: typeof replaceImageSrc,
+    opts: ImageOpts,
+): [string, string] | null {
+    if (key !== 'gallery-src' && key !== 'data-gallery-src') {
+        return null;
+    }
+
+    if (!value) {
+        return null;
+    }
+
+    const galleryFile = calcPath(from, value);
+    const processedSrc = replaceImage(state, from, galleryFile, value, opts);
+
+    return ['data-gallery-src', processedSrc];
+}
+
+function collectDataAttrs(
+    image: Token,
+    state: StateCore,
+    from: string,
+    calcPath: (root: string, path: string) => string,
+    replaceImage: typeof replaceImageSrc,
+    opts: ImageOpts,
+): Record<string, string> {
     const result: Record<string, string> = {};
     if (!image.attrs) return result;
 
     for (const [key, value] of image.attrs) {
         if (key === 'gallery' && isGalleryValid(value)) {
             result['data-gallery'] = value;
-        } else if (key.startsWith('data-') && (key !== 'data-gallery' || isGalleryValid(value))) {
+            continue;
+        }
+
+        const gallerySrc = resolveGallerySrcAttr(
+            key,
+            value,
+            state,
+            from,
+            calcPath,
+            replaceImage,
+            opts,
+        );
+
+        if (gallerySrc) {
+            result[gallerySrc[0]] = gallerySrc[1];
+            continue;
+        }
+
+        if (
+            key.startsWith('data-') &&
+            key !== 'data-gallery-src' &&
+            (key !== 'data-gallery' || isGalleryValid(value))
+        ) {
             result[key] = value;
         }
     }
+
     image.attrs = image.attrs.filter(
-        ([key, value]) => key !== 'gallery' && (key !== 'data-gallery' || isGalleryValid(value)),
+        ([key, value]) =>
+            key !== 'gallery' &&
+            key !== 'gallery-src' &&
+            (key !== 'data-gallery' || isGalleryValid(value)) &&
+            (key !== 'data-gallery-src' || value !== ''),
     );
     return result;
 }
@@ -162,7 +219,8 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
         const imgSrc = getSrcTokenAttr(image);
         if (isExternalHref(imgSrc)) return;
 
-        const dataAttrs = collectDataAttrs(image);
+        const from = state.env.path || opts.path;
+        const dataAttrs = collectDataAttrs(image, state, from, calcPath, replaceImage, opts);
         const forceInlineSvg = image.attrGet('inline') === 'true';
         const imageOpts = {
             width: image.attrGet('width'),
@@ -171,7 +229,6 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
             dataAttrs,
         };
 
-        const from = state.env.path || opts.path;
         const file = calcPath(from, imgSrc);
 
         if (shouldBeInlined(image, opts.svgInline)) {
@@ -225,6 +282,18 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
     };
 };
 
+function applyDataAttrs(svgRoot: string, dataAttrs: Record<string, string>): string {
+    let result = svgRoot;
+
+    for (const [key, value] of Object.entries(dataAttrs)) {
+        if (!result.includes(`${key}=`)) {
+            result = `${result} ${key}="${sanitizeHTMLAttr(value)}"`;
+        }
+    }
+
+    return result;
+}
+
 function replaceSvgContent(
     content: string | null,
     options: ImageOptions,
@@ -263,9 +332,7 @@ function replaceSvgContent(
     }
 
     if (options.dataAttrs) {
-        for (const [key, value] of Object.entries(options.dataAttrs)) {
-            svgRoot = `${svgRoot} ${key}="${sanitizeHTMLAttr(value)}"`;
-        }
+        svgRoot = applyDataAttrs(svgRoot, options.dataAttrs);
         content = content.replace(/<svg([^>]*)>/, `<svg${svgRoot}>`);
     }
 
