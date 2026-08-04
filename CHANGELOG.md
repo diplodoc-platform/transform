@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.77.10](https://github.com/diplodoc-platform/transform/compare/v4.77.9...v4.77.10) (2026-08-04)
+
+
+### Bug Fixes
+
+* add gallery-src attr to open img in gallery ([43ad2c9](https://github.com/diplodoc-platform/transform/commit/43ad2c9c0707472138fecc4b347f1094e835e2b7))
+
 ## [4.77.9](https://github.com/diplodoc-platform/transform/compare/v4.77.8...v4.77.9) (2026-07-30)
 
 
