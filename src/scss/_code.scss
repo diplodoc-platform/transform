@@ -41,6 +41,16 @@
                 white-space: pre-wrap;
                 overflow-x: hidden;
             }
+
+            .yfm-line-number {
+                display: inline-block;
+                min-width: 2ch;
+                padding-right: 1.5em;
+                text-align: right;
+                color: var(--yfm-color-code-line-numbers, var(--yfm-color-table-border, #ccc));
+                user-select: none;
+                -webkit-user-select: none;
+            }
         }
 
         .yfm-code-floating {
