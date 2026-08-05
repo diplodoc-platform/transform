@@ -14,7 +14,7 @@
   "author": {
     "name": "moki",
     "email": "morozov.kirill.moki@gmail.com",
-    "url": "github.com/moki"
+    "url": "https://github.com/moki"
   },
   "keywords": [
     "diplodoc",
@@ -43,7 +43,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@diplodoc/infra": "2.0.1",
+    "@diplodoc/infra": "2.2.2",
     "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
     "@gravity-ui/tsconfig": "^1.0.0",
     "@gravity-ui/uikit": "^6.10.2",
