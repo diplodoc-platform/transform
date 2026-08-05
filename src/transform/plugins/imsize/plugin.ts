@@ -307,19 +307,26 @@ function isOwnAttr(key: string): boolean {
         key === 'height' ||
         key === 'inline' ||
         key === 'gallery' ||
+        key === 'gallery-id' ||
         key === 'gallery-src' ||
         key.startsWith('data-')
     );
 }
 
 function resolveDataAttr(key: string, value: string): [string, string] | null {
-    const isGalleryValid = value === 'true' || value === 'false';
+    if (key === 'gallery' || key === 'data-gallery') {
+        const isGalleryValid = value === 'true' || value === 'false';
 
-    if (key === 'gallery') return isGalleryValid ? ['data-gallery', value] : null;
-    if (key === 'data-gallery') return isGalleryValid ? [key, value] : null;
-    if (key === 'gallery-src') return value === '' ? null : ['data-gallery-src', value];
-    if (key.startsWith('data-')) return [key, value];
-    return null;
+        return isGalleryValid ? ['data-gallery', value] : null;
+    }
+
+    if (key === 'gallery-id' || key === 'gallery-src') {
+        if (value === '') return null;
+
+        return [`data-${key}`, value];
+    }
+
+    return key.startsWith('data-') ? [key, value] : null;
 }
 
 function parseInlineAttributes(attrsStr: string): ParsedAttrs {
@@ -356,6 +363,10 @@ function parseInlineAttributes(attrsStr: string): ParsedAttrs {
             result.dataAttrs = result.dataAttrs || {};
             result.dataAttrs[resolved[0]] = resolved[1];
         }
+    }
+
+    if (result.dataAttrs?.['data-gallery-id']) {
+        result.dataAttrs['data-gallery'] = 'true';
     }
 
     // The block is fully ours only if it carries our attributes and nothing
