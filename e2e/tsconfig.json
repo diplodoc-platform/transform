@@ -7,7 +7,7 @@
     "baseUrl": ".",
     "declaration": true,
     "target": "ES6",
-    "types": ["node", "jest"]
+    "types": ["node"]
   },
   "include": [
     "tests/**/*",
