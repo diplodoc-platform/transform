@@ -235,7 +235,13 @@ export const imageWithSize = (md: MarkdownIt, opts?: ImsizeOptions): ParserInlin
                         }
                     }
 
-                    pos = bracePos + 1;
+                    // Consume the block only when it belongs to imsize entirely.
+                    // Otherwise leave its source text in the token stream: it still
+                    // has to be seen by markdown-it-attrs and by the @diplodoc/translation
+                    // skeleton, which extracts the translatable title from it.
+                    if (!result.foreign) {
+                        pos = bracePos + 1;
+                    }
                 }
             }
 
@@ -290,14 +296,28 @@ type ParsedAttrs = {
     height: string;
     inline: string;
     dataAttrs?: Record<string, string>;
+    // true when the {...} block holds anything imsize does not own:
+    // a foreign key (title=...) or free-form content like markdown-it-attrs' {.class}.
+    foreign: boolean;
 };
+
+function isOwnAttr(key: string): boolean {
+    return (
+        key === 'width' ||
+        key === 'height' ||
+        key === 'inline' ||
+        key === 'gallery' ||
+        key === 'gallery-src' ||
+        key.startsWith('data-')
+    );
+}
 
 function resolveDataAttr(key: string, value: string): [string, string] | null {
     const isGalleryValid = value === 'true' || value === 'false';
 
     if (key === 'gallery') return isGalleryValid ? ['data-gallery', value] : null;
     if (key === 'data-gallery') return isGalleryValid ? [key, value] : null;
-    if (key === 'gallery-src') return value !== '' ? ['data-gallery-src', value] : null;
+    if (key === 'gallery-src') return value === '' ? null : ['data-gallery-src', value];
     if (key.startsWith('data-')) return [key, value];
     return null;
 }
@@ -305,8 +325,11 @@ function resolveDataAttr(key: string, value: string): [string, string] | null {
 function parseInlineAttributes(attrsStr: string): ParsedAttrs {
     // Parse key=value pairs
     const attrRegex = /([\w-]+)=(?:'([^']*)'|"([^"]*)"|(\S+))/g;
-    const result: ParsedAttrs = {width: '', height: '', inline: '', dataAttrs: {}};
+    const result: ParsedAttrs = {width: '', height: '', inline: '', dataAttrs: {}, foreign: false};
+    const dense = (str: string) => str.replace(/\s+/g, '').length;
     let match;
+    let own = 0;
+    let ownChars = 0;
 
     while ((match = attrRegex.exec(attrsStr)) !== null) {
         const key = match[1];
@@ -315,6 +338,13 @@ function parseInlineAttributes(attrsStr: string): ParsedAttrs {
         if (value?.endsWith('}')) {
             value = value.slice(0, -1);
         }
+
+        if (!isOwnAttr(key)) {
+            continue;
+        }
+
+        own++;
+        ownChars += dense(match[0]);
 
         if (key === 'width' || key === 'height' || key === 'inline') {
             result[key] = value;
@@ -327,5 +357,10 @@ function parseInlineAttributes(attrsStr: string): ParsedAttrs {
             result.dataAttrs[resolved[0]] = resolved[1];
         }
     }
+
+    // The block is fully ours only if it carries our attributes and nothing
+    // foreign is left over — otherwise someone downstream has to parse it.
+    result.foreign = own === 0 || ownChars !== dense(attrsStr);
+
     return result;
 }
