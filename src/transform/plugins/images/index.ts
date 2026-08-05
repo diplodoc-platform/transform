@@ -155,6 +155,11 @@ function collectDataAttrs(
             continue;
         }
 
+        if (key === 'gallery-id' && value !== '') {
+            result['data-gallery-id'] = value;
+            continue;
+        }
+
         const gallerySrc = resolveGallerySrcAttr(
             key,
             value,
@@ -173,6 +178,7 @@ function collectDataAttrs(
         if (
             key.startsWith('data-') &&
             key !== 'data-gallery-src' &&
+            (key !== 'data-gallery-id' || value !== '') &&
             (key !== 'data-gallery' || isGalleryValid(value))
         ) {
             result[key] = value;
@@ -182,10 +188,17 @@ function collectDataAttrs(
     image.attrs = image.attrs.filter(
         ([key, value]) =>
             key !== 'gallery' &&
+            key !== 'gallery-id' &&
             key !== 'gallery-src' &&
             (key !== 'data-gallery' || isGalleryValid(value)) &&
+            (key !== 'data-gallery-id' || value !== '') &&
             (key !== 'data-gallery-src' || value !== ''),
     );
+
+    if (result['data-gallery-id']) {
+        result['data-gallery'] = 'true';
+    }
+
     return result;
 }
 
