@@ -54,12 +54,12 @@ describe('Images plugin gallery', () => {
     });
 
     test('should handle inline SVG with gallery attribute', () => {
-        const imagePath = resolve(dirname(mocksPath), 'test.svg');
+        const imagePath = resolve(dirname(mocksPath), 'test-gallery.svg');
         const svgContent =
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="red" /></svg>';
         writeFileSync(imagePath, svgContent);
 
-        const html = transformYfm('![test](./test.svg){inline=true data-gallery=true}');
+        const html = transformYfm('![test](./test-gallery.svg){inline=true data-gallery=true}');
         expect(html).toContain('data-gallery="true"');
 
         unlinkSync(imagePath);
@@ -68,6 +68,48 @@ describe('Images plugin gallery', () => {
     test('should not add gallery attribute when not set md attribute', () => {
         const html = transformYfm('![test](./test.png)');
         expect(html).not.toContain('data-gallery="true"');
+    });
+
+    describe('gallery-id', () => {
+        test('should convert gallery-id attribute into data-gallery-id', () => {
+            const html = transformYfm('![test](./test.png){gallery-id=42}');
+
+            expect(html).toContain('data-gallery-id="42"');
+            expect(html).toContain('data-gallery="true"');
+            expect(html).not.toMatch(/\sgallery-id=/);
+        });
+
+        test.each(['gallery=false gallery-id=42', 'gallery-id=42 gallery=false'])(
+            'should prioritize gallery-id over gallery=false: %s',
+            (attributes) => {
+                const html = transformYfm(`![test](./test.png){${attributes}}`);
+
+                expect(html).toContain('data-gallery-id="42"');
+                expect(html).toContain('data-gallery="true"');
+                expect(html).not.toContain('data-gallery="false"');
+            },
+        );
+
+        test('should not add data-gallery-id when gallery-id is empty', () => {
+            const html = transformYfm('![test](./test.png){gallery-id=}');
+
+            expect(html).not.toContain('data-gallery-id');
+        });
+
+        test('should add data-gallery-id to inline SVG images', () => {
+            const svgPath = resolve(dirname(mocksPath), 'test-gallery-id.svg');
+            const svgContent =
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="red" /></svg>';
+
+            writeFileSync(svgPath, svgContent);
+
+            const html = transformYfm('![test](./test-gallery-id.svg){inline=true gallery-id=42}');
+
+            expect(html).toContain('data-gallery-id="42"');
+            expect(html).toContain('data-gallery="true"');
+
+            unlinkSync(svgPath);
+        });
     });
 
     describe('gallery-src', () => {

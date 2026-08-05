@@ -66,6 +66,25 @@ describe('imsize inline attributes {key=value}', () => {
         expect(result).not.toContain('data-gallery=');
     });
 
+    test('converts gallery-id into data-gallery-id', () => {
+        const result = md.render('![test](img.png){gallery-id=42}');
+
+        expect(result).toContain('data-gallery-id="42"');
+        expect(result).toContain('data-gallery="true"');
+        expect(result).not.toMatch(/\sgallery-id=/);
+    });
+
+    test.each(['data-gallery=false gallery-id=42', 'gallery-id=42 data-gallery=false'])(
+        'gallery-id overrides gallery=false regardless of attribute order: %s',
+        (attributes) => {
+            const result = md.render(`![test](img.png){${attributes}}`);
+
+            expect(result).toContain('data-gallery-id="42"');
+            expect(result).toContain('data-gallery="true"');
+            expect(result).not.toContain('data-gallery="false"');
+        },
+    );
+
     test('single-quoted attribute value', () => {
         const result = md.render("![test](img.png){width='150'}");
         expect(result).toContain('width="150"');
