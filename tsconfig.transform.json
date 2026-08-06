@@ -9,7 +9,8 @@
     "noImplicitAny": true,
     "target": "ES2018",
     "types": ["node"],
-    "sourceMap": true
+    "sourceMap": true,
+    "rootDir": "./src/transform"
   },
   "include": ["src/transform/**/*"]
 }
