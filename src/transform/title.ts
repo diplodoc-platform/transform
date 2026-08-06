@@ -3,29 +3,7 @@ import type Token from 'markdown-it/lib/token';
 const htmlComment = /^(?:\s*<!--[\s\S]*?-->\s*)+$/;
 
 function isHtmlComment(token: Token) {
-    return (
-        (token.type === 'html_block' || token.type === 'inline') && htmlComment.test(token.content)
-    );
-}
-
-function getTitleIndex(tokens: Token[]) {
-    let index = 0;
-
-    while (index < tokens.length) {
-        if (isHtmlComment(tokens[index])) {
-            index += 1;
-        } else if (
-            tokens[index].type === 'paragraph_open' &&
-            isHtmlComment(tokens[index + 1]) &&
-            tokens[index + 2]?.type === 'paragraph_close'
-        ) {
-            index += 3;
-        } else {
-            break;
-        }
-    }
-
-    return index;
+    return token.type === 'html_block' && htmlComment.test(token.content);
 }
 
 export = function extractTitle(tokens: Token[]) {
@@ -34,7 +12,7 @@ export = function extractTitle(tokens: Token[]) {
         titleTokens: Token[] = [];
 
     if (Array.isArray(tokens) && tokens.length > 0) {
-        const titleIndex = getTitleIndex(tokens);
+        const titleIndex = tokens.findIndex((token) => !isHtmlComment(token));
         const titleOpenToken = tokens[titleIndex];
 
         if (titleOpenToken?.type === 'heading_open' && titleOpenToken.tag === 'h1') {
