@@ -3,11 +3,14 @@
   "compilerOptions": {
     "lib": ["DOM", "ES6"],
     "outDir": "lib",
-    "module": "commonjs",
-    "baseUrl": ".",
+    "module": "preserve",
     "declaration": true,
     "target": "ES6",
-    "types": ["node"]
+    "types": ["node"],
+    "moduleResolution": "bundler",
+    "paths": {
+      "fixtures/*": ["./fixtures/*"]
+    }
   },
   "include": [
     "tests/**/*",
