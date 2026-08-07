@@ -13,6 +13,7 @@ import getHeadings from './headings';
 import sanitizeHtml, {defaultOptions, sanitizeStyles} from './sanitize';
 import {olAttrConversion} from './plugins/ol-attr-conversion';
 import linkifyStrikethrough from './plugins/linkify-strikethrough';
+import inlineSvgMarker from './plugins/inline-svg-marker';
 import {DEFAULT_LANG} from './constants';
 import {createIDGeneratorByStrategy} from './plugins/utils';
 
@@ -117,6 +118,7 @@ function initPlugins(md: MarkdownIt, options: OptionsType, pluginOptions: Markdo
     }
 
     md.use(olAttrConversion);
+    md.use(inlineSvgMarker);
 
     md.use(linkifyStrikethrough);
     plugins.forEach((plugin) => md.use(plugin, pluginOptions));
