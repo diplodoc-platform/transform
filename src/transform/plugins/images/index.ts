@@ -5,7 +5,7 @@ import type {IDGenerator} from '../utils';
 
 import {join, sep} from 'path';
 import {bold} from 'chalk';
-import {optimize} from 'svgo';
+import {type PluginConfig, optimize} from 'svgo';
 import {readFileSync} from 'fs';
 
 import {isFileExists, resolveRelativePath} from '../../utilsFS';
@@ -147,7 +147,9 @@ function collectDataAttrs(
     opts: ImageOpts,
 ): Record<string, string> {
     const result: Record<string, string> = {};
-    if (!image.attrs) return result;
+    if (!image.attrs) {
+        return result;
+    }
 
     for (const [key, value] of image.attrs) {
         if (key === 'gallery' && isGalleryValid(value)) {
@@ -214,10 +216,14 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
         childrenTokens: Token[],
         state: StateCore,
     ): void {
-        if (image.attrGet('yfm_patched')) return;
+        if (image.attrGet('yfm_patched')) {
+            return;
+        }
 
         const imgSrc = getSrcTokenAttr(image);
-        if (isExternalHref(imgSrc)) return;
+        if (isExternalHref(imgSrc)) {
+            return;
+        }
 
         const from = state.env.path || opts.path;
         const dataAttrs = collectDataAttrs(image, state, from, calcPath, replaceImage, opts);
@@ -261,10 +267,14 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
 
     const plugin = (state: StateCore) => {
         filterTokens(state.tokens, 'inline', (inline, {commented}) => {
-            if (commented || !inline.children) return;
+            if (commented || !inline.children) {
+                return;
+            }
             const childrenTokens = inline.children;
             filterTokens(childrenTokens, 'image', (image, {commented, index}) => {
-                if (!commented) processImageToken(image, index, childrenTokens, state);
+                if (!commented) {
+                    processImageToken(image, index, childrenTokens, state);
+                }
             });
         });
     };
@@ -294,6 +304,21 @@ function applyDataAttrs(svgRoot: string, dataAttrs: Record<string, string>): str
     return result;
 }
 
+const removeProcessingInstructions: PluginConfig = {
+    name: 'removeProcessingInstructions',
+    fn: () => {
+        return {
+            instruction: {
+                enter: (node, parent) => {
+                    const start = parent.children.indexOf(node);
+
+                    parent.children.splice(start, 1);
+                },
+            },
+        };
+    },
+};
+
 function replaceSvgContent(
     content: string | null,
     options: ImageOptions,
@@ -305,8 +330,22 @@ function replaceSvgContent(
     // monoline
     content = content.replace(/>\r?\n</g, '><').replace(/\r?\n/g, ' ');
 
-    // remove XML processing instructions (<?xml?>, <?plantuml?>, etc.) — invalid in HTML
-    content = content.replace(/<\?[^?]*\?>/g, '');
+    const optimized = optimize(content, {
+        plugins: [
+            'removeDoctype',
+            {name: 'removeComments', params: {preservePatterns: []}},
+            removeProcessingInstructions,
+            {
+                name: 'prefixIds',
+                params: {
+                    prefix: generateID('svg'),
+                    prefixClassNames: false,
+                },
+            },
+        ],
+    });
+
+    content = optimized.data;
 
     // width, height
     let svgRoot = content.replace(/.*?<svg([^>]*)>.*/g, '$1');
@@ -342,19 +381,6 @@ function replaceSvgContent(
         // Insert title tag after the opening svg tag
         content = content.replace(/(<svg[^>]*>)/, `$1<title>${options.title}</title>`);
     }
-
-    // randomize ids
-    content = optimize(content, {
-        plugins: [
-            {
-                name: 'prefixIds',
-                params: {
-                    prefix: generateID('svg'),
-                    prefixClassNames: false,
-                },
-            },
-        ],
-    }).data;
 
     return escapeMarkdownCharsInSvgTextNodes(content);
 }
