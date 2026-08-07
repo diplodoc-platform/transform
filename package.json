@@ -90,7 +90,7 @@
     "@vitest/coverage-v8": "^2.1.9",
     "@vitest/ui": "^2.1.8",
     "autoprefixer": "^10.4.15",
-    "esbuild": "^0.27.2",
+    "esbuild": "^0.28.1",
     "esbuild-sass-plugin": "^3.3.1",
     "highlight.js": "^11.8.0",
     "jest-serializer-html": "^7.1.0",
