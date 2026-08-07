@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.77.11](https://github.com/diplodoc-platform/transform/compare/v4.77.10...v4.77.11) (2026-08-07)
+
+
+### Bug Fixes
+
+* setup for upgrade 5.9.3 DOCSTOOLS-6357 ([cd3aaac](https://github.com/diplodoc-platform/transform/commit/cd3aaaca5d417a3bcc61edec5a2de88ab8ee3c5b))
+* Upgrade typescript to 5.9.3 DOCSTOOLS-6357 ([9a50c17](https://github.com/diplodoc-platform/transform/commit/9a50c17d08bf0bf037b194e4a1aa1dee1e633cf7))
+* Upgrade typescript to 6.0.3 DOCSTOOLS-6359 ([8a09dde](https://github.com/diplodoc-platform/transform/commit/8a09dde8a8371025fa77db19ddf3cfe69a5e3e66))
+
 ## [4.77.10](https://github.com/diplodoc-platform/transform/compare/v4.77.9...v4.77.10) (2026-08-04)
 
 
