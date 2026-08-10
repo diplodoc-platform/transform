@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.77.12](https://github.com/diplodoc-platform/transform/compare/v4.77.11...v4.77.12) (2026-08-10)
+
+
+### Bug Fixes
+
+* add gallery-id attribute ([1d595ae](https://github.com/diplodoc-platform/transform/commit/1d595ae877ce3695590b162a790498b6ea4c7702))
+
 ## [4.77.11](https://github.com/diplodoc-platform/transform/compare/v4.77.10...v4.77.11) (2026-08-07)
 
 
