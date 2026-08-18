@@ -76,6 +76,7 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
         disableCommonAnchors,
         useCommonAnchorButtons,
         lang,
+        isLintRun,
     } = options;
 
     const plugin = (state: StateCore) => {
@@ -129,6 +130,9 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
                         lower: true,
                         remove: /[^\w\s$_\-,;=/]+/g,
                     });
+                    if (isLintRun && !id) {
+                        token.attrSet('YFM021', 'true');
+                    }
                     ghId = slugger.slug(title);
                 }
 
