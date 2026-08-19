@@ -62,7 +62,7 @@ function trimMarkdownSuffix(value: string, unmatchedOpeners: Map<number, number>
         const previousEnd = end;
 
         // Preserve the built-in linkify rule's handling of emphasis markers.
-        while (end > 0 && value.charCodeAt(end - 1) === ASTERISK_MARKER) {
+        while (end > 0 && value.codePointAt(end - 1) === ASTERISK_MARKER) {
             end--;
         }
 
@@ -70,8 +70,8 @@ function trimMarkdownSuffix(value: string, unmatchedOpeners: Map<number, number>
         while (
             unmatchedStrikethrough > 0 &&
             end >= 2 &&
-            value.charCodeAt(end - 1) === TILDE_MARKER &&
-            value.charCodeAt(end - 2) === TILDE_MARKER
+            value.codePointAt(end - 1) === TILDE_MARKER &&
+            value.codePointAt(end - 2) === TILDE_MARKER
         ) {
             end -= 2;
             unmatchedStrikethrough--;
@@ -82,7 +82,7 @@ function trimMarkdownSuffix(value: string, unmatchedOpeners: Map<number, number>
         while (
             unmatchedEmphasis > 0 &&
             end > 0 &&
-            value.charCodeAt(end - 1) === UNDERSCORE_MARKER
+            value.codePointAt(end - 1) === UNDERSCORE_MARKER
         ) {
             end--;
             unmatchedEmphasis--;
