@@ -1,5 +1,6 @@
 import {dirname} from 'path';
 import dedent from 'ts-dedent';
+import MarkdownIt from 'markdown-it';
 
 import includes from '../src/transform/plugins/includes';
 import anchors from '../src/transform/plugins/anchors';
@@ -20,6 +21,24 @@ const html = (text: string, opts?: transform.Options) => {
         ...opts,
     });
     return html;
+};
+
+const headingTokens = (text: string, opts: {extractTitle?: boolean; isLintRun?: boolean} = {}) => {
+    const md = new MarkdownIt();
+
+    md.use(anchors, {
+        path: mocksPath,
+        root: dirname(mocksPath),
+        rootPublicPath: '',
+        lang: 'en',
+        log,
+        transformLink: (value: string) => value,
+        extractTitle: true,
+        isLintRun: true,
+        ...opts,
+    });
+
+    return md.parse(text, {}).filter((token) => token.type === 'heading_open');
 };
 
 describe('Anchors', () => {
@@ -223,6 +242,52 @@ describe('Anchors', () => {
                 Content
             `);
             expect(title).toBe('Config <key> reference');
+        });
+    });
+
+    describe('lint markers', () => {
+        it('marks headings with empty automatic anchors', () => {
+            const headings = headingTokens(dedent`
+                ## 😀
+
+                ## ☕
+
+                中文
+                ---
+            `);
+
+            expect(headings).toHaveLength(3);
+            expect(headings.every((token) => token.attrGet('YFM021') === 'true')).toBe(true);
+        });
+
+        it('marks duplicate empty base anchors before adding numeric suffixes', () => {
+            const headings = headingTokens(dedent`
+                ## 😀
+
+                ## 🚀
+            `);
+
+            expect(headings.map((token) => token.attrGet('id'))).toEqual(['', '1']);
+            expect(headings.map((token) => token.attrGet('YFM021'))).toEqual(['true', 'true']);
+        });
+
+        it('does not mark valid automatic, explicit, or extracted title anchors', () => {
+            const headings = headingTokens(dedent`
+                # 😀
+
+                ## Release 🚀 notes
+
+                ## 😀 {#emoji-section}
+            `);
+
+            expect(headings.map((token) => token.attrGet('YFM021'))).toEqual([null, null, null]);
+        });
+
+        it('does not add lint markers during a regular transform', () => {
+            const [heading] = headingTokens('## 😀', {isLintRun: false});
+
+            expect(heading.attrGet('YFM021')).toBeNull();
+            expect(html('## 😀')).not.toContain('YFM021');
         });
     });
 
