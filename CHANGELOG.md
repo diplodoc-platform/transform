@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.77.13](https://github.com/diplodoc-platform/transform/compare/v4.77.12...v4.77.13) (2026-08-21)
+
+
+### Bug Fixes
+
+* **transform:** preserve strikethrough around auto-linked URLs #DOCSTOOLS-5243 ([aa6e75e](https://github.com/diplodoc-platform/transform/commit/aa6e75ecf488d9da7b1ba93a090683cdbdc95e48))
+
 ## [4.77.12](https://github.com/diplodoc-platform/transform/compare/v4.77.11...v4.77.12) (2026-08-10)
 
 
