@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.77.14](https://github.com/diplodoc-platform/transform/compare/v4.77.13...v4.77.14) (2026-08-26)
+
+
+### Bug Fixes
+
+* **yfmlint:** utf16 in headers ([375c968](https://github.com/diplodoc-platform/transform/commit/375c9681769cd4ce9d268185d3938e90cdb349a1))
+
 ## [4.77.13](https://github.com/diplodoc-platform/transform/compare/v4.77.12...v4.77.13) (2026-08-21)
 
 
