@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.77.15](https://github.com/diplodoc-platform/transform/compare/v4.77.14...v4.77.15) (2026-08-27)
+
+
+### Bug Fixes
+
+* handle inline SVG preamble ([#1044](https://github.com/diplodoc-platform/transform/issues/1044)) ([cd091d5](https://github.com/diplodoc-platform/transform/commit/cd091d5f8c427afe83fd0291364f258ed1714ed4))
+
 ## [4.77.14](https://github.com/diplodoc-platform/transform/compare/v4.77.13...v4.77.14) (2026-08-26)
 
 
