@@ -1,5 +1,9 @@
 import type Token from 'markdown-it/lib/token';
 import type {EnvType, OptionsType, OutputType} from './typings';
+import type {
+    ContentAudience as VisibilityContentAudience,
+    VisibilityMode as VisibilityContentMode,
+} from './plugins/visibility';
 
 import {bold} from 'chalk';
 
@@ -59,4 +63,6 @@ export = transform;
 namespace transform {
     export type Options = OptionsType;
     export type Output = OutputType;
+    export type ContentAudience = VisibilityContentAudience;
+    export type VisibilityMode = VisibilityContentMode;
 }

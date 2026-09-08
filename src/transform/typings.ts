@@ -6,6 +6,7 @@ import type {SanitizeFunction, SanitizeOptions} from './sanitize';
 import type {LogLevels, Logger} from './log';
 import type {ChangelogItem} from './plugins/changelog/types';
 import type {IDGenerator} from './plugins/utils';
+import type {VisibilityMode} from './plugins/visibility';
 
 export interface MarkdownIt extends DefaultMarkdownIt {
     assets?: string[];
@@ -111,6 +112,10 @@ export interface OptionsType {
      */
     codeLineWrapping?: boolean;
     /**
+     * Selects audience-specific content. Defaults to `human`.
+     */
+    contentAudience?: VisibilityMode;
+    /**
      * Custom ID generator factory to use for this transform call.
      * If provided, it will be called once per file to create a per-file isolated generator.
      * If not provided, a new {@link IDGenerator} is created via {@link createIDGenerator}
@@ -164,6 +169,7 @@ export interface MarkdownItPluginOpts {
      * the next non-blank line is an `{% include %}` directive.
      */
     multilineTermDefinitions?: boolean;
+    contentAudience?: VisibilityMode;
 }
 
 export type MarkdownItPluginCb<T extends {} = {}> = {
