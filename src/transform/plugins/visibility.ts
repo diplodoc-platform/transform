@@ -45,10 +45,10 @@ type VisibilityBlock = {
 const AUDIENCE_ORDER: ContentAudience[] = ['human', 'agent'];
 
 function parseAudience(value = ''): ContentAudience | undefined {
-    if (value === 'humans') {
+    if (value === 'human') {
         return 'human';
     }
-    if (value === 'agents') {
+    if (value === 'agent') {
         return 'agent';
     }
     return undefined;
@@ -59,7 +59,7 @@ function createVisibilityError(value: string, line: number): VisibilityError {
     return {
         line,
         value,
-        message: `Invalid visibility audience "${printableValue}" at line ${line}; expected "humans" or "agents"`,
+        message: `Invalid visibility audience "${printableValue}" at line ${line}; expected "human" or "agent"`,
     };
 }
 

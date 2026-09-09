@@ -1,18 +1,21 @@
+import {dirname, resolve} from 'node:path';
 import dedent from 'ts-dedent';
 import {beforeEach, describe, expect, it} from 'vitest';
 
 import transform from '../src/transform';
+import defaultPlugins from '../src/transform/plugins';
+import includes from '../src/transform/plugins/includes';
 import {filterAudienceContent} from '../src/transform/plugins/visibility';
 import {log} from '../src/transform/log';
 
 const MARKDOWN = dedent`
 Common content.
 
-:::visibility agents
+:::visibility agent
 Agent instructions.
 :::
 
-:::visibility humans
+:::visibility human
 Human instructions.
 :::
 `;
@@ -51,6 +54,121 @@ describe('visibility', () => {
         expect(result.html).not.toContain('Hidden content.');
         expect(logs.error.join('\n')).toContain('Invalid visibility audience "robots"');
     });
+
+    it.each([
+        ['human', 'Human heading', 'Agent heading'],
+        ['agent', 'Agent heading', 'Human heading'],
+    ] as const)(
+        'keeps only %s headings in the generated mini-toc and anchors',
+        (contentAudience, visibleHeading, hiddenHeading) => {
+            const {result} = transform(
+                dedent`
+                :::visibility human
+                ## Human heading
+                :::
+
+                :::visibility agent
+                ## Agent heading
+                :::
+                `,
+                {contentAudience},
+            );
+
+            expect(JSON.stringify(result.headings)).toContain(visibleHeading);
+            expect(JSON.stringify(result.headings)).not.toContain(hiddenHeading);
+            expect(result.html).toContain(`id="${visibleHeading.toLowerCase().replace(' ', '-')}"`);
+            expect(result.html).not.toContain(
+                `id="${hiddenHeading.toLowerCase().replace(' ', '-')}"`,
+            );
+        },
+    );
+
+    it('composes with notes, cuts, and tabs in both nesting directions', () => {
+        const source = dedent`
+        {% note info %}
+
+        :::visibility agent
+        Agent inside note.
+        :::
+
+        {% endnote %}
+
+        :::visibility agent
+        {% note info %}
+
+        Note inside agent visibility.
+
+        {% endnote %}
+        :::
+
+        {% cut "Details" %}
+
+        :::visibility agent
+        Agent inside cut.
+        :::
+
+        {% endcut %}
+
+        :::visibility agent
+        {% cut "Agent details" %}
+
+        Cut inside agent visibility.
+
+        {% endcut %}
+        :::
+
+        {% list tabs %}
+        - Tab
+
+          :::visibility agent
+          Agent inside tabs.
+          :::
+        {% endlist %}
+
+        :::visibility agent
+        {% list tabs %}
+        - Agent tab
+
+          Tabs inside agent visibility.
+        {% endlist %}
+        :::
+        `;
+
+        const human = transform(source).result.html;
+        const agent = transform(source, {contentAudience: 'agent'}).result.html;
+        const audienceSpecificText = [
+            'Agent inside note.',
+            'Note inside agent visibility.',
+            'Agent inside cut.',
+            'Cut inside agent visibility.',
+            'Agent inside tabs.',
+            'Tabs inside agent visibility.',
+        ];
+
+        audienceSpecificText.forEach((text) => {
+            expect(human).not.toContain(text);
+            expect(agent).toContain(text);
+        });
+    });
+
+    it('composes with includes in both nesting directions', () => {
+        const path = resolve(__dirname, 'visibility-entry.md');
+        const source = dedent`
+        {% include notitle [Visible include](./mocks/visibility-include.md) %}
+
+        :::visibility agent
+        {% include notitle [Agent include](./mocks/visibility-include.md) %}
+        :::
+        `;
+        const options = {path, root: dirname(path), plugins: [...defaultPlugins, includes]};
+        const human = transform(source, options).result.html;
+        const agent = transform(source, {...options, contentAudience: 'agent'}).result.html;
+
+        expect(human).toContain('Human content from include.');
+        expect(human).not.toContain('Agent content from include.');
+        expect(agent).toContain('Agent content from include.');
+        expect(agent).not.toContain('Human content from include.');
+    });
 });
 
 describe('filterAudienceContent', () => {
@@ -70,10 +188,10 @@ describe('filterAudienceContent', () => {
     it('applies nested visibility as an intersection', () => {
         const result = filterAudienceContent(
             dedent`
-            :::visibility agents
+            :::visibility agent
             Agent content.
 
-            :::visibility humans
+            :::visibility human
             Unreachable content.
             :::
             :::
@@ -89,7 +207,7 @@ describe('filterAudienceContent', () => {
     it('does not interpret examples inside fenced code blocks', () => {
         const source = dedent`
         \`\`\`md
-        :::visibility agents
+        :::visibility agent
         Example content.
         :::
         \`\`\`
