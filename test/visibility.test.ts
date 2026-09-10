@@ -5,7 +5,7 @@ import {beforeEach, describe, expect, it} from 'vitest';
 import transform from '../src/transform';
 import defaultPlugins from '../src/transform/plugins';
 import includes from '../src/transform/plugins/includes';
-import {filterAudienceContent} from '../src/transform/plugins/visibility';
+import visibilityPlugin, {filterAudienceContent} from '../src/transform/plugins/visibility';
 import {log} from '../src/transform/log';
 
 const MARKDOWN = dedent`
@@ -39,6 +39,16 @@ describe('visibility', () => {
         expect(result.html).toContain('Agent instructions.');
         expect(result.html).not.toContain('Human instructions.');
         expect(result.meta).toMatchObject({visibilityAudiences: ['human', 'agent']});
+    });
+
+    it('preserves both audiences during a lint parse', () => {
+        const {result} = transform(MARKDOWN, {
+            plugins: [visibilityPlugin],
+            isLintRun: true,
+        } as unknown as transform.Options);
+
+        expect(result.html).toContain('Human instructions.');
+        expect(result.html).toContain('Agent instructions.');
     });
 
     it('reports and hides an unsupported audience', () => {
@@ -169,6 +179,16 @@ describe('visibility', () => {
         expect(agent).toContain('Agent content from include.');
         expect(agent).not.toContain('Human content from include.');
     });
+
+    it('records audiences found only in an include', () => {
+        const path = resolve(__dirname, 'visibility-entry.md');
+        const source = '{% include notitle [Visible include](./mocks/visibility-include.md) %}';
+        const options = {path, root: dirname(path), plugins: [...defaultPlugins, includes]};
+
+        const {result} = transform(source, options);
+
+        expect(result.meta).toMatchObject({visibilityAudiences: ['human', 'agent']});
+    });
 });
 
 describe('filterAudienceContent', () => {
@@ -202,6 +222,28 @@ describe('filterAudienceContent', () => {
         expect(result.content).toContain('Agent content.');
         expect(result.content).not.toContain('Unreachable content.');
         expect(result.audience).toEqual(['human', 'agent']);
+    });
+
+    it('preserves list indentation when filtering nested visibility blocks', () => {
+        const result = filterAudienceContent(
+            dedent`
+            - Outer item
+              - Nested item
+
+                :::visibility agent
+                Agent content.
+
+                :::visibility human
+                Unreachable human content.
+                :::
+                :::
+            `,
+            'agent',
+        );
+
+        expect(result.content).toContain('    Agent content.');
+        expect(result.content).not.toContain('Unreachable human content.');
+        expect(result.content).not.toContain(':::visibility');
     });
 
     it('does not interpret examples inside fenced code blocks', () => {
