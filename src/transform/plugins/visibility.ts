@@ -21,6 +21,7 @@ export interface VisibilityError {
 
 export interface VisibilityOptions {
     audience?: VisibilityMode;
+    lint?: boolean;
     onError?: (error: VisibilityError) => void;
 }
 
@@ -40,18 +41,13 @@ type VisibilityMeta = Record<string, unknown> & {
 type VisibilityBlock = {
     audience?: ContentAudience;
     params: ContainerDirectiveParams;
+    children: VisibilityBlock[];
 };
 
 const AUDIENCE_ORDER: ContentAudience[] = ['human', 'agent'];
 
 function parseAudience(value = ''): ContentAudience | undefined {
-    if (value === 'human') {
-        return 'human';
-    }
-    if (value === 'agent') {
-        return 'agent';
-    }
-    return undefined;
+    return AUDIENCE_ORDER.find((audience) => audience === value);
 }
 
 function createVisibilityError(value: string, line: number): VisibilityError {
@@ -73,16 +69,24 @@ function orderedAudiences(audiences: Iterable<ContentAudience>): ContentAudience
 }
 
 function markAudience(state: StateBlock, audience: ContentAudience): void {
-    const currentMeta =
-        state.env.meta && typeof state.env.meta === 'object' && !Array.isArray(state.env.meta)
-            ? (state.env.meta as VisibilityMeta)
-            : {};
-    const visibilityAudiences = orderedAudiences([
-        ...(currentMeta.visibilityAudiences ?? []),
-        audience,
-    ]);
+    if (!state.env.meta || typeof state.env.meta !== 'object' || Array.isArray(state.env.meta)) {
+        state.env.meta = {};
+    }
+    const meta = state.env.meta as VisibilityMeta;
+    meta.visibilityAudiences = orderedAudiences([...(meta.visibilityAudiences ?? []), audience]);
+}
 
-    state.env.meta = {...currentMeta, visibilityAudiences};
+function emitLintToken(
+    state: StateBlock,
+    params: ContainerDirectiveParams,
+    audience: ContentAudience | undefined,
+): void {
+    const token = state.push('__yfm_lint', '', 0);
+    token.hidden = true;
+    token.map = [params.startLine, params.startLine + 1];
+    token.attrSet('visibility-directive', 'true');
+    token.attrSet('visibility-audience', params.contentTitle?.raw ?? '');
+    token.attrSet('YFM023', audience ? 'valid' : 'invalid');
 }
 
 /**
@@ -96,16 +100,32 @@ function markAudience(state: StateBlock, audience: ContentAudience): void {
  */
 export function visibility({
     audience = 'human',
+    lint = false,
     onError,
 }: VisibilityOptions = {}): MarkdownIt.PluginSimple {
     return (md) => {
         md.use(directiveParser());
+        if (lint) {
+            md.core.ruler.before('block', 'visibility-lint-mode', (state) => {
+                const token = new state.Token('__yfm_lint', '', 0);
+                token.hidden = true;
+                token.attrSet('visibility-parser', 'true');
+                state.tokens.push(token);
+            });
+        }
         registerContainerDirective(md, 'visibility', (state, params) => {
             const rawAudience = params.contentTitle?.raw ?? '';
             const blockAudience = parseAudience(rawAudience);
 
+            if (lint) {
+                emitLintToken(state, params, blockAudience);
+            }
+
             if (!blockAudience) {
                 onError?.(createVisibilityError(rawAudience, params.startLine + 1));
+                if (audience === 'preserve') {
+                    tokenizeBlockContent(state, params.content, 'visibility-directive');
+                }
                 return true;
             }
 
@@ -124,57 +144,52 @@ function splitLines(content: string): string[] {
     return content.match(/[^\r\n]*(?:\r\n|\n|\r)|[^\r\n]+$/g) ?? [];
 }
 
-function filterSegment(
-    markdown: string,
-    selectedAudience: ContentAudience,
-    detectedAudiences: Set<ContentAudience>,
-    errors: VisibilityError[],
-    lineOffset = 0,
-): string {
-    const blocks: VisibilityBlock[] = [];
-    const md = new MarkdownItImpl({html: true}).use(directiveParser());
+function nestBlocks(blocks: VisibilityBlock[]): VisibilityBlock[] {
+    const roots: VisibilityBlock[] = [];
+    const stack: VisibilityBlock[] = [];
 
-    registerContainerDirective(md, 'visibility', (_state, params) => {
-        const rawAudience = params.contentTitle?.raw ?? '';
-        const blockAudience = parseAudience(rawAudience);
-        blocks.push({audience: blockAudience, params});
-
-        if (blockAudience) {
-            addAudience(detectedAudiences, blockAudience);
-        } else {
-            errors.push(createVisibilityError(rawAudience, lineOffset + params.startLine + 1));
+    for (const block of blocks.sort((left, right) => {
+        const startDiff = left.params.startLine - right.params.startLine;
+        return startDiff || right.params.endLine - left.params.endLine;
+    })) {
+        while (
+            stack.length &&
+            block.params.startLine >= stack[stack.length - 1].params.content.endLine
+        ) {
+            stack.pop();
         }
 
-        // Consume the outer block as a unit. Selected bodies are parsed recursively below so edits
-        // never overlap and source outside visibility directives remains byte-for-byte intact.
-        return true;
-    });
-
-    md.parse(markdown, {});
-    if (!blocks.length) {
-        return markdown;
+        const parent = stack[stack.length - 1];
+        if (parent && block.params.endLine <= parent.params.content.endLine) {
+            parent.children.push(block);
+        } else {
+            roots.push(block);
+        }
+        stack.push(block);
     }
 
-    const lines = splitLines(markdown);
+    return roots;
+}
+
+function filterRange(
+    lines: string[],
+    startLine: number,
+    endLine: number,
+    blocks: VisibilityBlock[],
+    selectedAudience: ContentAudience,
+): string {
     const parts: string[] = [];
-    let cursorLine = 0;
+    let cursorLine = startLine;
 
-    for (const block of blocks.sort(
-        (left, right) => left.params.startLine - right.params.startLine,
-    )) {
+    for (const block of blocks) {
         const {params, audience} = block;
-        if (params.startLine < cursorLine) {
-            continue;
-        }
-
         parts.push(lines.slice(cursorLine, params.startLine).join(''));
-        const body = lines.slice(params.content.startLine, params.content.endLine).join('');
-        const filteredBody = filterSegment(
-            body,
+        const filteredBody = filterRange(
+            lines,
+            params.content.startLine,
+            params.content.endLine,
+            block.children,
             selectedAudience,
-            detectedAudiences,
-            errors,
-            lineOffset + params.content.startLine,
         );
         if (audience === selectedAudience) {
             parts.push(filteredBody);
@@ -182,7 +197,7 @@ function filterSegment(
         cursorLine = params.endLine;
     }
 
-    parts.push(lines.slice(cursorLine).join(''));
+    parts.push(lines.slice(cursorLine, endLine).join(''));
     return parts.join('');
 }
 
@@ -199,7 +214,29 @@ export function filterAudienceContent(
 ): AudienceFilterResult {
     const detectedAudiences = new Set<ContentAudience>();
     const errors: VisibilityError[] = [];
-    const content = filterSegment(markdown, audience, detectedAudiences, errors);
+    const blocks: VisibilityBlock[] = [];
+    const md = new MarkdownItImpl({html: true}).use(directiveParser());
+
+    registerContainerDirective(md, 'visibility', (state, params) => {
+        const rawAudience = params.contentTitle?.raw ?? '';
+        const blockAudience = parseAudience(rawAudience);
+        blocks.push({audience: blockAudience, params, children: []});
+
+        if (blockAudience) {
+            addAudience(detectedAudiences, blockAudience);
+        } else {
+            errors.push(createVisibilityError(rawAudience, params.startLine + 1));
+        }
+
+        // Parse nested directives in the original block state. Their line maps remain relative to
+        // the complete source, so reconstruction below can preserve list indentation exactly.
+        tokenizeBlockContent(state, params.content, 'visibility-directive');
+        return true;
+    });
+
+    md.parse(markdown, {});
+    const lines = splitLines(markdown);
+    const content = filterRange(lines, 0, lines.length, nestBlocks(blocks), audience);
     const originalCharacters = Array.from(markdown).length;
     const filteredCharacters = Array.from(content).length;
 
@@ -214,11 +251,17 @@ export function filterAudienceContent(
 }
 
 const visibilityPlugin: MarkdownItPluginCb = (md, options) => {
+    const lint = options.isLintRun;
     md.use(
         visibility({
-            audience: options.contentAudience ?? 'human',
-            onError: (error) =>
-                options.log.error(`${error.message}${options.path ? ` in ${options.path}` : ''}`),
+            audience: lint ? 'preserve' : (options.contentAudience ?? 'human'),
+            lint,
+            onError: lint
+                ? undefined
+                : (error) =>
+                      options.log.error(
+                          `${error.message}${options.path ? ` in ${options.path}` : ''}`,
+                      ),
         }),
     );
 };
