@@ -47,7 +47,7 @@ type VisibilityBlock = {
 const AUDIENCE_ORDER: ContentAudience[] = ['human', 'agent'];
 
 function parseAudience(value = ''): ContentAudience | undefined {
-    return AUDIENCE_ORDER.find((audience) => audience === value);
+    return value === 'human' || value === 'agent' ? value : undefined;
 }
 
 function createVisibilityError(value: string, line: number): VisibilityError {
