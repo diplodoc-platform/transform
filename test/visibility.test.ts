@@ -199,7 +199,7 @@ describe('filterAudienceContent', () => {
         expect(result.content).toContain('Agent instructions.');
         expect(result.content).not.toContain('Human instructions.');
         expect(result.content).not.toContain(':::visibility');
-        expect(result.audience).toEqual(['human', 'agent']);
+        expect(result.audienceSpecificContent).toEqual(['human', 'agent']);
         expect(result.originalCharacters - result.filteredCharacters).toBe(
             result.removedCharacters,
         );
@@ -221,7 +221,7 @@ describe('filterAudienceContent', () => {
 
         expect(result.content).toContain('Agent content.');
         expect(result.content).not.toContain('Unreachable content.');
-        expect(result.audience).toEqual(['human', 'agent']);
+        expect(result.audienceSpecificContent).toEqual(['human', 'agent']);
     });
 
     it('preserves list indentation when filtering nested visibility blocks', () => {
@@ -256,7 +256,7 @@ describe('filterAudienceContent', () => {
         `;
 
         expect(filterAudienceContent(source, 'human')).toMatchObject({
-            audience: [],
+            audienceSpecificContent: [],
             content: source,
         });
     });

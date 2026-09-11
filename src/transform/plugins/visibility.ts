@@ -27,7 +27,7 @@ export interface VisibilityOptions {
 
 export interface AudienceFilterResult {
     content: string;
-    audience: ContentAudience[];
+    audienceSpecificContent: ContentAudience[];
     originalCharacters: number;
     filteredCharacters: number;
     removedCharacters: number;
@@ -212,6 +212,18 @@ export function filterAudienceContent(
     markdown: string,
     audience: ContentAudience,
 ): AudienceFilterResult {
+    const originalCharacters = Array.from(markdown).length;
+    if (!markdown.includes(':::visibility')) {
+        return {
+            content: markdown,
+            audienceSpecificContent: [],
+            originalCharacters,
+            filteredCharacters: originalCharacters,
+            removedCharacters: 0,
+            errors: [],
+        };
+    }
+
     const detectedAudiences = new Set<ContentAudience>();
     const errors: VisibilityError[] = [];
     const blocks: VisibilityBlock[] = [];
@@ -237,12 +249,11 @@ export function filterAudienceContent(
     md.parse(markdown, {});
     const lines = splitLines(markdown);
     const content = filterRange(lines, 0, lines.length, nestBlocks(blocks), audience);
-    const originalCharacters = Array.from(markdown).length;
     const filteredCharacters = Array.from(content).length;
 
     return {
         content,
-        audience: orderedAudiences(detectedAudiences),
+        audienceSpecificContent: orderedAudiences(detectedAudiences),
         originalCharacters,
         filteredCharacters,
         removedCharacters: originalCharacters - filteredCharacters,
