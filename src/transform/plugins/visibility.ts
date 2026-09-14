@@ -45,6 +45,7 @@ type VisibilityBlock = {
 };
 
 const AUDIENCE_ORDER: ContentAudience[] = ['human', 'agent'];
+const VISIBILITY_DIRECTIVE_REGEXP = /:::[ \t]*visibility(?:[ \t]|\r?\n|$)/;
 
 function parseAudience(value = ''): ContentAudience | undefined {
     return value === 'human' || value === 'agent' ? value : undefined;
@@ -213,7 +214,7 @@ export function filterAudienceContent(
     audience: ContentAudience,
 ): AudienceFilterResult {
     const originalCharacters = Array.from(markdown).length;
-    if (!markdown.includes(':::visibility')) {
+    if (!VISIBILITY_DIRECTIVE_REGEXP.test(markdown)) {
         return {
             content: markdown,
             audienceSpecificContent: [],

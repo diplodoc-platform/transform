@@ -205,6 +205,20 @@ describe('filterAudienceContent', () => {
         );
     });
 
+    it('recognizes whitespace between the container marker and directive name', () => {
+        const result = filterAudienceContent(
+            dedent`
+            ::: visibility agent
+            Agent instructions.
+            :::
+            `,
+            'human',
+        );
+
+        expect(result.content).not.toContain('Agent instructions.');
+        expect(result.audienceSpecificContent).toEqual(['agent']);
+    });
+
     it('applies nested visibility as an intersection', () => {
         const result = filterAudienceContent(
             dedent`
