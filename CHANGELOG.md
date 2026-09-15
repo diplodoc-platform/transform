@@ -1,5 +1,23 @@
 # Changelog
 
+## [4.78.0](https://github.com/diplodoc-platform/transform/compare/v4.77.16...v4.78.0) (2026-09-15)
+
+
+### Features
+
+* add audience visibility blocks DOCSTOOLS-6553 ([dd3356f](https://github.com/diplodoc-platform/transform/commit/dd3356f35fe8e0c3a220ea43f7f206fcbf182b4a))
+* use singular visibility audiences ([cc9c8c7](https://github.com/diplodoc-platform/transform/commit/cc9c8c76a2536223538190bf4e95e1e7a652f496))
+
+
+### Bug Fixes
+
+* align audience filter metadata DOCSTOOLS-6553 ([d62ddee](https://github.com/diplodoc-platform/transform/commit/d62ddee01e1c2eb92d182d4be23b4f4b3cbc1b14))
+* align visibility parsing across consumers DOCSTOOLS-6553 ([0e3167d](https://github.com/diplodoc-platform/transform/commit/0e3167daf3252009a2da129358b2d926852785d0))
+* detect all visibility directive openers DOCSTOOLS-6553 ([4a83ff6](https://github.com/diplodoc-platform/transform/commit/4a83ff69b17ebe5d3e9c944696ccb8e662b55404))
+* simplify audience validation DOCSTOOLS-6553 ([eedf41a](https://github.com/diplodoc-platform/transform/commit/eedf41abe5bcbae4dee95022dcf2e807a753d2a2))
+* **transform:** detect spaced visibility directives ([827fc00](https://github.com/diplodoc-platform/transform/commit/827fc002ab39e65d43d1628e7f55aa5228def1af))
+* update directive dependency to 0.4.0 ([c9a8b31](https://github.com/diplodoc-platform/transform/commit/c9a8b3144ea0aa1b9b2c902a6192299553bb86c6))
+
 ## [4.77.16](https://github.com/diplodoc-platform/transform/compare/v4.77.15...v4.77.16) (2026-09-02)
 
 
