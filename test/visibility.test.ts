@@ -205,18 +205,35 @@ describe('filterAudienceContent', () => {
         );
     });
 
-    it('recognizes whitespace between the container marker and directive name', () => {
+    it.each(['::: visibility agent', ':::Visibility agent'])(
+        'recognizes the parser-supported opener %s',
+        (opener) => {
+            const result = filterAudienceContent(
+                dedent`
+                ${opener}
+                Agent instructions.
+                :::
+                `,
+                'human',
+            );
+
+            expect(result.content).not.toContain('Agent instructions.');
+            expect(result.audienceSpecificContent).toEqual(['agent']);
+        },
+    );
+
+    it('does not skip a directive whose attributes follow the name without whitespace', () => {
         const result = filterAudienceContent(
             dedent`
-            ::: visibility agent
-            Agent instructions.
+            :::visibility{agent}
+            Hidden because the audience title is missing.
             :::
             `,
             'human',
         );
 
-        expect(result.content).not.toContain('Agent instructions.');
-        expect(result.audienceSpecificContent).toEqual(['agent']);
+        expect(result.content).not.toContain('Hidden because the audience title is missing.');
+        expect(result.errors).toEqual([expect.objectContaining({value: '{agent}'})]);
     });
 
     it('applies nested visibility as an intersection', () => {
