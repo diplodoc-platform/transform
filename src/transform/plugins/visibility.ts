@@ -45,7 +45,7 @@ type VisibilityBlock = {
 };
 
 const AUDIENCE_ORDER: ContentAudience[] = ['human', 'agent'];
-const VISIBILITY_DIRECTIVE_REGEXP = /:::[ \t]*visibility(?:[ \t]|\r?\n|$)/;
+const VISIBILITY_DIRECTIVE_REGEXP = /:{3,}[ \t]*visibility/i;
 
 function parseAudience(value = ''): ContentAudience | undefined {
     return value === 'human' || value === 'agent' ? value : undefined;
