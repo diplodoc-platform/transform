@@ -30,3 +30,440 @@ exports[`Table plugin > parses table with liquid variables inside 1`] = `
   </tbody>
 </table>
 `;
+
+exports[`table column widths > should apply different widths to outer and inner tables independently 1`] = `
+<table>
+  <colgroup>
+    <col style="width:10px">
+    <col style="width:20px">
+  </colgroup>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          Text
+        </p>
+      </td>
+      <td>
+        <table>
+          <colgroup>
+            <col style="width:50px">
+            <col style="width:100px">
+          </colgroup>
+          <tbody>
+            <tr>
+              <td>
+                <p>
+                  inner A
+                </p>
+              </td>
+              <td>
+                <p>
+                  inner B
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`table column widths > should combine widths with table attributes 1`] = `
+<table class="my-table">
+  <colgroup>
+    <col style="width:30px">
+    <col style="width:auto">
+  </colgroup>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          A
+        </p>
+      </td>
+      <td>
+        <p>
+          B
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`table column widths > should handle percentage width values 1`] = `
+<table>
+  <colgroup>
+    <col style="width:25%">
+    <col style="width:75%">
+  </colgroup>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          A
+        </p>
+      </td>
+      <td>
+        <p>
+          B
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`table column widths > should handle table with options but no content rows 1`] = `
+<table>
+  <tbody>
+  </tbody>
+</table>
+`;
+
+exports[`table column widths > should ignore extra widths beyond column count 1`] = `
+<table>
+  <colgroup>
+    <col style="width:10px">
+    <col style="width:20px">
+  </colgroup>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          A
+        </p>
+      </td>
+      <td>
+        <p>
+          B
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`table column widths > should not apply outer widths to inner table 1`] = `
+<table>
+  <colgroup>
+    <col style="width:10px">
+    <col style="width:20px">
+  </colgroup>
+  <tbody>
+    <tr>
+      <td>
+        <table>
+          <tbody>
+            <tr>
+              <td>
+                <p>
+                  inner A
+                </p>
+              </td>
+              <td>
+                <p>
+                  inner B
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+      <td>
+        <p>
+          Text
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`table column widths > should not render colgroup when widths value is empty 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          A
+        </p>
+      </td>
+      <td>
+        <p>
+          B
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`table column widths > should override widths when specified on multiple lines 1`] = `
+<table>
+  <colgroup>
+    <col style="width:10px">
+    <col style="width:20px">
+    <col style="width:30px">
+  </colgroup>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          A
+        </p>
+      </td>
+      <td>
+        <p>
+          B
+        </p>
+      </td>
+      <td>
+        <p>
+          C
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`table column widths > should pad missing widths with auto 1`] = `
+<table>
+  <colgroup>
+    <col style="width:50px">
+    <col style="width:auto">
+    <col style="width:auto">
+  </colgroup>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          A
+        </p>
+      </td>
+      <td>
+        <p>
+          B
+        </p>
+      </td>
+      <td>
+        <p>
+          C
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`table column widths > should parse multiple options with only widths taking effect 1`] = `
+<table>
+  <colgroup>
+    <col style="width:30px">
+    <col style="width:auto">
+  </colgroup>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          A
+        </p>
+      </td>
+      <td>
+        <p>
+          B
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`table column widths > should render colgroup for single column table 1`] = `
+<table>
+  <colgroup>
+    <col style="width:200px">
+  </colgroup>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          A
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`table column widths > should render colgroup with widths option 1`] = `
+<table>
+  <colgroup>
+    <col style="width:30px">
+    <col style="width:auto">
+    <col style="width:100px">
+  </colgroup>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          A
+        </p>
+      </td>
+      <td>
+        <p>
+          B
+        </p>
+      </td>
+      <td>
+        <p>
+          C
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`table column widths > should render table without options unchanged 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          A
+        </p>
+      </td>
+      <td>
+        <p>
+          B
+        </p>
+      </td>
+      <td>
+        <p>
+          C
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`table column widths > should render widths alongside colspan 1`] = `
+<table>
+  <colgroup>
+    <col style="width:30px">
+    <col style="width:auto">
+    <col style="width:100px">
+  </colgroup>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          A
+        </p>
+      </td>
+      <td>
+        <p>
+          B
+        </p>
+      </td>
+      <td>
+        <p>
+          C
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <p>
+          X
+        </p>
+      </td>
+      <td>
+        <p>
+          Z
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`table column widths > should support widths in nested tables 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <table>
+          <colgroup>
+            <col style="width:50px">
+            <col style="width:100px">
+          </colgroup>
+          <tbody>
+            <tr>
+              <td>
+                <p>
+                  inner A
+                </p>
+              </td>
+              <td>
+                <p>
+                  inner B
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`table column widths > should use max column count across all rows 1`] = `
+<table>
+  <colgroup>
+    <col style="width:10px">
+    <col style="width:20px">
+    <col style="width:30px">
+  </colgroup>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          A
+        </p>
+      </td>
+      <td>
+        <p>
+          B
+        </p>
+      </td>
+      <td>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>
+          X
+        </p>
+      </td>
+      <td>
+        <p>
+          Y
+        </p>
+      </td>
+      <td>
+        <p>
+          Z
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
