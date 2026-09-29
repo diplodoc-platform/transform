@@ -209,6 +209,41 @@ describe('Sanitize HTML utility', () => {
         });
     });
 
+    describe('style tag breakout', () => {
+        it.each([
+            [
+                'comment inside closing tag',
+                '<style></sty/**/le/><script src=poc.js></script>{color:red}</style>',
+            ],
+            [
+                'mixed case and whitespace',
+                '<style></STY/**/LE ><img src=x onerror=alert(1)>{color:red}</style>',
+            ],
+            [
+                'comment at another position',
+                '<style>a</st/*x*/yle><script>alert(1)</script>{color:red}</style>',
+            ],
+        ])('should remove style tag when sanitized css closes it: %s', (_name, content) => {
+            const result = sanitizeHtml(content);
+
+            expect(result).not.toMatch(/<\s*\/\s*style/i);
+            expect(result).not.toContain('<script');
+            expect(result).not.toContain('onerror');
+            expect(html(content)).not.toContain('<script');
+        });
+
+        it('should preserve style tag with combinators and attribute selectors', () => {
+            const result = sanitizeHtml(
+                '<style>ul > li + li ~ p, a[title="x"] {color: red;}</style>',
+            );
+
+            expect(result).toContain('<style>');
+            expect(result).toContain('ul > li + li ~ p');
+            expect(result).toContain('a[title="x"]');
+            expect(result).toMatch(/color:\s*red/);
+        });
+    });
+
     it('transform should not sanitize html if needToSanitizeHtml is false', () => {
         expect(html('<img src=a onerror=alert(1)>', {needToSanitizeHtml: false})).toMatchSnapshot();
     });
