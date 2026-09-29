@@ -234,6 +234,24 @@ describe('js/code integration — wrap button', () => {
     });
 });
 
+describe('js/code integration — button focus', () => {
+    it.each(['.yfm-wrapping-button', '.yfm-clipboard-button'])(
+        'should release focus after clicking a child of %s',
+        async (selector) => {
+            mount(render('```\nline\n```', {codeLineWrapping: true}));
+            const button = must(document.querySelector<HTMLElement>(selector), 'button');
+            const icon = must(button.querySelector('.g-button__icon-inner'), 'icon');
+
+            button.focus();
+            click(icon);
+            await flush();
+            vi.runOnlyPendingTimers();
+
+            expect(document.activeElement).not.toBe(button);
+        },
+    );
+});
+
 describe('js/code integration — event guards', () => {
     it('should ignore clicks that are not on a copy or wrap button', async () => {
         const {code} = mount(render('```\nnpm install\n```'));

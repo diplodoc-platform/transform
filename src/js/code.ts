@@ -63,7 +63,7 @@ function buttonCopyFn(target: HTMLElement) {
     copyToClipboard(textContent.trim()).then(() => {
         notifySuccess(container.querySelector('.yfm-clipboard-icon'));
 
-        setTimeout(() => target.blur(), 1500);
+        setTimeout(() => button.blur(), 500);
     });
 }
 
@@ -79,7 +79,7 @@ function buttonWrapFn(target: HTMLElement) {
     button.classList.toggle(SELECTED_WRAP_BUTTON, hasWrap);
     button.setAttribute('aria-pressed', String(hasWrap));
 
-    setTimeout(() => target.blur(), 500);
+    setTimeout(() => button.blur(), 500);
 }
 
 if (typeof document !== 'undefined') {
