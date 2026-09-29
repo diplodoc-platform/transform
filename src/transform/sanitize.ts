@@ -752,7 +752,14 @@ function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) 
                 });
             });
 
-            dom(element).text(css.stringify(parsedCSS));
+            const sanitizedCSS = css.stringify(parsedCSS);
+
+            if (CLOSE_STYLE_RE.test(sanitizedCSS)) {
+                dom(element).remove();
+                return;
+            }
+
+            dom(element).text(sanitizedCSS);
         } catch (error) {
             dom(element).remove();
 
