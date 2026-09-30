@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.78.3](https://github.com/diplodoc-platform/transform/compare/v4.78.2...v4.78.3) (2026-09-30)
+
+
+### Bug Fixes
+
+* fixed buttons styles ([#1075](https://github.com/diplodoc-platform/transform/issues/1075)) ([38dc838](https://github.com/diplodoc-platform/transform/commit/38dc838d2e3b6165226f0018f45d5cc680513ce7))
+
 ## [4.78.2](https://github.com/diplodoc-platform/transform/compare/v4.78.1...v4.78.2) (2026-09-30)
 
 
