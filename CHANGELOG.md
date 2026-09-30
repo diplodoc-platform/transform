@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.78.1](https://github.com/diplodoc-platform/transform/compare/v4.78.0...v4.78.1) (2026-09-30)
+
+
+### Bug Fixes
+
+* **code:** release focus after clicking code buttons ([#1069](https://github.com/diplodoc-platform/transform/issues/1069)) ([6feb23d](https://github.com/diplodoc-platform/transform/commit/6feb23ded9d6d17a85c25bb4b1b64fc96ea73af2))
+
 ## [4.78.0](https://github.com/diplodoc-platform/transform/compare/v4.77.16...v4.78.0) (2026-09-15)
 
 
