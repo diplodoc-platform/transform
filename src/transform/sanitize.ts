@@ -571,6 +571,7 @@ export const defaultOptions: SanitizeOptions = {
 const DANGEROUS_TAGS_RE =
     /<\s*(script|iframe|object|embed|svg|img|video|audio|link|meta|base|form|style|template|math|foreignobject)\b/i;
 const CLOSE_STYLE_RE = /<\s*\/\s*style/i;
+const STYLE_END_TAG_RE = /<\/style[\s/>]/i;
 const DANGEROUS_URL_RE =
     /url\s*\(\s*['"]?\s*(?:javascript:|vbscript:|data\s*:\s*(?:text\/html|application\/xhtml\+xml|image\/svg\+xml))/i;
 const IE_EXPR_RE = /expression\s*\(/i;
@@ -754,7 +755,7 @@ function sanitizeStyleTags(dom: cheerio.CheerioAPI, cssWhiteList: CssWhiteList) 
 
             const sanitizedCSS = css.stringify(parsedCSS);
 
-            if (CLOSE_STYLE_RE.test(sanitizedCSS)) {
+            if (STYLE_END_TAG_RE.test(sanitizedCSS)) {
                 dom(element).remove();
                 return;
             }

@@ -242,6 +242,16 @@ describe('Sanitize HTML utility', () => {
             expect(result).toContain('a[title="x"]');
             expect(result).toMatch(/color:\s*red/);
         });
+
+        it('should preserve style tag with non-style end tag names in selectors', () => {
+            const result = sanitizeHtml(
+                '<style>p[title="</stylesheet>"] {color: red;} h1 {color: blue;}</style>',
+            );
+
+            expect(result).toContain('p[title="</stylesheet>"]');
+            expect(result).toMatch(/color:\s*red/);
+            expect(result).toMatch(/color:\s*blue/);
+        });
     });
 
     it('transform should not sanitize html if needToSanitizeHtml is false', () => {
