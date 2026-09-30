@@ -23,6 +23,7 @@ describeStory(stories, 'Base', () => {
         const anchorButton = yfmRoot.getByRole('button');
         await anchorButton.click();
 
+        await expect(anchorButton).toHaveAttribute('data-tooltip-id', /.+/);
         const tooltipId = await anchorButton.getAttribute('data-tooltip-id');
         const tooltip = page.locator(`div[id="${tooltipId}"]`);
         const classes = await tooltip.getAttribute('class');
@@ -37,6 +38,7 @@ describeStory(stories, 'Base', () => {
         const anchorButton = yfmRoot.getByRole('button');
         await anchorButton.click();
 
+        await expect(anchorButton).toHaveAttribute('data-tooltip-id', /.+/);
         const tooltipId = await anchorButton.getAttribute('data-tooltip-id');
         const tooltip = page.locator(`div[id="${tooltipId}"]`);
         await expect(tooltip).toBeVisible();

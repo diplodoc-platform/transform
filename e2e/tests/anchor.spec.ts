@@ -12,6 +12,7 @@ describeStory(stories, 'Common', () => {
         const anchorLink = yfmRoot.locator('.yfm-anchor');
         await anchorLink.click();
 
+        await expect(anchorLink).toHaveAttribute('data-tooltip-id', /.+/);
         const tooltipId = await anchorLink.getAttribute('data-tooltip-id');
         const tooltip = page.locator(`div[id="${tooltipId}"]`);
         const classes = await tooltip.getAttribute('class');
@@ -26,6 +27,7 @@ describeStory(stories, 'Common', () => {
         const anchorLink = yfmRoot.locator('.yfm-anchor');
         await anchorLink.click();
 
+        await expect(anchorLink).toHaveAttribute('data-tooltip-id', /.+/);
         const tooltipId = await anchorLink.getAttribute('data-tooltip-id');
         const tooltip = page.locator(`div[id="${tooltipId}"]`);
         await expect(tooltip).toBeVisible();
