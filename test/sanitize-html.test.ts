@@ -223,6 +223,10 @@ describe('Sanitize HTML utility', () => {
                 'comment at another position',
                 '<style>a</st/*x*/yle><script>alert(1)</script>{color:red}</style>',
             ],
+            [
+                'tab after tag name',
+                '<style>a</st/**/yle\t><script>alert(1)</script>{color:red}</style>',
+            ],
         ])('should remove style tag when sanitized css closes it: %s', (_name, content) => {
             const result = sanitizeHtml(content);
 
@@ -243,12 +247,15 @@ describe('Sanitize HTML utility', () => {
             expect(result).toMatch(/color:\s*red/);
         });
 
-        it('should preserve style tag with non-style end tag names in selectors', () => {
+        it.each([
+            ['non-style end tag name', '</stylesheet>'],
+            ['non-html whitespace after tag name', '</style\u00a0>'],
+        ])('should preserve style tag with %s in selector', (_name, value) => {
             const result = sanitizeHtml(
-                '<style>p[title="</stylesheet>"] {color: red;} h1 {color: blue;}</style>',
+                `<style>p[title="${value}"] {color: red;} h1 {color: blue;}</style>`,
             );
 
-            expect(result).toContain('p[title="</stylesheet>"]');
+            expect(result).toContain(`p[title="${value}"]`);
             expect(result).toMatch(/color:\s*red/);
             expect(result).toMatch(/color:\s*blue/);
         });
