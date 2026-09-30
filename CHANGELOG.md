@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.78.2](https://github.com/diplodoc-platform/transform/compare/v4.78.1...v4.78.2) (2026-09-30)
+
+
+### Bug Fixes
+
+* match only html whitespace in style end tag check DOCSTOOLS-6626 ([56438d3](https://github.com/diplodoc-platform/transform/commit/56438d3cc72051bca3019e27df05f57de7bfe5c6))
+* prevent style tag breakout in sanitizeStyleTags DOCSTOOLS-6626 ([7480af0](https://github.com/diplodoc-platform/transform/commit/7480af08f4346e9a244b660179e52b1539e18eb7))
+* require end tag delimiter in style breakout check DOCSTOOLS-6626 ([384f08a](https://github.com/diplodoc-platform/transform/commit/384f08a7ba4a4622fb898639d46f3c09bcffca75))
+
 ## [4.78.1](https://github.com/diplodoc-platform/transform/compare/v4.78.0...v4.78.1) (2026-09-30)
 
 
