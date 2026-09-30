@@ -19,6 +19,10 @@
             transition:
                 opacity 0.1s ease-out,
                 color 0.15s linear;
+
+            &::before {
+                opacity: 0.5;
+            }
         }
 
         &:hover {
@@ -56,6 +60,23 @@
             flex-wrap: nowrap;
             gap: 4px;
 
+            &::before {
+                $background: var(
+                    --yfm-color-code-background,
+                    var(--yfm-color-code-background-private)
+                );
+
+                content: '';
+                position: absolute;
+                inset: 0;
+                z-index: -1;
+                background:
+                    linear-gradient($background, $background),
+                    var(--yfm-color-base, var(--yfm-color-base-private));
+                opacity: 0.5;
+                pointer-events: none;
+            }
+
             &:focus,
             &:has(> .yfm-code-button:focus) {
                 opacity: 1;
@@ -70,6 +91,20 @@
             color: var(--yfm-color-hljs-comment-private);
             pointer-events: none;
             user-select: none;
+        }
+    }
+
+    & &-code-floating-container > pre > code {
+        @media screen {
+            @supports selector(::-webkit-scrollbar) {
+                scrollbar-width: auto;
+                scrollbar-color: auto;
+
+                &:not(.wrap) {
+                    padding-bottom: 10px;
+                    overflow-x: scroll;
+                }
+            }
         }
     }
 
