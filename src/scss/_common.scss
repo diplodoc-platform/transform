@@ -415,6 +415,21 @@
 
         white-space: pre;
 
+        @media screen {
+            &::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                min-width: 24px;
+                border-radius: 3px;
+                background-color: var(
+                    --g-color-scroll-handle,
+                    var(--yfm-color-text, var(--yfm-color-text-private))
+                );
+            }
+        }
+
         .yfm-line-number {
             display: inline-block;
             padding-right: 1em;
