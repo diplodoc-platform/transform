@@ -64,3 +64,16 @@ describeStory(stories, 'LongContent', () => {
         );
     });
 });
+
+describeStory(stories, 'RawPreLongContent', () => {
+    test('raw pre scrolls long lines instead of overflowing', async ({yfmRoot}) => {
+        const pre = yfmRoot.locator('pre');
+        await expect(pre).toBeVisible();
+
+        const isPreScrollable = await pre.evaluate((el) => el.scrollWidth > el.clientWidth);
+        const isRootOverflowed = await yfmRoot.evaluate((el) => el.scrollWidth > el.clientWidth);
+
+        expect(isPreScrollable).toBe(true);
+        expect(isRootOverflowed).toBe(false);
+    });
+});

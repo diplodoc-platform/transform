@@ -31,3 +31,17 @@ export const LongContent: MarkdownSnippetStory = {
         },
     },
 };
+
+export const RawPreLongContent: MarkdownSnippetStory = {
+    name: 'Raw HTML pre with long content',
+    args: {
+        snippet: dedent`
+            Raw HTML pre without inner code:
+
+            <pre>| id                   | hostname                         | service        | status  | created_at          | updated_at          | owner        | flags        |</pre>
+        `,
+        extraOptions: {
+            allowHTML: true,
+        },
+    },
+};

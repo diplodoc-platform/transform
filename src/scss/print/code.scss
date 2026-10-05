@@ -5,5 +5,9 @@
                 white-space: pre-wrap;
             }
         }
+
+        pre:not(:has(> code)) {
+            white-space: pre-wrap;
+        }
     }
 }
