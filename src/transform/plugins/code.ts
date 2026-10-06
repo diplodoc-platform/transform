@@ -92,26 +92,123 @@ interface EnvTerm {
     };
 }
 
-function termReplace(
-    str: string,
-    env: EnvTerm,
-    escape: (str: string) => string,
-    generateID: IDGenerator,
-): string {
-    const regTerms = Object.keys(env.terms)
+function buildTermRegExp(env: EnvTerm, escape: (str: string) => string): RegExp | null {
+    const termKeys = Object.keys(env.terms);
+    if (!termKeys.length) {
+        return null;
+    }
+
+    const regTerms = termKeys
         .map((el) => el.slice(1))
         .map(escape)
         .join('|');
-    const regText = '\\[([^\\[]+)\\](\\(\\*(' + regTerms + ')\\))';
-    const reg = new RegExp(regText, 'g');
 
-    const termCode = str.replace(
+    // The title must stay on a single line: a multi-line match would be collapsed
+    // into a one-word placeholder and shift line numbers and prompt flags.
+    return new RegExp('\\[([^\\[\\n]+)\\](\\(\\*(' + regTerms + ')\\))', 'g');
+}
+
+function renderTerm(title: string, termKey: string, generateID: IDGenerator): string {
+    return `<i class="yfm yfm-term_title" term-key=":${termKey}" id="${generateID(termKey)}">${title}</i>`;
+}
+
+const TERM_PLACEHOLDER_PREFIX = 'yfmterm';
+const TERM_PLACEHOLDER_END = 'z';
+const TERM_PLACEHOLDER_DIGITS = 'abcdefghij';
+
+interface TermPlaceholders {
+    prefix: string;
+    placeholders: Map<string, string>;
+}
+
+/**
+ * Encodes a non-negative integer with letters `a`-`j` (one per decimal digit)
+ * so the resulting token contains neither digits nor the terminator letter.
+ *
+ * @param value - Non-negative integer.
+ * @returns Letter-only representation of `value`.
+ */
+function encodeIndex(value: number): string {
+    return String(value)
+        .split('')
+        .map((digit) => TERM_PLACEHOLDER_DIGITS[Number(digit)])
+        .join('');
+}
+
+/**
+ * Replaces `[title](*key)` term references in the raw fence content with
+ * letter-only placeholders BEFORE the content reaches the highlighter.
+ *
+ * Term markup is replaced on the raw source rather than on the highlighted
+ * HTML because highlight.js splits the pattern with `<span>` tags for many
+ * grammars (e.g. `[` `]` and `(*key)` get different token classes in yaml,
+ * keywords like `type` get wrapped in typescript). A placeholder made of
+ * lowercase letters only is always tokenized as a single word, so it survives
+ * highlighting intact and can be swapped back for the term markup afterwards.
+ *
+ * @param content - Raw fence content.
+ * @param reg - Term reference pattern built from the defined term keys.
+ * @param generateID - ID generator for the term title element.
+ * @returns Content with placeholders and the data needed to restore them.
+ */
+function replaceTermsWithPlaceholders(
+    content: string,
+    reg: RegExp,
+    generateID: IDGenerator,
+): {content: string} & TermPlaceholders {
+    // Make sure the prefix never collides with something already in the code.
+    let prefix = TERM_PLACEHOLDER_PREFIX;
+    while (content.includes(prefix)) {
+        prefix += 'x';
+    }
+
+    const placeholders = new Map<string, string>();
+    reg.lastIndex = 0;
+    const replaced = content.replace(
         reg,
-        (_match: string, p1: string, _p2: string, p3: string) =>
-            `<i class="yfm yfm-term_title" term-key=":${p3}" id="${generateID(p3)}">${p1}</i>`,
+        (_match: string, title: string, _p2: string, key: string) => {
+            const placeholder = prefix + encodeIndex(placeholders.size) + TERM_PLACEHOLDER_END;
+            placeholders.set(placeholder, renderTerm(escapeHtml(title), key, generateID));
+            return placeholder;
+        },
     );
 
-    return termCode || str;
+    return {content: replaced, prefix, placeholders};
+}
+
+/**
+ * Swaps term placeholders in the rendered HTML back for the term markup.
+ *
+ * @param html - Highlighted fence HTML containing placeholders.
+ * @param placeholders - Placeholder data from {@link replaceTermsWithPlaceholders}.
+ * @returns HTML with term markup restored.
+ */
+function restoreTermPlaceholders(html: string, {prefix, placeholders}: TermPlaceholders): string {
+    if (!placeholders.size) {
+        return html;
+    }
+
+    const placeholderRE = new RegExp(
+        `${prefix}[${TERM_PLACEHOLDER_DIGITS}]+${TERM_PLACEHOLDER_END}`,
+        'g',
+    );
+
+    return html.replace(
+        placeholderRE,
+        (placeholder) => placeholders.get(placeholder) ?? placeholder,
+    );
+}
+
+/**
+ * Fallback for fence renderers that do not render `token.content` verbatim:
+ * replaces term references that are still intact in the rendered HTML.
+ */
+function termReplace(str: string, reg: RegExp, generateID: IDGenerator): string {
+    reg.lastIndex = 0;
+
+    return str.replace(reg, (_match: string, title: string, _p2: string, key: string) =>
+        renderTerm(title, key, generateID),
+    );
 }
 
 const SPAN_TAG_RE = /<span[^>]*>|<\/span>/g;
@@ -289,6 +386,17 @@ const code: MarkdownItPluginCb<CodeOptions> = (md, opts) => {
             promptEscaped = escapeHtml(prompt);
         }
 
+        // Swap term references for placeholders BEFORE highlighting so that
+        // language grammars cannot split `[title](*key)` into several spans.
+        // The placeholders are restored after the HTML is rendered.
+        const termRE = env?.terms ? buildTermRegExp(env, md.utils.escapeRE) : null;
+        const termPlaceholders = termRE
+            ? replaceTermsWithPlaceholders(token.content, termRE, generateID)
+            : null;
+        if (termPlaceholders) {
+            token.content = termPlaceholders.content;
+        }
+
         let superCode = superCodeRenderer?.(tokens, idx, options, env, self);
 
         // Restore the original content so the mutation does not leak to other
@@ -333,12 +441,12 @@ const code: MarkdownItPluginCb<CodeOptions> = (md, opts) => {
             });
         }
 
-        const superCodeWithTerms =
-            superCode && env?.terms
-                ? termReplace(superCode, env, md.utils.escapeRE, generateID)
-                : superCode;
+        if (superCode && termRE && termPlaceholders) {
+            superCode = restoreTermPlaceholders(superCode, termPlaceholders);
+            superCode = termReplace(superCode, termRE, generateID);
+        }
 
-        return wrapInFloatingContainer(superCodeWithTerms, idx, lineWrapping, shouldWrap);
+        return wrapInFloatingContainer(superCode, idx, lineWrapping, shouldWrap);
     };
 };
 
