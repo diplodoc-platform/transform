@@ -74,6 +74,47 @@ describe('Terms', () => {
         expect(clearRandomId(result)).toMatchSnapshot();
     });
 
+    test('Should create term in yaml code where highlighting splits the pattern', () => {
+        const inputPath = resolve(__dirname, './mocks/term/code-highlight-yaml.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(result).toContain('<code class="hljs yaml">');
+        expect(clearRandomId(result)).toContain(
+            '<i class="yfm yfm-term_title" term-key=":service-id" id="service-id">service-id</i>',
+        );
+        expect(result).not.toContain('(*service-id)');
+        expect(result).toContain('id=":service-id_element"');
+    });
+
+    test('Should create term in code where title is a highlighted keyword', () => {
+        const inputPath = resolve(__dirname, './mocks/term/code-highlight-keyword.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(result).toContain('<code class="hljs ts">');
+        expect(clearRandomId(result)).toContain(
+            '<i class="yfm yfm-term_title" term-key=":type" id="type">type</i>',
+        );
+        expect(clearRandomId(result)).toContain(
+            '<i class="yfm yfm-term_title" term-key=":default" id="default">default</i>',
+        );
+        expect(result).not.toContain('(*type)');
+        expect(result).not.toContain('(*default)');
+    });
+
+    test('Should escape term title in highlighted code and avoid placeholder collisions', () => {
+        const inputPath = resolve(__dirname, './mocks/term/code-highlight-escape.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(clearRandomId(result)).toContain(
+            '<i class="yfm yfm-term_title" term-key=":html" id="html">a &lt; b &amp; "c"</i>',
+        );
+        expect(result).toContain('yfmterm = ');
+        expect(result).not.toMatch(/yfmtermx/);
+    });
+
     test('Term should use content from include', () => {
         const inputPath = resolve(__dirname, './mocks/term/includeContent.md');
         const input = readFileSync(inputPath, 'utf8');
