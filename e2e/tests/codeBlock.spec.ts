@@ -76,4 +76,15 @@ describeStory(stories, 'RawPreLongContent', () => {
         expect(isPreScrollable).toBe(true);
         expect(isRootOverflowed).toBe(false);
     });
+
+    test('raw pre wraps long urls and hashes when printing', async ({yfmRoot, page}) => {
+        await page.emulateMedia({media: 'print'});
+
+        const pre = yfmRoot.locator('pre');
+        await expect(pre).toBeVisible();
+
+        const isPreOverflowed = await pre.evaluate((el) => el.scrollWidth > el.clientWidth);
+
+        expect(isPreOverflowed).toBe(false);
+    });
 });
