@@ -74,6 +74,7 @@ describeStory(stories, 'RawPreLongContent', () => {
         const isRootOverflowed = await yfmRoot.evaluate((el) => el.scrollWidth > el.clientWidth);
 
         expect(isPreScrollable).toBe(true);
+        await expect(pre).toHaveCSS('overflow-x', 'auto');
         expect(isRootOverflowed).toBe(false);
     });
 
