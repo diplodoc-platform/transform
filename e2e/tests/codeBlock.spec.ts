@@ -64,3 +64,28 @@ describeStory(stories, 'LongContent', () => {
         );
     });
 });
+
+describeStory(stories, 'RawPreLongContent', () => {
+    test('raw pre scrolls long lines instead of overflowing', async ({yfmRoot}) => {
+        const pre = yfmRoot.locator('pre');
+        await expect(pre).toBeVisible();
+
+        const isPreScrollable = await pre.evaluate((el) => el.scrollWidth > el.clientWidth);
+        const isRootOverflowed = await yfmRoot.evaluate((el) => el.scrollWidth > el.clientWidth);
+
+        expect(isPreScrollable).toBe(true);
+        await expect(pre).toHaveCSS('overflow-x', 'auto');
+        expect(isRootOverflowed).toBe(false);
+    });
+
+    test('raw pre wraps long urls and hashes when printing', async ({yfmRoot, page}) => {
+        await page.emulateMedia({media: 'print'});
+
+        const pre = yfmRoot.locator('pre');
+        await expect(pre).toBeVisible();
+
+        const isPreOverflowed = await pre.evaluate((el) => el.scrollWidth > el.clientWidth);
+
+        expect(isPreOverflowed).toBe(false);
+    });
+});

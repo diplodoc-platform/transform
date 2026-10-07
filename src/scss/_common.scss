@@ -385,6 +385,11 @@
 
     pre {
         word-wrap: normal;
+
+        // raw HTML <pre> has no inner <code> to scroll long lines
+        &:not(:has(> code)) {
+            overflow-x: auto;
+        }
     }
 
     table code {
