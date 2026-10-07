@@ -115,6 +115,29 @@ describe('Terms', () => {
         expect(result).not.toMatch(/yfmtermx/);
     });
 
+    test('Should restore term when highlighting splits the placeholder', () => {
+        const inputPath = resolve(__dirname, './mocks/term/code-highlight-split.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = clearRandomId(transformYfm(input, inputPath));
+
+        const term = '<i class="yfm yfm-term_title" term-key=":char" id="char">c</i>';
+        expect(result).toContain(`X = <span class="hljs-string">$</span>${term}.`);
+        expect(result).toContain(`<span class="hljs-character">\\</span>${term})`);
+        expect(result).toContain(`c := <span class="hljs-string">$</span>${term}.`);
+        expect(result).not.toContain('yfmterm');
+    });
+
+    test('Should escape term key in code term attributes', () => {
+        const inputPath = resolve(__dirname, './mocks/term/code-key-injection.md');
+        const input = readFileSync(inputPath, 'utf8');
+        const result = transformYfm(input, inputPath);
+
+        expect(result).not.toContain('<img');
+        expect(result).not.toContain('onclick="alert');
+        expect(result).toContain('term-key=":x&quot;&gt;&lt;img src=x onerror=alert(1)&gt;"');
+        expect(result).toContain('term-key=":y&quot; onclick=&quot;alert(1)"');
+    });
+
     test('Term should use content from include', () => {
         const inputPath = resolve(__dirname, './mocks/term/includeContent.md');
         const input = readFileSync(inputPath, 'utf8');

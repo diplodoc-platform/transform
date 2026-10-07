@@ -105,11 +105,20 @@ function buildTermRegExp(env: EnvTerm, escape: (str: string) => string): RegExp 
 
     // The title must stay on a single line: a multi-line match would be collapsed
     // into a one-word placeholder and shift line numbers and prompt flags.
-    return new RegExp('\\[([^\\[\\n]+)\\](\\(\\*(' + regTerms + ')\\))', 'g');
+    return new RegExp(String.raw`\[([^\[\n]+)\](\(\*(${regTerms})\))`, 'g');
 }
 
+/**
+ * @param title - Term title, already HTML-escaped.
+ * @param termKey - Raw term key from the markdown source.
+ * @param generateID - ID generator for the term title element.
+ * @returns Term title markup with escaped attribute values.
+ */
 function renderTerm(title: string, termKey: string, generateID: IDGenerator): string {
-    return `<i class="yfm yfm-term_title" term-key=":${termKey}" id="${generateID(termKey)}">${title}</i>`;
+    const key = escapeHtml(termKey);
+    const id = escapeHtml(generateID(termKey));
+
+    return `<i class="yfm yfm-term_title" term-key=":${key}" id="${id}">${title}</i>`;
 }
 
 const TERM_PLACEHOLDER_PREFIX = 'yfmterm';
@@ -143,8 +152,9 @@ function encodeIndex(value: number): string {
  * HTML because highlight.js splits the pattern with `<span>` tags for many
  * grammars (e.g. `[` `]` and `(*key)` get different token classes in yaml,
  * keywords like `type` get wrapped in typescript). A placeholder made of
- * lowercase letters only is always tokenized as a single word, so it survives
- * highlighting intact and can be swapped back for the term markup afterwards.
+ * lowercase letters only is tokenized as a single word by most grammars, and
+ * {@link restoreTermPlaceholders} tolerates the rare splits (e.g. `$y` char
+ * literals in erlang) by matching across `<span>` boundaries.
  *
  * @param content - Raw fence content.
  * @param reg - Term reference pattern built from the defined term keys.
@@ -176,8 +186,41 @@ function replaceTermsWithPlaceholders(
     return {content: replaced, prefix, placeholders};
 }
 
+const HTML_TAG_RE = /<[^>]*>/g;
+
+/**
+ * Re-emits the tags found inside a split placeholder around the term markup
+ * so that the surrounding spans stay balanced: spans closed inside the
+ * placeholder are closed before the term, spans opened inside it are reopened
+ * after the term, and spans fully contained in it are dropped.
+ *
+ * @param fragment - Matched HTML fragment of a placeholder with tags inside.
+ * @param markup - Term markup to insert in place of the placeholder.
+ * @returns Replacement HTML keeping the span nesting intact.
+ */
+function wrapTermWithSplitTags(fragment: string, markup: string): string {
+    const closeBefore: string[] = [];
+    const openAfter: string[] = [];
+
+    for (const tag of fragment.match(HTML_TAG_RE) ?? []) {
+        if (!tag.startsWith('</')) {
+            openAfter.push(tag);
+        } else if (openAfter.length) {
+            openAfter.pop();
+        } else {
+            closeBefore.push(tag);
+        }
+    }
+
+    return closeBefore.join('') + markup + openAfter.join('');
+}
+
 /**
  * Swaps term placeholders in the rendered HTML back for the term markup.
+ *
+ * Highlighters may wrap a part of the placeholder in its own span (erlang
+ * and smalltalk treat `$y` as a char literal, clojure treats `\y` the same
+ * way), so the pattern allows tags between any two placeholder characters.
  *
  * @param html - Highlighted fence HTML containing placeholders.
  * @param placeholders - Placeholder data from {@link replaceTermsWithPlaceholders}.
@@ -188,15 +231,24 @@ function restoreTermPlaceholders(html: string, {prefix, placeholders}: TermPlace
         return html;
     }
 
+    const tags = '(?:<[^>]*>)*';
     const placeholderRE = new RegExp(
-        `${prefix}[${TERM_PLACEHOLDER_DIGITS}]+${TERM_PLACEHOLDER_END}`,
+        prefix.split('').join(tags) +
+            tags +
+            `(?:[${TERM_PLACEHOLDER_DIGITS}]${tags})+` +
+            TERM_PLACEHOLDER_END,
         'g',
     );
 
-    return html.replace(
-        placeholderRE,
-        (placeholder) => placeholders.get(placeholder) ?? placeholder,
-    );
+    return html.replace(placeholderRE, (fragment) => {
+        const placeholder = fragment.replace(HTML_TAG_RE, '');
+        const markup = placeholders.get(placeholder);
+        if (!markup) {
+            return fragment;
+        }
+
+        return placeholder === fragment ? markup : wrapTermWithSplitTags(fragment, markup);
+    });
 }
 
 /**
