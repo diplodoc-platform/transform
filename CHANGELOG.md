@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.78.4](https://github.com/diplodoc-platform/transform/compare/v4.78.3...v4.78.4) (2026-10-07)
+
+
+### Bug Fixes
+
+* escape term key and restore split placeholders in code blocks DOCSTOOLS-6887 ([c3a29ff](https://github.com/diplodoc-platform/transform/commit/c3a29ff12a7c8d25eb8817035c04d8c023eae1f3))
+* render terms in code blocks with syntax highlighting DOCSTOOLS-6887 ([41fd657](https://github.com/diplodoc-platform/transform/commit/41fd65710ce2d304c2a77bf354f3d5e5b2bfb227))
+* scroll long lines in raw html pre instead of overflowing ([#1077](https://github.com/diplodoc-platform/transform/issues/1077)) ([0d9301a](https://github.com/diplodoc-platform/transform/commit/0d9301ad1807186821600a9e33a53d87a18ee6a2))
+
 ## [4.78.3](https://github.com/diplodoc-platform/transform/compare/v4.78.2...v4.78.3) (2026-09-30)
 
 
