@@ -375,6 +375,17 @@ npm run lint:fix
 npm run pre-commit
 ```
 
+## Markdown attribute compatibility
+
+`markdown-it-attrs` is pinned to the existing lockfile version, 4.3.1, to preserve
+the current YFM contract without an unrelated dependency upgrade:
+backslashes in quoted attribute values remain literal, including a trailing
+backslash. Version 4.5.0 treats the closing quote after an odd number of
+backslashes as escaped, dropping the title or consuming the following attribute.
+Before removing the pin, run `test/markdown-attrs.test.ts` and the CLI translation
+document regression suite in both standalone and workspace modes. Do not change
+expected titles or introduce double-backslash escaping to hide the incompatibility.
+
 ## Important Notes
 
 1. **Metapackage vs Standalone**: This package can be used both as part of the metapackage (workspace mode) and as a standalone npm package. All scripts must work in both contexts.
