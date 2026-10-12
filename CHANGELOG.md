@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.78.5](https://github.com/diplodoc-platform/transform/compare/v4.78.4...v4.78.5) (2026-10-12)
+
+
+### Bug Fixes
+
+* preserve literal backslashes in markdown attributes ([9607222](https://github.com/diplodoc-platform/transform/commit/9607222a63aa866c8877b04f6d327fff8d829132))
+* preserve SVG sanitizer compatibility across parser versions ([bd16efe](https://github.com/diplodoc-platform/transform/commit/bd16efe81ed70213724cf27973ac71cd0e57da3c))
+
 ## [4.78.4](https://github.com/diplodoc-platform/transform/compare/v4.78.3...v4.78.4) (2026-10-07)
 
 
