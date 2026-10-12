@@ -1,4 +1,5 @@
 import type StateCore from 'markdown-it/lib/rules_core/state_core';
+import type Token from 'markdown-it/lib/token';
 import type {MarkdownItPluginCb} from '../typings';
 
 import {bold} from 'chalk';
@@ -79,6 +80,21 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
         isLintRun,
     } = options;
 
+    const titlesBeforeAttrs = new WeakMap<Token, string>();
+    const captureHeadingTitles = (state: StateCore) => {
+        state.tokens.forEach((token, index) => {
+            if (token.type === 'heading_open') {
+                titlesBeforeAttrs.set(token, headingInfo(state.tokens, index).title);
+            }
+        });
+    };
+    const getSlugTitle = (token: Token, visibleTitle: string) => {
+        if (token.attrGet('id') !== null) {
+            return visibleTitle;
+        }
+        return titlesBeforeAttrs.get(token) ?? visibleTitle;
+    };
+
     const plugin = (state: StateCore) => {
         /* Do not use the plugin if it is included in the file */
         if (state.env.includes && state.env.includes.length) {
@@ -126,14 +142,16 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
                     id = customIds[0];
                     removeCustomIds(tokens[i + 1]);
                 } else {
-                    id = slugify(title, {
+                    // Preserve existing automatic URLs when includes ran before attributes.
+                    const slugTitle = getSlugTitle(token, title);
+                    id ??= slugify(slugTitle, {
                         lower: true,
                         remove: /[^\w\s$_\-,;=/]+/g,
                     });
                     if (isLintRun && !id) {
                         token.attrSet('YFM021', 'true');
                     }
-                    ghId = slugger.slug(title);
+                    ghId = slugger.slug(slugTitle);
                 }
 
                 token.attrSet('id', id);
@@ -184,10 +202,16 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
     };
 
     try {
-        md.core.ruler.after('includes', 'anchors', plugin);
+        // Attributes must be parsed before generating heading IDs and anchor text.
+        md.core.ruler.after('curly_attributes', 'anchors', plugin);
+        try {
+            md.core.ruler.after('includes', 'anchor_titles_before_attrs', captureHeadingTitles);
+        } catch {
+            // Without includes, anchors already ran after attributes before this fix.
+        }
     } catch {
         try {
-            md.core.ruler.after('curly_attributes', 'anchors', plugin);
+            md.core.ruler.after('includes', 'anchors', plugin);
         } catch {
             md.core.ruler.push('anchors', plugin);
         }
