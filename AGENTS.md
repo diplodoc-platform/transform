@@ -386,6 +386,16 @@ Before removing the pin, run `test/markdown-attrs.test.ts` and the CLI translati
 document regression suite in both standalone and workspace modes. Do not change
 expected titles or introduce double-backslash escaping to hide the incompatibility.
 
+Heading anchors must run after Markdown attributes and after unfolded includes.
+Preserve an existing token ID instead of replacing it with a generated slug.
+Mixed heading attributes such as `{#section data-role="section"}` must agree
+across the heading ID, common anchor link or button, and extracted headings/TOC.
+Keep existing automatic heading URLs, including the legacy includes-before-attrs
+slug behavior, while generating common anchor labels from visible text.
+Keep legacy `{#id}` and multiple anchor aliases working with attributes disabled.
+Run `test/heading-attrs.test.ts`, CLI integration, and the unchanged testpack
+heading attribute assertion before changing rule order or this compatibility contract.
+
 ## Important Notes
 
 1. **Metapackage vs Standalone**: This package can be used both as part of the metapackage (workspace mode) and as a standalone npm package. All scripts must work in both contexts.
