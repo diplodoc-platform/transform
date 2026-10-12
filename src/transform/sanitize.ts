@@ -137,14 +137,14 @@ const htmlTags = [
 
 const svgTags = [
     'svg',
-    'altglyph',
-    'altglyphdef',
-    'altglyphitem',
-    'animatecolor',
-    'animatemotion',
-    'animatetransform',
+    'altGlyph',
+    'altGlyphDef',
+    'altGlyphItem',
+    'animateColor',
+    'animateMotion',
+    'animateTransform',
     'circle',
-    'clippath',
+    'clipPath',
     'defs',
     'desc',
     'ellipse',
@@ -152,11 +152,11 @@ const svgTags = [
     'font',
     'g',
     'glyph',
-    'glyphref',
+    'glyphRef',
     'hkern',
     'image',
     'line',
-    'lineargradient',
+    'linearGradient',
     'marker',
     'mask',
     'metadata',
@@ -165,13 +165,13 @@ const svgTags = [
     'pattern',
     'polygon',
     'polyline',
-    'radialgradient',
+    'radialGradient',
     'rect',
     'stop',
     'switch',
     'symbol',
     'text',
-    'textpath',
+    'textPath',
     'title',
     'tref',
     'tspan',
@@ -505,7 +505,13 @@ const defaultCssWhitelist = {
 const yfmHtmlAttrs = ['note-type', 'term-key'];
 
 const allowedTags = Array.from(
-    new Set([...htmlTags, ...svgTags, ...sanitizeHtml.defaults.allowedTags]),
+    // Older htmlparser2 versions lowercase SVG names; newer versions use SVG casing.
+    new Set([
+        ...htmlTags,
+        ...svgTags,
+        ...svgTags.map((tagName) => tagName.toLowerCase()),
+        ...sanitizeHtml.defaults.allowedTags,
+    ]),
 );
 const allowedAttributes = Array.from(new Set([...htmlAttrs, ...svgAttrs, ...yfmHtmlAttrs]));
 
@@ -564,6 +570,11 @@ export const defaultOptions: SanitizeOptions = {
     cssWhiteList: defaultCssWhitelist,
     transformTags: {
         use: useTagTransformer,
+        // Keep the existing HTML serialization while accepting SVG-cased parser names.
+        '*': (tagName, attribs) => ({
+            tagName: svgTags.includes(tagName) ? tagName.toLowerCase() : tagName,
+            attribs,
+        }),
     },
 };
 
