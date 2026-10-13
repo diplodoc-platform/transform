@@ -7,7 +7,7 @@ import type {Token} from 'markdown-it';
 import escapeRegExp from 'lodash/escapeRegExp';
 
 /**
- * Detect empty shorthand IDs using the attribute parser's space separator.
+ * Detect empty shorthand IDs in terminal attributes using the parser's space separator.
  * @param content - The final text token before attributes are parsed.
  * @param left - Opening attribute delimiter.
  * @param right - Closing attribute delimiter.
@@ -16,16 +16,14 @@ import escapeRegExp from 'lodash/escapeRegExp';
 export const hasEmptyShorthandId = (content: string, left = '{', right = '}') => {
     const open = escapeRegExp(left);
     const close = escapeRegExp(right);
-    const blocks = new RegExp(`${open}((?:[^"${open}${close}]|"[^"]*")*)${close}`, 'g');
-
-    for (const match of content.matchAll(blocks)) {
-        const attributes: string[] = match[1].match(/(?:[^ "]+|"[^"]*")+/g) || [];
-        if (attributes.includes('#')) {
-            return true;
-        }
+    const block = new RegExp(`${open}((?:[^"${open}${close}]|"[^"]*")*)${close}\\s*$`);
+    const match = content.match(block);
+    if (!match) {
+        return false;
     }
 
-    return false;
+    const attributes: string[] = match[1].match(/(?:[^ "]+|"[^"]*")+/g) || [];
+    return attributes.includes('#');
 };
 
 /**

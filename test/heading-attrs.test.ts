@@ -202,6 +202,10 @@ describe.each([false, true])('Heading attributes (includes=%s)', (withIncludes) 
         '## Title {#good title="literal # text"}',
         '## Title {#\tvalue}',
         '## Title {#one} {#two}',
+        '## Use {# x} syntax {#good}',
+        '## A {# x} tail',
+        'Use {# x} syntax {#good}\n---',
+        'A {# x} tail\n---',
         '## Literal `{# bad}`',
         '## Literal `{#bad words}` {#good}',
         'Body {# bad}',
@@ -216,6 +220,36 @@ describe.each([false, true])('Heading attributes (includes=%s)', (withIncludes) 
             tokens: true,
         });
         expect(result.some((token) => token.attrGet('YFM024'))).toBe(false);
+    });
+
+    it.each([
+        ['## Use {# x} syntax {#good}', 'good', 'Use {# x} syntax'],
+        ['## A {# x} tail', 'a-x-tail', 'A {# x} tail'],
+    ])('keeps nonterminal attribute-like text literal: %s', (source, id, title) => {
+        const heading = load(render(source).html)('h2');
+        expect(heading.attr('id')).toBe(id);
+        heading.find('a').remove();
+        expect(heading.text()).toBe(title);
+    });
+
+    it.each([
+        ['## Use [# x] syntax [#good]', null],
+        ['## A [# x] tail', null],
+        ['## A [# x]', 'true'],
+    ])('checks only terminal custom-delimiter attributes: %s', (source, marker) => {
+        const result = transform(source, {
+            plugins: withIncludes ? [includes, anchors] : [anchors],
+            path: mocksPath,
+            root: dirname(mocksPath),
+            enableMarkdownAttrs: true,
+            leftDelimiter: '[',
+            rightDelimiter: ']',
+            isLintRun: true,
+            tokens: true,
+        });
+        expect(result.find((token) => token.type === 'heading_open')?.attrGet('YFM024')).toBe(
+            marker,
+        );
     });
 
     it('keeps legacy multiple custom anchor IDs', () => {
