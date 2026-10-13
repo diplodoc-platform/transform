@@ -386,20 +386,10 @@ Before removing the pin, run `test/markdown-attrs.test.ts` and the CLI translati
 document regression suite in both standalone and workspace modes. Do not change
 expected titles or introduce double-backslash escaping to hide the incompatibility.
 
-Heading anchors must run after Markdown attributes and after unfolded includes.
-Preserve a nonempty token ID instead of replacing it with a generated slug.
-An empty parsed ID (for example `{# section}`) must fall back to the legacy slug.
-Multi-word shorthand IDs intentionally use the first word; document the URL change.
-Mark ambiguous shorthand IDs as `YFM024` only in lint runs; the companion yfmlint
-rule warns by default. Do not mark literal code, quoted attribute values, or valid
-mixed attributes. Keep visible heading boundaries, labels and TOC/search titles trimmed.
-Mixed heading attributes such as `{#section data-role="section"}` must agree
-across the heading ID, common anchor link or button, and extracted headings/TOC.
-Keep existing automatic heading URLs, including the legacy includes-before-attrs
-slug behavior, while generating common anchor labels from visible text.
-Keep legacy `{#id}` and multiple anchor aliases working with attributes disabled.
-Run `test/heading-attrs.test.ts`, CLI integration, and the unchanged testpack
-heading attribute assertion before changing rule order or this compatibility contract.
+Run anchors after attributes/includes; preserve nonempty explicit IDs and legacy auto URLs.
+Keep lint marking separate from pre-attribute title capture and trim heading titles/labels.
+Validate changes with `test/heading-attrs.test.ts`, CLI integration,
+and unchanged testpack heading assertions before changing this contract.
 
 ## Important Notes
 

@@ -58,6 +58,15 @@ describe.each([false, true])('Heading attributes (includes=%s)', (withIncludes) 
         expect(result.headings[0].title).toBe('Heading with attributes');
     });
 
+    it('uses an explicit mixed-attribute ID with or without includes', () => {
+        const result = render('## Title {#a .b}');
+        const heading = load(result.html)('h2');
+        expect(heading.attr('id')).toBe('a');
+        expect(heading.attr('class')).toBe('b');
+        expect(heading.find('a').attr('href')).toBe(`${publicPath}#a`);
+        expect(result.headings[0].href).toBe(`${publicPath}#a`);
+    });
+
     it('keeps duplicate explicit IDs and anchor links consistent after deduplication', () => {
         const result = render(
             '### First heading {#custom data-role="section"}\n\n' +
@@ -114,42 +123,42 @@ describe.each([false, true])('Heading attributes (includes=%s)', (withIncludes) 
     });
 
     it('keeps the accepted first-word ID for multi-word shorthand IDs', () => {
-        const result = render('## Service discovery {#YP Service Discovery interaction}');
+        const result = render('## Custom section {#custom Multiple Words}');
         const heading = load(result.html)('h2');
 
-        expect(heading.attr('id')).toBe('YP');
-        expect(heading.find('a').attr('href')).toBe(`${publicPath}#YP`);
-        expect(result.headings[0].href).toBe(`${publicPath}#YP`);
+        expect(heading.attr('id')).toBe('custom');
+        expect(heading.find('a').attr('href')).toBe(`${publicPath}#custom`);
+        expect(result.headings[0].href).toBe(`${publicPath}#custom`);
     });
 
     it.each([false, true])('trims visible titles, labels and headings (flat=%s)', (flat) => {
-        const result = render('#### arc stash apply  { #stash-apply }', {
+        const result = render('#### Build docs  { #build-docs }', {
             needFlatListHeadings: flat,
         });
         const heading = load(result.html)('h4');
         const button = load(
-            render('#### arc stash apply  { #stash-apply }', {
+            render('#### Build docs  { #build-docs }', {
                 useCommonAnchorButtons: true,
                 lang: 'en',
             }).html,
         )('h4 button');
 
-        expect(heading.find('a span').text()).toBe('arc stash apply');
+        expect(heading.find('a span').text()).toBe('Build docs');
         heading.find('a').remove();
-        expect(heading.text()).toBe('arc stash apply');
-        expect(button.attr('data-href')).toBe(`${publicPath}#stash-apply`);
+        expect(heading.text()).toBe('Build docs');
+        expect(button.attr('data-href')).toBe(`${publicPath}#build-docs`);
         if (flat) {
-            expect(result.headings[0].title).toBe('arc stash apply');
+            expect(result.headings[0].title).toBe('Build docs');
         } else {
-            const nested = render('## Parent\n\n### arc stash apply  { #stash-apply }', {
+            const nested = render('## Parent\n\n### Build docs  { #build-docs }', {
                 needFlatListHeadings: false,
             });
-            expect(nested.headings[0].items?.[0].title).toBe('arc stash apply');
+            expect(nested.headings[0].items?.[0].title).toBe('Build docs');
         }
     });
 
-    it.each(['{# broken}', '{#YP Service Discovery interaction}'])(
-        'marks malformed shorthand IDs only during lint runs: %s',
+    it.each(['{# broken}', '{#}'])(
+        'marks empty shorthand IDs only during lint runs: %s',
         (attributes) => {
             const source = `# Title ${attributes}\n\n## Section ${attributes}`;
             const lintTokens = transform(source, {
@@ -185,6 +194,13 @@ describe.each([false, true])('Heading attributes (includes=%s)', (withIncludes) 
         '## Title {#good}',
         '## Title { #good }',
         '## Title {#good .class data-role="section" title="two words"}',
+        '## Title {#good hidden}',
+        '## Title {#good data-x}',
+        '## Title {#good hidden data-x}',
+        '## Title {#good custom-flag}',
+        '## Title {#custom Multiple Words}',
+        '## Title {#good title="literal # text"}',
+        '## Title {#\tvalue}',
         '## Title {#one} {#two}',
         '## Literal `{# bad}`',
         '## Literal `{#bad words}` {#good}',
@@ -214,6 +230,18 @@ describe.each([false, true])('Heading attributes (includes=%s)', (withIncludes) 
                 .sort(),
         ).toEqual([`${publicPath}#first`, `${publicPath}#second`]);
     });
+
+    it.each(['hidden', 'data-x', 'custom-flag', 'multiple words'])(
+        'preserves arbitrary boolean attributes without sanitization: %s',
+        (attributes) => {
+            const result = render(`## Title {#custom ${attributes}}`, {needToSanitizeHtml: false});
+            const heading = load(result.html)('h2');
+            expect(heading.attr('id')).toBe('custom');
+            for (const attribute of attributes.split(' ')) {
+                expect(heading.prop('attribs')).toMatchObject({[attribute]: ''});
+            }
+        },
+    );
 
     it('preserves legacy custom IDs when Markdown attributes are disabled', () => {
         const heading = load(render('### Heading {#custom}', {enableMarkdownAttrs: false}).html)(
