@@ -11,7 +11,7 @@ import {headingInfo} from '../../utils';
 import {ANCHOR_TITLES} from './constants';
 import {
     getCustomIds,
-    hasMalformedCustomId,
+    hasEmptyShorthandId,
     removeCustomId,
     removeCustomIds,
     trimHeadingWhitespace,
@@ -89,25 +89,25 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
     } = options;
 
     const titlesBeforeAttrs = new WeakMap<Token, string>();
-    const captureHeadingTitles = (state: StateCore, captureSlug = true) => {
-        state.tokens.forEach((token, index) => {
+    const captureHeadingTitles = (state: StateCore) => {
+        state.tokens.forEach((token, tokenIndex) => {
             if (token.type === 'heading_open') {
-                if (captureSlug) {
-                    titlesBeforeAttrs.set(token, headingInfo(state.tokens, index).title);
-                }
-                const children = state.tokens[index + 1].children;
-                const last = children?.[children.length - 1];
-                if (
-                    isLintRun &&
-                    last?.type === 'text' &&
-                    hasMalformedCustomId(
-                        last.content,
-                        options.leftDelimiter,
-                        options.rightDelimiter,
-                    )
-                ) {
-                    token.attrSet('YFM024', 'true');
-                }
+                titlesBeforeAttrs.set(token, headingInfo(state.tokens, tokenIndex).title);
+            }
+        });
+    };
+    const markEmptyShorthandIds = (state: StateCore) => {
+        state.tokens.forEach((token, tokenIndex) => {
+            if (token.type !== 'heading_open') {
+                return;
+            }
+            const children = state.tokens[tokenIndex + 1].children;
+            const last = children?.[children.length - 1];
+            if (
+                last?.type === 'text' &&
+                hasEmptyShorthandId(last.content, options.leftDelimiter, options.rightDelimiter)
+            ) {
+                token.attrSet('YFM024', 'true');
             }
         });
     };
@@ -225,33 +225,42 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
         }
     };
 
-    try {
-        // Attributes must be parsed before generating heading IDs and anchor text.
-        md.core.ruler.after('curly_attributes', 'anchors', plugin);
+    const insertOptionalRule = (
+        position: 'before' | 'after',
+        reference: string,
+        ruleName: string,
+        rule: (state: StateCore) => void,
+    ) => {
         try {
-            md.core.ruler.after('includes', 'anchor_titles_before_attrs', captureHeadingTitles);
+            md.core.ruler[position](reference, ruleName, rule);
+            return true;
         } catch {
-            // Without includes, anchors already ran after attributes before this fix.
-            if (isLintRun) {
-                md.core.ruler.before('curly_attributes', 'anchor_ids_before_attrs', (state) => {
-                    captureHeadingTitles(state, false);
-                });
-            }
+            // Optional plugins need not register the reference rule.
+            return false;
         }
-    } catch {
-        try {
-            md.core.ruler.after('includes', 'anchors', plugin);
-        } catch {
-            md.core.ruler.push('anchors', plugin);
-        }
+    };
+
+    const hasAttributes = insertOptionalRule('after', 'curly_attributes', 'anchors', plugin);
+    if (hasAttributes) {
+        insertOptionalRule('after', 'includes', 'capture_heading_titles', captureHeadingTitles);
+    } else if (!insertOptionalRule('after', 'includes', 'anchors', plugin)) {
+        md.core.ruler.push('anchors', plugin);
+    }
+    if (isLintRun && hasAttributes) {
+        insertOptionalRule(
+            'before',
+            'curly_attributes',
+            'lint_custom_heading_ids',
+            markEmptyShorthandIds,
+        );
     }
 
     const {escapeHtml} = md.utils;
 
-    md.renderer.rules.anchor_hidden_desc = function (tokens, index) {
+    md.renderer.rules.anchor_hidden_desc = function (tokens, tokenIndex) {
         return (
             '<span class="visually-hidden" data-no-index="true">' +
-            escapeHtml(tokens[index].content) +
+            escapeHtml(tokens[tokenIndex].content) +
             '</span>'
         );
     };

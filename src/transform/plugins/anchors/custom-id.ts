@@ -7,26 +7,20 @@ import type {Token} from 'markdown-it';
 import escapeRegExp from 'lodash/escapeRegExp';
 
 /**
- * Detect ambiguous shorthand IDs without treating quoted values as words.
+ * Detect empty shorthand IDs using the attribute parser's space separator.
  * @param content - The final text token before attributes are parsed.
  * @param left - Opening attribute delimiter.
  * @param right - Closing attribute delimiter.
- * @returns Whether a shorthand ID block contains ambiguous whitespace.
+ * @returns Whether a shorthand ID block contains an empty ID.
  */
-export const hasMalformedCustomId = (content: string, left = '{', right = '}') => {
+export const hasEmptyShorthandId = (content: string, left = '{', right = '}') => {
     const open = escapeRegExp(left);
     const close = escapeRegExp(right);
-    const blocks = new RegExp(`${open}((?:[^"'${open}${close}]|"[^"]*"|'[^']*')*)${close}`, 'g');
+    const blocks = new RegExp(`${open}((?:[^"${open}${close}]|"[^"]*")*)${close}`, 'g');
 
     for (const match of content.matchAll(blocks)) {
-        const attributes = match[1].match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) || [];
-        if (!attributes.some((attribute) => attribute.startsWith('#'))) {
-            continue;
-        }
-        if (attributes.some((attribute) => attribute === '#')) {
-            return true;
-        }
-        if (attributes.some((attribute) => !/^[.#]/.test(attribute) && !attribute.includes('='))) {
+        const attributes: string[] = match[1].match(/(?:[^ "]+|"[^"]*")+/g) || [];
+        if (attributes.includes('#')) {
             return true;
         }
     }
