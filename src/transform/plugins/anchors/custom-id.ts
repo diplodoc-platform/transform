@@ -4,6 +4,53 @@
 
 import type {Token} from 'markdown-it';
 
+import escapeRegExp from 'lodash/escapeRegExp';
+
+/**
+ * Detect ambiguous shorthand IDs without treating quoted values as words.
+ * @param content - The final text token before attributes are parsed.
+ * @param left - Opening attribute delimiter.
+ * @param right - Closing attribute delimiter.
+ * @returns Whether a shorthand ID block contains ambiguous whitespace.
+ */
+export const hasMalformedCustomId = (content: string, left = '{', right = '}') => {
+    const open = escapeRegExp(left);
+    const close = escapeRegExp(right);
+    const blocks = new RegExp(`${open}((?:[^"'${open}${close}]|"[^"]*"|'[^']*')*)${close}`, 'g');
+
+    for (const match of content.matchAll(blocks)) {
+        const attributes = match[1].match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) || [];
+        if (!attributes.some((attribute) => attribute.startsWith('#'))) {
+            continue;
+        }
+        if (attributes.some((attribute) => attribute === '#')) {
+            return true;
+        }
+        if (attributes.some((attribute) => !/^[.#]/.test(attribute) && !attribute.includes('='))) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
+/**
+ * Remove boundary whitespace left by attributes, not spaces inside inline markup.
+ * @param token - The heading inline token.
+ * @returns Nothing; only boundary text tokens are updated.
+ */
+export const trimHeadingWhitespace = (token: Token) => {
+    const children = token.children || [];
+    const first = children[0];
+    const last = children[children.length - 1];
+    if (first?.type === 'text') {
+        first.content = first.content.trimStart();
+    }
+    if (last?.type === 'text') {
+        last.content = last.content.trimEnd();
+    }
+};
+
 export const CUSTOM_ID_REGEXP = /\[?{ ?#(\S+) ?}]?/g;
 export const CUSTOM_ID_EXCEPTION = '[{#T}]';
 

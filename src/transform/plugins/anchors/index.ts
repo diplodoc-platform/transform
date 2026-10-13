@@ -9,7 +9,13 @@ import slugify from 'slugify';
 import {headingInfo} from '../../utils';
 
 import {ANCHOR_TITLES} from './constants';
-import {getCustomIds, removeCustomId, removeCustomIds} from './custom-id';
+import {
+    getCustomIds,
+    hasMalformedCustomId,
+    removeCustomId,
+    removeCustomIds,
+    trimHeadingWhitespace,
+} from './custom-id';
 
 function createAnchorButtonTokens(
     state: StateCore,
@@ -59,6 +65,8 @@ function createAnchorLinkTokens(
 }
 
 interface Options {
+    leftDelimiter?: string;
+    rightDelimiter?: string;
     extractTitle?: boolean;
     supportGithubAnchors?: boolean;
     disableCommonAnchors?: boolean;
@@ -81,15 +89,30 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
     } = options;
 
     const titlesBeforeAttrs = new WeakMap<Token, string>();
-    const captureHeadingTitles = (state: StateCore) => {
+    const captureHeadingTitles = (state: StateCore, captureSlug = true) => {
         state.tokens.forEach((token, index) => {
             if (token.type === 'heading_open') {
-                titlesBeforeAttrs.set(token, headingInfo(state.tokens, index).title);
+                if (captureSlug) {
+                    titlesBeforeAttrs.set(token, headingInfo(state.tokens, index).title);
+                }
+                const children = state.tokens[index + 1].children;
+                const last = children?.[children.length - 1];
+                if (
+                    isLintRun &&
+                    last?.type === 'text' &&
+                    hasMalformedCustomId(
+                        last.content,
+                        options.leftDelimiter,
+                        options.rightDelimiter,
+                    )
+                ) {
+                    token.attrSet('YFM024', 'true');
+                }
             }
         });
     };
     const getSlugTitle = (token: Token, visibleTitle: string) => {
-        if (token.attrGet('id') !== null) {
+        if (token.attrGet('id')) {
             return visibleTitle;
         }
         return titlesBeforeAttrs.get(token) ?? visibleTitle;
@@ -117,6 +140,7 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
             const isHeading = token.type === 'heading_open';
 
             if (isHeading) {
+                trimHeadingWhitespace(tokens[i + 1]);
                 const {title, level} = headingInfo(tokens, i);
 
                 const inlineToken = tokens[i + 1];
@@ -144,7 +168,7 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
                 } else {
                     // Preserve existing automatic URLs when includes ran before attributes.
                     const slugTitle = getSlugTitle(token, title);
-                    id ??= slugify(slugTitle, {
+                    id ||= slugify(slugTitle, {
                         lower: true,
                         remove: /[^\w\s$_\-,;=/]+/g,
                     });
@@ -166,7 +190,7 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
                 const allAnchorIds = customIds ? customIds : [id];
                 const anchorTitle = useCommonAnchorButtons
                     ? ANCHOR_TITLES[lang]
-                    : removeCustomId(title).replace(/`/g, '');
+                    : removeCustomId(title).replace(/`/g, '').trim();
 
                 allAnchorIds.forEach((customId) => {
                     const setId = id !== customId;
@@ -208,6 +232,11 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
             md.core.ruler.after('includes', 'anchor_titles_before_attrs', captureHeadingTitles);
         } catch {
             // Without includes, anchors already ran after attributes before this fix.
+            if (isLintRun) {
+                md.core.ruler.before('curly_attributes', 'anchor_ids_before_attrs', (state) => {
+                    captureHeadingTitles(state, false);
+                });
+            }
         }
     } catch {
         try {

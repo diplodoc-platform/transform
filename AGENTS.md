@@ -387,7 +387,12 @@ document regression suite in both standalone and workspace modes. Do not change
 expected titles or introduce double-backslash escaping to hide the incompatibility.
 
 Heading anchors must run after Markdown attributes and after unfolded includes.
-Preserve an existing token ID instead of replacing it with a generated slug.
+Preserve a nonempty token ID instead of replacing it with a generated slug.
+An empty parsed ID (for example `{# section}`) must fall back to the legacy slug.
+Multi-word shorthand IDs intentionally use the first word; document the URL change.
+Mark ambiguous shorthand IDs as `YFM024` only in lint runs; the companion yfmlint
+rule warns by default. Do not mark literal code, quoted attribute values, or valid
+mixed attributes. Keep visible heading boundaries, labels and TOC/search titles trimmed.
 Mixed heading attributes such as `{#section data-role="section"}` must agree
 across the heading ID, common anchor link or button, and extracted headings/TOC.
 Keep existing automatic heading URLs, including the legacy includes-before-attrs
