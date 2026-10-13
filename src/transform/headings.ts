@@ -10,7 +10,7 @@ function getTitle(token: Token) {
 
             return acc;
         }, '') || ''
-    );
+    ).trim();
 }
 
 function getHref(token: Token) {

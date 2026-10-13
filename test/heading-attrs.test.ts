@@ -81,6 +81,127 @@ describe.each([false, true])('Heading attributes (includes=%s)', (withIncludes) 
         ]);
     });
 
+    it.each(['{# deployment-preparation}', '{# worker-logs }', '{# puncher}'])(
+        'falls back to a nonempty legacy slug for an empty parsed ID: %s',
+        (attributes) => {
+            const result = render(`## Подготовьте окружение ${attributes}`);
+            const heading = load(result.html)('h2');
+            const suffix = attributes.replace(/[{}# ]/g, '');
+            const id = withIncludes ? `podgotovte-okruzhenie-${suffix}` : 'podgotovte-okruzhenie';
+
+            expect(heading.attr('id')).toBe(id);
+            expect(heading.find('a').attr('href')).toBe(`${publicPath}#${id}`);
+            expect(heading.find('a span').text()).toBe('Подготовьте окружение');
+            expect(result.headings).toEqual([
+                {title: 'Подготовьте окружение', href: `${publicPath}#${id}`, level: 2},
+            ]);
+        },
+    );
+
+    it('does not use numeric-only IDs to deduplicate empty parsed IDs', () => {
+        const result = render('## First {# broken}\n\n## Second {# another}');
+        const document = load(result.html);
+        const ids = withIncludes ? ['first-broken', 'second-another'] : ['first', 'second'];
+
+        expect(
+            document('h2')
+                .map((_index, element) => document(element).attr('id'))
+                .get(),
+        ).toEqual(ids);
+        expect(result.headings.map((heading) => heading.href)).toEqual(
+            ids.map((id) => `${publicPath}#${id}`),
+        );
+    });
+
+    it('keeps the accepted first-word ID for multi-word shorthand IDs', () => {
+        const result = render('## Service discovery {#YP Service Discovery interaction}');
+        const heading = load(result.html)('h2');
+
+        expect(heading.attr('id')).toBe('YP');
+        expect(heading.find('a').attr('href')).toBe(`${publicPath}#YP`);
+        expect(result.headings[0].href).toBe(`${publicPath}#YP`);
+    });
+
+    it.each([false, true])('trims visible titles, labels and headings (flat=%s)', (flat) => {
+        const result = render('#### arc stash apply  { #stash-apply }', {
+            needFlatListHeadings: flat,
+        });
+        const heading = load(result.html)('h4');
+        const button = load(
+            render('#### arc stash apply  { #stash-apply }', {
+                useCommonAnchorButtons: true,
+                lang: 'en',
+            }).html,
+        )('h4 button');
+
+        expect(heading.find('a span').text()).toBe('arc stash apply');
+        heading.find('a').remove();
+        expect(heading.text()).toBe('arc stash apply');
+        expect(button.attr('data-href')).toBe(`${publicPath}#stash-apply`);
+        if (flat) {
+            expect(result.headings[0].title).toBe('arc stash apply');
+        } else {
+            const nested = render('## Parent\n\n### arc stash apply  { #stash-apply }', {
+                needFlatListHeadings: false,
+            });
+            expect(nested.headings[0].items?.[0].title).toBe('arc stash apply');
+        }
+    });
+
+    it.each(['{# broken}', '{#YP Service Discovery interaction}'])(
+        'marks malformed shorthand IDs only during lint runs: %s',
+        (attributes) => {
+            const source = `# Title ${attributes}\n\n## Section ${attributes}`;
+            const lintTokens = transform(source, {
+                plugins: withIncludes ? [includes, anchors] : [anchors],
+                path: mocksPath,
+                root: dirname(mocksPath),
+                enableMarkdownAttrs: true,
+                extractTitle: false,
+                isLintRun: true,
+                tokens: true,
+            });
+
+            expect(
+                lintTokens
+                    .filter((token) => token.type === 'heading_open')
+                    .map((token) => token.attrGet('YFM024')),
+            ).toEqual(['true', 'true']);
+            expect(
+                transform(source, {
+                    plugins: withIncludes ? [includes, anchors] : [anchors],
+                    path: mocksPath,
+                    root: dirname(mocksPath),
+                    enableMarkdownAttrs: true,
+                    tokens: true,
+                })
+                    .filter((token) => token.type === 'heading_open')
+                    .map((token) => token.attrGet('YFM024')),
+            ).toEqual([null, null]);
+        },
+    );
+
+    it.each([
+        '## Title {#good}',
+        '## Title { #good }',
+        '## Title {#good .class data-role="section" title="two words"}',
+        '## Title {#one} {#two}',
+        '## Literal `{# bad}`',
+        '## Literal `{#bad words}` {#good}',
+        'Body {# bad}',
+        '```\n## Code {# bad}\n```',
+    ])('does not mark valid attributes or literal IDs: %s', (source) => {
+        const result = transform(source, {
+            plugins: withIncludes ? [includes, anchors] : [anchors],
+            path: mocksPath,
+            root: dirname(mocksPath),
+            enableMarkdownAttrs: true,
+            isLintRun: true,
+            tokens: true,
+        });
+        expect(result.some((token) => token.attrGet('YFM024'))).toBe(false);
+    });
+
     it('keeps legacy multiple custom anchor IDs', () => {
         const heading = load(render('### Heading {#first} {#second}').html)('h3');
 
