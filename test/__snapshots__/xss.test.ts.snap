@@ -549,7 +549,7 @@ exports[`XSS checks with disabled markdown-it-attrs > Style closure with space v
 `;
 
 exports[`XSS checks with disabled markdown-it-attrs > TABLE 1`] = `
-<table background="javascript:alert('XSS')">
+<table>
 </table>
 `;
 
@@ -557,7 +557,7 @@ exports[`XSS checks with disabled markdown-it-attrs > TD 1`] = `
 <table>
   <tbody>
     <tr>
-      <td background="javascript:alert('XSS')">
+      <td>
       </td>
     </tr>
   </tbody>
@@ -637,11 +637,6 @@ exports[`XSS checks with disabled markdown-it-attrs > href animate from 1`] = `
     <a>
       <circle r="400">
       </circle>
-      <animate attributename="href"
-               begin="0"
-               to="&amp;"
-      >
-      </animate>
     </a>
   </svg>
 </div>
@@ -757,11 +752,6 @@ exports[`XSS checks with disabled markdown-it-attrs > xlink:href 1`] = `
     <a>
       <circle r="400">
       </circle>
-      <animate attributename="xlink:href"
-               begin="0"
-               to="&amp;"
-      >
-      </animate>
     </a>
   </svg>
 </div>
@@ -1194,7 +1184,7 @@ exports[`XSS checks with enabled markdown-it-attrs > Style closure with space va
 `;
 
 exports[`XSS checks with enabled markdown-it-attrs > TABLE 1`] = `
-<table background="javascript:alert('XSS')">
+<table>
 </table>
 `;
 
@@ -1202,7 +1192,7 @@ exports[`XSS checks with enabled markdown-it-attrs > TD 1`] = `
 <table>
   <tbody>
     <tr>
-      <td background="javascript:alert('XSS')">
+      <td>
       </td>
     </tr>
   </tbody>
@@ -1282,11 +1272,6 @@ exports[`XSS checks with enabled markdown-it-attrs > href animate from 1`] = `
     <a>
       <circle r="400">
       </circle>
-      <animate attributename="href"
-               begin="0"
-               to="&amp;"
-      >
-      </animate>
     </a>
   </svg>
 </div>
@@ -1402,11 +1387,6 @@ exports[`XSS checks with enabled markdown-it-attrs > xlink:href 1`] = `
     <a>
       <circle r="400">
       </circle>
-      <animate attributename="xlink:href"
-               begin="0"
-               to="&amp;"
-      >
-      </animate>
     </a>
   </svg>
 </div>
