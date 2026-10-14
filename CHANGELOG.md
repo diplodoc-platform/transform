@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.78.7](https://github.com/diplodoc-platform/transform/compare/v4.78.6...v4.78.7) (2026-10-14)
+
+
+### Bug Fixes
+
+* update sanitize-html to 2.18.0 ([39330c0](https://github.com/diplodoc-platform/transform/commit/39330c0557c895940c338c92cdb50eb8aeba68df))
+
 ## [4.78.6](https://github.com/diplodoc-platform/transform/compare/v4.78.5...v4.78.6) (2026-10-14)
 
 
