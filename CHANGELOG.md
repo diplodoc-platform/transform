@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.78.6](https://github.com/diplodoc-platform/transform/compare/v4.78.5...v4.78.6) (2026-10-14)
+
+
+### Bug Fixes
+
+* fall back for empty heading IDs; multi-word IDs use first word ([0063bed](https://github.com/diplodoc-platform/transform/commit/0063bed481ada1eba920867114b518c057a4b0d3))
+* preserve boolean attributes and narrow the empty heading ID warning ([c268281](https://github.com/diplodoc-platform/transform/commit/c268281a8aa3fabcf36711249d7b0656f22cd372))
+* preserve heading attributes and anchor URLs ([8cd76e1](https://github.com/diplodoc-platform/transform/commit/8cd76e1e76946530f2bf084d0cf0b7c1e80f5c0c))
+* restrict empty heading ID warnings to terminal attributes ([793191e](https://github.com/diplodoc-platform/transform/commit/793191e968826057a758b517cf2494ceb99fc5bf))
+
 ## [4.78.5](https://github.com/diplodoc-platform/transform/compare/v4.78.4...v4.78.5) (2026-10-12)
 
 
