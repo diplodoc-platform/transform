@@ -92,6 +92,8 @@ export interface OptionsType {
     useCommonAnchorButtons?: boolean;
     lang?: Lang;
     [x: string]: unknown;
+    /** Override SVGO's XML entity limit for SVG inlining. Omit to use its default. */
+    svgMaxEntityCount?: number;
     svgInline?: {
         enabled: boolean;
         maxFileSize: number;
@@ -156,6 +158,8 @@ export interface MarkdownItPluginOpts {
     extractTitle?: boolean;
     disableLiquid?: boolean;
     skipLinkFileCheck?: boolean;
+    /** Override SVGO's XML entity limit for SVG inlining. Omit to use its default. */
+    svgMaxEntityCount?: number;
     svgInline?: {
         enabled: boolean;
         maxFileSize: number;
@@ -198,6 +202,8 @@ export type MarkdownItPreprocessorCb<T extends unknown = {}> = {
 export type CssWhiteList = {[property: string]: boolean};
 
 export type ImageOptions = {
+    /** Override SVGO's XML entity limit for this SVG. Omit to use its default. */
+    svgMaxEntityCount?: number;
     width: string | undefined | null;
     height: string | undefined | null;
     title: string | undefined | null;
