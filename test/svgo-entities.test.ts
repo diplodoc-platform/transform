@@ -1,10 +1,5 @@
-import type * as Svgo from 'svgo' with {'resolution-mode': 'import'};
-
-import {createRequire} from 'node:module';
-
+import {optimize} from '../src/transform/svgo';
 import {replaceSvgContent} from '../src/transform/plugins/images';
-
-const {optimize} = createRequire(__filename)('svgo') as typeof Svgo;
 
 // Numeric references are counted by SAX; predefined XML entities such as &amp; are not.
 const svgWithEntities = (count: number) =>

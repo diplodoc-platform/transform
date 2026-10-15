@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
-import {mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync} from 'node:fs';
+import {existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import {tmpdir} from 'node:os';
 import {dirname, join} from 'node:path';
@@ -35,15 +35,14 @@ try {
 
     const packageRoot = join(extractedRoot, 'package');
     const require = createRequire(join(packageRoot, 'package.json'));
-    const svgoRoot = join(packageRoot, 'node_modules/svgo');
-    const {version} = JSON.parse(readFileSync(join(svgoRoot, 'package.json'), 'utf8'));
-    assert.equal(version, '4.1.0');
-    assert.equal(require.resolve('svgo'), join(svgoRoot, 'dist/svgo-node.cjs'));
-
-    const esm = await import(pathToFileURL(join(svgoRoot, 'lib/svgo-node.js')));
+    const svgoModule = join(packageRoot, 'lib/svgo.js');
+    assert.match(readFileSync(join(packageRoot, 'lib/svgo.LICENSES.txt'), 'utf8'), /svgo@4\.1\.0/);
+    assert.equal(require.resolve('./lib/svgo.js'), svgoModule);
+    assert.equal(existsSync(join(packageRoot, 'node_modules/svgo')), false);
+    const esm = await import(pathToFileURL(svgoModule));
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" content="${'&#10;'.repeat(800)}"><path d="M0 0h10"/></svg>`;
 
-    for (const {optimize} of [require('svgo'), esm]) {
+    for (const {optimize} of [require('./lib/svgo.js'), esm.default]) {
         assert.throws(() => optimize(svg), /Parsed entity count exceeds max entity count/);
         assert.match(optimize(svg, {maxEntityCount: 100_000, multipass: true}).data, /<svg/);
         assert.throws(() => optimize(svg), /Parsed entity count exceeds max entity count/);
@@ -55,7 +54,7 @@ try {
 
     // eslint-disable-next-line no-console
     console.log(
-        'The npm tarball includes patched SVGO 4.1.0 and its dependencies (ESM and CommonJS).',
+        'The npm tarball contains an isolated patched SVGO module and its dependency licenses.',
     );
 } finally {
     rmSync(temporaryRoot, {recursive: true, force: true});
