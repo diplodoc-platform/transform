@@ -1,20 +1,17 @@
-import type * as Svgo from 'svgo' with {'resolution-mode': 'import'};
 import type Token from 'markdown-it/lib/token';
 import type {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
 import type {ImageOptions, StateCore} from '../../typings';
 import type {IDGenerator} from '../utils';
+import type {PluginConfig} from '../../svgo';
 
 import {join, sep} from 'path';
 import {bold} from 'chalk';
-import {createRequire} from 'node:module';
 import {readFileSync} from 'fs';
 
 import {isFileExists, resolveRelativePath} from '../../utilsFS';
 import {filterTokens, getSrcTokenAttr, isExternalHref} from '../../utils';
 import {generateID as globalGenerateID} from '../utils';
-
-// SVGO's CommonJS entry shares its ESM declarations.
-const {optimize} = createRequire(__filename)('svgo') as typeof Svgo;
+import {optimize} from '../../svgo';
 
 // Draw.io metadata can exceed SAX's default entity limit (DOCSTOOLS-6096).
 const MAX_SVG_ENTITY_COUNT = 100_000;
@@ -324,7 +321,7 @@ function applyDataAttrs(svgRoot: string, dataAttrs: Record<string, string>): str
     return result;
 }
 
-const removeProcessingInstructions: Svgo.PluginConfig = {
+const removeProcessingInstructions: PluginConfig = {
     name: 'removeProcessingInstructions',
     fn: () => {
         return {

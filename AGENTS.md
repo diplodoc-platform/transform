@@ -393,12 +393,13 @@ and unchanged testpack heading assertions before changing this contract.
 
 ## SVGO parser compatibility
 
-SVGO is pinned to 4.1.0 and patched with `patch-package` during `prepare` and
-`prepack`. Keep `bundleDependencies: ["svgo"]`: the published Transform must
-include the patched dependency, not fetch an unpatched copy for consumers.
-After an install with scripts disabled, run `npm run patch:svgo`. Run
-`npm run test:package` when changing the patch or its delivery. See
-`docs/ADR/ADR-008-svgo-parser-patch.md` for the rationale and removal procedure.
+SVGO is an exact-pinned development dependency patched during `prepare` and
+`prepack`. `build:lib` bundles it into the internal `lib/svgo.js` module with
+third-party notices; published consumers must not require the unpatched registry
+package. Do not replace this with npm `bundleDependencies`, which can collide
+with a consumer's unrelated parser dependencies. After installing with scripts
+disabled, run `npm run patch:svgo`. Run `npm run test:package` when changing the
+patch or its delivery. See `docs/ADR/ADR-008-svgo-parser-patch.md`.
 
 ## Important Notes
 
