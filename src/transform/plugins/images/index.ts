@@ -13,9 +13,6 @@ import {filterTokens, getSrcTokenAttr, isExternalHref} from '../../utils';
 import {generateID as globalGenerateID} from '../utils';
 import {optimize} from '../../svgo';
 
-// Draw.io metadata can exceed SAX's default entity limit (DOCSTOOLS-6096).
-const MAX_SVG_ENTITY_COUNT = 100_000;
-
 const sanitizeAttribute = (value: string): string => value.replace(/(\d*[%a-z]{0,5}).*/gi, '$1');
 const sanitizeHTMLAttr = (value: string): string => {
     return value
@@ -266,7 +263,11 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                     const svgToken = new state.Token('image_svg', '', 0);
                     svgToken.attrSet(
                         'content',
-                        replaceSvgContent(svgContent, imageOpts, opts.generateID),
+                        replaceSvgContent(
+                            svgContent,
+                            {...imageOpts, svgMaxEntityCount: opts.svgMaxEntityCount},
+                            opts.generateID,
+                        ),
                     );
                     childrenTokens[tokenIndex] = svgToken;
                 }
@@ -348,7 +349,9 @@ function replaceSvgContent(
     content = content.replace(/>\r?\n</g, '><').replace(/\r?\n/g, ' ');
 
     const optimized = optimize(content, {
-        maxEntityCount: MAX_SVG_ENTITY_COUNT,
+        ...(options.svgMaxEntityCount === undefined
+            ? {}
+            : {maxEntityCount: options.svgMaxEntityCount}),
         plugins: [
             'removeDoctype',
             {name: 'removeComments', params: {preservePatterns: []}},

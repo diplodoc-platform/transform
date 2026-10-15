@@ -44,7 +44,7 @@ try {
 
     for (const {optimize} of [require('./lib/svgo.js'), esm.default]) {
         assert.throws(() => optimize(svg), /Parsed entity count exceeds max entity count/);
-        assert.match(optimize(svg, {maxEntityCount: 100_000, multipass: true}).data, /<svg/);
+        assert.match(optimize(svg, {maxEntityCount: 1024, multipass: true}).data, /<svg/);
         assert.throws(() => optimize(svg), /Parsed entity count exceeds max entity count/);
         assert.throws(
             () => optimize(svg, {maxEntityCount: 1}),
