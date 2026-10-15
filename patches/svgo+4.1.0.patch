@@ -1,0 +1,106 @@
+--- a/node_modules/svgo/lib/parser.js
++++ b/node_modules/svgo/lib/parser.js
+@@ -75,10 +75,18 @@
+  *
+  * @param {string} data
+  * @param {string=} from
++ * @param {number=} maxEntityCount Maximum number of XML entities the parser is
++ *   allowed to expand before throwing. When omitted, the underlying parser
++ *   falls back to its own default (512 in recent versions).
+  * @returns {import('./types.js').XastRoot}
+  */
+-export const parseSvg = (data, from) => {
+-  const sax = SAX.parser(config.strict, config);
++export const parseSvg = (data, from, maxEntityCount) => {
++  // Build a fresh options object per call: sax mutates the options it receives
++  // (e.g. it stamps a default `maxEntityCount`), so the shared `config` must
++  // not be passed directly.
++  const parserConfig =
++    maxEntityCount == null ? { ...config } : { ...config, maxEntityCount };
++  const sax = SAX.parser(parserConfig.strict, parserConfig);
+   /** @type {import('./types.js').XastRoot} */
+   const root = { type: 'root', children: [] };
+   /** @type {import('./types.js').XastParent} */
+--- a/node_modules/svgo/lib/svgo.js
++++ b/node_modules/svgo/lib/svgo.js
+@@ -94,7 +94,7 @@
+   }
+   for (let i = 0; i < maxPassCount; i += 1) {
+     info.multipassCount = i;
+-    const ast = parseSvg(input, config.path);
++    const ast = parseSvg(input, config.path, config.maxEntityCount);
+     const plugins = config.plugins || ['preset-default'];
+     if (!Array.isArray(plugins)) {
+       throw Error(
+--- a/node_modules/svgo/lib/svgo/coa.js
++++ b/node_modules/svgo/lib/svgo/coa.js
+@@ -46,6 +46,10 @@
+     .option(
+       '-p, --precision <INTEGER>',
+       'Set number of digits in the fractional part, overrides plugins params',
++    )
++    .option(
++      '--max-entity-count <INTEGER>',
++      'Maximum number of XML entities the parser may expand before throwing',
+     )
+     .option(
+       '--config <CONFIG>',
+@@ -186,6 +190,19 @@
+       process.exit(1);
+     } else {
+       config.floatPrecision = Math.min(Math.max(0, number), 20);
++    }
++  }
++
++  // --max-entity-count
++  if (opts.maxEntityCount != null) {
++    const number = Number.parseInt(opts.maxEntityCount, 10);
++    if (Number.isNaN(number)) {
++      console.error(
++        "error: option '--max-entity-count' argument must be an integer number",
++      );
++      process.exit(1);
++    } else {
++      config.maxEntityCount = number;
+     }
+   }
+ 
+--- a/node_modules/svgo/dist/svgo-node.cjs
++++ b/node_modules/svgo/dist/svgo-node.cjs
+@@ -2013,7 +2013,7 @@
+ return`>${gutter}${ellipsisPrefix}${lineSlice}${ellipsisSuffix}\n ${spacing}^`}return` ${gutter}${ellipsisPrefix}${lineSlice}${ellipsisSuffix}`}).join("\n")
+ return`${this.name}: ${this.message}\n\n${code}\n`}}const entityDeclaration=/<!ENTITY\s+(\S+)\s+(?:'([^']+)'|"([^"]+)")\s*>/g
+ const config={strict:true,trim:false,normalize:false,lowercase:true,xmlns:true,position:true,unparsedEntities:true}
+-const parseSvg=(data,from)=>{const sax=SAX.parser(config.strict,config)
++const parseSvg=(data,from,maxEntityCount)=>{const parserConfig=maxEntityCount==null?{...config}:{...config,maxEntityCount};const sax=SAX.parser(parserConfig.strict,parserConfig)
+ const root={type:"root",children:[]}
+ let current=root
+ const stack=[root]
+@@ -2128,7 +2128,7 @@
+ const info={}
+ config.path!=null&&(info.path=config.path)
+ for(let i=0;i<maxPassCount;i+=1){info.multipassCount=i
+-const ast=parseSvg(input,config.path)
++const ast=parseSvg(input,config.path,config.maxEntityCount)
+ const plugins=config.plugins||["preset-default"]
+ if(!Array.isArray(plugins))throw Error("malformed config, `plugins` property must be an array.\nSee more info here: https://github.com/svg/svgo#configuration")
+ const resolvedPlugins=plugins.filter(plugin=>plugin!=null).map(resolvePluginConfig)
+--- a/node_modules/svgo/types/lib/types.d.ts
++++ b/node_modules/svgo/types/lib/types.d.ts
+@@ -254,6 +254,8 @@
+ };
+ export type DataUri = 'base64' | 'enc' | 'unenc';
+ export type Config = {
++    /** Maximum number of XML entities the SAX parser may expand. */
++    maxEntityCount?: number;
+     /** Can be used by plugins, for example prefixIds. */
+     path?: string;
+     /** Pass over SVGs multiple times to ensure all optimizations are applied. */
+--- a/node_modules/svgo/types/lib/parser.d.ts
++++ b/node_modules/svgo/types/lib/parser.d.ts
+@@ -20,4 +20,4 @@
+  * @param {string=} from
+  * @returns {import('./types.js').XastRoot}
+  */
+-export declare const parseSvg: (data: string, from?: string | undefined) => import('./types.js').XastRoot;
++export declare const parseSvg: (data: string, from?: string | undefined, maxEntityCount?: number) => import('./types.js').XastRoot;

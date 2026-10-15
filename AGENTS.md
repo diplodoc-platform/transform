@@ -391,6 +391,15 @@ Keep lint marking separate from pre-attribute title capture and trim heading tit
 Validate changes with `test/heading-attrs.test.ts`, CLI integration,
 and unchanged testpack heading assertions before changing this contract.
 
+## SVGO parser compatibility
+
+SVGO is pinned to 4.1.0 and patched with `patch-package` during `prepare` and
+`prepack`. Keep `bundleDependencies: ["svgo"]`: the published Transform must
+include the patched dependency, not fetch an unpatched copy for consumers.
+After an install with scripts disabled, run `npm run patch:svgo`. Run
+`npm run test:package` when changing the patch or its delivery. See
+`docs/ADR/ADR-008-svgo-parser-patch.md` for the rationale and removal procedure.
+
 ## Important Notes
 
 1. **Metapackage vs Standalone**: This package can be used both as part of the metapackage (workspace mode) and as a standalone npm package. All scripts must work in both contexts.

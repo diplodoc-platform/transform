@@ -49,8 +49,11 @@
     "lint": "lint",
     "lint:fix": "lint fix",
     "pre-commit": "lint-staged",
-    "prepare": "husky || true",
-    "lock": "npm install --no-workspaces --package-lock-only --ignore-scripts"
+    "prepare": "npm run patch:svgo && (husky || true)",
+    "lock": "npm install --no-workspaces --package-lock-only --ignore-scripts",
+    "patch:svgo": "node scripts/patch-svgo.mjs",
+    "prepack": "npm run patch:svgo",
+    "test:package": "npm run build && node scripts/test-package.mjs"
   },
   "dependencies": {
     "@diplodoc/cut-extension": "^1.1.6",
@@ -75,7 +78,7 @@
     "quick-lru": "^5.1.1",
     "sanitize-html": "^2.18.0",
     "slugify": "1.6.6",
-    "svgo": "3.3.2",
+    "svgo": "4.1.0",
     "ts-dedent": "^2.2.0"
   },
   "devDependencies": {
@@ -98,6 +101,7 @@
     "jsdom": "^25.0.1",
     "markdown-it-testgen": "^0.1.6",
     "npm-run-all": "^4.1.5",
+    "patch-package": "^8.0.1",
     "postcss": "^8.4.27",
     "postcss-preset-env": "^9.1.1",
     "sass": "^1.79.0",
@@ -112,5 +116,8 @@
     "highlight.js": {
       "optional": true
     }
-  }
+  },
+  "bundleDependencies": [
+    "svgo"
+  ]
 }
