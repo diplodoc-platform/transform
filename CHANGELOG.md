@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.78.8](https://github.com/diplodoc-platform/transform/compare/v4.78.7...v4.78.8) (2026-10-16)
+
+
+### Bug Fixes
+
+* **svg:** centralize fallback and forward the caller logger ([dc3f7e2](https://github.com/diplodoc-platform/transform/commit/dc3f7e25594fc0cf59c0b66c92f7da03bfed0ae8))
+* **svg:** isolate patched parser dependencies in the build ([28ad5d9](https://github.com/diplodoc-platform/transform/commit/28ad5d99e7501bd019a16e36bb0a200fc379fcff))
+* **svg:** make entity limit opt-in through config ([01ff0f0](https://github.com/diplodoc-platform/transform/commit/01ff0f0989c0bb6e96fe3ca096f98200a49a685a))
+* **svg:** preserve images when the entity limit is reached ([7b092ab](https://github.com/diplodoc-platform/transform/commit/7b092ab9818513ca741462f3db35db2f01460432))
+* **svg:** upgrade SVGO with bundled entity-limit patch ([bd4666c](https://github.com/diplodoc-platform/transform/commit/bd4666cbf1d90f52a3913676959066a3147fce24))
+
 ## [4.78.7](https://github.com/diplodoc-platform/transform/compare/v4.78.6...v4.78.7) (2026-10-14)
 
 
