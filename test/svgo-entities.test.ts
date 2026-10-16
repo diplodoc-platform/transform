@@ -1,8 +1,10 @@
 import {dirname} from 'path';
+import {vi} from 'vitest';
 
 import transform from '../src/transform';
 import images, {replaceSvgContent} from '../src/transform/plugins/images';
 import {optimize} from '../src/transform/svgo';
+import {log} from '../src/transform/log';
 
 // Numeric references are counted by SAX; predefined XML entities such as &amp; are not.
 const svgWithEntities = (count: number) =>
@@ -11,19 +13,34 @@ const svgWithEntities = (count: number) =>
 const constantID = () => 'svg-test';
 const imageOptions = {width: '', height: '', title: ''};
 const entityError = 'Parsed entity count exceeds max entity count';
-const render = (svgMaxEntityCount?: number) =>
+const render = (
+    svgMaxEntityCount?: number,
+    svg = svgWithEntities(800),
+    logger?: Partial<typeof log>,
+) =>
     transform('![Diagram](diagram.svg){inline=true}', {
         plugins: [images],
         path: __filename,
         root: dirname(__filename),
-        rawContent: () => svgWithEntities(800),
+        rawContent: () => svg,
+        replaceImageSrc: () => '/diagram.svg',
+        log: logger,
         generateID: constantID,
         ...(svgMaxEntityCount === undefined ? {} : {svgMaxEntityCount}),
     });
 
 describe('SVG entity expansion', () => {
+    beforeEach(() => log.clear());
     test('retains the SVGO default when Transform config omits the limit', () => {
-        expect(() => render()).toThrow(entityError);
+        const {
+            result: {html},
+            logs,
+        } = render();
+        expect(html).toContain('<img src="/diagram.svg"');
+        expect(html).not.toContain('<svg');
+        expect(logs.error).toEqual([]);
+        expect(logs.warn.join(' ')).toContain('content.svgMaxEntityCount');
+        expect(logs.warn.join(' ')).toContain('--svg-max-entity-count');
         expect(() => replaceSvgContent(svgWithEntities(800), imageOptions, constantID)).toThrow(
             entityError,
         );
@@ -57,9 +74,34 @@ describe('SVG entity expansion', () => {
 
     test('keeps explicit limits local to each call', () => {
         render(1024);
-        expect(() => render()).toThrow(entityError);
-        expect(() => render(1)).toThrow(entityError);
+        expect(render().result.html).toContain('<img');
+        expect(render(1).result.html).toContain('<img');
         expect(() => optimize(svgWithEntities(800))).toThrow(entityError);
         expect(() => render(1024)).not.toThrow();
+    });
+    test('reports the fallback through the caller logger', () => {
+        const warn = vi.fn();
+        const error = vi.fn();
+        class Logger {
+            warn(message: string) {
+                warn(message);
+            }
+            error(message: string) {
+                error(message);
+            }
+        }
+        render(undefined, svgWithEntities(800), new Logger());
+        expect(warn).toHaveBeenCalledWith(expect.stringContaining('--svg-max-entity-count'));
+        expect(error).not.toHaveBeenCalled();
+    });
+
+    test('does not hide other SVG parser errors', () => {
+        expect(() => render(undefined, '<svg><path></svg>')).toThrow();
+    });
+
+    test('adds configuration guidance to entity limit errors from the helper', () => {
+        expect(() => replaceSvgContent(svgWithEntities(800), imageOptions, constantID)).toThrow(
+            '--svg-max-entity-count',
+        );
     });
 });

@@ -393,8 +393,8 @@ and unchanged testpack heading assertions before changing this contract.
 
 ## SVGO parser compatibility
 
-SVGO is an exact-pinned development dependency patched during `prepare` and
-`prepack`. `build:lib` bundles it into the internal `lib/svgo.js` module with
+SVGO is an exact-pinned development dependency. `prepare` attempts the patch
+without blocking install or hook setup; `build:lib` and `prepack` require it. `build:lib` bundles it into the internal `lib/svgo.js` module with
 third-party notices; published consumers must not require the unpatched registry
 package. Do not replace this with npm `bundleDependencies`, which can collide
 with a consumer's unrelated parser dependencies. After installing with scripts

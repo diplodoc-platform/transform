@@ -145,6 +145,8 @@ export type EnvType<Extras extends {} = {}> = {
 } & Extras;
 
 export interface MarkdownItPluginOpts {
+    /** @internal Routes SVG fallback warnings to the embedding application. */
+    svgLogger?: {warn: (message: string) => void};
     path: string;
     log: Logger;
     lang: Lang;

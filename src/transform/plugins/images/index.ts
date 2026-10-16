@@ -13,6 +13,17 @@ import {filterTokens, getSrcTokenAttr, isExternalHref} from '../../utils';
 import {generateID as globalGenerateID} from '../utils';
 import {optimize} from '../../svgo';
 
+const SVG_ENTITY_LIMIT_HINT =
+    'To inline this SVG, set svgMaxEntityCount in Transform or content.svgMaxEntityCount / --svg-max-entity-count in CLI.';
+
+function isSvgEntityLimitError(error: unknown): error is Error {
+    return (
+        error instanceof Error &&
+        error.name === 'SvgoParserError' &&
+        error.message.includes('Parsed entity count exceeds max entity count')
+    );
+}
+
 const sanitizeAttribute = (value: string): string => value.replace(/(\d*[%a-z]{0,5}).*/gi, '$1');
 const sanitizeHTMLAttr = (value: string): string => {
     return value
@@ -261,15 +272,24 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                     );
                 } else {
                     const svgToken = new state.Token('image_svg', '', 0);
-                    svgToken.attrSet(
-                        'content',
-                        replaceSvgContent(
-                            svgContent,
-                            {...imageOpts, svgMaxEntityCount: opts.svgMaxEntityCount},
-                            opts.generateID,
-                        ),
-                    );
-                    childrenTokens[tokenIndex] = svgToken;
+                    try {
+                        svgToken.attrSet(
+                            'content',
+                            replaceSvgContent(
+                                svgContent,
+                                {...imageOpts, svgMaxEntityCount: opts.svgMaxEntityCount},
+                                opts.generateID,
+                            ),
+                        );
+                        childrenTokens[tokenIndex] = svgToken;
+                    } catch (error) {
+                        if (!isSvgEntityLimitError(error)) {
+                            throw error;
+                        }
+                        (opts.svgLogger ?? opts.log).warn(
+                            `SVG entity limit reached: ${file}. Keeping the image reference. ${SVG_ENTITY_LIMIT_HINT}`,
+                        );
+                    }
                 }
             }
         }
@@ -348,23 +368,31 @@ function replaceSvgContent(
     // monoline
     content = content.replace(/>\r?\n</g, '><').replace(/\r?\n/g, ' ');
 
-    const optimized = optimize(content, {
-        ...(options.svgMaxEntityCount === undefined
-            ? {}
-            : {maxEntityCount: options.svgMaxEntityCount}),
-        plugins: [
-            'removeDoctype',
-            {name: 'removeComments', params: {preservePatterns: []}},
-            removeProcessingInstructions,
-            {
-                name: 'prefixIds',
-                params: {
-                    prefix: generateID('svg'),
-                    prefixClassNames: false,
+    let optimized;
+    try {
+        optimized = optimize(content, {
+            ...(options.svgMaxEntityCount === undefined
+                ? {}
+                : {maxEntityCount: options.svgMaxEntityCount}),
+            plugins: [
+                'removeDoctype',
+                {name: 'removeComments', params: {preservePatterns: []}},
+                removeProcessingInstructions,
+                {
+                    name: 'prefixIds',
+                    params: {
+                        prefix: generateID('svg'),
+                        prefixClassNames: false,
+                    },
                 },
-            },
-        ],
-    });
+            ],
+        });
+    } catch (error) {
+        if (isSvgEntityLimitError(error)) {
+            error.message += ` ${SVG_ENTITY_LIMIT_HINT}`;
+        }
+        throw error;
+    }
 
     content = optimized.data;
 

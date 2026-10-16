@@ -1,6 +1,14 @@
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
-import {existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync} from 'node:fs';
+import {
+    existsSync,
+    mkdirSync,
+    mkdtempSync,
+    readFileSync,
+    realpathSync,
+    rmSync,
+    writeFileSync,
+} from 'node:fs';
 import {createRequire} from 'node:module';
 import {tmpdir} from 'node:os';
 import {dirname, join} from 'node:path';
@@ -52,9 +60,71 @@ try {
         );
     }
 
+    const consumerRoot = join(temporaryRoot, 'consumer');
+    mkdirSync(consumerRoot);
+    const manifest = JSON.parse(readFileSync(join(projectRoot, 'package.json'), 'utf8'));
+    const typeDependencies = Object.fromEntries(
+        Object.entries(manifest.devDependencies).filter(([name]) => name.startsWith('@types/')),
+    );
+    writeFileSync(
+        join(consumerRoot, 'package.json'),
+        JSON.stringify({
+            private: true,
+            dependencies: {
+                '@diplodoc/transform': `file:${join(temporaryRoot, packed[0].filename)}`,
+                'highlight.js': '^11.8.0',
+                ...typeDependencies,
+            },
+        }),
+    );
+    execFileSync(
+        process.execPath,
+        [process.env.npm_execpath, 'install', '--ignore-scripts', '--no-audit', '--no-fund'],
+        {
+            cwd: consumerRoot,
+            stdio: 'inherit',
+        },
+    );
+    const consumerRequire = createRequire(join(consumerRoot, 'package.json'));
+    assert.throws(() => consumerRequire.resolve('svgo'), {code: 'MODULE_NOT_FOUND'});
+    writeFileSync(
+        join(consumerRoot, 'consumer.ts'),
+        `
+import transform = require('@diplodoc/transform');
+import images = require('@diplodoc/transform/lib/plugins/images');
+import init = require('@diplodoc/transform/lib/md');
+const options: transform.Options = {svgMaxEntityCount: 1024};
+transform('example', options);
+init(options);
+images.replaceSvgContent('<svg/>', {width: null, height: null, title: null, svgMaxEntityCount: 1024});
+`,
+    );
+    writeFileSync(
+        join(consumerRoot, 'tsconfig.json'),
+        JSON.stringify({
+            compilerOptions: {
+                strict: true,
+                skipLibCheck: false,
+                noEmit: true,
+                esModuleInterop: true,
+                module: 'Node16',
+                moduleResolution: 'Node16',
+                target: 'ES2022',
+                types: ['node'],
+            },
+            files: ['consumer.ts'],
+        }),
+    );
+    const projectRequire = createRequire(import.meta.url);
+    execFileSync(
+        process.execPath,
+        [projectRequire.resolve('typescript/lib/tsc.js'), '-p', consumerRoot],
+        {stdio: 'inherit'},
+    );
+
     // eslint-disable-next-line no-console
     console.log(
-        'The npm tarball contains an isolated patched SVGO module and its dependency licenses.',
+        'The npm tarball contains the patched parser and licenses; public types compile without SVGO and with skipLibCheck disabled.',
     );
 } finally {
     rmSync(temporaryRoot, {recursive: true, force: true});
