@@ -95,6 +95,7 @@ function getPluginOptions(options: OptionsType) {
         extractTitle,
         disableLiquid,
         log,
+        svgLogger: options.log as MarkdownItPluginOpts['svgLogger'],
         lang,
         svgInline,
         generateID: generateID ?? createIDGeneratorByStrategy('random'),

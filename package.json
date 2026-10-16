@@ -34,7 +34,7 @@
   "scripts": {
     "build": "npm run build:lib && npm run build:dist",
     "build:dist": "node ./scripts/build-static.mjs",
-    "build:lib": "tsc -p tsconfig.transform.json && node scripts/build-svgo.mjs",
+    "build:lib": "npm run patch:svgo && tsc -p tsconfig.transform.json && node scripts/build-svgo.mjs",
     "dev:lib": "tsc -w -p tsconfig.transform.json",
     "dev:playground": "node ./scripts/dev.mjs",
     "preplayground": "cd playground && npm ci --ignore-scripts || (exit 0)",
@@ -49,7 +49,7 @@
     "lint": "lint",
     "lint:fix": "lint fix",
     "pre-commit": "lint-staged",
-    "prepare": "npm run patch:svgo && (husky || true)",
+    "prepare": "node scripts/prepare.mjs",
     "lock": "npm install --no-workspaces --package-lock-only --ignore-scripts",
     "patch:svgo": "node scripts/patch-svgo.mjs",
     "prepack": "npm run patch:svgo",
