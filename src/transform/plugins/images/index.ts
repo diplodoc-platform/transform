@@ -12,6 +12,7 @@ import {isFileExists, resolveRelativePath} from '../../utilsFS';
 import {filterTokens, getSrcTokenAttr, isExternalHref} from '../../utils';
 import {generateID as globalGenerateID} from '../utils';
 import {optimize} from '../../svgo';
+import {getLogger} from '../../log';
 
 const SVG_ENTITY_LIMIT_HINT =
     'To inline this SVG, set svgMaxEntityCount in Transform or content.svgMaxEntityCount / --svg-max-entity-count in CLI.';
@@ -271,24 +272,20 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
                         `Svg size: ${svgContent.length}; Config size: ${opts.svgInline.maxFileSize}; Src: ${bold(file)}`,
                     );
                 } else {
-                    const svgToken = new state.Token('image_svg', '', 0);
-                    try {
-                        svgToken.attrSet(
-                            'content',
-                            replaceSvgContent(
-                                svgContent,
-                                {...imageOpts, svgMaxEntityCount: opts.svgMaxEntityCount},
-                                opts.generateID,
-                            ),
-                        );
+                    const inlinedSvg = replaceSvgContent(
+                        svgContent,
+                        {
+                            ...imageOpts,
+                            svgMaxEntityCount: opts.svgMaxEntityCount,
+                            path: file,
+                            log: opts.log,
+                        },
+                        opts.generateID,
+                    );
+                    if (inlinedSvg) {
+                        const svgToken = new state.Token('image_svg', '', 0);
+                        svgToken.attrSet('content', inlinedSvg);
                         childrenTokens[tokenIndex] = svgToken;
-                    } catch (error) {
-                        if (!isSvgEntityLimitError(error)) {
-                            throw error;
-                        }
-                        (opts.svgLogger ?? opts.log).warn(
-                            `SVG entity limit reached: ${file}. Keeping the image reference. ${SVG_ENTITY_LIMIT_HINT}`,
-                        );
                     }
                 }
             }
@@ -357,6 +354,13 @@ const removeProcessingInstructions: PluginConfig = {
     },
 };
 
+/**
+ * Return inline SVG, or an empty string when the original image must be kept.
+ * @param {string | null} content Source SVG.
+ * @param {ImageOptions} options Image, parser and diagnostic options.
+ * @param {IDGenerator} generateID Generator used for SVG identifier prefixes.
+ * @returns {string} Inline markup, or an empty result for the image fallback.
+ */
 function replaceSvgContent(
     content: string | null,
     options: ImageOptions,
@@ -388,10 +392,13 @@ function replaceSvgContent(
             ],
         });
     } catch (error) {
-        if (isSvgEntityLimitError(error)) {
-            error.message += ` ${SVG_ENTITY_LIMIT_HINT}`;
+        if (!isSvgEntityLimitError(error)) {
+            throw error;
         }
-        throw error;
+        getLogger(options.log).warn(
+            `SVG entity limit reached: ${options.path ?? '<input>'}. Keeping the image reference. ${SVG_ENTITY_LIMIT_HINT}`,
+        );
+        return '';
     }
 
     content = optimized.data;

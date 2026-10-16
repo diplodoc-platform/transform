@@ -3,7 +3,7 @@ import type {Token} from 'markdown-it';
 import type DefaultMarkdownIt from 'markdown-it';
 import type DefaultStateCore from 'markdown-it/lib/rules_core/state_core';
 import type {SanitizeFunction, SanitizeOptions} from './sanitize';
-import type {LogLevels, Logger} from './log';
+import type {LogConsumer, LogLevels, Logger} from './log';
 import type {ChangelogItem} from './plugins/changelog/types';
 import type {IDGenerator} from './plugins/utils';
 import type {VisibilityMode} from './plugins/visibility';
@@ -50,6 +50,8 @@ export type Lang =
     | 'uz';
 
 export interface OptionsType {
+    /** Forward plugin messages while retaining the collected Transform diagnostics. */
+    log?: LogConsumer;
     tokens?: boolean;
     vars?: Record<string, string>;
     path?: string;
@@ -145,8 +147,6 @@ export type EnvType<Extras extends {} = {}> = {
 } & Extras;
 
 export interface MarkdownItPluginOpts {
-    /** @internal Routes SVG fallback warnings to the embedding application. */
-    svgLogger?: {warn: (message: string) => void};
     path: string;
     log: Logger;
     lang: Lang;
@@ -204,6 +204,9 @@ export type MarkdownItPreprocessorCb<T extends unknown = {}> = {
 export type CssWhiteList = {[property: string]: boolean};
 
 export type ImageOptions = {
+    /** Diagnostic identity of the SVG asset. */
+    path?: string;
+    log?: LogConsumer;
     /** Override SVGO's XML entity limit for this SVG. Omit to use its default. */
     svgMaxEntityCount?: number;
     width: string | undefined | null;

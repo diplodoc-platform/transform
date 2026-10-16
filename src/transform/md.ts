@@ -6,7 +6,7 @@ import attrs from 'markdown-it-attrs';
 
 import DefaultPlugins from './plugins';
 import {preprocess} from './preprocessors';
-import {log} from './log';
+import {getLogger} from './log';
 import makeHighlight from './highlight';
 import extractTitle from './title';
 import getHeadings from './headings';
@@ -94,8 +94,7 @@ function getPluginOptions(options: OptionsType) {
         path,
         extractTitle,
         disableLiquid,
-        log,
-        svgLogger: options.log as MarkdownItPluginOpts['svgLogger'],
+        log: getLogger(options.log),
         lang,
         svgInline,
         generateID: generateID ?? createIDGeneratorByStrategy('random'),
@@ -144,7 +143,7 @@ function initParser(
         } = options;
 
         // Run preprocessor
-        input = preprocess(input, pluginOptions, options, md);
+        input = preprocess(input, pluginOptions, {...options, log: pluginOptions.log}, md);
 
         // Generate global href link
         const href = getPublicPath ? getPublicPath(options) : '';
