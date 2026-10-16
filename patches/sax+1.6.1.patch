@@ -1,0 +1,35 @@
+--- a/node_modules/sax/lib/sax.js
++++ b/node_modules/sax/lib/sax.js
+@@ -62,9 +62,13 @@
+     var parser = this
+     clearBuffers(parser)
+     parser.q = parser.c = ''
+-    parser.bufferCheckPosition = sax.MAX_BUFFER_LENGTH
+     parser.encoding = null;
+     parser.opt = opt || {}
++    // Snapshot the limit for this parser; never change the module-wide default.
++    parser.maxBufferLength = parser.opt.maxBufferLength == null
++      ? sax.MAX_BUFFER_LENGTH
++      : parser.opt.maxBufferLength
++    parser.bufferCheckPosition = parser.maxBufferLength
+     parser.opt.lowercase = parser.opt.lowercase || parser.opt.lowercasetags
+     parser.looseCase = parser.opt.lowercase ? 'toLowerCase' : 'toUpperCase'
+     parser.opt.maxEntityCount = parser.opt.maxEntityCount || 512
+@@ -122,7 +126,7 @@
+   }
+ 
+   function checkBufferLength(parser) {
+-    var maxAllowed = Math.max(sax.MAX_BUFFER_LENGTH, 10)
++    var maxAllowed = Math.max(parser.maxBufferLength, 10)
+     var maxActual = 0
+     for (var i = 0, l = buffers.length; i < l; i++) {
+       var len = parser[buffers[i]].length
+@@ -153,7 +157,7 @@
+       maxActual = Math.max(maxActual, len)
+     }
+     // schedule the next check for the earliest possible buffer overrun.
+-    var m = sax.MAX_BUFFER_LENGTH - maxActual
++    var m = parser.maxBufferLength - maxActual
+     parser.bufferCheckPosition = m + parser.position
+   }
+ 
