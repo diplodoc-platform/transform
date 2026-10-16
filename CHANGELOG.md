@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.78.9](https://github.com/diplodoc-platform/transform/compare/v4.78.8...v4.78.9) (2026-10-16)
+
+
+### Bug Fixes
+
+* **svg:** size SAX buffers per document ([f4e28c0](https://github.com/diplodoc-platform/transform/commit/f4e28c0742a2b61ebecdb2a3dfede6ac117c360f))
+
 ## [4.78.8](https://github.com/diplodoc-platform/transform/compare/v4.78.7...v4.78.8) (2026-10-16)
 
 
