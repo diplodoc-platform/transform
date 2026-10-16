@@ -90,8 +90,8 @@
     "@types/markdown-it-attrs": "4.1.0",
     "@types/node": "^22.19.7",
     "@types/sanitize-html": "^2.9.3",
-    "@vitest/coverage-v8": "^2.1.9",
-    "@vitest/ui": "^2.1.8",
+    "@vitest/coverage-v8": "^5.0.5",
+    "@vitest/ui": "^5.0.5",
     "autoprefixer": "^10.4.15",
     "esbuild": "^0.27.2",
     "esbuild-sass-plugin": "^3.3.1",
@@ -107,7 +107,7 @@
     "svgo": "4.1.0",
     "terminal-link": "^2.1.1",
     "typescript": "6.0.3",
-    "vitest": "^2.1.8"
+    "vitest": "^5.0.5"
   },
   "peerDependencies": {
     "highlight.js": "^10.0.3 || ^11"
