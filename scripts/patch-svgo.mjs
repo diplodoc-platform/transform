@@ -1,5 +1,5 @@
 import {spawnSync} from 'node:child_process';
-import {readFileSync, realpathSync} from 'node:fs';
+import {copyFileSync, mkdtempSync, readFileSync, realpathSync, rmSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import {dirname, join, relative} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -15,26 +15,45 @@ function applyPatch() {
         throw new Error(`The SVG parser patch requires svgo@4.1.0, received ${name}@${version}`);
     }
 
-    const appRoot = dirname(dirname(svgoRoot));
-    const result = spawnSync(
-        process.execPath,
-        [
-            require.resolve('patch-package/index.js'),
-            '--patch-dir',
-            relative(appRoot, join(projectRoot, 'patches')),
-            '--error-on-fail',
-        ],
-        {
-            cwd: appRoot,
-            stdio: 'inherit',
-        },
-    );
-
-    if (result.error) {
-        throw result.error;
+    const svgoRequire = createRequire(join(svgoRoot, 'package.json'));
+    const saxRoot = dirname(dirname(realpathSync(svgoRequire.resolve('sax'))));
+    const sax = JSON.parse(readFileSync(join(saxRoot, 'package.json'), 'utf8'));
+    if (sax.name !== 'sax' || sax.version !== '1.6.1') {
+        throw new Error(
+            `The SVG buffer patch requires sax@1.6.1, received ${sax.name}@${sax.version}`,
+        );
     }
-    if (result.status !== 0) {
-        throw new Error(`Could not apply the SVG parser patch (exit ${result.status})`);
+
+    // npm can hoist SAX independently of SVGO. Apply each patch at its resolved root.
+    const patches = [
+        {root: saxRoot, file: 'sax+1.6.1.patch'},
+        {root: svgoRoot, file: 'svgo+4.1.0.patch'},
+    ];
+    for (const {root, file} of patches) {
+        const appRoot = dirname(dirname(root));
+        // Keep the temporary patch on the same volume for relative Windows paths.
+        const temporaryRoot = mkdtempSync(join(appRoot, 'node_modules', '.diplodoc-svg-patches-'));
+        try {
+            copyFileSync(join(projectRoot, 'patches', file), join(temporaryRoot, file));
+            const result = spawnSync(
+                process.execPath,
+                [
+                    require.resolve('patch-package/index.js'),
+                    '--patch-dir',
+                    relative(appRoot, temporaryRoot),
+                    '--error-on-fail',
+                ],
+                {cwd: appRoot, stdio: 'inherit'},
+            );
+            if (result.error) {
+                throw result.error;
+            }
+            if (result.status !== 0) {
+                throw new Error(`Could not apply ${file} (exit ${result.status})`);
+            }
+        } finally {
+            rmSync(temporaryRoot, {recursive: true, force: true});
+        }
     }
 }
 

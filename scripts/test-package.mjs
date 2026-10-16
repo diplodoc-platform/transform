@@ -49,8 +49,18 @@ try {
     assert.equal(existsSync(join(packageRoot, 'node_modules/svgo')), false);
     const esm = await import(pathToFileURL(svgoModule));
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" content="${'&#10;'.repeat(800)}"><path d="M0 0h10"/></svg>`;
+    const projectRequire = createRequire(import.meta.url);
+    const svgoRoot = dirname(dirname(realpathSync(projectRequire.resolve('svgo'))));
+    const nativeEsm = await import(pathToFileURL(join(svgoRoot, 'lib/svgo-node.js')));
+    const largeSvg = `<svg xmlns="http://www.w3.org/2000/svg" content="${'x'.repeat(1024 * 1024)}&#10;"><path id="line" d="M0 0h10"/></svg>`;
 
-    for (const {optimize} of [require('./lib/svgo.js'), esm.default]) {
+    for (const {optimize} of [
+        require('./lib/svgo.js'),
+        esm.default,
+        projectRequire('svgo'),
+        nativeEsm,
+    ]) {
+        assert.match(optimize(largeSvg, {plugins: []}).data, /<path id="line"/);
         assert.throws(() => optimize(svg), /Parsed entity count exceeds max entity count/);
         assert.match(optimize(svg, {maxEntityCount: 1024, multipass: true}).data, /<svg/);
         assert.throws(() => optimize(svg), /Parsed entity count exceeds max entity count/);
@@ -115,7 +125,6 @@ images.replaceSvgContent('<svg/>', {width: null, height: null, title: null, svgM
             files: ['consumer.ts'],
         }),
     );
-    const projectRequire = createRequire(import.meta.url);
     execFileSync(
         process.execPath,
         [projectRequire.resolve('typescript/lib/tsc.js'), '-p', consumerRoot],

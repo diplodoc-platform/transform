@@ -1,6 +1,6 @@
 --- a/node_modules/svgo/lib/parser.js
 +++ b/node_modules/svgo/lib/parser.js
-@@ -75,10 +75,18 @@
+@@ -75,10 +75,23 @@
   *
   * @param {string} data
   * @param {string=} from
@@ -15,8 +15,13 @@
 +  // Build a fresh options object per call: sax mutates the options it receives
 +  // (e.g. it stamps a default `maxEntityCount`), so the shared `config` must
 +  // not be passed directly.
-+  const parserConfig =
-+    maxEntityCount == null ? { ...config } : { ...config, maxEntityCount };
++  const parserConfig = {
++    ...config,
++    // SVGO already holds the complete input in memory. Allow its literal
++    // attribute values without changing SAX limits for other parser instances.
++    maxBufferLength: Math.max(SAX.MAX_BUFFER_LENGTH, data.length),
++    ...(maxEntityCount == null ? {} : { maxEntityCount }),
++  };
 +  const sax = SAX.parser(parserConfig.strict, parserConfig);
    /** @type {import('./types.js').XastRoot} */
    const root = { type: 'root', children: [] };
@@ -72,7 +77,7 @@
  return`${this.name}: ${this.message}\n\n${code}\n`}}const entityDeclaration=/<!ENTITY\s+(\S+)\s+(?:'([^']+)'|"([^"]+)")\s*>/g
  const config={strict:true,trim:false,normalize:false,lowercase:true,xmlns:true,position:true,unparsedEntities:true}
 -const parseSvg=(data,from)=>{const sax=SAX.parser(config.strict,config)
-+const parseSvg=(data,from,maxEntityCount)=>{const parserConfig=maxEntityCount==null?{...config}:{...config,maxEntityCount};const sax=SAX.parser(parserConfig.strict,parserConfig)
++const parseSvg=(data,from,maxEntityCount)=>{const parserConfig={...config,maxBufferLength:Math.max(SAX.MAX_BUFFER_LENGTH,data.length),...(maxEntityCount==null?{}:{maxEntityCount})};const sax=SAX.parser(parserConfig.strict,parserConfig)
  const root={type:"root",children:[]}
  let current=root
  const stack=[root]
