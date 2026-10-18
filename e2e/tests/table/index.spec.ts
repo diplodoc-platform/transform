@@ -52,3 +52,9 @@ describeStory(yfmTableStories, 'WithHeaderRowsAndCellBg', () => {
         await expect(yfmRoot).toHaveScreenshot();
     });
 });
+
+describeStory(yfmTableStories, 'WithColWidths', () => {
+    test('yfm-table with col widths', async ({yfmRoot}) => {
+        await expect(yfmRoot).toHaveScreenshot();
+    });
+});
