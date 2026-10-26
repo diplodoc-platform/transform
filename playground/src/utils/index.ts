@@ -1,14 +1,13 @@
-import {EditorType} from '../App';
-import data from '../PageConstructorEditor/data.json';
-import initialMarkup from '../SplitViewEditor/mdContent';
+import {EditorType} from 'src/App';
+import data from 'src/PageConstructorEditor/data.json';
+import initialMarkup from 'src/SplitViewEditor/mdContent';
 
 function persist(input: string, query = 'input') {
     try {
         const current = new URL(location.toString());
         current.searchParams.set(query, encodeURI(input) ?? '');
 
-        // @ts-expect-error
-        history.pushState(null, null, current);
+        history.pushState(null, '', current);
     } catch (err) {
         // eslint-disable-next-line no-console
         console.error(err);
@@ -20,8 +19,7 @@ function deleteQuery(query) {
         const current = new URL(location.toString());
         current.searchParams.delete(query);
 
-        // @ts-expect-error
-        history.pushState(null, null, current);
+        history.pushState(null, '', current);
     } catch (err) {
         // eslint-disable-next-line no-console
         console.error(err);
@@ -40,7 +38,7 @@ function restore(query = 'input') {
         }
 
         return input;
-    } catch (err) {
+    } catch {
         return '';
     }
 }
@@ -50,14 +48,14 @@ function prefill() {
 
     if (search.get('prefill') === 'true') {
         const mode = search.get('mode');
-        return mode === EditorType.PC ? data : initialMarkup;
+        return mode === EditorType.PC ? JSON.stringify(data) : initialMarkup;
     }
 
     return restore();
 }
 
-function deleteElementById(data, idToRemove) {
-    return data
+function deleteElementById(items, idToRemove) {
+    return items
         .map((subArray) => {
             return subArray.filter((element) => element.id !== idToRemove);
         })

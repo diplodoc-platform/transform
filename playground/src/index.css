@@ -1,14 +1,4 @@
 @import '@gravity-ui/uikit/styles/styles.css';
-@import '@gravity-ui/uikit/styles/themes/light/_index.scss';
-@import '@gravity-ui/uikit/build/cjs/components/variables.css';
-@import '@gravity-ui/uikit/build/cjs/components/layout/variables.css';
-@import '@gravity-ui/uikit/build/cjs/components/layout/Col/Col.css';
-@import '@gravity-ui/uikit/build/cjs/components/layout/Container/Container.css';
-@import '@gravity-ui/uikit/build/cjs/components/Card/Card.css';
-@import '@gravity-ui/uikit/build/cjs/components/Tabs/Tabs.css';
-@import '@gravity-ui/uikit/build/cjs/components/controls/mixins.css';
-@import '@gravity-ui/uikit/build/cjs/components/controls/variables.css';
-@import '@gravity-ui/uikit/build/cjs/components/controls/TextArea/TextArea.css';
 
 html,
 body {
@@ -35,8 +25,9 @@ h6 {
 .g-root {
     --g-text-header-font-family: 'Manrope', 'Helvetica Neue', 'Arial', 'Helvetica', sans-serif;
     --g-font-family-sans: 'Inter', 'Helvetica Neue', 'Arial', 'Helvetica', sans-serif;
-    --g-font-family-monospace: 'Martian Mono', 'Monaco', 'Consolas', 'Ubuntu Mono',
-        'Liberation Mono', 'DejaVu Sans Mono', 'Courier New', 'Courier', monospace;
+    --g-font-family-monospace:
+        'Martian Mono', 'Monaco', 'Consolas', 'Ubuntu Mono', 'Liberation Mono', 'DejaVu Sans Mono',
+        'Courier New', 'Courier', monospace;
     --g-text-accent-font-weight: 700;
 
     /* g-colors-private-green-light; */

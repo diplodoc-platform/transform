@@ -5,19 +5,24 @@ import {Editor} from '@gravity-ui/page-constructor/editor';
 import {contentTransformer} from '@gravity-ui/page-constructor/server';
 import {ErrorBoundary} from 'react-error-boundary';
 
-import {deleteQuery, persist, prefill} from '../utils';
-
-import {memoizeLast} from './utils';
+import {memoizeLast} from 'src/PageConstructorEditor/utils';
+import {deleteQuery, persist, prefill} from 'src/utils';
 
 const contentTransformerMemoized = memoizeLast(contentTransformer);
 
 function PageConstructorEditor() {
-    const [input, setInput] = useState(prefill() || '');
+    const [input, setInput] = useState<PageContent>(() => {
+        const content = JSON.parse(prefill() || '{"blocks":[]}');
+        if (!Array.isArray(content.blocks)) {
+            throw new Error('Page constructor content must contain a blocks array');
+        }
+        return content;
+    });
     const lang = 'ru';
-    const onChange = (input) => {
-        setInput(input);
-        if (input) {
-            persist(JSON.stringify(input));
+    const onChange = (content: PageContent) => {
+        setInput(content);
+        if (content) {
+            persist(JSON.stringify(content));
         } else {
             deleteQuery('input');
         }
@@ -33,10 +38,10 @@ function PageConstructorEditor() {
 
     return (
         <Editor
-            // @ts-expect-error
-            content={input['blocks'] ? input : {blocks: []}}
+            content={input}
             onChange={onChange}
             transformContent={transformContent}
+            deviceEmulationSettings={{applyHostStyles: true}}
         />
     );
 }
@@ -50,7 +55,7 @@ function SafePageConstructorEditor() {
                     start with "blocks" array.{' '}
                     <a
                         href={
-                            '/playground?mode=PC&input=%257B%2522blocks%2522%3A%255B%255D%2C%2522animated%2522%3Afalse%257D'
+                            '?mode=PC&input=%257B%2522blocks%2522%3A%255B%255D%2C%2522animated%2522%3Afalse%257D'
                         }
                     >
                         Refresh the page.

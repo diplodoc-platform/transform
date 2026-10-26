@@ -24,7 +24,8 @@ export function generateHTML({env, jspath, csspath} = {}) {
         <!-- End Google Tag Manager -->
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width,initial-scale=1"/>
-        <title>playground</title>${
+        <title>Playground | Diplodoc</title>
+        <link rel="icon" type="image/x-icon" href="https://storage.yandexcloud.net/diplodoc-www-assets/favicon/favicon.ico"/>${
             env === 'development'
                 ? `
         <script>

@@ -1,14 +1,17 @@
-import {PageConstructor, PageConstructorProvider} from '@gravity-ui/page-constructor';
+import type {NavigationData} from '@gravity-ui/page-constructor';
 
-import {useTabs} from '../useTabs';
-import SplitViewEditor from '../SplitViewEditor';
-import PageConstructorEditor from '../PageConstructorEditor';
-import WYSIWYGEditor from '../WYSIWYGEditor';
-import Header from '../Header';
-import {restore} from '../utils';
+import {PageConstructor, PageConstructorProvider, Theme} from '@gravity-ui/page-constructor';
 
-import './index.scss';
+import {useTabs} from 'src/useTabs';
+import SplitViewEditor from 'src/SplitViewEditor';
+import PageConstructorEditor from 'src/PageConstructorEditor';
+import WYSIWYGEditor from 'src/WYSIWYGEditor';
+import Header from 'src/Header';
+
+import {deleteQuery, persist, restore} from '../utils';
+
 import navigation from './navigation.json';
+import './index.scss';
 
 export type PlaygroundProperties = {
     content?: string;
@@ -45,15 +48,17 @@ const App = () => {
             ...value,
         })),
         initial: mode[urlMode] ? urlMode : EditorType.SPLIT,
+        onSetActive: (active) => {
+            deleteQuery('input');
+            persist(active, 'mode');
+        },
     });
 
     return (
         <>
-            {/* @ts-expect-error */}
-            <PageConstructorProvider theme={'light'}>
+            <PageConstructorProvider theme={Theme.Light}>
                 <PageConstructor
-                    // @ts-expect-error
-                    navigation={navigation}
+                    navigation={navigation as NavigationData}
                     custom={{
                         navigation: {
                             controls: () => (
@@ -65,12 +70,7 @@ const App = () => {
                             ),
                         },
                         blocks: {
-                            page: () => (
-                                // @ts-expect-error
-                                <Playground persistRestore={true}>
-                                    {mode[activeTab].node}
-                                </Playground>
-                            ),
+                            page: () => <Playground>{mode[activeTab].node}</Playground>,
                         },
                     }}
                     content={{

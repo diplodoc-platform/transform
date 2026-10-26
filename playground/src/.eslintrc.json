@@ -1,0 +1,5 @@
+{
+  "settings": {
+    "import/internal-regex": "^(@local/|src/)"
+  }
+}
