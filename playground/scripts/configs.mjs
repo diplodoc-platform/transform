@@ -90,6 +90,10 @@ const pageConstructorCompatibilityPlugin = {
 
 const common = {
     absWorkingDir: resolveFromPlaygroundRoot(),
+    alias: {
+        '@diplodoc/transform/dist/js/base.js': resolveFromPlaygroundRoot('../dist/js/yfm.js'),
+        '@diplodoc/transform/dist/js/_yfm-only.js': resolveFromPlaygroundRoot('../dist/js/yfm.js'),
+    },
     platform: 'browser',
     sourcemap: true,
     minify: false,
