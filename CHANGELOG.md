@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.78.10](https://github.com/diplodoc-platform/transform/compare/v4.78.9...v4.78.10) (2026-10-26)
+
+
+### Bug Fixes
+
+* **playground:** refresh editors and YFM support (DOCSTOOLS-6343) ([#1113](https://github.com/diplodoc-platform/transform/issues/1113)) ([2e5bdc4](https://github.com/diplodoc-platform/transform/commit/2e5bdc4ad281048cb4a7ae7e25ba4a920caaf970))
+
 ## [4.78.9](https://github.com/diplodoc-platform/transform/compare/v4.78.8...v4.78.9) (2026-10-16)
 
 
