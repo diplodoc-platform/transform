@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.78.11](https://github.com/diplodoc-platform/transform/compare/v4.78.10...v4.78.11) (2026-10-26)
+
+
+### Bug Fixes
+
+* **playground:** deduplicate term runtime (DOCSTOOLS-7001) ([#1117](https://github.com/diplodoc-platform/transform/issues/1117)) ([2c2b667](https://github.com/diplodoc-platform/transform/commit/2c2b667810765ab68feeb1be0099fac3e87be818))
+
 ## [4.78.10](https://github.com/diplodoc-platform/transform/compare/v4.78.9...v4.78.10) (2026-10-26)
 
 
