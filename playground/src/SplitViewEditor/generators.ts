@@ -1,7 +1,8 @@
 import MarkdownIt from 'markdown-it';
 import {mdRenderer} from '@diplodoc/markdown-it-markdown-renderer';
-import meta from '@local/transform/plugins/meta';
 import sup from 'markdown-it-sup';
+
+import meta from '@local/transform/plugins/meta';
 import cut from '@local/transform/plugins/cut';
 import checkbox from '@local/transform/plugins/checkbox';
 import anchors from '@local/transform/plugins/anchors';
@@ -38,6 +39,22 @@ function generateMD(input: string) {
     md.use(video, diplodocOptions);
     md.use(table, diplodocOptions);
     md.use(mdRenderer);
+
+    // markdown-renderer 0.16 does not yet serialize the new cell attributes.
+    const renderCell = md.renderer.rules.yfm_td_open;
+    if (!renderCell) {
+        throw new Error('Markdown renderer must provide a YFM table cell rule');
+    }
+    md.renderer.rules.yfm_td_open = function (tokens, index, ...args) {
+        const attributes = ['bg', 'align']
+            .map((name) => {
+                const value = tokens[index].attrGet(`data-${name}`);
+                return value ? `${name}="${value}"` : '';
+            })
+            .filter(Boolean);
+        const opening = renderCell.call(this, tokens, index, ...args);
+        return attributes.length ? opening.replace(/^\|/, `|::{${attributes.join(' ')}}`) : opening;
+    };
 
     try {
         return md.render(input, {source: input.split('\n')});

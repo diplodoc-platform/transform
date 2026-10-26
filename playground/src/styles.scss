@@ -10,13 +10,14 @@
     }
 }
 
+/* stylelint-disable declaration-no-important -- Override UIKit and Monaco inline editor dimensions. */
+
 .g-text-area__control {
     height: calc(var(--diplodoc-playground-height) + 26px) !important;
     min-height: calc(var(--diplodoc-playground-height) + 26px) !important;
     max-height: calc(var(--diplodoc-playground-height) + 26px) !important;
 
-    overflow-y: scroll;
-    overflow-x: hidden;
+    overflow: hidden auto;
 }
 
 .g-text-area__content {
@@ -31,3 +32,5 @@
 .margin {
     display: none !important;
 }
+
+/* stylelint-enable declaration-no-important */

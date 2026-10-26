@@ -1,6 +1,7 @@
 import {mkdir, rm, writeFile} from 'node:fs/promises';
-import {join} from 'node:path';
-import {context} from '@diplodoc/infra/esbuild';
+import {join, resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {context} from 'esbuild';
 
 import {generateHTML} from '../src/index.html.mjs';
 
@@ -36,10 +37,15 @@ export const runPlaygroundInDev = async () => {
 
     await ctx.watch();
 
-    const {host, port} = await ctx.serve({
+    const {port} = await ctx.serve({
+        host: '127.0.0.1',
         servedir: outdir,
     });
 
     // eslint-disable-next-line no-console
-    console.log(`http://${host}:${port}`);
+    console.log(`http://localhost:${port}`);
 };
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+    await runPlaygroundInDev();
+}

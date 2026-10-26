@@ -14,10 +14,26 @@
     "skipLibCheck": true,
     "noImplicitAny": false,
     "paths": {
-      "@local/transform/*": ["../lib/*"],
-      "@local/transform-dist/*": ["../dist/*"]
-    }
+      "@local/transform/*": [
+        "../lib/*"
+      ],
+      "@local/transform-dist/*": [
+        "../dist/*"
+      ],
+      "src/*": [
+        "./src/*"
+      ]
+    },
+    "types": [
+      "node"
+    ]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

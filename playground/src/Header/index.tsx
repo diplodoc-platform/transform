@@ -1,4 +1,4 @@
-import {Tabs} from '@gravity-ui/uikit';
+import {Tabs} from '@gravity-ui/uikit/legacy';
 
 import './header.scss';
 
@@ -11,7 +11,11 @@ function Header({activeTab, items, handleSetInputAreaTabActive}) {
                     activeTab={activeTab}
                     items={items}
                     onSelectTab={handleSetInputAreaTabActive}
-                    wrapTo={(item, node) => <div className="header__tab" key={item.id}>{node}</div>}
+                    wrapTo={(item, node) => (
+                        <div key={item.id} className="header__tab">
+                            {node}
+                        </div>
+                    )}
                 />
             </div>
         </div>

@@ -1,9 +1,7 @@
 import type {ReactNode} from 'react';
-import type {TabsItemProps, TabsProps} from '@gravity-ui/uikit';
+import type {TabsItemProps, TabsProps} from '@gravity-ui/uikit/legacy';
 
 import {useState} from 'react';
-
-import {deleteQuery, persist} from './utils';
 
 export type TabItem = TabsItemProps & {node?: ReactNode};
 
@@ -18,14 +16,11 @@ function useTabs(parameters: UseTabsParameters): [TabsProps['items'], string, (a
 
     const [active, setTabActive] = useState(initial);
 
-    const handleSetTabActive = (active: string) => {
-        deleteQuery('input');
-        persist(active, 'mode');
-
-        setTabActive(active);
+    const handleSetTabActive = (value: string) => {
+        setTabActive(value);
 
         if (onSetActive) {
-            onSetActive(active);
+            onSetActive(value);
         }
     };
 

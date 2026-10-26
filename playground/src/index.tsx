@@ -1,5 +1,6 @@
 import {createRoot} from 'react-dom/client';
 import {ThemeProvider} from '@gravity-ui/uikit';
+
 import '@local/transform-dist/js/yfm.js';
 import '@local/transform-dist/css/yfm.css';
 

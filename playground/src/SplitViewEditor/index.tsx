@@ -3,14 +3,13 @@ import {useCallback, useEffect, useState} from 'react';
 import {useTabs} from '../useTabs';
 import {deleteQuery, persist, prefill} from '../utils';
 
-import {generateHTML, generateMD, generateTokens} from './generators';
-import './index.scss';
 import {InputArea} from './input-area';
 import {OutputArea} from './output-area';
+import {generateHTML, generateMD, generateTokens} from './generators';
+import './index.scss';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(window as any).MonacoEnvironment = {
-    getWorker: (_: unknown, label: string) => {
+window.MonacoEnvironment = {
+    getWorker: (_, label: string) => {
         if (label === 'json') {
             return new Worker(
                 new URL('monaco-editor/esm/vs/language/json/json.worker?worker', 'monaco-worker'),
@@ -35,16 +34,12 @@ function SplitViewEditor(props: PlaygroundProperties) {
     const generate = useCallback(
         (active: string) => {
             if (active === 'markdown') {
-                // @ts-expect-error
                 setGenerated(generateMD(input));
             } else if (active === 'html') {
-                // @ts-expect-error
                 setGenerated(generateHTML(input));
             } else if (active === 'tokens') {
-                // @ts-expect-error
                 setGenerated(generateTokens(input));
             } else if (active === 'preview') {
-                // @ts-expect-error
                 setGenerated(generateHTML(input));
             } else {
                 setGenerated(input);
@@ -64,15 +59,14 @@ function SplitViewEditor(props: PlaygroundProperties) {
         onSetActive: generate,
     });
 
-    const handleInputChange = (input?: string) => {
-        setInput(input || '');
+    const handleInputChange = (value?: string) => {
+        setInput(value || '');
     };
 
     useEffect(() => {
         generate(outputActive);
 
         if (props?.persistRestore && input) {
-            // @ts-expect-error
             persist(input);
         } else {
             deleteQuery('input');
@@ -81,13 +75,11 @@ function SplitViewEditor(props: PlaygroundProperties) {
 
     return (
         <div className="split-view">
-            {/* @ts-expect-error */}
             <InputArea handleInputChange={handleInputChange} input={input} />
             <OutputArea
                 handleSelectTab={handleSetOutputAreaTabActive}
                 tabItems={outputItems}
                 tabActive={outputActive}
-                /* @ts-expect-error */
                 output={generated}
             />
         </div>
