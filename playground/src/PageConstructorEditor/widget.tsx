@@ -1,7 +1,8 @@
 import {createRoot} from 'react-dom/client';
 import {PageConstructor, PageConstructorProvider} from '@gravity-ui/page-constructor';
 
-// The message protocol used by Page Constructor's DeviceIframe.
+import '@local/transform-dist/js/yfm.js';
+
 const ready = 'PC_EDITOR_DEVICE_MESSAGE_READY';
 const update = 'PC_EDITOR_DEVICE_MESSAGE_UPDATE';
 const parentOrigin = window.parent.location.origin;

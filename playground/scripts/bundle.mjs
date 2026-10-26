@@ -14,8 +14,6 @@ const external = [
     ...Object.keys(dependencies ?? {}),
 ].filter((name) => name !== '@gravity-ui/page-constructor');
 
-// CommonJS dependencies inside Page Constructor must share the ESM consumer's peers.
-// Hoist their external requires to imports instead of emitting browser-only dynamic require.
 const esmExternalsPlugin = {
     name: 'esm-externals',
     setup(build) {
@@ -35,7 +33,6 @@ const esmExternalsPlugin = {
     },
 };
 
-// Bundle Page Constructor so the same compatibility fixes apply to npm consumers.
 (async () => {
     const outdir = resolveFromPlaygroundRoot('bundle');
 

@@ -40,7 +40,6 @@ function generateMD(input: string) {
     md.use(table, diplodocOptions);
     md.use(mdRenderer);
 
-    // markdown-renderer 0.16 does not yet serialize the new cell attributes.
     const renderCell = md.renderer.rules.yfm_td_open;
     if (!renderCell) {
         throw new Error('Markdown renderer must provide a YFM table cell rule');

@@ -10,7 +10,7 @@
     }
 }
 
-/* stylelint-disable declaration-no-important -- Override UIKit and Monaco inline editor dimensions. */
+/* stylelint-disable declaration-no-important */
 
 .g-text-area__control {
     height: calc(var(--diplodoc-playground-height) + 26px) !important;

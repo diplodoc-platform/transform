@@ -36,14 +36,11 @@ const configuredNodePolyfillPlugin = nodeModulesPolyfillPlugin({
     globals: {process: true, Buffer: true},
 });
 
-// page-constructor 8.x publishes only a webpack chunk as widget/index.js.
-// Bundle the iframe entry locally; Editor copies the host styles into its iframe.
 const pageConstructorCompatibilityPlugin = {
     name: 'page-constructor-compatibility',
     setup(build) {
-        // The published enum includes blocks for which no editor template is shipped.
         build.onLoad(
-            {filter: /page-constructor\/build\/esm\/editor\/data\/index\.js$/},
+            {filter: /page-constructor[\\/]build[\\/]esm[\\/]editor[\\/]data[\\/]index\.js$/},
             ({path: filename}) => {
                 const source = readFileSync(filename, 'utf8');
                 const templateDir = path.join(path.dirname(filename), 'templates');
