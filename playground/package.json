@@ -38,7 +38,7 @@
     "bundle": "node scripts/bundle.mjs",
     "pages": "node scripts/pages.mjs",
     "dev": "node scripts/dev.mjs",
-    "typecheck": "tsc -p . --noEmit",
+    "typecheck": "tsc -p . --noEmit --incremental false",
     "prepublishOnly": "npm run bundle",
     "test": "vitest run"
   },
