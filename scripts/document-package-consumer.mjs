@@ -71,6 +71,40 @@ if (process.argv.includes('--native13')) {
         assert.notEqual(a.env, b.env);
     }
 }
+// Both facades replay the same opaque, parser-owned contribution handle.
+for (const api of [common, esm]) {
+    let native;
+    let parses = 0;
+    require('@diplodoc/transform/parser')({
+        plugins: [
+            (md) => {
+                native = md;
+                md.core.ruler.push('captured-resource', (state) => {
+                    parses++;
+                    state.env.assets = ['child.png'];
+                    state.env.meta = {script: ['child.js']};
+                    state.env.terms = {...state.env.terms, child: 'definition'};
+                });
+            },
+        ],
+    });
+    const a = api.createDocumentEnv();
+    a.terms = {parent: 'A'};
+    const fragment = api.parseDocumentFragmentResult(native, 'child', a, {purpose: 'reference'});
+    assert.equal(a.assets, undefined);
+    const b = api.createDocumentEnv();
+    api.replayDocumentFragment(native, fragment, b, {purpose: 'include'});
+    api.replayDocumentFragment(native, fragment, b, {purpose: 'include'});
+    assert.deepEqual(b.assets, ['child.png']);
+    assert.deepEqual(b.meta, {script: ['child.js']});
+    assert.deepEqual(b.terms, {child: 'definition'});
+    assert.equal(parses, 1);
+    assert.throws(
+        () =>
+            api.replayDocumentFragment(native, {tokens: fragment.tokens}, b, {purpose: 'include'}),
+        /configured parser/,
+    );
+}
 console.log(
     'Installed document runtime passed' +
         (process.argv.includes('--native13') ? ' (native MarkdownIt 13)' : ' (CJS/ESM)'),

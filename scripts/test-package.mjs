@@ -284,6 +284,20 @@ const secondDocument = documents.parseDocument('B');
 const typedContext: ParserEnv = firstDocument.env;
 const typedLabel: string | undefined = typedContext.requestLabel;
 const plainEnv: DocumentEnv = createDocumentEnv();
+import {parseDocumentFragmentResult, replayDocumentFragment, type ParsedDocumentFragment} from '@diplodoc/transform/document';
+let fragmentMd!: import('@diplodoc/transform/types').MarkdownIt;
+DOCUMENT_FACTORY({plugins: [(md) => {fragmentMd = md;}]});
+const fragment = parseDocumentFragmentResult(fragmentMd, 'child', plainEnv, {purpose: 'reference'}, source => source);
+replayDocumentFragment(fragmentMd, fragment, plainEnv, {purpose: 'include'});
+fragment.tokens.push(...fragment.tokens);
+// @ts-expect-error Opaque handles cannot be structurally forged.
+const forgedFragment: ParsedDocumentFragment = {tokens: fragment.tokens};
+// @ts-expect-error Source preparation must complete synchronously.
+parseDocumentFragmentResult(fragmentMd, 'child', plainEnv, {purpose: 'include'}, async source => source);
+// @ts-expect-error The handle's token-array property cannot be reassigned.
+fragment.tokens = [];
+void forgedFragment;
+
 documents.compile(firstDocument.tokens.slice(), firstDocument);
 documents.compileDocument(secondDocument);
 // @ts-expect-error Core title remains a string.
@@ -298,7 +312,7 @@ void typedLabel; void pathIsNotGuaranteed;
         const path = join(consumerRoot, file);
         writeFileSync(
             path,
-            `${readFileSync(path, 'utf8')}\n${documentTypes.replace('DOCUMENT_FACTORY', file.endsWith('.cts') ? 'init' : 'parser')}`,
+            `${readFileSync(path, 'utf8')}\n${documentTypes.replaceAll('DOCUMENT_FACTORY', file.endsWith('.cts') ? 'init' : 'parser')}`,
         );
     }
     const configurationTypes = `

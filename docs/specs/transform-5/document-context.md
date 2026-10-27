@@ -437,3 +437,41 @@ and recoverable cycle failure. These are concrete implementation choices within
 the task. No missing user product requirement currently requires a question.
 The global diagnostic collector and opaque custom/third-party mutable closures
 remain explicit limits, not silently claimed document isolation.
+
+## Same-parser fragment contribution replay
+
+`parseDocumentFragmentResult(md, source, parentEnv, options, prepareSource?)`
+returns an opaque `ParsedDocumentFragment` with readonly `tokens` property. The
+array/tokens themselves remain mutable with their original identity. A private
+WeakMap associates this handle with its configured parser and a finite snapshot.
+`replayDocumentFragment(md, fragment, parentEnv, {purpose})` commits that snapshot
+using the same merge as the initial parse. Foreign-parser and forged handles
+throw before any parent mutation. There is no serialization or cache registry.
+
+The capsule contains only child-owned assets, script/style, cloned CSP records
+and arrays, ordered visibility audiences, CSS flags, and terms/materialized keys
+absent from the inherited parent at parse start. Parent-only keys, unknown child
+metadata and title are excluded. Changes to inherited keys are not contributions.
+All captured arrays/maps are copied; subsequent child or parent mutation cannot
+change future replay. Parent terms/materialized mappings retain first-wins
+semantics, and resources retain the established first-occurrence deduplication.
+
+An initial reference captures contributions but commits none. Later include replay
+can promote it. Fragment purpose excludes terms/materialized mappings. Every
+resource collision is validated before committing anything; failed replay leaves
+the parent unchanged and the handle remains retryable. Replay never parses,
+renders, preprocesses, or calls an ID generator. The existing tokens-only
+`parseDocumentFragment` delegates to the result API with unchanged behavior.
+
+The optional final `prepareSource(source): string` callback runs synchronously
+inside the child's active frame before native parse, with child path/flags already
+set. This permits materialized-source preprocessing to write to the child rather
+than its parent. Promise and other non-string return values throw a clear TypeError;
+no handle/contributions are returned on preparation or parse failure. No implicit
+Liquid execution is added. The callback may close over the same native parser.
+
+The consumer owns cache keys/lifetime and token reuse policy. This API does not
+make tokens context-free, repair cached IDs, handle changed caller flags, clone
+custom plugin state, or permit cross-parser reuse. Same configured parser means
+the exact parser object within its existing installation/options lifetime; callers
+must not mutate its configured rules/options while treating fragments as reusable.

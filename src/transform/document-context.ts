@@ -1,4 +1,9 @@
-import type {ChildParseOptions, DocumentEnv, DocumentMeta} from './document';
+import type {
+    ChildParseOptions,
+    DocumentEnv,
+    DocumentMeta,
+    ParsedDocumentFragment,
+} from './document';
 import type {DeprecationReporter} from './deprecation';
 import type {MarkdownIt, ParserEnv} from './typings';
 
@@ -16,6 +21,7 @@ type Context = {
 
 const contexts = new WeakMap<MarkdownIt, Context>();
 const services = new WeakMap<ParserEnv, Services>();
+const fragments = new WeakMap<ParsedDocumentFragment, {md: MarkdownIt; contributions: ParserEnv}>();
 
 function initialize(context: Context, env: ParserEnv) {
     if (context.initializers.has('meta')) {
@@ -237,13 +243,15 @@ function prepareMetaMerge(parent: ParserEnv, child: ParserEnv): Partial<Document
     return updates;
 }
 
-export function parseChildDocument(
+export function parseChildDocumentResult(
     md: MarkdownIt,
     source: string,
     parent: ParserEnv,
     options: ChildParseOptions,
     prepare?: (source: string) => string,
 ) {
+    const inheritedTerms = new Set(Object.keys(parent.terms ?? {}));
+    const inheritedIncluded = new Set(Object.keys(parent.included ?? {}));
     const child = createDocumentEnv();
     // Custom enumerable extension fields preserve the existing shallow inheritance.
     // Builtin document-owned fields are explicitly replaced below.
@@ -267,9 +275,62 @@ export function parseChildDocument(
     }
     services.set(child, shared);
     const tokens = withDocumentEnv(md, parent, () =>
-        withDocumentEnv(md, child, () => md.parse(prepare ? prepare(source) : source, child)),
+        withDocumentEnv(md, child, () => {
+            const prepared = prepare ? prepare(source) : source;
+            if (typeof prepared !== 'string') {
+                throw new TypeError('prepareSource must synchronously return a string');
+            }
+            return md.parse(prepared, child);
+        }),
     );
-    if (options.purpose !== 'reference') {
+    const contributions: ParserEnv = {
+        meta: prepareMetaMerge({}, child),
+        assets: isStringList(child.assets) ? [...child.assets] : undefined,
+        additionalOptionsCssWhiteList: {...child.additionalOptionsCssWhiteList},
+        terms: Object.fromEntries(
+            Object.entries(child.terms ?? {}).filter(([key]) => !inheritedTerms.has(key)),
+        ),
+        included: Object.fromEntries(
+            Object.entries(child.included ?? {}).filter(([key]) => !inheritedIncluded.has(key)),
+        ),
+    };
+    // CSP records contain mutable arrays; do not retain references into parsed child data.
+    normalizeDocumentResources(contributions);
+    mergeContributions(parent, contributions, options.purpose);
+    const fragment = Object.freeze({tokens}) as ParsedDocumentFragment;
+    fragments.set(fragment, {md, contributions});
+    return fragment;
+}
+
+export function parseChildDocument(
+    md: MarkdownIt,
+    source: string,
+    parent: ParserEnv,
+    options: ChildParseOptions,
+    prepare?: (source: string) => string,
+) {
+    return parseChildDocumentResult(md, source, parent, options, prepare).tokens;
+}
+
+export function replayChildDocument(
+    md: MarkdownIt,
+    fragment: ParsedDocumentFragment,
+    parent: ParserEnv,
+    options: Pick<ChildParseOptions, 'purpose'>,
+) {
+    const captured = fragments.get(fragment);
+    if (!captured || captured.md !== md) {
+        throw new TypeError('Expected a document fragment created by this configured parser');
+    }
+    mergeContributions(parent, captured.contributions, options.purpose);
+}
+
+function mergeContributions(
+    parent: ParserEnv,
+    child: ParserEnv,
+    purpose: ChildParseOptions['purpose'],
+) {
+    if (purpose !== 'reference') {
         const metaUpdates = prepareMetaMerge(parent, child);
         const assets = isStringList(child.assets) && child.assets.length ? child.assets : undefined;
         if (assets && parent.assets !== undefined && !isStringList(parent.assets)) {
@@ -286,13 +347,12 @@ export function parseChildDocument(
             ...parent.additionalOptionsCssWhiteList,
             ...child.additionalOptionsCssWhiteList,
         };
-        if (options.purpose === 'include') {
+        if (purpose === 'include') {
             parent.terms = {...child.terms, ...parent.terms};
             parent.included = {...child.included, ...parent.included};
         }
         normalizeDocumentResources(parent);
     }
-    return tokens;
 }
 
 // Only the historical destructurable result view forwards to changing roots.
