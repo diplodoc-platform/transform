@@ -8,6 +8,7 @@ import DefaultPlugins from './plugins';
 import {preprocess} from './preprocessors';
 import {getLogger} from './log';
 import {createDeprecationReporter} from './deprecation';
+import {normalizeSvgInline} from './plugins/images/options';
 import makeHighlight from './highlight';
 import extractTitle from './title';
 import getHeadings from './headings';
@@ -80,10 +81,8 @@ function getPluginOptions(options: OptionsType) {
         conditionsInCode = false,
         disableLiquid = false,
         lang = DEFAULT_LANG,
-        svgInline = {
-            enabled: true,
-            maxFileSize: 2 * 1024 * 1024,
-        },
+        svgInline,
+        inlineSvg,
         generateID,
         ...customOptions
     } = options;
@@ -98,7 +97,8 @@ function getPluginOptions(options: OptionsType) {
         log: getLogger(options.log),
         deprecations: createDeprecationReporter(options),
         lang,
-        svgInline,
+        inlineSvg,
+        svgInline: normalizeSvgInline({svgInline, inlineSvg}),
         generateID: generateID ?? createIDGeneratorByStrategy('random'),
     } as MarkdownItPluginOpts;
 }
