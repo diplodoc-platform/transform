@@ -1,6 +1,6 @@
 import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
-import type {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
-import type {ImageOptions, StateCore} from '../../typings';
+import type {MarkdownItPluginOpts} from '../typings';
+import type {ImageOptions, MarkdownIt, StateCore} from '../../typings';
 import type {IDGenerator} from '../utils';
 import type {PluginConfig} from '../../svgo';
 import type {DeprecationDescriptor} from '../../deprecation';
@@ -47,9 +47,10 @@ const sanitizeHTMLAttr = (value: string): string => {
         .replace(/>/g, '&gt;');
 };
 
-interface ImageOpts extends MarkdownItPluginOpts {
-    assetsPublicPath: string;
-}
+type ImageOpts = Partial<MarkdownItPluginOpts> &
+    Pick<MarkdownItPluginOpts, 'path' | 'log'> & {
+        assetsPublicPath?: string;
+    };
 
 function replaceImageSrc(
     state: StateCore,
@@ -70,12 +71,15 @@ function replaceImageSrc(
     return publicSrc.replace(/\\/g, '/');
 }
 
-interface SVGOpts extends MarkdownItPluginOpts {
-    notFoundCb: (s: string) => void;
-    imageOpts: ImageOptions;
+interface SVGOpts {
+    notFoundCb?: (s: string) => void;
 }
 
-function getSvgContent(file: string, from: string, {rawContent, notFoundCb, log, root = ''}: Opts) {
+function getSvgContent(
+    file: string,
+    from: string,
+    {rawContent, notFoundCb, log, root = ''}: Opts & {rawContent: (path: string) => string},
+) {
     try {
         const content = rawContent(file);
 
@@ -105,16 +109,15 @@ function getSvgContent(file: string, from: string, {rawContent, notFoundCb, log,
 
 type Opts = SVGOpts &
     ImageOpts & {
-        rawContent: (path: string) => string;
-        calcPath: (root: string, path: string) => string;
-        replaceImageSrc: (
+        rawContent?: (path: string) => string;
+        calcPath?: (root: string, path: string) => string;
+        replaceImageSrc?: (
             state: StateCore,
             currentPath: string,
             path: string,
             imgSrc: string,
             opts: ImageOpts,
         ) => string;
-        file: string;
     };
 
 function shouldBeInlined(token: Token, opts: Required<SvgInlineOptions>) {
@@ -227,7 +230,7 @@ const getRawFile = (path: string) => {
     return readFileSync(path, 'utf8').toString();
 };
 
-const index: MarkdownItPluginCb<Opts> = (md, opts) => {
+const index = (md: MarkdownIt, opts: Opts) => {
     const {
         rawContent = getRawFile,
         calcPath = resolveRelativePath,
