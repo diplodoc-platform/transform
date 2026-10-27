@@ -10,6 +10,7 @@ import type {SanitizeFunction, SanitizeOptions} from './sanitize';
 import type {LogConsumer, LogLevels, Logger} from './log';
 import type {CompatibilityPolicy, DeprecationReporter} from './deprecation';
 import type {LegacyBuiltinOptions, PluginConfiguration} from './plugin-configuration';
+import type {Highlighter} from './highlighter';
 import type {SvgInlineOptions} from './plugins/images/options';
 import type {ChangelogItem} from './plugins/changelog/types';
 import type {IDGenerator} from './plugins/utils';
@@ -112,6 +113,9 @@ export interface OptionsType extends LegacyBuiltinOptions {
     /** Enable the existing preprocessor for materialized include blocks (default true). */
     included?: boolean;
     preprocessors?: MarkdownItPreprocessorCb[]; // Preprocessors should modify the input before passing it to MD
+    /** Explicit synchronous code highlighter; omitted means escaped plain code. */
+    highlighter?: Highlighter;
+    /** @deprecated Use createHighlightJsHighlighter(instance, {languages}). Removal: Transform 6. */
     highlightLangs?: HighlightLangMap;
     disableRules?: string[];
     extractChangelogs?: boolean;

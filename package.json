@@ -152,6 +152,26 @@
         "default": "./api/plugin-configuration.cjs"
       }
     },
+    "./highlighter": {
+      "import": {
+        "types": "./api/highlighter.d.mts",
+        "default": "./api/highlighter.mjs"
+      },
+      "require": {
+        "types": "./api/highlighter.d.cts",
+        "default": "./api/highlighter.cjs"
+      }
+    },
+    "./highlighter/legacy": {
+      "import": {
+        "types": "./api/highlighter/legacy.d.mts",
+        "default": "./api/highlighter/legacy.mjs"
+      },
+      "require": {
+        "types": "./api/highlighter/legacy.d.cts",
+        "default": "./api/highlighter/legacy.cjs"
+      }
+    },
     "./types": {
       "import": {
         "types": "./api/typings.d.mts",

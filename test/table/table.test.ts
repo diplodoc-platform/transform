@@ -7,11 +7,13 @@ import transform from '../../src/transform';
 import table from '../../src/transform/plugins/table';
 import includes from '../../src/transform/plugins/includes';
 import {log} from '../../src/transform/log';
+import {highlighter} from '../highlighter-fixture';
 
 const transformYfm = (text: string, opts?: YfmTablePluginOptions) => {
     const {
         result: {html},
     } = transform(text, {
+        highlighter,
         plugins: [table],
         enableMarkdownAttrs: false,
         ...opts,
@@ -1721,6 +1723,7 @@ const transformWithIncludes = (text: string) => {
     const {
         result: {html},
     } = transform(text, {
+        highlighter,
         plugins: [table, includes],
         path: mocksPath,
         enableMarkdownAttrs: false,
@@ -2217,9 +2220,9 @@ describe('table header-rows attribute', () => {
     it('first yfm_tr_open has data-header="true", others do not', () => {
         const tokens = parseTokens(table3x3);
         const trOpens = findTokens(tokens, 'yfm_tr_open');
-        expect(trOpens[0]!.attrGet('data-header')).toBe('true');
-        expect(trOpens[1]!.attrGet('data-header')).toBeNull();
-        expect(trOpens[2]!.attrGet('data-header')).toBeNull();
+        expect(trOpens[0]?.attrGet('data-header')).toBe('true');
+        expect(trOpens[1]?.attrGet('data-header')).toBeNull();
+        expect(trOpens[2]?.attrGet('data-header')).toBeNull();
     });
 
     it('yfm_table_open has data-header-rows="1"', () => {
