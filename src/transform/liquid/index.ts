@@ -1,8 +1,10 @@
 import type {Dictionary} from 'lodash';
 import type {ArgvSettings} from './services/argv';
+import type {LegacyEngineDiagnostics} from '../legacy-engines';
 
 import cloneDeepWith from 'lodash/cloneDeepWith';
 
+import {warnBundledEngine} from '../legacy-engines';
 import {composeFrontMatter, extractFrontMatter} from '../frontmatter';
 
 import applySubstitutions from './substitutions';
@@ -71,7 +73,7 @@ function repairCode(str: string, codes: string[]) {
     return replace(fence, fence, (code) => codes[Number(code)], str);
 }
 
-function liquidSnippet<
+function applySnippet<
     B extends boolean = false,
     C = B extends false ? string : {output: string; sourceMap: Dictionary<string>},
 >(
@@ -156,6 +158,35 @@ function linesCount(content: string) {
     return count;
 }
 
+/**
+ * @deprecated Compose @diplodoc/liquid explicitly. Removal no earlier than Transform 6.
+ * @param input - Source to process.
+ * @param vars - Variables visible to the bundled engine.
+ * @param path - Source path, when known.
+ * @param settings - Existing engine settings and optional caller diagnostics.
+ * @returns Processed source, or source and its map when requested.
+ */
+function liquidSnippet<
+    B extends boolean = false,
+    C = B extends false ? string : {output: string; sourceMap: Dictionary<string>},
+>(
+    input: string,
+    vars: Record<string, unknown>,
+    path?: string,
+    settings?: ArgvSettings & LegacyEngineDiagnostics & {withSourceMap?: B},
+): C {
+    warnBundledEngine('Liquid', path, settings);
+    return applySnippet<B, C>(input, vars, path, settings);
+}
+
+/**
+ * @deprecated Compose @diplodoc/liquid explicitly. Removal no earlier than Transform 6.
+ * @param input - Source to process.
+ * @param vars - Variables visible to the bundled engine.
+ * @param path - Source path, when known.
+ * @param settings - Existing engine settings and optional caller diagnostics.
+ * @returns Processed source, or source and its map when requested.
+ */
 function liquidDocument<
     B extends boolean = false,
     C = B extends false ? string : {output: string; sourceMap: Dictionary<string>},
@@ -163,17 +194,18 @@ function liquidDocument<
     input: string,
     vars: Record<string, unknown>,
     path?: string,
-    settings?: ArgvSettings & {withSourceMap?: B},
+    settings?: ArgvSettings & LegacyEngineDiagnostics & {withSourceMap?: B},
 ): C {
+    warnBundledEngine('Liquid', path, settings);
     const [frontMatter, strippedContent] = extractFrontMatter(input, path);
 
     const liquidedFrontMatter = cloneDeepWith(frontMatter, (value: unknown) =>
         typeof value === 'string'
-            ? liquidSnippet(value, vars, path, {...settings, withSourceMap: false})
+            ? applySnippet(value, vars, path, {...settings, withSourceMap: false})
             : undefined,
     );
 
-    const liquidedResult = liquidSnippet(strippedContent, vars, path, settings);
+    const liquidedResult = applySnippet(strippedContent, vars, path, settings);
     const liquidedContent =
         typeof liquidedResult === 'object' ? liquidedResult.output : liquidedResult;
 

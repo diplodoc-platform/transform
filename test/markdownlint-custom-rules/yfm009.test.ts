@@ -1,3 +1,4 @@
+import {withoutBundledEngineWarnings} from '../utils';
 import {LogLevels, log} from '../../src/transform/log';
 import term from '../../src/transform/plugins/term';
 import yfmlint from '../../src/transform/yfmlint';
@@ -58,11 +59,19 @@ describe('YFM009', () => {
 
     it('accepts includes', () => {
         lint(withIncludes);
-        expect(log.isEmpty()).toBeTruthy();
+        expect(
+            withoutBundledEngineWarnings(log.get().warn).length === 0 &&
+                log.get().error.length === 0 &&
+                log.get().info.length === 0,
+        ).toBeTruthy();
     });
 
     it('accepts includes with text before', () => {
         lint(prependText(withIncludes));
-        expect(log.isEmpty()).toBeTruthy();
+        expect(
+            withoutBundledEngineWarnings(log.get().warn).length === 0 &&
+                log.get().error.length === 0 &&
+                log.get().info.length === 0,
+        ).toBeTruthy();
     });
 });

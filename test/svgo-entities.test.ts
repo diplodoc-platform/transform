@@ -17,6 +17,7 @@ const imageOptions = {width: '', height: '', title: ''};
 const entityError = 'Parsed entity count exceeds max entity count';
 const render = (svgMaxEntityCount?: number, svg = svgWithEntities(800), logger?: LogConsumer) =>
     transform('![Diagram](diagram.svg){inline=true}', {
+        disableLiquid: true,
         plugins: [images],
         path: __filename,
         root: dirname(__filename),

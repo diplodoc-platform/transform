@@ -1,3 +1,4 @@
+import type {DeprecationReporter} from './deprecation';
 import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {EnvType, OptionsType, OutputType} from './typings';
 import type {
@@ -8,10 +9,11 @@ import type {
 import {bold} from 'chalk';
 
 import {log} from './log';
+import {createDeprecationReporter} from './deprecation';
 import liquidDocument from './liquid';
 import initMarkdownIt from './md';
 
-function applyLiquid(input: string, options: OptionsType) {
+function applyLiquid(input: string, options: OptionsType, deprecations: DeprecationReporter) {
     const {
         vars = {},
         path,
@@ -22,7 +24,7 @@ function applyLiquid(input: string, options: OptionsType) {
 
     return disableLiquid || isLiquided
         ? input
-        : liquidDocument(input, vars, path, {conditionsInCode});
+        : liquidDocument(input, vars, path, {conditionsInCode, deprecations});
 }
 
 function handleError(error: unknown, path?: string): never {
@@ -43,8 +45,9 @@ type TokensOptionsType = OptionsType & {tokens: true};
 function transform(originInput: string, options: TokensOptionsType): Token[];
 function transform(originInput: string, options?: OptionsType): OutputType;
 function transform(originInput: string, options: OptionsType = {}): OutputType | Token[] {
-    const input = applyLiquid(originInput, options);
-    const {parse, compile, env} = initMarkdownIt(options);
+    const deprecations = createDeprecationReporter(options);
+    const input = applyLiquid(originInput, options, deprecations);
+    const {parse, compile, env} = initMarkdownIt(options, deprecations);
 
     try {
         const tokens = parse(input);

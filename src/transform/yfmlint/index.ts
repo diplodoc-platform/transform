@@ -2,6 +2,7 @@ import type {Dictionary} from 'lodash';
 import type {Rule} from 'markdownlint';
 import type {LogLevels, Logger} from '../log';
 import type {Options} from './typings';
+import type {LegacyEngineDiagnostics} from '../legacy-engines';
 
 import {sync} from 'markdownlint';
 import merge from 'lodash/merge';
@@ -9,6 +10,7 @@ import union from 'lodash/union';
 import attrs from 'markdown-it-attrs';
 
 import {preprocess} from '../preprocessors';
+import {warnBundledEngine} from '../legacy-engines';
 
 import baseDefaultLintConfig from './yfmlint';
 import {
@@ -28,7 +30,13 @@ const defaultLintRules = [yfm001, yfm002, yfm003, yfm004, yfm005, yfm006, yfm007
 
 const lintCache = new Set();
 
+/**
+ * @deprecated Run @diplodoc/yfmlint in the caller pipeline. Removal no earlier than Transform 6.
+ * @param opts - Existing lint input, plugins, settings and caller diagnostics.
+ * @returns Nothing; diagnostics use the existing logger.
+ */
 function yfmlint(opts: Options) {
+    warnBundledEngine('YFMLint', opts.pluginOptions.path, opts.pluginOptions);
     let {input} = opts;
     const {plugins: customPlugins, pluginOptions, customLintRules, sourceMap} = opts;
     const {log} = pluginOptions;
@@ -119,7 +127,7 @@ namespace yfmlint {
         sourceMap?: Dictionary<string>;
     }
 
-    export interface PluginOptions {
+    export interface PluginOptions extends LegacyEngineDiagnostics {
         log: Logger;
         path?: string;
         disableLint?: boolean;

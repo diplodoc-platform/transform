@@ -239,6 +239,7 @@ describe('highlighter migration', () => {
         const warn = vi.fn();
         for (let index = 0; index < 2; index++) {
             const output = transform('```custom\nfixture\n```', {
+                disableLiquid: true,
                 highlighter: callback,
                 highlightLangs: {custom: factory},
                 log: {warn, info: vi.fn(), error: vi.fn()},
@@ -253,7 +254,11 @@ describe('highlighter migration', () => {
 
     it('does not warn for an empty map and rejects nonempty maps without an adapter', () => {
         const warn = vi.fn();
-        transform('', {highlightLangs: {}, log: {warn, info: vi.fn(), error: vi.fn()}});
+        transform('', {
+            disableLiquid: true,
+            highlightLangs: {},
+            log: {warn, info: vi.fn(), error: vi.fn()},
+        });
         expect(warn).not.toHaveBeenCalled();
         expect(() => transform('', {highlightLangs: {custom: () => ({})}})).toThrow(
             /explicit highlighter/,

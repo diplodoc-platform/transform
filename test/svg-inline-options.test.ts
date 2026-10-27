@@ -14,6 +14,7 @@ const MARKDOWN = '![Diagram](diagram.svg)';
 const CODE = 'TRANSFORM_INLINE_SVG';
 const createConsumer = () => ({info: vi.fn(), warn: vi.fn(), error: vi.fn()});
 const sourceOptions = {
+    disableLiquid: true,
     path: '/guide.md',
     root: '/',
     rawContent: () => SVG,

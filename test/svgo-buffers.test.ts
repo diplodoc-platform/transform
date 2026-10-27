@@ -33,6 +33,7 @@ describe('SVG attribute buffers', () => {
     test('preserves inline SVG in both the HTML renderer and shared Markdown helper', () => {
         const svg = svgWithMetadata(sax.MAX_BUFFER_LENGTH + 1024);
         const {result, logs} = transform('![Diagram](diagram.svg){inline=true}', {
+            disableLiquid: true,
             plugins: [images],
             path: __filename,
             root: dirname(__filename),

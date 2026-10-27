@@ -1,6 +1,7 @@
 import type {Dictionary} from 'lodash';
 import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {StateCore} from './typings';
+import type {LegacyEngineDiagnostics} from './legacy-engines';
 
 import {readFileSync, realpathSync, statSync} from 'fs';
 import escapeRegExp from 'lodash/escapeRegExp';
@@ -29,7 +30,7 @@ export function resolveRelativePath(fromPath: string, relativePath: string) {
     return resolve(fromDir, relativePath);
 }
 
-export type GetFileTokensOpts = {
+export type GetFileTokensOpts = LegacyEngineDiagnostics & {
     getVarsPerFile?: (path: string) => Record<string, string>;
     vars?: Record<string, unknown>;
     disableLiquid?: boolean;
@@ -77,6 +78,9 @@ export function getFileTokens(
 
     if (!disableLiquid) {
         const liquidResult = liquidSnippet(content, builtVars, path, {
+            log: options.log,
+            compatibility: options.compatibility,
+            deprecations: options.deprecations,
             withSourceMap: true,
             conditionsInCode,
         });
