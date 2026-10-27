@@ -1,0 +1,68 @@
+name: Transform 5 acceptance
+
+# This branch-specific workflow complements the generated master/main workflows.
+on:
+  pull_request:
+    branches: ['codex/transform-5-major']
+  push:
+    branches: ['codex/transform-5-major']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: transform-major-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Quality (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: diplodoc-platform/setup-node-action@v1
+        with:
+          node-version: '24'
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - name: Verify installable package
+        if: matrix.os == 'ubuntu-latest'
+        run: npm run test:package
+
+  e2e:
+    name: Browser regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: diplodoc-platform/setup-node-action@v1
+        with:
+          node-version: '24'
+      - run: npm run build
+      - name: Install browser test dependencies
+        working-directory: e2e
+        run: npm ci
+      - name: Install Playwright browsers
+        working-directory: e2e
+        run: npx playwright install --with-deps
+      - name: Run browser regression tests
+        working-directory: e2e
+        run: npm test
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: transform-major-playwright-report
+          path: e2e/playwright-report/
+          retention-days: 14
