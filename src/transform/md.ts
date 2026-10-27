@@ -7,6 +7,7 @@ import attrs from 'markdown-it-attrs';
 import DefaultPlugins from './plugins';
 import {preprocess} from './preprocessors';
 import {getLogger} from './log';
+import {createDeprecationReporter} from './deprecation';
 import makeHighlight from './highlight';
 import extractTitle from './title';
 import getHeadings from './headings';
@@ -95,6 +96,7 @@ function getPluginOptions(options: OptionsType) {
         extractTitle,
         disableLiquid,
         log: getLogger(options.log),
+        deprecations: createDeprecationReporter(options),
         lang,
         svgInline,
         generateID: generateID ?? createIDGeneratorByStrategy('random'),

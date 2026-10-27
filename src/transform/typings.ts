@@ -4,6 +4,7 @@ import type DefaultMarkdownIt from 'markdown-it';
 import type DefaultStateCore from 'markdown-it/lib/rules_core/state_core';
 import type {SanitizeFunction, SanitizeOptions} from './sanitize';
 import type {LogConsumer, LogLevels, Logger} from './log';
+import type {CompatibilityPolicy, DeprecationReporter} from './deprecation';
 import type {ChangelogItem} from './plugins/changelog/types';
 import type {IDGenerator} from './plugins/utils';
 import type {VisibilityMode} from './plugins/visibility';
@@ -52,6 +53,8 @@ export type Lang =
 export interface OptionsType {
     /** Forward plugin messages while retaining the collected Transform diagnostics. */
     log?: LogConsumer;
+    /** Explicit per-feature migration choices; unspecified features use their current contract. */
+    compatibility?: CompatibilityPolicy;
     tokens?: boolean;
     vars?: Record<string, string>;
     path?: string;
@@ -149,6 +152,9 @@ export type EnvType<Extras extends {} = {}> = {
 export interface MarkdownItPluginOpts {
     path: string;
     log: Logger;
+    /** Provided by Transform; optional for callers constructing plugin options themselves. */
+    deprecations?: DeprecationReporter;
+    compatibility?: CompatibilityPolicy;
     lang: Lang;
     root: string;
     rootPublicPath: string;
