@@ -119,6 +119,7 @@ import images, {replaceSvgContent} from '@diplodoc/transform/plugins/images';
 import log, {getLogger} from '@diplodoc/transform/log';
 import {createDeprecationReporter} from '@diplodoc/transform/deprecation';
 import {getFileTokens} from '@diplodoc/transform/utils/fs';
+import {definePlugin, defineTransformOptions} from '@diplodoc/transform/configuration';
 const require = createRequire(import.meta.url);
 assert.equal(transform, namedTransform);
 assert.equal(transform, require('@diplodoc/transform'));
@@ -128,7 +129,9 @@ assert.equal(typeof getLogger, 'function');
 assert.equal(typeof createDeprecationReporter, 'function');
 assert.equal(typeof getFileTokens, 'function');
 assert.equal(log, require('@diplodoc/transform/log').default);
-assert.match(transform('Static ESM').result.html, /Static ESM/);
+assert.equal(typeof definePlugin, 'function');
+assert.equal(defineTransformOptions, require('@diplodoc/transform/configuration').defineTransformOptions);
+assert.match(transform('Static ESM', defineTransformOptions()).result.html, /Static ESM/);
 `,
     );
     execFileSync(process.execPath, [join(consumerRoot, 'static-consumer.mjs')], {
@@ -214,6 +217,55 @@ void getFileTokens;
             files: ['consumer.cts', 'consumer.mts'],
         }),
     );
+    const configurationTypes = `
+const custom = configuration.definePlugin<{label: string}, {label: string}>({
+    id: 'package/typed',
+    setup(_md, options, context) {
+        options.label.toUpperCase();
+        const path: string | undefined = context.path;
+        context.deprecations.compatibility('PACKAGE');
+        context.generateID();
+        void path;
+        // @ts-expect-error Source paths are optional in an ordinary transform call.
+        const guaranteedPath: string = context.path;
+        // @ts-expect-error Shared context is not custom plugin configuration.
+        options.log;
+        void guaranteedPath;
+    },
+    collect(input, options) {
+        const count: number = options.tokenStream.length;
+        return options.label + input + count;
+    },
+});
+const configured = custom({label: 'typed'});
+configured.plugin.collect?.('source', {label: 'collector', tokenStream: []});
+const settings: configuration.TransformConfiguration = {
+    plugins: {preset: 'none', enable: ['notes'], plugins: [configured], options: {notes: undefined}},
+};
+transform('text', configuration.defineTransformOptions(settings));
+const parsedTokens = transform('text', configuration.defineTransformOptions({core: {tokens: true}}));
+const tokenName: string = parsedTokens[0].type;
+void tokenName;
+// @ts-expect-error Builtin IDs are finite.
+configuration.defineTransformOptions({plugins: {disable: ['note']}});
+// @ts-expect-error Core options are closed.
+configuration.defineTransformOptions({core: {allowHTLM: true}});
+// @ts-expect-error Builtin settings preserve actual value types.
+configuration.defineTransformOptions({plugins: {options: {notes: {notesAutotitle: 'false'}}}});
+// @ts-expect-error Custom configuration values are checked.
+custom({label: false});
+// @ts-expect-error Custom configuration rejects unknown keys.
+custom({label: 'typed', unknown: true});
+`;
+    for (const extension of ['cts', 'mts']) {
+        const path = join(consumerRoot, `consumer.${extension}`);
+        const importLine =
+            extension === 'cts'
+                ? "import configuration = require('@diplodoc/transform/configuration');"
+                : "import * as configuration from '@diplodoc/transform/configuration';";
+        writeFileSync(path, `${readFileSync(path, 'utf8')}\n${importLine}\n${configurationTypes}`);
+    }
+
     const typeEntries = Object.entries(manifest.exports).filter(
         ([, entry]) => typeof entry !== 'string',
     );

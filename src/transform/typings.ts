@@ -9,6 +9,7 @@ import type {
 import type {SanitizeFunction, SanitizeOptions} from './sanitize';
 import type {LogConsumer, LogLevels, Logger} from './log';
 import type {CompatibilityPolicy, DeprecationReporter} from './deprecation';
+import type {LegacyBuiltinOptions, PluginConfiguration} from './plugin-configuration';
 import type {SvgInlineOptions} from './plugins/images/options';
 import type {ChangelogItem} from './plugins/changelog/types';
 import type {IDGenerator} from './plugins/utils';
@@ -79,7 +80,7 @@ export type Lang =
     | 'tr'
     | 'uz';
 
-export interface OptionsType {
+export interface OptionsType extends LegacyBuiltinOptions {
     /** Forward plugin messages while retaining the collected Transform diagnostics. */
     log?: LogConsumer;
     /** Explicit per-feature migration choices; unspecified features use their current contract. */
@@ -104,6 +105,12 @@ export interface OptionsType {
     needFlatListHeadings?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     plugins?: ExtendedPluginWithCollect<any, any>[];
+    /** Additive named composition; cannot be combined with the legacy plugins array. */
+    pluginConfiguration?: PluginConfiguration;
+    /** Preserve the existing lint context when plugins are run by a lint consumer. */
+    isLintRun?: boolean;
+    /** Enable the existing preprocessor for materialized include blocks (default true). */
+    included?: boolean;
     preprocessors?: MarkdownItPreprocessorCb[]; // Preprocessors should modify the input before passing it to MD
     highlightLangs?: HighlightLangMap;
     disableRules?: string[];

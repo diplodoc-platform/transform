@@ -142,6 +142,16 @@
         "default": "./api/md.cjs"
       }
     },
+    "./configuration": {
+      "import": {
+        "types": "./api/plugin-configuration.d.mts",
+        "default": "./api/plugin-configuration.mjs"
+      },
+      "require": {
+        "types": "./api/plugin-configuration.d.cts",
+        "default": "./api/plugin-configuration.cjs"
+      }
+    },
     "./types": {
       "import": {
         "types": "./api/typings.d.mts",

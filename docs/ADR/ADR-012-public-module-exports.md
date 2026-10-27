@@ -54,6 +54,7 @@ After changing the public export surface during watch mode, rerun the full build
 | Entry                                                        | Native ESM                                         | CommonJS                                    |
 | ------------------------------------------------------------ | -------------------------------------------------- | ------------------------------------------- |
 | package root                                                 | default and named `transform`                      | directly callable transform                 |
+| `/configuration`                                             | named configuration builders, plugin IDs and types | namespace with the same named functions     |
 | `/parser`                                                    | default synchronous parser factory                 | directly callable factory                   |
 | `/types`                                                     | named type exports                                 | named type exports                          |
 | `/plugins`                                                   | default preset array                               | preset array                                |
@@ -65,6 +66,8 @@ After changing the public export surface during watch mode, rerun the full build
 | `/utils`, `/utils/fs`                                        | named helpers                                      | namespace                                   |
 | `/sanitize`                                                  | default sanitizer and named options/style helpers  | namespace with `.default`                   |
 | `/log`, `/deprecation`                                       | existing named exports and logger default          | historical namespace shape                  |
+
+The `/configuration` API is described in [the plugin configuration specification](../specs/transform-5/plugin-configuration.md). New stable entries receive facades without automatically becoming legacy `lib/*` aliases.
 
 The precise plugin list lives in `stableEntries` in the manifest. A namespace
 module such as `sanitize` or `visibility` is not converted into a directly

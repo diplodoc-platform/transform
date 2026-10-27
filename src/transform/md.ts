@@ -8,6 +8,7 @@ import DefaultPlugins from './plugins';
 import {preprocess} from './preprocessors';
 import {getLogger} from './log';
 import {createDeprecationReporter} from './deprecation';
+import {resolvePluginConfiguration} from './plugin-registry';
 import {normalizeSvgInline} from './plugins/images/options';
 import makeHighlight from './highlight';
 import extractTitle from './title';
@@ -113,6 +114,7 @@ function getPluginOptions(options: OptionsType) {
 }
 
 function initPlugins(md: MarkdownIt, options: OptionsType, pluginOptions: MarkdownItPluginOpts) {
+    const configuredPlugins = resolvePluginConfiguration(options);
     const {
         linkify = false,
         linkifyTlds,
@@ -132,7 +134,13 @@ function initPlugins(md: MarkdownIt, options: OptionsType, pluginOptions: Markdo
     md.use(inlineSvgMarker, pluginOptions);
 
     md.use(linkifyStrikethrough);
-    plugins.forEach((plugin) => md.use(plugin, pluginOptions));
+    if (configuredPlugins) {
+        configuredPlugins.forEach(({plugin, options: settings}) => {
+            md.use(plugin, settings ? {...pluginOptions, ...settings} : pluginOptions);
+        });
+    } else {
+        plugins.forEach((plugin) => md.use(plugin, pluginOptions));
+    }
 
     if (linkify && linkifyTlds) {
         md.linkify.tlds(linkifyTlds, true);
