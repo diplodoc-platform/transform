@@ -107,6 +107,34 @@ try {
         cwd: consumerRoot,
         stdio: 'inherit',
     });
+    // Static imports are evaluated in the real installed consumer, independent of source self-resolution.
+    writeFileSync(
+        join(consumerRoot, 'static-consumer.mjs'),
+        `
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+import transform, {transform as namedTransform} from '@diplodoc/transform';
+import parser from '@diplodoc/transform/parser';
+import images, {replaceSvgContent} from '@diplodoc/transform/plugins/images';
+import log, {getLogger} from '@diplodoc/transform/log';
+import {createDeprecationReporter} from '@diplodoc/transform/deprecation';
+import {getFileTokens} from '@diplodoc/transform/utils/fs';
+const require = createRequire(import.meta.url);
+assert.equal(transform, namedTransform);
+assert.equal(transform, require('@diplodoc/transform'));
+assert.equal(parser, require('@diplodoc/transform/parser'));
+assert.equal(images.replaceSvgContent, replaceSvgContent);
+assert.equal(typeof getLogger, 'function');
+assert.equal(typeof createDeprecationReporter, 'function');
+assert.equal(typeof getFileTokens, 'function');
+assert.equal(log, require('@diplodoc/transform/log').default);
+assert.match(transform('Static ESM').result.html, /Static ESM/);
+`,
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'static-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
     const consumerRequire = createRequire(join(consumerRoot, 'package.json'));
     assert.throws(() => consumerRequire.resolve('svgo'), {code: 'MODULE_NOT_FOUND'});
     assert.throws(() => consumerRequire.resolve('highlight.js'), {code: 'MODULE_NOT_FOUND'});
