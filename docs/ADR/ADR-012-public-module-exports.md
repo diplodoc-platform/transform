@@ -167,14 +167,19 @@ transitive dependency floor alone is insufficient to establish package support.
 - packed runtime/style/source paths, browser bundles and DOM execution for each
   split runtime, CSS bundling, and Sass package-importer resolution.
 
-For unreleased companion compatibility work, an isolated fixture may explicitly
-set `TRANSFORM_PACKAGE_COMPANIONS` to a JSON map of local tarball dependencies.
-This is an acceptance fixture only: committed dependencies and the lockfile
-remain registry-based. The current registry file-extension peer range still
-rejects parser 15; clean registry installation remains gated on companion
-releases. The two promoted type dependencies reuse existing lockfile versions
-and integrity records; their production reachability metadata is updated without
-changing the blocked peer resolution.
+The initial 2026-10-27 acceptance used isolated local companion tarballs while
+registry file-extension peers still rejected parser 15. For such unreleased
+compatibility work, `TRANSFORM_PACKAGE_COMPANIONS` can explicitly select a JSON
+map of tarballs; these fixture overrides never belong in committed metadata.
+
+Later on 2026-10-27, registry acceptance passed with exact published companions:
+`@diplodoc/file-extension@0.2.7-transform5.0`,
+`@diplodoc/tabs-extension@3.10.8-transform5.0`, and
+`@diplodoc/utils@2.3.7-transform5.0`. npm regenerated the lockfile for the promoted
+production type dependencies, and a fresh registry-only `npm ci` plus the full
+installed-package matrix passed without local companion overrides or peer
+resolution flags. The source and generated runtime are unchanged from the
+reviewed local-companion implementation.
 
 CLI/viewer acceptance and CI for the final integration revision remain separate
 merge gates. Passing an isolated local fixture does not establish those gates.
