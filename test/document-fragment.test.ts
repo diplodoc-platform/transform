@@ -1,6 +1,8 @@
 import type {MarkdownIt, ParserEnv} from '../src/transform/typings';
 import type {ParsedDocumentFragment} from '../src/transform/document';
 
+import {resolve} from 'node:path';
+
 import {vi} from 'vitest';
 import NativeMarkdownIt from 'markdown-it';
 
@@ -161,7 +163,7 @@ test('preparation runs inside child frame, retains nested materialized content a
     expect(parent.included).toEqual({parent: 'preserved'});
     expect(fragment.tokens.some((token) => token.content === 'child')).toBe(true);
     replayDocumentFragment(native, fragment, parent, {purpose: 'include'});
-    expect(parent.included?.['/docs/grand.md']).toContain('# Grandchild');
+    expect(parent.included?.[resolve('/docs/grand.md')]).toContain('# Grandchild');
     expect(prepare).toHaveBeenCalledTimes(1);
     const bad = (() => Promise.resolve('body')) as unknown as (source: string) => string;
     expect(() =>
