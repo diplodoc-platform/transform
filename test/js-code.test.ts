@@ -23,6 +23,8 @@ vi.mock('../src/js/utils', async (importOriginal) => {
 
 const mockedCopy = vi.mocked(copyToClipboard);
 
+import {highlighter} from './highlighter-fixture';
+
 const mocksPath = require.resolve('./utils.ts');
 
 // Runs the full transform pipeline with the default plugins (code plugin
@@ -31,6 +33,7 @@ function render(markdown: string, options: {codeLineWrapping?: boolean} = {}) {
     const {
         result: {html},
     } = transform(markdown, {
+        highlighter,
         path: mocksPath,
         root: dirname(mocksPath),
         ...options,

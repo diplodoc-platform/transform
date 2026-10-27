@@ -1,3 +1,4 @@
+import type {DeprecationReporter} from './deprecation';
 import type {EnvType, MarkdownIt, MarkdownItPluginOpts, OptionsType} from './typings';
 import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 
@@ -10,7 +11,7 @@ import {getLogger} from './log';
 import {createDeprecationReporter} from './deprecation';
 import {resolvePluginConfiguration} from './plugin-registry';
 import {normalizeSvgInline} from './plugins/images/options';
-import makeHighlight from './highlight';
+import {configureHighlighter} from './highlighter/renderer';
 import extractTitle from './title';
 import getHeadings from './headings';
 import sanitizeHtml, {defaultOptions, sanitizeStyles} from './sanitize';
@@ -27,15 +28,10 @@ const applyAttrs = attrs as (
 ) => void;
 
 function initMarkdownIt(options: OptionsType) {
-    const {
-        allowHTML = false,
-        linkify = false,
-        breaks = true,
-        highlightLangs = {},
-        disableRules = [],
-    } = options;
+    const {allowHTML = false, linkify = false, breaks = true, disableRules = []} = options;
 
-    const highlight = makeHighlight(highlightLangs);
+    const pluginOptions = getPluginOptions(options);
+    const highlight = configureHighlighter(options, pluginOptions.deprecations);
     const md = new DefaultMarkdownIt({html: allowHTML, linkify, highlight, breaks}) as MarkdownIt;
 
     // Keep Transform's established linkify behavior when using linkify-it 6.
@@ -67,9 +63,6 @@ function initMarkdownIt(options: OptionsType) {
         headings: [],
         title: '',
     } as EnvType;
-
-    // Plugin options is the plugin context that remains during the build of one file
-    const pluginOptions = getPluginOptions(options);
 
     // Init the plugins. Which install the md rules (core, block, ...)
     initPlugins(md, options, pluginOptions);
@@ -110,7 +103,7 @@ function getPluginOptions(options: OptionsType) {
         inlineSvg,
         svgInline: normalizeSvgInline({svgInline, inlineSvg}),
         generateID: generateID ?? createIDGeneratorByStrategy('random'),
-    } as MarkdownItPluginOpts;
+    } as MarkdownItPluginOpts & {deprecations: DeprecationReporter};
 }
 
 function initPlugins(md: MarkdownIt, options: OptionsType, pluginOptions: MarkdownItPluginOpts) {

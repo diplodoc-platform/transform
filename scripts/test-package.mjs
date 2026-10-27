@@ -15,6 +15,8 @@ import {tmpdir} from 'node:os';
 import {dirname, join} from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 
+import {verifyHighlighterGraph} from './test-highlighter-graph.mjs';
+
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const temporaryRoot = realpathSync(mkdtempSync(join(tmpdir(), 'diplodoc-svgo-package-')));
 
@@ -139,6 +141,15 @@ assert.match(transform('Static ESM', defineTransformOptions()).result.html, /Sta
         cwd: consumerRoot,
         stdio: 'inherit',
     });
+    copyFileSync(
+        join(projectRoot, 'scripts/highlighter-package-consumer.mjs'),
+        join(consumerRoot, 'highlighter-consumer.mjs'),
+    );
+    execFileSync(
+        process.execPath,
+        [join(consumerRoot, 'highlighter-consumer.mjs'), '--without-peer'],
+        {cwd: consumerRoot, stdio: 'inherit'},
+    );
     const consumerRequire = createRequire(join(consumerRoot, 'package.json'));
     assert.throws(() => consumerRequire.resolve('svgo'), {code: 'MODULE_NOT_FOUND'});
     assert.throws(() => consumerRequire.resolve('highlight.js'), {code: 'MODULE_NOT_FOUND'});
@@ -219,6 +230,19 @@ void getFileTokens;
         }),
     );
     const configurationTypes = `
+import {type Highlighter, type HighlightJsLegacyApi, createHighlightJsHighlighter} from '@diplodoc/transform/highlighter';
+const callback: Highlighter = () => ({html: '', classes: ['custom']});
+transform('code', configuration.defineTransformOptions({core: {highlighter: callback}}));
+const legacyInstance: HighlightJsLegacyApi = {versionString: '10.0.3', getLanguage: () => true, highlight: (_language, _source, _ignore) => ({value: ''})};
+createHighlightJsHighlighter(legacyInstance);
+// @ts-expect-error Async callback output cannot cross the synchronous boundary.
+const asyncCallback: Highlighter = async () => ({html: ''});
+// @ts-expect-error A result needs an HTML fragment.
+const invalidCallback: Highlighter = () => ({classes: []});
+// @ts-expect-error Await module loading before creating the adapter.
+createHighlightJsHighlighter(Promise.resolve(legacyInstance));
+void asyncCallback; void invalidCallback;
+
 const custom = configuration.definePlugin<{label: string}, {label: string}>({
     id: 'package/typed',
     setup(_md, options, context) {
@@ -301,10 +325,12 @@ custom({label: 'typed', unknown: true});
         join(consumerRoot, 'with-highlighter.mts'),
         `
 import transform from '@diplodoc/transform';
-import type hljs from 'highlight.js';
+import hljs from 'highlight.js';
+import {createHighlightJsHighlighter} from '@diplodoc/transform/highlighter';
 type LanguageFn = Parameters<typeof hljs.registerLanguage>[1];
 const language: LanguageFn = () => ({contains: []});
-transform('text', {highlightLangs: {custom: language}});
+transform('text', {highlighter: createHighlightJsHighlighter(hljs, {languages: {custom: language}})});
+transform('text', {highlighter: createHighlightJsHighlighter({default: hljs}), highlightLangs: {custom: language}});
 `,
     );
     writeFileSync(
@@ -313,12 +339,13 @@ transform('text', {highlightLangs: {custom: language}});
 const assert = require('node:assert/strict');
 const transform = require('@diplodoc/transform');
 const hljs = require('highlight.js');
+const {createHighlightJsHighlighter} = require('@diplodoc/transform/highlighter');
 let registeredWithActualApi = false;
 const language = (api) => {
     registeredWithActualApi = api === hljs;
     return {contains: [{begin: /fixture/, className: 'keyword'}]};
 };
-const html = transform('~~~custom\\nfixture\\n~~~', {highlightLangs: {custom: language}}).result.html;
+const html = transform('~~~custom\\nfixture\\n~~~', {highlighter: createHighlightJsHighlighter(hljs), highlightLangs: {custom: language}}).result.html;
 assert.equal(registeredWithActualApi, true);
 assert.match(html, /hljs-keyword/);
 `,
@@ -330,7 +357,7 @@ assert.match(html, /hljs-keyword/);
     withHighlighterConfig.compilerOptions.moduleResolution = 'NodeNext';
     withHighlighterConfig.files = ['consumer.cts', 'consumer.mts', 'with-highlighter.mts'];
     writeFileSync(join(consumerRoot, 'tsconfig.json'), JSON.stringify(withHighlighterConfig));
-    for (const version of ['10.7.3', '^11.8.0']) {
+    for (const version of ['10.0.3', '10.6.0', '10.7.0', '11.12.0']) {
         execFileSync(
             process.execPath,
             [
@@ -343,11 +370,43 @@ assert.match(html, /hljs-keyword/);
             ],
             {cwd: consumerRoot, stdio: 'inherit'},
         );
-        execFileSync(
-            process.execPath,
-            [projectRequire.resolve('typescript/lib/tsc.js'), '-p', consumerRoot],
-            {stdio: 'inherit'},
-        );
+        // 10.0.3 has no bundled declarations; 10.6 has only the legacy declaration.
+        // Core/legacy structural declarations are checked above without the optional peer.
+        if (version === '10.7.0' || version === '11.12.0') {
+            for (const module of ['Node16', 'NodeNext', 'Preserve']) {
+                const config = {
+                    ...withHighlighterConfig,
+                    compilerOptions: {
+                        ...withHighlighterConfig.compilerOptions,
+                        module,
+                        moduleResolution: module === 'Preserve' ? 'Bundler' : module,
+                    },
+                };
+                if (module === 'Preserve') {
+                    config.files = ['consumer.mts', 'with-highlighter.mts'];
+                }
+                writeFileSync(join(consumerRoot, 'tsconfig.json'), JSON.stringify(config));
+                execFileSync(
+                    process.execPath,
+                    [projectRequire.resolve('typescript/lib/tsc.js'), '-p', consumerRoot],
+                    {stdio: 'inherit'},
+                );
+            }
+        }
+        execFileSync(process.execPath, [join(consumerRoot, 'highlighter-consumer.mjs')], {
+            cwd: consumerRoot,
+            stdio: 'inherit',
+        });
+        if (version === '10.7.0' || version === '11.12.0') {
+            execFileSync(
+                process.execPath,
+                [join(consumerRoot, 'highlighter-consumer.mjs'), '--selected-core'],
+                {
+                    cwd: consumerRoot,
+                    stdio: 'inherit',
+                },
+            );
+        }
         execFileSync(process.execPath, [join(consumerRoot, 'with-highlighter.cjs')], {
             cwd: consumerRoot,
             stdio: 'inherit',
@@ -361,6 +420,7 @@ assert.match(html, /hljs-keyword/);
     // Bundle the installed browser entry points independently: base/yfm-only must
     // retain their split contents rather than silently resolving to the full runtime.
     const {buildSync} = projectRequire('esbuild');
+    verifyHighlighterGraph(consumerRoot, buildSync);
     const {JSDOM} = projectRequire('jsdom');
     for (const variant of ['', '/base', '/yfm-only', '/print']) {
         const result = buildSync({

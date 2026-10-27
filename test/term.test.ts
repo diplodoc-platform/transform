@@ -12,12 +12,15 @@ import sup from '../src/transform/plugins/sup';
 import cut from '../src/transform/plugins/cut';
 import tabs from '../src/transform/plugins/tabs';
 
+import {highlighter} from './highlighter-fixture';
+
 const mocksPath = require.resolve('./utils.ts');
 
 const transformYfm = (text: string, path?: string, opts?: Object) => {
     const {
         result: {html},
     } = transform(text, {
+        highlighter,
         plugins: [includes, links, code, sup, term],
         path: path || mocksPath,
         root: dirname(path || mocksPath),
@@ -318,6 +321,7 @@ describe('Terms', () => {
             const {
                 result: {html},
             } = transform(text, {
+                highlighter,
                 plugins: [includes, links, code, sup, term],
                 path: path || mocksPath,
                 root: dirname(path || mocksPath),
