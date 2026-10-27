@@ -14,4 +14,4 @@ const checkbox = (md: MarkdownIt, options?: CheckboxOptions) => {
     return md;
 };
 
-export = checkbox;
+export default checkbox;

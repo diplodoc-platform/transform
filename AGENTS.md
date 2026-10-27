@@ -84,7 +84,7 @@ This package has a **dual architecture**:
 - **Purpose**: Transform YFM to HTML on the server
 - **Runtime**: Node.js
 - **Output**: `lib/` directory (CommonJS)
-- **Entry**: `lib/index.js`
+- **Entry**: `api/index.cjs` (CommonJS) or `api/index.mjs` (native ESM)
 - **Dependencies**: Uses extension packages as plugins
   - `@diplodoc/cut-extension` — cut plugin
   - `@diplodoc/tabs-extension` — tabs plugin
@@ -254,7 +254,7 @@ Extensions are used as MarkdownIt plugins:
 // src/transform/plugins/cut.ts
 import {transform} from '@diplodoc/cut-extension';
 
-export = transform({bundle: false, directiveSyntax: 'disabled'});
+export default transform({bundle: false, directiveSyntax: 'disabled'});
 ```
 
 The plugin is then registered in `src/transform/plugins.ts`:
@@ -415,7 +415,7 @@ patch or its delivery. See `docs/ADR/ADR-008-svgo-parser-patch.md`.
    - `lib/` — server-side code (CommonJS)
    - `dist/` — client-side assets (bundled JS and CSS)
 
-5. **TypeScript Version**: Currently uses TypeScript 4.7.4. Upgrading to TypeScript 5.x should be done as a separate task due to potential breaking changes.
+5. **TypeScript Version**: Currently uses TypeScript 6.0.3. Native consumer fixtures cover Node16, NodeNext, and bundler resolution with strict declaration checking.
 
 6. **Testing**: Unit tests use Vitest. E2E tests use Playwright and are in a separate `e2e/` directory.
 
@@ -487,3 +487,19 @@ The package uses **release-please** for automated versioning and publishing:
 - `@diplodoc/lint` documentation - Linting and formatting setup
 - `@diplodoc/tsconfig` - TypeScript configuration reference
 - Extension packages (`@diplodoc/cut-extension`, `@diplodoc/tabs-extension`, `@diplodoc/file-extension`) - Extension documentation
+
+## Public module build
+
+Server sources use standard ESM syntax; `lib/` is the sole CommonJS implementation
+graph. Generated `api/` adapters provide native ESM and CJS package entry points
+without duplicating logger/cache state. `scripts/public-api.mjs` separates stable
+entries from finite legacy aliases. Update it deliberately, run
+`npm run exports:update`, and run `npm run test:package` when modifying exports,
+module shapes, public declarations, or asset delivery. Keep callable CJS root and
+plugin types, explicit ESM names, and optional-highlighter absence working.
+See `docs/ADR/ADR-012-public-module-exports.md` for contracts and migration paths.
+
+Node 24 is the tested supported runtime; ES2018 remains the syntax target. Keep
+Liquid/YFMLint implementations and their compatibility imports until their
+separate removal is authorized. `lib/vendor/` contains generated declarations
+for the isolated patched SVG bundle, not a runtime registry SVGO dependency.

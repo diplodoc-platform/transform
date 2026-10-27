@@ -105,4 +105,4 @@ const index: MarkdownItPreprocessorCb<{
     return input;
 };
 
-export = index;
+export default index;

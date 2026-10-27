@@ -428,4 +428,4 @@ const term: MarkdownItPluginCb = (md, options) => {
     }
 };
 
-export = term;
+export default term;

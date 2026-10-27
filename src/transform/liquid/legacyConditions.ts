@@ -164,7 +164,7 @@ type Tag = {
     elses: Elses[];
 };
 
-export = function legacyConditions(
+export default function legacyConditions(
     originInput: string,
     vars: Record<string, unknown>,
     path?: string,
@@ -249,4 +249,4 @@ export = function legacyConditions(
     }
 
     return input;
-};
+}

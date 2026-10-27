@@ -38,4 +38,4 @@ const defaultPlugins = [
     visibility,
 ] as MarkdownItPluginCb[];
 
-export = defaultPlugins;
+export default defaultPlugins;

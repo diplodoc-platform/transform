@@ -284,3 +284,23 @@ This ensures the `DOCKER_HOST` is set as necessary.
 ## Documentation
 
 For detailed information about architecture, development, and contributing, see [AGENTS.md](./AGENTS.md).
+
+## Public module entry points
+
+Use the package root with either native ESM or CommonJS. Both resolve to the same
+synchronous transform function:
+
+```js
+import transform, {transform as namedTransform} from '@diplodoc/transform';
+// CommonJS: const transform = require('@diplodoc/transform');
+```
+
+The synchronous parser factory is available at `@diplodoc/transform/parser`,
+public types at `/types`, and plugins at `/plugins/<name>`. Browser assets have
+`/runtime`, `/runtime/base`, `/runtime/yfm-only`, and `/runtime/print` entries;
+styles use the equivalent `/styles` entries. Source SCSS is available through
+`/scss/*`. Existing `lib/*` and distribution imports remain compatibility aliases.
+
+Node.js 24 or newer is supported. See [ADR-012](docs/ADR/ADR-012-public-module-exports.md)
+for the complete export contract, CJS namespace shapes, migration table, and
+package verification matrix.

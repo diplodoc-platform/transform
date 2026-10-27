@@ -1,6 +1,7 @@
 import type {MarkdownItPluginOpts} from '../typings';
 
 import chain from 'lodash/chain';
+import slugify from 'slugify';
 import {sep} from 'path';
 
 import {getSinglePageAnchorId, resolveRelativePath} from '../../utilsFS';
@@ -8,8 +9,6 @@ import {transformLinkToOriginalArticle} from '../../utils';
 import {сarriage} from '../utils';
 
 import {CUSTOM_ID_EXCEPTION, CUSTOM_ID_REGEXP} from './constants';
-
-const slugify: (str: string, opts: {}) => string = require('slugify');
 
 /* eslint-disable max-len */
 /* If the singlePage option is passed in the options:
@@ -99,4 +98,4 @@ const collect = (input: string, options: MarkdownItPluginOpts & {singlePage: boo
     return lines.join(сarriage);
 };
 
-export = collect;
+export default collect;

@@ -244,7 +244,7 @@ function inlineConditions(
     };
 }
 
-export = function conditions(
+export default function conditions(
     input: string,
     vars: Record<string, unknown>,
     path?: string,
@@ -330,4 +330,4 @@ export = function conditions(
     }
 
     return input;
-};
+}

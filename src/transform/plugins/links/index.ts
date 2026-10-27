@@ -271,4 +271,4 @@ const index: MarkdownItPluginCb<ProcOpts> = (md: MarkdownItIncluded, opts) => {
     }
 };
 
-export = index;
+export default index;

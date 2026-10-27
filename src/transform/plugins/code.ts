@@ -501,4 +501,4 @@ const code: MarkdownItPluginCb<CodeOptions> = (md, opts) => {
     };
 };
 
-export = code;
+export default code;

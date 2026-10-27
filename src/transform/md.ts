@@ -228,4 +228,4 @@ function initCompiler(md: MarkdownIt, options: OptionsType, env: EnvType) {
     };
 }
 
-export = initMarkdownIt;
+export default initMarkdownIt;

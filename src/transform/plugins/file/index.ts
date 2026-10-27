@@ -8,4 +8,4 @@ const file: (md: MarkdownIt, options?: PluginOptions) => void = transform({
     directiveSyntax: 'disabled',
 });
 
-export = file;
+export default file;

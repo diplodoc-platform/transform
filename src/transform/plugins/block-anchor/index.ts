@@ -13,4 +13,4 @@ const blockAnchor = (md: MarkdownIt) => {
     return md;
 };
 
-export = blockAnchor;
+export default blockAnchor;

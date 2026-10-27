@@ -71,4 +71,4 @@ const collect = (input: string, {path: filepath, log, changelogs, extractChangel
     return result;
 };
 
-export = collect;
+export default collect;

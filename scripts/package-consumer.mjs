@@ -1,0 +1,86 @@
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+import {readFileSync, writeFileSync} from 'node:fs';
+import {join} from 'node:path';
+import MarkdownIt from 'markdown-it';
+
+import transform, {transform as namedTransform} from '@diplodoc/transform';
+import parser from '@diplodoc/transform/parser';
+import images, {replaceSvgContent} from '@diplodoc/transform/plugins/images';
+import log, {getLogger} from '@diplodoc/transform/log';
+import {createDeprecationReporter} from '@diplodoc/transform/deprecation';
+import {getFileTokens} from '@diplodoc/transform/utils/fs';
+
+const require = createRequire(import.meta.url);
+const manifest = require('@diplodoc/transform/package.json');
+assert.equal(typeof globalThis.document, 'undefined');
+assert.equal(typeof globalThis.window, 'undefined');
+assert.equal(transform, namedTransform);
+assert.equal(transform, require('@diplodoc/transform'));
+assert.equal(transform.transform, transform);
+assert.equal(parser, require('@diplodoc/transform/parser'));
+assert.equal(images, require('@diplodoc/transform/plugins/images'));
+assert.equal(images.replaceSvgContent, replaceSvgContent);
+assert.equal(log, require('@diplodoc/transform/log').default);
+assert.equal(getFileTokens, require('@diplodoc/transform/lib/utilsFS').getFileTokens);
+const cachedFile = join(process.cwd(), 'mixed-cache-fixture.md');
+writeFileSync(cachedFile, 'original cached content');
+const state = {md: new MarkdownIt(), env: {}};
+const firstTokens = getFileTokens(cachedFile, state, {disableLiquid: true});
+writeFileSync(cachedFile, 'changed content on disk');
+const cachedTokens = require('@diplodoc/transform/utils/fs').getFileTokens(cachedFile, state, {
+    disableLiquid: true,
+});
+assert.deepEqual(cachedTokens, firstTokens);
+const external = {info() {}, warn() {}, error() {}};
+assert.equal(getLogger(external), require('@diplodoc/transform/log').getLogger(external));
+log.clear();
+require('@diplodoc/transform/log').log.warn('mixed module warning');
+assert.equal(log.get().warn.length, 1);
+createDeprecationReporter().warn(
+    {code: 'fixture', feature: 'old', replacement: 'new', removal: {version: '6'}},
+    {option: 'old'},
+);
+assert.equal(require('@diplodoc/transform/log').log.get().warn.length, 2);
+log.clear();
+const instance = parser({});
+assert.match(instance.compile(instance.parse('# Heading')), /<h1/);
+assert.match(transform('SSR text').result.html, /SSR text/);
+assert.deepEqual(
+    createRequire(require.resolve('@diplodoc/transform'))('js-yaml').load('key: value'),
+    {key: 'value'},
+);
+
+for (const [subpath, target] of Object.entries(manifest.exports)) {
+    const specifier = `@diplodoc/transform${subpath === '.' ? '' : subpath.slice(1)}`;
+    if (typeof target === 'string') {
+        if (!subpath.includes('*')) {
+            assert.ok(readFileSync(require.resolve(specifier)).length > 0, specifier);
+        }
+        continue;
+    }
+    const cjs = require(specifier);
+    const esm = await import(specifier);
+    assert.equal(require.resolve(specifier).endsWith('.cjs'), true, specifier);
+    assert.equal(import.meta.resolve(specifier).endsWith('.mjs'), true, specifier);
+    if (esm.default === cjs || typeof cjs === 'function' || Array.isArray(cjs)) {
+        assert.equal(esm.default, cjs, specifier);
+    } else {
+        for (const name of Object.keys(esm)) {
+            assert.equal(esm[name], cjs[name], `${specifier}: ${name}`);
+        }
+    }
+}
+assert.notEqual(
+    require.resolve('@diplodoc/transform/runtime'),
+    require.resolve('@diplodoc/transform/runtime/base'),
+);
+assert.notEqual(
+    require.resolve('@diplodoc/transform/runtime'),
+    require.resolve('@diplodoc/transform/runtime/yfm-only'),
+);
+assert.ok(readFileSync(require.resolve('@diplodoc/transform/scss/yfm-base.scss')).length);
+assert.ok(readFileSync(require.resolve('@diplodoc/transform/src/scss/yfm.scss')).length);
+assert.throws(() => require.resolve('@diplodoc/transform/lib/new-private-file'), {
+    code: 'ERR_PACKAGE_PATH_NOT_EXPORTED',
+});

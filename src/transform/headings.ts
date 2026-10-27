@@ -17,11 +17,11 @@ function getHref(token: Token) {
     return '#' + (token.attrGet('id') || '');
 }
 
-export = function getHeadings(tokens: Token[], needFlatListHeadings?: boolean, href = '') {
+export default function getHeadings(tokens: Token[], needFlatListHeadings?: boolean, href = '') {
     return needFlatListHeadings
         ? getFlatListHeadings(tokens, href)
         : getFilteredHeadings(tokens, href);
-};
+}
 
 function getFilteredHeadings(tokens: Token[], href: string) {
     const headings: Heading[] = [];

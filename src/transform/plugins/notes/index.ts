@@ -143,4 +143,4 @@ const index: MarkdownItPluginCb<NotesPluginParams> = (
     }
 };
 
-export = index;
+export default index;
