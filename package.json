@@ -58,9 +58,9 @@
   "dependencies": {
     "@diplodoc/cut-extension": "^1.1.6",
     "@diplodoc/directive": "^0.4.0",
-    "@diplodoc/file-extension": "^0.2.5",
-    "@diplodoc/tabs-extension": "^3.10.7",
-    "@diplodoc/utils": "^2.3.5",
+    "@diplodoc/file-extension": "0.2.7-transform5.0",
+    "@diplodoc/tabs-extension": "3.10.8-transform5.0",
+    "@diplodoc/utils": "2.3.7-transform5.0",
     "chalk": "^4.1.2",
     "cheerio": "^1.0.0",
     "css": "^3.0.0",
