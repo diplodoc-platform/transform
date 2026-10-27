@@ -139,6 +139,7 @@ describe('transform deprecation integration', () => {
         };
 
         const output = transform('text', {
+            disableLiquid: true,
             log: consumer,
             customOption,
             compatibility: {[descriptor.code]: 'legacy'},
@@ -167,7 +168,7 @@ describe('transform deprecation integration', () => {
                 }
             });
         };
-        const options = {log: consumer, path: 'guide.md', plugins: [plugin]};
+        const options = {disableLiquid: true, log: consumer, path: 'guide.md', plugins: [plugin]};
 
         transform('first', options);
         fail = true;
@@ -180,8 +181,9 @@ describe('transform deprecation integration', () => {
 
     test('does not warn or change defaults merely because compatibility was configured', () => {
         const consumer = createConsumer();
-        const ordinary = transform('# Heading', {log: consumer});
+        const ordinary = transform('# Heading', {disableLiquid: true, log: consumer});
         const configured = transform('# Heading', {
+            disableLiquid: true,
             log: consumer,
             compatibility: {[descriptor.code]: 'legacy'},
         });

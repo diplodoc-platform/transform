@@ -27,10 +27,10 @@ const applyAttrs = attrs as (
     options: {leftDelimiter: string; rightDelimiter: string},
 ) => void;
 
-function initMarkdownIt(options: OptionsType) {
+function initMarkdownIt(options: OptionsType, firstDocumentReporter?: DeprecationReporter) {
     const {allowHTML = false, linkify = false, breaks = true, disableRules = []} = options;
 
-    const pluginOptions = getPluginOptions(options);
+    const pluginOptions = getPluginOptions(options, firstDocumentReporter);
     const highlight = configureHighlighter(options, pluginOptions.deprecations);
     const md = new DefaultMarkdownIt({html: allowHTML, linkify, highlight, breaks}) as MarkdownIt;
 
@@ -76,7 +76,7 @@ function initMarkdownIt(options: OptionsType) {
     return {parse, compile, env};
 }
 
-function getPluginOptions(options: OptionsType) {
+function getPluginOptions(options: OptionsType, firstDocumentReporter?: DeprecationReporter) {
     const {
         vars = {},
         path,
@@ -98,7 +98,7 @@ function getPluginOptions(options: OptionsType) {
         extractTitle,
         disableLiquid,
         log: getLogger(options.log),
-        deprecations: createDeprecationReporter(options),
+        deprecations: firstDocumentReporter ?? createDeprecationReporter(options),
         lang,
         inlineSvg,
         svgInline: normalizeSvgInline({svgInline, inlineSvg}),

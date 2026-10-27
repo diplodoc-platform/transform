@@ -81,3 +81,16 @@ export const paragraph = (content: string): DeepPartial<Token>[] => [
 export const tokenize = (lines: string[] = []) => md.parse(lines.join('\n'), {});
 
 export * as log from '../src/transform/log';
+
+/**
+ * Keep existing diagnostic assertions separate from the two new engine warnings.
+ * @param messages - Collected diagnostic strings.
+ * @returns Existing diagnostics, excluding only the two named migration codes.
+ */
+export function withoutBundledEngineWarnings(messages: string[]): string[] {
+    return messages.filter(
+        (message) =>
+            !message.includes('[DEPRECATED TRANSFORM_BUNDLED_LIQUID]') &&
+            !message.includes('[DEPRECATED TRANSFORM_BUNDLED_YFMLINT]'),
+    );
+}

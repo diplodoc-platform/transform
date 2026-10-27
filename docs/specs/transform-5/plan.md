@@ -48,25 +48,25 @@ original sixteen-item manifest breakdown; final acceptance includes it.
 Dependencies below govern completion. Independent specification, fixtures and
 replacement implementations can start earlier.
 
-| Workstream          | Required result                                                                               | Completion dependencies                                                        |
-| ------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| DOCSTOOLS-6934 / 1  | Shared deprecation diagnostics, scoped deduplication and compatibility policy                 | None                                                                           |
-| DOCSTOOLS-6935 / 2  | Supported markdown-it and compatible dependencies; intentional parsing differences documented | Coordinate packaging with 3; validate extensions, CLI, yfmlint and translation |
-| DOCSTOOLS-6936 / 3  | ESM sources, working ESM/CJS entries, public exports and import migration map                 | 1 before restricting used paths; coordinate with 2                             |
-| DOCSTOOLS-6937 / 4  | Typed core/custom options, stable plugin IDs, deterministic composition and dependencies      | 1 before removing legacy configuration                                         |
-| DOCSTOOLS-6938 / 5  | Standalone Liquid/YFMLint composition and removal of bundled legacy implementations           | 1, ready consumer replacements, previously published warnings                  |
-| DOCSTOOLS-6939 / 6  | Explicit synchronous highlighter injection after optional external lazy loading               | 4; compatible public imports                                                   |
-| DOCSTOOLS-6940 / 7  | Browser entry without required Node APIs, globals, polyfills or bundler stubs                 | 3; Node dependencies and implicit highlighting addressed by 5/6                |
-| DOCSTOOLS-6941 / 8  | Replacement imports for removed cut/tabs/typings forwarding paths                             | 3 and the deprecation/removal policy in 1                                      |
-| DOCSTOOLS-6942 / 9  | Separate notes extension preserving syntax, localization, titles, HTML and accessibility      | 3/4; 1 before removing the previous path                                       |
-| DOCSTOOLS-6943 / 10 | Specified directive grammar, finite extension inventory and safe migrator                     | 4; 1 for warnings after equivalent replacements exist                          |
-| DOCSTOOLS-6944 / 11 | General Markdown attributes opt-in; anchors and image dimensions preserved                    | 1; cross-check 13/17 and explicit CLI compatibility                            |
-| DOCSTOOLS-6945 / 12 | Inline-code table splitters handled by default; alignment warnings and migration              | Splitter change independent; alignment migration uses 1                        |
-| DOCSTOOLS-6946 / 13 | Legacy image-size warnings and safe migration to modern dimension attributes                  | 1; dimensions also tested with general attrs disabled                          |
-| DOCSTOOLS-6947 / 14 | `inlineSvg` migration to `svgInline.enabled` with specified precedence                        | 1                                                                              |
-| DOCSTOOLS-6948 / 15 | Independently controllable footnotes, underline, subscript and task lists                     | 4 for final plugin controls                                                    |
-| DOCSTOOLS-6949 / 16 | Migration guide, changelog and installed-package/consumer acceptance                          | All other sixteen workstreams, including 17                                    |
-| DOCSTOOLS-6951 / 17 | Typed per-document env lifecycle with isolated metadata and resources                         | 1/4; coordinate exports with 3 and includes/attrs with 11                      |
+| Workstream          | Required result                                                                                 | Completion dependencies                                                        |
+| ------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| DOCSTOOLS-6934 / 1  | Shared deprecation diagnostics, scoped deduplication and compatibility policy                   | None                                                                           |
+| DOCSTOOLS-6935 / 2  | Supported markdown-it and compatible dependencies; intentional parsing differences documented   | Coordinate packaging with 3; validate extensions, CLI, yfmlint and translation |
+| DOCSTOOLS-6936 / 3  | ESM sources, working ESM/CJS entries, public exports and import migration map                   | 1 before restricting used paths; coordinate with 2                             |
+| DOCSTOOLS-6937 / 4  | Typed core/custom options, stable plugin IDs, deterministic composition and dependencies        | 1 before removing legacy configuration                                         |
+| DOCSTOOLS-6938 / 5  | Retained bundled Liquid/YFMLint APIs/defaults, actual-use deprecations and standalone migration | 1; consumer preservation; removal deferred to 6+ with release gates            |
+| DOCSTOOLS-6939 / 6  | Explicit synchronous highlighter injection after optional external lazy loading                 | 4; compatible public imports                                                   |
+| DOCSTOOLS-6940 / 7  | Browser entry without required Node APIs, globals, polyfills or bundler stubs                   | 3; Node dependencies and implicit highlighting addressed by 5/6                |
+| DOCSTOOLS-6941 / 8  | Replacement imports for removed cut/tabs/typings forwarding paths                               | 3 and the deprecation/removal policy in 1                                      |
+| DOCSTOOLS-6942 / 9  | Separate notes extension preserving syntax, localization, titles, HTML and accessibility        | 3/4; 1 before removing the previous path                                       |
+| DOCSTOOLS-6943 / 10 | Specified directive grammar, finite extension inventory and safe migrator                       | 4; 1 for warnings after equivalent replacements exist                          |
+| DOCSTOOLS-6944 / 11 | General Markdown attributes opt-in; anchors and image dimensions preserved                      | 1; cross-check 13/17 and explicit CLI compatibility                            |
+| DOCSTOOLS-6945 / 12 | Inline-code table splitters handled by default; alignment warnings and migration                | Splitter change independent; alignment migration uses 1                        |
+| DOCSTOOLS-6946 / 13 | Legacy image-size warnings and safe migration to modern dimension attributes                    | 1; dimensions also tested with general attrs disabled                          |
+| DOCSTOOLS-6947 / 14 | `inlineSvg` migration to `svgInline.enabled` with specified precedence                          | 1                                                                              |
+| DOCSTOOLS-6948 / 15 | Independently controllable footnotes, underline, subscript and task lists                       | 4 for final plugin controls                                                    |
+| DOCSTOOLS-6949 / 16 | Migration guide, changelog and installed-package/consumer acceptance                            | All other sixteen workstreams, including 17                                    |
+| DOCSTOOLS-6951 / 17 | Typed per-document env lifecycle with isolated metadata and resources                           | 1/4; coordinate exports with 3 and includes/attrs with 11                      |
 
 The first implementation wave is 1 and 2 in parallel, with consumer acceptance
 preparation from 16. Broad ESM conversion follows the parser update because both
@@ -102,6 +102,15 @@ available agent capacity may impose a smaller limit.
   composition settings need deterministic, actionable diagnostics.
 - Provide a supported typed custom-option mechanism before restricting arbitrary
   plugin configuration. Configuration changes must cover CLI and custom extensions.
+- Workstream 5 retains bundled Liquid/YFMLint engines, exports, synchronous APIs
+  and defaults in Transform 5 because the audited consumers still use them.
+  It supplies actual-use warnings and standalone composition guidance. Removal is
+  deferred to Transform 6 or later, subject to published-warning and migration
+  gates; there is no claim that a Transform 4 warning release exists. See
+  [the legacy-engine design](legacy-engines.md) for the proposed diagnostic contract.
+- Workstream 7 must exclude retained server-only legacy engines from its new
+  browser entry by choosing an explicit composition boundary. That boundary does
+  not remove these engines from the Node entries or compatibility exports.
 - A highlighter may be loaded asynchronously by its caller, but the supplied
   callback and transformation remain synchronous. No-highlighter output escapes
   code correctly; selected and unknown languages have explicit tests.

@@ -154,6 +154,14 @@ assert.match(transform('Static ESM', defineTransformOptions()).result.html, /Sta
         [join(consumerRoot, 'highlighter-consumer.mjs'), '--without-peer'],
         {cwd: consumerRoot, stdio: 'inherit'},
     );
+    copyFileSync(
+        join(projectRoot, 'scripts/legacy-engines-package-consumer.mjs'),
+        join(consumerRoot, 'legacy-engines-consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'legacy-engines-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
     const consumerRequire = createRequire(join(consumerRoot, 'package.json'));
     assert.throws(() => consumerRequire.resolve('svgo'), {code: 'MODULE_NOT_FOUND'});
     assert.throws(() => consumerRequire.resolve('highlight.js'), {code: 'MODULE_NOT_FOUND'});
@@ -233,6 +241,29 @@ void getFileTokens;
             files: ['consumer.cts', 'consumer.mts'],
         }),
     );
+    const legacyEngineTypes = `
+import {liquidDocument, liquidSnippet} from '@diplodoc/transform/lib/liquid';
+import {createDeprecationReporter} from '@diplodoc/transform/deprecation';
+import {getLogger} from '@diplodoc/transform/log';
+import {type PluginOptions as LegacyLintPluginOptions} from '@diplodoc/transform/lib/yfmlint';
+const diagnostics = {log: {info(_message: string) {}, warn(_message: string) {}, error(_message: string) {}}};
+const deprecations = createDeprecationReporter(diagnostics);
+const legacyLintOptions: LegacyLintPluginOptions = {log: getLogger(diagnostics.log), deprecations, compatibility: {TRANSFORM_BUNDLED_YFMLINT: 'legacy'}};
+void legacyLintOptions;
+const mapped = liquidDocument('plain', {}, 'guide.md', {...diagnostics, deprecations, withSourceMap: true});
+const mappedOutput: string = mapped.output;
+const sourceMap: Record<string, string> = mapped.sourceMap;
+const plain: string = liquidSnippet('plain', {}, undefined, diagnostics);
+// @ts-expect-error Plain return is not a source-map object.
+plain.output;
+// @ts-expect-error Source-map output remains a string.
+const invalidOutput: number = mapped.output;
+void mappedOutput; void sourceMap; void invalidOutput;
+`;
+    for (const file of ['consumer.cts', 'consumer.mts']) {
+        const path = join(consumerRoot, file);
+        writeFileSync(path, `${readFileSync(path, 'utf8')}\n${legacyEngineTypes}`);
+    }
     const configurationTypes = `
 import {type Highlighter, type HighlightJsLegacyApi, createHighlightJsHighlighter} from '@diplodoc/transform/highlighter';
 const callback: Highlighter = () => ({html: '', classes: ['custom']});

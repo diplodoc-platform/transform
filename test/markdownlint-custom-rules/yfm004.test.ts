@@ -1,3 +1,4 @@
+import {withoutBundledEngineWarnings} from '../utils';
 import {LogLevels, log} from '../../src/transform/log';
 import table from '../../src/transform/plugins/table';
 import yfmlint from '../../src/transform/yfmlint';
@@ -52,6 +53,10 @@ describe('YFM004', () => {
 
     it('Table with close token', () => {
         lint(tableWithCloseToken);
-        expect(log.isEmpty()).toBeTruthy();
+        expect(
+            withoutBundledEngineWarnings(log.get().warn).length === 0 &&
+                log.get().error.length === 0 &&
+                log.get().info.length === 0,
+        ).toBeTruthy();
     });
 });

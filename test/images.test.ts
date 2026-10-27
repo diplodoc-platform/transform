@@ -12,6 +12,7 @@ const transformYfm = (text: string) => {
     const {
         result: {html},
     } = transform(text, {
+        disableLiquid: true,
         plugins: [images],
         path: mocksPath,
         root: dirname(mocksPath),
@@ -52,6 +53,7 @@ describe('Images plugin', () => {
         const {
             result: {html},
         } = transform(input, {
+            disableLiquid: true,
             plugins: [images],
         });
 
