@@ -250,56 +250,56 @@ export function parseChildDocumentResult(
     options: ChildParseOptions,
     prepare?: (source: string) => string,
 ) {
-    const inheritedTerms = new Set(Object.keys(parent.terms ?? {}));
-    const inheritedIncluded = new Set(Object.keys(parent.included ?? {}));
-    const child = createDocumentEnv();
-    // Custom enumerable extension fields preserve the existing shallow inheritance.
-    // Builtin document-owned fields are explicitly replaced below.
-    Object.assign(child, parent, createDocumentEnv(), {
-        path: options.path ?? parent.path,
-        includes: [...(parent.includes ?? [])],
-        terms: {...parent.terms},
-        changelogs: undefined,
-        additionalOptionsCssWhiteList: undefined,
-        disableTitleRefSubstitution:
-            options.disableTitleRefSubstitution ?? parent.disableTitleRefSubstitution,
-        disableCircularError: options.disableCircularError ?? parent.disableCircularError,
-    });
-    delete child['has-yfm-cut'];
-    delete child['has-yfm-file'];
-    child.included = {...parent.included};
-    let shared = services.get(parent);
-    if (!shared) {
-        shared = {checkbox: 0};
-        services.set(parent, shared);
-    }
-    services.set(child, shared);
-    const tokens = withDocumentEnv(md, parent, () =>
-        withDocumentEnv(md, child, () => {
+    return withDocumentEnv(md, parent, () => {
+        const inheritedTerms = new Set(Object.keys(parent.terms ?? {}));
+        const inheritedIncluded = new Set(Object.keys(parent.included ?? {}));
+        const child = createDocumentEnv();
+        // Custom enumerable extension fields preserve the existing shallow inheritance.
+        // Builtin document-owned fields are explicitly replaced below.
+        Object.assign(child, parent, createDocumentEnv(), {
+            path: options.path ?? parent.path,
+            includes: [...(parent.includes ?? [])],
+            terms: {...parent.terms},
+            changelogs: undefined,
+            additionalOptionsCssWhiteList: undefined,
+            disableTitleRefSubstitution:
+                options.disableTitleRefSubstitution ?? parent.disableTitleRefSubstitution,
+            disableCircularError: options.disableCircularError ?? parent.disableCircularError,
+        });
+        delete child['has-yfm-cut'];
+        delete child['has-yfm-file'];
+        child.included = {...parent.included};
+        let shared = services.get(parent);
+        if (!shared) {
+            shared = {checkbox: 0};
+            services.set(parent, shared);
+        }
+        services.set(child, shared);
+        const tokens = withDocumentEnv(md, child, () => {
             const prepared = prepare ? prepare(source) : source;
             if (typeof prepared !== 'string') {
                 throw new TypeError('prepareSource must synchronously return a string');
             }
             return md.parse(prepared, child);
-        }),
-    );
-    const contributions: ParserEnv = {
-        meta: prepareMetaMerge({}, child),
-        assets: isStringList(child.assets) ? [...child.assets] : undefined,
-        additionalOptionsCssWhiteList: {...child.additionalOptionsCssWhiteList},
-        terms: Object.fromEntries(
-            Object.entries(child.terms ?? {}).filter(([key]) => !inheritedTerms.has(key)),
-        ),
-        included: Object.fromEntries(
-            Object.entries(child.included ?? {}).filter(([key]) => !inheritedIncluded.has(key)),
-        ),
-    };
-    // CSP records contain mutable arrays; do not retain references into parsed child data.
-    normalizeDocumentResources(contributions);
-    mergeContributions(parent, contributions, options.purpose);
-    const fragment = Object.freeze({tokens}) as ParsedDocumentFragment;
-    fragments.set(fragment, {md, contributions});
-    return fragment;
+        });
+        const contributions: ParserEnv = {
+            meta: prepareMetaMerge({}, child),
+            assets: isStringList(child.assets) ? [...child.assets] : undefined,
+            additionalOptionsCssWhiteList: {...child.additionalOptionsCssWhiteList},
+            terms: Object.fromEntries(
+                Object.entries(child.terms ?? {}).filter(([key]) => !inheritedTerms.has(key)),
+            ),
+            included: Object.fromEntries(
+                Object.entries(child.included ?? {}).filter(([key]) => !inheritedIncluded.has(key)),
+            ),
+        };
+        // CSP records contain mutable arrays; do not retain references into parsed child data.
+        normalizeDocumentResources(contributions);
+        mergeContributions(parent, contributions, options.purpose);
+        const fragment = Object.freeze({tokens}) as ParsedDocumentFragment;
+        fragments.set(fragment, {md, contributions});
+        return fragment;
+    });
 }
 
 export function parseChildDocument(

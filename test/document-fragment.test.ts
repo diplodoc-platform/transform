@@ -2,8 +2,11 @@ import type {MarkdownIt, ParserEnv} from '../src/transform/typings';
 import type {ParsedDocumentFragment} from '../src/transform/document';
 
 import {vi} from 'vitest';
+import NativeMarkdownIt from 'markdown-it';
 
 import parser from '../src/transform/md';
+import meta from '../src/transform/plugins/meta';
+import log from '../src/transform/log';
 import {
     createDocumentEnv,
     parseDocumentFragment,
@@ -166,4 +169,46 @@ test('preparation runs inside child frame, retains nested materialized content a
     ).toThrow('synchronously return a string');
     expect(parent.included?.parent).toBe('preserved');
     expect(parseDocumentFragment(native, 'body', parent, {purpose: 'fragment'})).toHaveLength(3);
+});
+
+test('failed initial merge preserves the previous native document until a complete child result succeeds', () => {
+    const native = new NativeMarkdownIt().use(meta, {
+        path: '',
+        root: '',
+        rootPublicPath: '',
+        lang: 'en',
+        log,
+        isLintRun: false,
+    }) as MarkdownIt;
+    native.core.ruler.push('resources', (state) => {
+        const env = state.env as ParserEnv;
+        env.assets = [state.src === 'child' ? '/child.png' : '/A.png'];
+        if (state.src === 'child') {
+            Object.assign((env.meta ??= {}), {script: ['/child.js']});
+        }
+    });
+    native.render('---\nname: A\n---\nA');
+    const previousMeta = native.meta;
+    const previousAssets = native.assets;
+    const invalid = createDocumentEnv();
+    invalid.meta = {};
+    Object.assign(invalid.meta, {script: 'invalid'});
+    let failed: ParsedDocumentFragment | undefined;
+    expect(() => {
+        failed = parseDocumentFragmentResult(native, 'child', invalid, {purpose: 'include'});
+    }).toThrow('meta.script');
+    expect(failed).toBeUndefined();
+    expect(native.meta).toBe(previousMeta);
+    expect(native.assets).toBe(previousAssets);
+    expect(native.meta).toEqual({name: 'A'});
+    expect(native.assets).toEqual(['/A.png']);
+    expect(invalid.meta).toEqual({script: 'invalid'});
+    expect(invalid.assets).toBeUndefined();
+    const valid = createDocumentEnv();
+    const fragment = parseDocumentFragmentResult(native, 'child', valid, {purpose: 'include'});
+    expect(fragment.tokens).toHaveLength(3);
+    expect(native.meta).toBe(valid.meta);
+    expect(native.assets).toBe(valid.assets);
+    expect(valid.meta).toEqual({script: ['/child.js']});
+    expect(valid.assets).toEqual(['/child.png']);
 });

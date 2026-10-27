@@ -475,3 +475,9 @@ make tokens context-free, repair cached IDs, handle changed caller flags, clone
 custom plugin state, or permit cross-parser reuse. Same configured parser means
 the exact parser object within its existing installation/options lifetime; callers
 must not mutate its configured rules/options while treating fragments as reusable.
+
+The outer parent frame encloses the complete initial fragment transaction:
+child parsing, contribution capture, initial merge validation/commit, and handle
+creation. A failed initial merge does not promote that parent to the legacy
+last-successful document view. Previous metadata/assets object identities remain
+visible, no usable fragment is returned, and a later valid call can recover.

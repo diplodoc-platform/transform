@@ -53,6 +53,40 @@ if (process.argv.includes('--native13')) {
         assert.deepEqual(native.meta, {name: 'C'});
         assert.equal(new Set(environments).size, 3);
     }
+    for (const api of [common, esm]) {
+        const native = new MarkdownIt().use(meta);
+        native.core.ruler.push('merge-resources', (state) => {
+            state.env.assets = [state.src === 'child' ? '/child.png' : '/A.png'];
+            if (state.src === 'child') state.env.meta.script = ['/child.js'];
+        });
+        native.render('---\nname: A\n---\nA');
+        const previousMeta = native.meta;
+        const previousAssets = native.assets;
+        const invalid = api.createDocumentEnv();
+        invalid.meta = {script: 'invalid'};
+        let failed;
+        assert.throws(() => {
+            failed = api.parseDocumentFragmentResult(native, 'child', invalid, {
+                purpose: 'include',
+            });
+        }, /meta.script/);
+        assert.equal(failed, undefined);
+        assert.equal(native.meta, previousMeta);
+        assert.equal(native.assets, previousAssets);
+        assert.deepEqual(native.meta, {name: 'A'});
+        assert.deepEqual(native.assets, ['/A.png']);
+        assert.deepEqual(invalid.meta, {script: 'invalid'});
+        assert.equal(invalid.assets, undefined);
+        const valid = api.createDocumentEnv();
+        const fragment = api.parseDocumentFragmentResult(native, 'child', valid, {
+            purpose: 'include',
+        });
+        assert.equal(fragment.tokens.length, 3);
+        assert.equal(native.meta, valid.meta);
+        assert.equal(native.assets, valid.assets);
+        assert.deepEqual(valid.meta, {script: ['/child.js']});
+        assert.deepEqual(valid.assets, ['/child.png']);
+    }
 } else {
     const factories = [
         require('@diplodoc/transform/parser'),
