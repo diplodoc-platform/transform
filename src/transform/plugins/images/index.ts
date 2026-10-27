@@ -3,6 +3,8 @@ import type {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
 import type {ImageOptions, StateCore} from '../../typings';
 import type {IDGenerator} from '../utils';
 import type {PluginConfig} from '../../svgo';
+import type {DeprecationDescriptor} from '../../deprecation';
+import type {SvgInlineOptions} from './options';
 
 import {join, sep} from 'path';
 import {bold} from 'chalk';
@@ -13,6 +15,16 @@ import {filterTokens, getSrcTokenAttr, isExternalHref} from '../../utils';
 import {generateID as globalGenerateID} from '../utils';
 import {optimize} from '../../svgo';
 import {getLogger} from '../../log';
+import {createDeprecationReporter} from '../../deprecation';
+
+import {normalizeSvgInline} from './options';
+
+const INLINE_SVG_DEPRECATION: DeprecationDescriptor = {
+    code: 'TRANSFORM_INLINE_SVG',
+    feature: 'The inlineSvg option',
+    replacement: 'svgInline.enabled',
+    removal: {version: '6.0.0'},
+};
 
 const SVG_ENTITY_LIMIT_HINT =
     'To inline this SVG, set svgMaxEntityCount in Transform or content.svgMaxEntityCount / --svg-max-entity-count in CLI.';
@@ -37,7 +49,6 @@ const sanitizeHTMLAttr = (value: string): string => {
 
 interface ImageOpts extends MarkdownItPluginOpts {
     assetsPublicPath: string;
-    inlineSvg?: boolean;
 }
 
 function replaceImageSrc(
@@ -59,15 +70,9 @@ function replaceImageSrc(
     return publicSrc.replace(/\\/g, '/');
 }
 
-interface InlineOptions {
-    enabled: boolean;
-    maxFileSize: number;
-}
-
 interface SVGOpts extends MarkdownItPluginOpts {
     notFoundCb: (s: string) => void;
     imageOpts: ImageOptions;
-    svgInline: InlineOptions;
 }
 
 function getSvgContent(file: string, from: string, {rawContent, notFoundCb, log, root = ''}: Opts) {
@@ -112,7 +117,7 @@ type Opts = SVGOpts &
         file: string;
     };
 
-function shouldBeInlined(token: Token, opts: InlineOptions) {
+function shouldBeInlined(token: Token, opts: Required<SvgInlineOptions>) {
     if (!token.attrGet('src')?.endsWith('.svg')) {
         return false;
     }
@@ -227,13 +232,8 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
         calcPath = resolveRelativePath,
         replaceImageSrc: replaceImage = replaceImageSrc,
     } = opts;
-    // TODO:goldserg need remove support opts.inlineSvg
-    if (opts.inlineSvg !== undefined) {
-        opts.svgInline = {
-            ...opts.svgInline,
-            enabled: opts.inlineSvg,
-        };
-    }
+    const svgInline = normalizeSvgInline(opts);
+    const deprecations = opts.deprecations ?? createDeprecationReporter(opts);
     md.assets = [];
 
     function processImageToken(
@@ -263,13 +263,13 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
 
         const file = calcPath(from, imgSrc);
 
-        if (shouldBeInlined(image, opts.svgInline)) {
+        if (shouldBeInlined(image, svgInline)) {
             const svgContent = getSvgContent(file, from, {...opts, rawContent});
             if (svgContent) {
-                if (svgContent.length > opts.svgInline.maxFileSize && !forceInlineSvg) {
+                if (svgContent.length > svgInline.maxFileSize && !forceInlineSvg) {
                     image.attrSet(
                         'YFM011',
-                        `Svg size: ${svgContent.length}; Config size: ${opts.svgInline.maxFileSize}; Src: ${bold(file)}`,
+                        `Svg size: ${svgContent.length}; Config size: ${svgInline.maxFileSize}; Src: ${bold(file)}`,
                     );
                 } else {
                     const inlinedSvg = replaceSvgContent(
@@ -301,6 +301,13 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
     }
 
     const plugin = (state: StateCore) => {
+        if (opts.inlineSvg !== undefined) {
+            deprecations.warn(INLINE_SVG_DEPRECATION, {
+                option: 'inlineSvg',
+                ...(opts.path ? {location: {path: opts.path}} : {}),
+            });
+        }
+
         filterTokens(state.tokens, 'inline', (inline, {commented}) => {
             if (commented || !inline.children) {
                 return;

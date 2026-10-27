@@ -5,6 +5,7 @@ import type DefaultStateCore from 'markdown-it/lib/rules_core/state_core';
 import type {SanitizeFunction, SanitizeOptions} from './sanitize';
 import type {LogConsumer, LogLevels, Logger} from './log';
 import type {CompatibilityPolicy, DeprecationReporter} from './deprecation';
+import type {SvgInlineOptions} from './plugins/images/options';
 import type {ChangelogItem} from './plugins/changelog/types';
 import type {IDGenerator} from './plugins/utils';
 import type {VisibilityMode} from './plugins/visibility';
@@ -99,10 +100,9 @@ export interface OptionsType {
     [x: string]: unknown;
     /** Override SVGO's XML entity limit for SVG inlining. Omit to use its default. */
     svgMaxEntityCount?: number;
-    svgInline?: {
-        enabled: boolean;
-        maxFileSize: number;
-    };
+    /** @deprecated Use svgInline.enabled. Scheduled for removal in Transform 6. */
+    inlineSvg?: boolean;
+    svgInline?: SvgInlineOptions;
     rawContent?: (path: string, assets: Record<string, string | boolean>) => string | boolean;
     calcPath?: (root: string, path: string) => string;
     replaceImageSrc?: (
@@ -168,10 +168,9 @@ export interface MarkdownItPluginOpts {
     skipLinkFileCheck?: boolean;
     /** Override SVGO's XML entity limit for SVG inlining. Omit to use its default. */
     svgMaxEntityCount?: number;
-    svgInline?: {
-        enabled: boolean;
-        maxFileSize: number;
-    };
+    /** @deprecated Use svgInline.enabled. Scheduled for removal in Transform 6. */
+    inlineSvg?: boolean;
+    svgInline?: SvgInlineOptions;
     /**
      * When true, term definitions continue past blank lines until the next
      * `[*key]:` or end of block. Designed for documents where all term
