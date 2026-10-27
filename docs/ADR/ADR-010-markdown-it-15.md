@@ -1,6 +1,6 @@
 # ADR-010: markdown-it 15 and public parser APIs
 
-Status: implementation candidate; companion releases and consumer validation are release gates.
+Status: implementation candidate; registry RC integration is verified, while consumer and release validation remain gates.
 
 ## Decision
 
@@ -90,13 +90,22 @@ markdown-it 13 parsing edge cases. See the
 
 ## Release and validation gates
 
-The published file extension currently peers on markdown-it 13, and the published
-tabs extension imports `markdown-it/lib/token` at runtime. A package with those
-unmodified releases cannot claim a clean supported installation with parser 15.
-Companion file, tabs, and directive adaptations must be reviewed and released,
-and Transform's registry manifest/lock must resolve their compatible versions.
-Temporary local companion tarballs can establish candidate behavior, but do not
-satisfy a published-package or registry-install release gate.
+The stable file extension still peers on markdown-it 13, and stable tabs import
+`markdown-it/lib/token` at runtime. Transform's integration candidate therefore
+pins the reviewed registry prereleases exactly:
+
+- `@diplodoc/file-extension`: `0.2.7-transform5.0`;
+- `@diplodoc/tabs-extension`: `3.10.8-transform5.0`;
+- `@diplodoc/utils`: `2.3.7-transform5.0`.
+
+The RC tarballs were verified against the reviewed bytes in the npm registry;
+tabs also depends on the exact utils RC in production. The registry manifest and
+npm-generated lock use these versions without local paths, overrides, or peer
+suppression. Clean standalone installation is checked against the registry.
+Stable `latest` tags remain unchanged. Earlier local companion fixtures establish
+candidate behavior only; the registry RC installation and package checks are
+separate evidence. Nested older parsers from legacy lint and directive packages
+remain allowed until their own migration is agreed.
 
 Required validation:
 
