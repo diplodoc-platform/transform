@@ -375,7 +375,9 @@ const yfmTable = (md: MarkdownIt, opts: YfmTablePluginOptions & TableContext = {
                         rowTokens[rowTokens.length - 1],
                         reporter,
                         {
-                            path: state.env.path ?? opts.path ?? '<input>',
+                            path:
+                                [state.env.path, opts.path].find((path) => path?.trim()) ??
+                                '<input>',
                             line: begin.line + 1,
                             column: begin.pos - state.bMarks[begin.line] + 1,
                         },

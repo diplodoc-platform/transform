@@ -1,4 +1,5 @@
 import type {YfmTablePluginOptions} from '../../src/transform/plugins/table/types';
+import type {MarkdownIt as MarkdownItParser} from '../../src/transform/typings';
 
 import MarkdownIt from 'markdown-it';
 import {describe, expect, it, vi} from 'vitest';
@@ -51,6 +52,52 @@ describe('Transform 5 inline-code table default', () => {
 });
 
 describe('scoped table alignment warnings', () => {
+    it.each([undefined, '', '   '])('renders legacy alignment with path %j', (path) => {
+        log.clear();
+        const warn = vi.fn();
+        const result = transform(wrap('A {.cell-align-center}'), {
+            disableLiquid: true,
+            path,
+            log: {warn, info() {}, error() {}},
+        });
+        expect(result.result.html).toContain('class="cell-align-center"');
+        expect(result.result.html).toContain('A');
+        expect(warn).toHaveBeenCalledOnce();
+        expect(warn.mock.calls[0][0]).toContain('TABLE_CELL_ALIGN_CLASS');
+        expect(warn.mock.calls[0][0]).toContain('<input>:2:3');
+        expect(result.logs.warn).toHaveLength(1);
+    });
+
+    it.each([
+        ['', ' guide.md ', ' guide.md '],
+        ['   ', 'guide.md', 'guide.md'],
+        [' source.md ', 'guide.md', ' source.md '],
+    ])('labels env path %j without changing source paths', (envPath, path, label) => {
+        const warn = vi.fn();
+        let readPath: (() => unknown) | undefined;
+        const options = {
+            disableLiquid: true,
+            path,
+            plugins: [
+                (md: MarkdownItParser) => {
+                    md.core.ruler.before('block', 'test_source_path', (state) => {
+                        state.env.path = envPath;
+                        readPath = () => state.env.path;
+                    });
+                },
+                table,
+            ],
+            log: {warn, info() {}, error() {}},
+        };
+        const result = transform(wrap('A {.cell-align-center}'), options);
+        expect(result.result.html).toContain('class="cell-align-center"');
+        expect(result.result.html).toContain('A');
+        expect(warn).toHaveBeenCalledOnce();
+        expect(warn.mock.calls[0][0]).toContain(`${label}:2:3`);
+        expect(readPath?.()).toBe(envPath);
+        expect(options.path).toBe(path);
+    });
+
     it('identifies separate source cells and reaches caller and collected diagnostics', () => {
         const warn = vi.fn();
         const source = '#|\n|| A {.cell-align-center} | B {.cell-align-top-left} ||\n|#';
