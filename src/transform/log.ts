@@ -63,6 +63,22 @@ export default log;
 export type LogConsumer = Pick<Logger, LogLevels.INFO | LogLevels.WARN | LogLevels.ERROR>;
 
 const externalLoggers = new WeakMap<LogConsumer, Logger>();
+const externalConsumers = new WeakMap<LogConsumer, LogConsumer>();
+
+/**
+ * Forward a warning whose deduplication is owned by an explicit caller scope.
+ *
+ * @param message - Formatted warning to retain and forward.
+ * @param consumer - Optional embedding logger, including a normalized adapter.
+ * @returns Nothing. Generic logger warning deduplication is unaffected.
+ */
+export function warnInScope(message: string, consumer?: LogConsumer): void {
+    log.warn(message);
+
+    if (consumer && consumer !== log) {
+        (externalConsumers.get(consumer) ?? consumer).warn(message);
+    }
+}
 
 /**
  * Preserve collected diagnostics and forward messages to the caller's logger.
@@ -103,5 +119,6 @@ export function getLogger(consumer?: LogConsumer): Logger {
     externalLoggers.set(consumer, logger);
     // Passing a normalized logger through another helper must not wrap it again.
     externalLoggers.set(logger, logger);
+    externalConsumers.set(logger, consumer);
     return logger;
 }
