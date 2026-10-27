@@ -152,6 +152,16 @@
         "default": "./api/plugin-configuration.cjs"
       }
     },
+    "./migrations/table-alignment": {
+      "import": {
+        "types": "./api/migrations/table-alignment.d.mts",
+        "default": "./api/migrations/table-alignment.mjs"
+      },
+      "require": {
+        "types": "./api/migrations/table-alignment.d.cts",
+        "default": "./api/migrations/table-alignment.cjs"
+      }
+    },
     "./highlighter": {
       "import": {
         "types": "./api/highlighter.d.mts",

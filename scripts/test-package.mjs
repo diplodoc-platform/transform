@@ -16,6 +16,7 @@ import {dirname, join} from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 
 import {verifyHighlighterGraph} from './test-highlighter-graph.mjs';
+import {verifyTableAlignmentGraph} from './test-table-alignment-graph.mjs';
 
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const temporaryRoot = realpathSync(mkdtempSync(join(tmpdir(), 'diplodoc-svgo-package-')));
@@ -162,6 +163,14 @@ assert.match(transform('Static ESM', defineTransformOptions()).result.html, /Sta
         cwd: consumerRoot,
         stdio: 'inherit',
     });
+    copyFileSync(
+        join(projectRoot, 'scripts/table-alignment-package-consumer.mjs'),
+        join(consumerRoot, 'table-alignment-consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'table-alignment-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
     const consumerRequire = createRequire(join(consumerRoot, 'package.json'));
     assert.throws(() => consumerRequire.resolve('svgo'), {code: 'MODULE_NOT_FOUND'});
     assert.throws(() => consumerRequire.resolve('highlight.js'), {code: 'MODULE_NOT_FOUND'});
@@ -265,6 +274,17 @@ void mappedOutput; void sourceMap; void invalidOutput;
         writeFileSync(path, `${readFileSync(path, 'utf8')}\n${legacyEngineTypes}`);
     }
     const configurationTypes = `
+import {migrateTableAlignment, type TableAlignmentMigrationResult, type YfmTablePluginOptions} from '@diplodoc/transform/migrations/table-alignment';
+const tableOptions: YfmTablePluginOptions = {table_ignoreSplittersInInlineCode: false};
+const migration: TableAlignmentMigrationResult = migrateTableAlignment('', {path: 'guide.md', table: tableOptions});
+const migratedSource: string = migration.output;
+// @ts-expect-error Existing splitter options retain boolean types.
+migrateTableAlignment('', {table: {table_ignoreSplittersInInlineCode: 'false'}});
+// @ts-expect-error Migrator options have no plugin execution hook.
+migrateTableAlignment('', {plugins: []});
+// @ts-expect-error Migration remains synchronous.
+const promisedMigration: Promise<TableAlignmentMigrationResult> = migrateTableAlignment('');
+void migratedSource; void promisedMigration;
 import {type Highlighter, type HighlightJsLegacyApi, createHighlightJsHighlighter} from '@diplodoc/transform/highlighter';
 const callback: Highlighter = () => ({html: '', classes: ['custom']});
 transform('code', configuration.defineTransformOptions({core: {highlighter: callback}}));
@@ -456,6 +476,7 @@ assert.match(html, /hljs-keyword/);
     // retain their split contents rather than silently resolving to the full runtime.
     const {buildSync} = projectRequire('esbuild');
     verifyHighlighterGraph(consumerRoot, buildSync);
+    verifyTableAlignmentGraph(consumerRoot, buildSync);
     const {JSDOM} = projectRequire('jsdom');
     for (const variant of ['', '/base', '/yfm-only', '/print']) {
         const result = buildSync({
