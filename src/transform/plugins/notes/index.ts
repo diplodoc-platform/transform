@@ -1,5 +1,5 @@
-import type StateCore from 'markdown-it/lib/rules_core/state_core';
-import type Token from 'markdown-it/lib/token';
+import type {StateCore} from '../../typings';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {MarkdownItPluginCb} from '../typings';
 import type {MatchTokenFunction} from '../utils';
 

@@ -1,4 +1,4 @@
-import type Token from 'markdown-it/lib/token';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {Logger} from '../../log';
 import type {CacheContext, StateCore} from '../../typings';
 import type {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
@@ -104,7 +104,7 @@ interface ProcOpts extends MarkdownItPluginOpts {
     transformLink: (v: string) => string;
     notFoundCb: (v: string) => void;
     needSkipLinkFn: (v: string) => boolean;
-    getPublicPath: (options: ProcOpts, v?: string) => string;
+    getPublicPath?: (options: ProcOpts, v?: string) => string;
 }
 
 function getDefaultPublicPath(
@@ -229,7 +229,7 @@ function processLink(
     linkToken.attrSet('href', linkHrefTransformer(patchedHref));
 }
 
-const index: MarkdownItPluginCb<ProcOpts & Options> = (md: MarkdownItIncluded, opts) => {
+const index: MarkdownItPluginCb<ProcOpts> = (md: MarkdownItIncluded, opts) => {
     const plugin = (state: StateCore) => {
         const tokens = state.tokens;
         let i = 0;
@@ -243,7 +243,7 @@ const index: MarkdownItPluginCb<ProcOpts & Options> = (md: MarkdownItIncluded, o
                     const token = childrenTokens[j];
 
                     const isLinkOpenToken = token.type === 'link_open';
-                    const tokenClass = token.attrGet('class');
+                    const tokenClass = String(token.attrGet('class') ?? '');
 
                     /*  Don't process anchor links */
                     const isYfmAnchor = tokenClass ? tokenClass.includes('yfm-anchor') : false;

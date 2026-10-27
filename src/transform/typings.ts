@@ -1,7 +1,12 @@
 import type {LanguageFn} from 'highlight.js';
-import type {Token} from 'markdown-it';
-import type DefaultMarkdownIt from 'markdown-it';
-import type DefaultStateCore from 'markdown-it/lib/rules_core/state_core';
+import type {
+    MarkdownIt as DefaultMarkdownIt,
+    StateBlock as DefaultStateBlock,
+    StateCore as DefaultStateCore,
+    StateInline as DefaultStateInline,
+    Env,
+    Token,
+} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {SanitizeFunction, SanitizeOptions} from './sanitize';
 import type {LogConsumer, LogLevels, Logger} from './log';
 import type {CompatibilityPolicy, DeprecationReporter} from './deprecation';
@@ -17,6 +22,23 @@ export interface MarkdownIt extends DefaultMarkdownIt {
 
 export interface StateCore extends DefaultStateCore {
     md: MarkdownIt;
+    env: ParserEnv;
+}
+
+export interface ParserEnv extends Env {
+    path?: string;
+    includes?: string[];
+    terms?: Record<string, string>;
+    changelogs?: ChangelogItem[];
+    additionalOptionsCssWhiteList?: CssWhiteList;
+}
+
+export interface StateInline extends DefaultStateInline {
+    env: ParserEnv;
+}
+
+export interface StateBlock extends DefaultStateBlock {
+    env: ParserEnv;
 }
 
 export interface CacheContext {

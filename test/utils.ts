@@ -1,8 +1,7 @@
 /* eslint-disable no-implicit-globals */
-import type StateCore from 'markdown-it/lib/rules_core/state_core';
+import type {StateCore, Token} from 'markdown-it';
 import type {MarkdownItPluginCb, MarkdownItPluginOpts} from '../src/transform/plugins/typings';
 
-import Token from 'markdown-it/lib/token';
 import MarkdownIt from 'markdown-it';
 
 import {log} from '../src/transform/log';
@@ -26,7 +25,7 @@ export function callPlugin<T extends {} = {}>(
     const state = {
         tokens,
         env: {},
-        Token,
+        Token: MarkdownIt.Token,
         md,
     } as StateCore;
 
@@ -38,7 +37,7 @@ export function callPlugin<T extends {} = {}>(
                     cb(state),
             },
         },
-    } as MarkdownIt;
+    } as InstanceType<typeof MarkdownIt>;
 
     plugin(
         fakeMd,

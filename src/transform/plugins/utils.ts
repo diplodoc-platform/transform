@@ -1,4 +1,4 @@
-import type Token from 'markdown-it/lib/token';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {Logger} from '../log';
 
 import {bold} from 'chalk';
@@ -51,11 +51,7 @@ export function generateID(prefix?: string): string {
     return `${prefix}-${Math.random().toString(36).substr(2, 8)}`;
 }
 
-export function append<T extends Record<string, []>, Key extends keyof T>(
-    target: T,
-    key: Key,
-    ...values: T[Key]
-) {
+export function append<T>(target: Record<string, T[]>, key: string, ...values: T[]) {
     if (!target[key]) {
         target[key] = values;
 

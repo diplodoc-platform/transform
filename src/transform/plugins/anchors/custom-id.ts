@@ -2,7 +2,7 @@
 // Utils for working with custom ids in heading tokens
 //
 
-import type {Token} from 'markdown-it';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 
 import escapeRegExp from 'lodash/escapeRegExp';
 

@@ -1,4 +1,4 @@
-import type Token from 'markdown-it/lib/token';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
 import type {ImageOptions, StateCore} from '../../typings';
 import type {IDGenerator} from '../utils';
@@ -118,7 +118,7 @@ type Opts = SVGOpts &
     };
 
 function shouldBeInlined(token: Token, opts: Required<SvgInlineOptions>) {
-    if (!token.attrGet('src')?.endsWith('.svg')) {
+    if (!String(token.attrGet('src') ?? '').endsWith('.svg')) {
         return false;
     }
 
@@ -169,7 +169,8 @@ function collectDataAttrs(
         return result;
     }
 
-    for (const [key, value] of image.attrs) {
+    for (const [key, attr] of image.attrs) {
+        const value = String(attr);
         if (key === 'gallery' && isGalleryValid(value)) {
             result['data-gallery'] = value;
             continue;
@@ -198,7 +199,7 @@ function collectDataAttrs(
         if (
             key.startsWith('data-') &&
             key !== 'data-gallery-src' &&
-            (key !== 'data-gallery-id' || value !== '') &&
+            (key !== 'data-gallery-id' || attr !== '') &&
             (key !== 'data-gallery' || isGalleryValid(value))
         ) {
             result[key] = value;
@@ -206,13 +207,13 @@ function collectDataAttrs(
     }
 
     image.attrs = image.attrs.filter(
-        ([key, value]) =>
+        ([key, attr]) =>
             key !== 'gallery' &&
             key !== 'gallery-id' &&
             key !== 'gallery-src' &&
-            (key !== 'data-gallery' || isGalleryValid(value)) &&
-            (key !== 'data-gallery-id' || value !== '') &&
-            (key !== 'data-gallery-src' || value !== ''),
+            (key !== 'data-gallery' || isGalleryValid(String(attr))) &&
+            (key !== 'data-gallery-id' || attr !== '') &&
+            (key !== 'data-gallery-src' || attr !== ''),
     );
 
     if (result['data-gallery-id']) {
@@ -255,9 +256,9 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
         const dataAttrs = collectDataAttrs(image, state, from, calcPath, replaceImage, opts);
         const forceInlineSvg = image.attrGet('inline') === 'true';
         const imageOpts = {
-            width: image.attrGet('width'),
-            height: image.attrGet('height'),
-            title: image.attrGet('title'),
+            width: image.attrGet('width')?.toString(),
+            height: image.attrGet('height')?.toString(),
+            title: image.attrGet('title')?.toString(),
             dataAttrs,
         };
 
@@ -330,7 +331,7 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
     md.renderer.rules.image_svg = (tokens, index) => {
         const token = tokens[index];
 
-        return token.attrGet('content') || '';
+        return String(token.attrGet('content') ?? '');
     };
 };
 

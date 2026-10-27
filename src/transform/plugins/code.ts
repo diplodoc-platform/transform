@@ -3,7 +3,7 @@
 import type {MarkdownItPluginCb} from './typings';
 import type {IDGenerator} from './utils';
 
-import {escapeHtml} from 'markdown-it/lib/common/utils';
+import {escapeHtml} from '../markdown-it-utils';
 
 import {generateID as globalGenerateID} from './utils';
 
@@ -86,14 +86,11 @@ const wrapInFloatingContainer = (
 `;
 };
 
-interface EnvTerm {
-    terms: {
-        [keys: string]: string;
-    };
-}
-
-function buildTermRegExp(env: EnvTerm, escape: (str: string) => string): RegExp | null {
-    const termKeys = Object.keys(env.terms);
+function buildTermRegExp(
+    terms: Record<string, string>,
+    escape: (str: string) => string,
+): RegExp | null {
+    const termKeys = Object.keys(terms);
     if (!termKeys.length) {
         return null;
     }
@@ -441,7 +438,9 @@ const code: MarkdownItPluginCb<CodeOptions> = (md, opts) => {
         // Swap term references for placeholders BEFORE highlighting so that
         // language grammars cannot split `[title](*key)` into several spans.
         // The placeholders are restored after the HTML is rendered.
-        const termRE = env?.terms ? buildTermRegExp(env, md.utils.escapeRE) : null;
+        const termRE = env?.terms
+            ? buildTermRegExp((env as {terms: Record<string, string>}).terms, md.utils.escapeRE)
+            : null;
         const termPlaceholders = termRE
             ? replaceTermsWithPlaceholders(token.content, termRE, generateID)
             : null;

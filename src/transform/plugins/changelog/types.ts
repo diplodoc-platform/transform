@@ -1,9 +1,9 @@
 export interface ChangelogItem {
     title: string;
-    image: {
+    image?: {
         src: string;
         alt: string;
-        ratio?: string;
+        ratio?: number;
     };
     description: string;
     [x: string]: unknown;

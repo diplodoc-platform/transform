@@ -1,5 +1,5 @@
-import type {Delimiter} from 'markdown-it/lib/rules_inline/state_inline';
-import type StateInline from 'markdown-it/lib/rules_inline/state_inline';
+import type {Delimiter} from 'markdown-it' with {'resolution-mode': 'import'};
+import type {StateInline} from '../typings';
 import type {MarkdownItPluginCb} from './typings';
 
 const monospace: MarkdownItPluginCb = (md) => {

@@ -1,5 +1,5 @@
 import type {EnvType, MarkdownIt, MarkdownItPluginOpts, OptionsType} from './typings';
-import type Token from 'markdown-it/lib/token';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 
 import DefaultMarkdownIt from 'markdown-it';
 import attrs from 'markdown-it-attrs';
@@ -19,6 +19,12 @@ import inlineSvgMarker from './plugins/inline-svg-marker';
 import {DEFAULT_LANG} from './constants';
 import {createIDGeneratorByStrategy} from './plugins/utils';
 
+// The attrs 4.3 declarations omit the options supported by the pinned runtime.
+const applyAttrs = attrs as (
+    md: MarkdownIt,
+    options: {leftDelimiter: string; rightDelimiter: string},
+) => void;
+
 function initMarkdownIt(options: OptionsType) {
     const {
         allowHTML = false,
@@ -30,6 +36,9 @@ function initMarkdownIt(options: OptionsType) {
 
     const highlight = makeHighlight(highlightLangs);
     const md = new DefaultMarkdownIt({html: allowHTML, linkify, highlight, breaks}) as MarkdownIt;
+
+    // Keep Transform's established linkify behavior when using linkify-it 6.
+    md.linkify.set({fuzzyLink: true, fuzzyEmail: true, urlAuth: true});
 
     if (disableRules?.length) {
         md.disable(disableRules);
@@ -116,11 +125,11 @@ function initPlugins(md: MarkdownIt, options: OptionsType, pluginOptions: Markdo
     // TODO: set enableMarkdownAttrs to false by default in next major
     if (enableMarkdownAttrs !== false) {
         // Need for ids of headers
-        md.use(attrs, {leftDelimiter, rightDelimiter});
+        md.use(applyAttrs, {leftDelimiter, rightDelimiter});
     }
 
-    md.use(olAttrConversion);
-    md.use(inlineSvgMarker);
+    md.use(olAttrConversion, pluginOptions);
+    md.use(inlineSvgMarker, pluginOptions);
 
     md.use(linkifyStrikethrough);
     plugins.forEach((plugin) => md.use(plugin, pluginOptions));
