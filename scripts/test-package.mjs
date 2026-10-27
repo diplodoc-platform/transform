@@ -264,6 +264,41 @@ void mappedOutput; void sourceMap; void invalidOutput;
         const path = join(consumerRoot, file);
         writeFileSync(path, `${readFileSync(path, 'utf8')}\n${legacyEngineTypes}`);
     }
+    copyFileSync(
+        join(projectRoot, 'scripts/document-package-consumer.mjs'),
+        join(consumerRoot, 'document-consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'document-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
+    const documentTypes = `
+import {createDocumentEnv, type DocumentEnv, type ParsedDocument} from '@diplodoc/transform/document';
+declare module '@diplodoc/transform/types' {
+    interface ParserEnv {requestLabel?: string;}
+}
+const documents = DOCUMENT_FACTORY({});
+const firstDocument: ParsedDocument = documents.parseDocument('A', (env) => {env.requestLabel = 'A';});
+const secondDocument = documents.parseDocument('B');
+const typedLabel: string | undefined = firstDocument.env.requestLabel;
+const plainEnv: DocumentEnv = createDocumentEnv();
+documents.compile(firstDocument.tokens.slice(), firstDocument);
+documents.compileDocument(secondDocument);
+// @ts-expect-error Core title remains a string.
+plainEnv.title = 42;
+// @ts-expect-error Augmented custom fields keep their declared type.
+plainEnv.requestLabel = 42;
+// @ts-expect-error Path may be absent on ordinary transforms.
+const pathIsNotGuaranteed: string = plainEnv.path;
+void typedLabel; void pathIsNotGuaranteed;
+`;
+    for (const file of ['consumer.cts', 'consumer.mts']) {
+        const path = join(consumerRoot, file);
+        writeFileSync(
+            path,
+            `${readFileSync(path, 'utf8')}\n${documentTypes.replace('DOCUMENT_FACTORY', file.endsWith('.cts') ? 'init' : 'parser')}`,
+        );
+    }
     const configurationTypes = `
 import {type Highlighter, type HighlightJsLegacyApi, createHighlightJsHighlighter} from '@diplodoc/transform/highlighter';
 const callback: Highlighter = () => ({html: '', classes: ['custom']});
@@ -355,6 +390,69 @@ custom({label: 'typed', unknown: true});
             {stdio: 'inherit'},
         );
     }
+
+    // Translation currently owns native MarkdownIt 13: validate its honest structural writer boundary.
+    const native13 = join(temporaryRoot, 'native13');
+    mkdirSync(native13);
+    writeFileSync(
+        join(native13, 'package.json'),
+        JSON.stringify({
+            private: true,
+            dependencies: {
+                '@diplodoc/transform': `file:${join(temporaryRoot, packed[0].filename)}`,
+                'markdown-it': '13.0.2',
+                '@types/markdown-it': '13.0.9',
+                '@types/node': manifest.devDependencies['@types/node'],
+            },
+        }),
+    );
+    execFileSync(
+        process.execPath,
+        [process.env.npm_execpath, 'install', '--ignore-scripts', '--no-audit', '--no-fund'],
+        {cwd: native13, stdio: 'inherit'},
+    );
+    copyFileSync(
+        join(projectRoot, 'scripts/document-package-consumer.mjs'),
+        join(native13, 'document-consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(native13, 'document-consumer.mjs'), '--native13'], {
+        cwd: native13,
+        stdio: 'inherit',
+    });
+    writeFileSync(
+        join(native13, 'consumer.cts'),
+        `
+import MarkdownIt = require('markdown-it');
+import {envMeta} from '@diplodoc/transform/document';
+import {createDocumentEnv} from '@diplodoc/transform/document';
+const md = new MarkdownIt().use(envMeta);
+const env = createDocumentEnv();
+md.render('---\\nname: A\\n---\\nbody', env);
+const name: unknown = env.meta?.name;
+void name;
+`,
+    );
+    writeFileSync(
+        join(native13, 'tsconfig.json'),
+        JSON.stringify({
+            compilerOptions: {
+                target: 'ES2022',
+                module: 'Node16',
+                moduleResolution: 'Node16',
+                strict: true,
+                noEmit: true,
+                skipLibCheck: false,
+                esModuleInterop: false,
+                ignoreDeprecations: '6.0',
+            },
+            files: ['consumer.cts'],
+        }),
+    );
+    execFileSync(
+        process.execPath,
+        [projectRequire.resolve('typescript/lib/tsc.js'), '-p', native13],
+        {stdio: 'inherit'},
+    );
 
     writeFileSync(
         join(consumerRoot, 'with-highlighter.mts'),

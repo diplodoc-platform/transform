@@ -1,6 +1,7 @@
 import type {MarkdownItPreprocessorCb} from '../../typings';
 import type {MarkdownItIncluded} from '../../plugins/includes/types';
 
+import {getDocumentEnv} from '../../document-context';
 import {getFullIncludePath} from '../../utilsFS';
 
 const INCLUDE_REGEXP = /^\s*{%\s*included\s*\((.+?)\)\s*%}\s*$/;
@@ -53,9 +54,8 @@ const preprocessLine = (
 
     // No included cache for lint mode
     if (hasIncludedCache) {
-        if (!md.included) {
-            md.included = {};
-        }
+        const env = getDocumentEnv(md);
+        env.included ??= {};
 
         // Normalize the path to absolute
         let includePath = getFullIncludePath(includePaths[0], root, path);
@@ -65,7 +65,7 @@ const preprocessLine = (
         }
 
         // Store the included content
-        md.included[includePath] = data.join('\n');
+        env.included[includePath] = data.join('\n');
     }
 
     // Remove the content of the included file

@@ -88,8 +88,10 @@ describe('retained bundled engines', () => {
                 log: logger,
                 path: 'guide.md',
                 plugins: [
-                    (_md, options) => {
-                        liquidDocument('plain', {}, options.path, options);
+                    (md, options) => {
+                        md.core.ruler.push('same-source-liquid', () => {
+                            liquidDocument('plain', {}, options.path, options);
+                        });
                     },
                 ],
             },

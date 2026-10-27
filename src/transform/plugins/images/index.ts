@@ -10,6 +10,7 @@ import {join, sep} from 'path';
 import {bold} from 'chalk';
 import {readFileSync} from 'fs';
 
+import {initializeDocumentField} from '../../document-context';
 import {isFileExists, resolveRelativePath} from '../../utilsFS';
 import {filterTokens, getSrcTokenAttr, isExternalHref} from '../../utils';
 import {generateID as globalGenerateID} from '../utils';
@@ -60,7 +61,7 @@ function replaceImageSrc(
     {assetsPublicPath = sep, root = '', log}: ImageOpts,
 ) {
     if (isFileExists(path)) {
-        state.md.assets?.push(imgSrc);
+        state.env.assets?.push(imgSrc);
     } else {
         log.error(`Asset not found: ${bold(imgSrc)} in ${bold(currentPath)}`);
     }
@@ -238,7 +239,7 @@ const index = (md: MarkdownIt, opts: Opts) => {
     } = opts;
     const svgInline = normalizeSvgInline(opts);
     const deprecations = opts.deprecations ?? createDeprecationReporter(opts);
-    md.assets = [];
+    initializeDocumentField(md, 'assets');
 
     function processImageToken(
         image: Token,

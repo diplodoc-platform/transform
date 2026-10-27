@@ -11,6 +11,14 @@ import type {LogConsumer, LogLevels, Logger} from './log';
 import type {CompatibilityPolicy, DeprecationReporter} from './deprecation';
 import type {LegacyBuiltinOptions, PluginConfiguration} from './plugin-configuration';
 import type {Highlighter} from './highlighter';
+import type {DocumentMeta} from './document';
+export type {
+    DocumentEnv,
+    DocumentMeta,
+    DocumentParser,
+    ParsedDocument,
+    ChildParseOptions,
+} from './document';
 import type {SvgInlineOptions} from './plugins/images/options';
 import type {ChangelogItem} from './plugins/changelog/types';
 import type {IDGenerator} from './plugins/utils';
@@ -18,7 +26,8 @@ import type {VisibilityMode} from './plugins/visibility';
 
 export interface MarkdownIt extends DefaultMarkdownIt {
     assets?: string[];
-    meta?: string[];
+    meta?: DocumentMeta;
+    included?: Record<string, string>;
 }
 
 export interface StateCore extends DefaultStateCore {
@@ -27,6 +36,9 @@ export interface StateCore extends DefaultStateCore {
 }
 
 export interface ParserEnv extends Env {
+    meta?: DocumentMeta;
+    assets?: string[];
+    included?: Record<string, string>;
     path?: string;
     includes?: string[];
     terms?: Record<string, string>;
@@ -162,12 +174,11 @@ export interface OptionsType extends LegacyBuiltinOptions {
      */
     contentAudience?: VisibilityMode;
     /**
-     * Custom ID generator factory to use for this transform call.
-     * If provided, it will be called once per file to create a per-file isolated generator.
-     * If not provided, a new {@link IDGenerator} is created via {@link createIDGenerator}
-     * (deterministic per-file counters).
+     * Custom ID generator to use for this parser.
+     * If provided, this exact function is used for IDs and retains its caller-owned state.
+     * If not provided, Transform uses its default random ID generator.
      *
-     * Pass `() => () => Math.random().toString(36).substr(2, 8)` to restore legacy random behavior.
+     * Parser reuse does not reset or clone a supplied generator.
      */
     generateID?: IDGenerator;
 }

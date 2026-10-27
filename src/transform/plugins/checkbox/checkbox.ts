@@ -1,6 +1,8 @@
 import type {MarkdownIt, Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {StateCore} from '../../typings';
 
+import {nextCheckboxId} from '../../document-context';
+
 // eslint-disable-next-line no-useless-escape
 export const pattern = /^\[(X|\s|\_|\-)\]\s(.*)/i;
 export const CheckboxTokenType = {
@@ -46,7 +48,6 @@ export const checkboxReplace = function (
     _md: MarkdownIt,
     opts?: CheckboxOptions,
 ): (state: StateCore) => void {
-    let lastId = 0;
     const defaults: Required<CheckboxOptions> = {
         divClass: 'checkbox',
         idPrefix: 'checkbox',
@@ -70,8 +71,7 @@ export const checkboxReplace = function (
         /**
          * <input type="checkbox" id="checkbox{n}" checked="true">
          */
-        const id = options.idPrefix + lastId;
-        lastId += 1;
+        const id = options.idPrefix + nextCheckboxId(state.env);
         token = new state.Token(CheckboxTokenType.CheckboxInput, 'input', 0);
         token.block = true;
         token.map = [checkbox.startLine, checkbox.endLine];

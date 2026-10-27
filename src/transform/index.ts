@@ -47,14 +47,14 @@ function transform(originInput: string, options?: OptionsType): OutputType;
 function transform(originInput: string, options: OptionsType = {}): OutputType | Token[] {
     const deprecations = createDeprecationReporter(options);
     const input = applyLiquid(originInput, options, deprecations);
-    const {parse, compile, env} = initMarkdownIt(options, deprecations);
+    const {parseDocument, compileDocument} = initMarkdownIt(options, deprecations);
 
     try {
-        const tokens = parse(input);
+        const document = parseDocument(input);
         if (options.tokens === true) {
-            return tokens;
+            return document.tokens;
         }
-        return emitResult(compile(tokens), env);
+        return emitResult(compileDocument(document), document.env);
     } catch (error) {
         handleError(error, options.path);
     }

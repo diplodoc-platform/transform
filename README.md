@@ -297,7 +297,9 @@ import transform, {transform as namedTransform} from '@diplodoc/transform';
 
 The synchronous parser factory is available at `@diplodoc/transform/parser`,
 public types at `/types`, typed plugin configuration builders at `/configuration`,
-and plugins at `/plugins/<name>`. Browser assets have
+and plugins at `/plugins/<name>`. Document environment helpers are available at
+`/document`; see [parser reuse and context migration](docs/migrations/document-context.md).
+Browser assets have
 `/runtime`, `/runtime/base`, `/runtime/yfm-only`, and `/runtime/print` entries;
 styles use the equivalent `/styles` entries. Source SCSS is available through
 `/scss/*`. Existing `lib/*` and distribution imports remain compatibility aliases.

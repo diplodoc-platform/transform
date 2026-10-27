@@ -129,7 +129,7 @@ describe('deprecation scopes', () => {
 });
 
 describe('transform deprecation integration', () => {
-    test('shares one scope across plugin and preprocessor and forwards to the injected logger', () => {
+    test('separates installation and document scopes and forwards both to the injected logger', () => {
         const consumer = createConsumer();
         const customOption = {enabled: true};
         const plugin: MarkdownItPluginCb<{customOption: typeof customOption}> = (_md, options) => {
@@ -152,7 +152,8 @@ describe('transform deprecation integration', () => {
             ],
         });
 
-        expect(consumer.warn).toHaveBeenCalledOnce();
+        // Installation and document processing have independent occurrence scopes.
+        expect(consumer.warn).toHaveBeenCalledTimes(2);
         expect(output.logs.warn.join()).toContain('[DEPRECATED TEST_LEGACY_FEATURE]');
         expect(output.result.html).toBe('<p>text</p>\n');
     });
