@@ -2,7 +2,6 @@ import type {MarkdownIt, ParserEnv} from '../src/transform/typings';
 import type {ParsedDocumentFragment} from '../src/transform/document';
 
 import {resolve} from 'node:path';
-
 import {vi} from 'vitest';
 import NativeMarkdownIt from 'markdown-it';
 
