@@ -242,9 +242,13 @@ plugin. Empty presets still allow explicitly enabled builtin IDs.
   collision where representable. Use compiler diagnostics, not only runtime casts.
 - Runtime fixtures for all metadata errors, stable ordering, missing enabled
   dependencies, cycles, per-builtin settings isolation and configuration conflicts.
-- Build and install the actual tarball with exact compatible local companions;
+- Build and install the actual tarball with exact compatible registry companions;
   verify native imports/declarations and custom configuration from outside the
-  workspace. Record companion identities; do not commit local tarball paths.
+  workspace. Record companion versions and integrity values. Initial 2026-10-27
+  acceptance used isolated local tarballs; subsequent fresh registry-only
+  `npm ci` and installed-package checks passed with file `0.2.7-transform5.0`,
+  tabs `3.10.8-transform5.0`, and utils `2.3.7-transform5.0`, without local
+  overrides or peer resolution flags.
 - A real CLI migration fixture and representative custom extension must exercise
   this configuration. Passing transform-only mocks does not complete task 6937.
 
