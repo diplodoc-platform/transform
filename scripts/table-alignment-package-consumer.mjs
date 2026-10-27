@@ -28,11 +28,13 @@ try {
     assert.equal(nestedResult.output, nested);
     assert.deepEqual(nestedResult.edits, []);
     assert.equal(nestedResult.diagnostics[0]?.reason, 'nested-or-spanning-table');
-    const unclosed = '#|\n|| Text {.cell-align-center}';
-    const unclosedResult = esm.migrateTableAlignment(unclosed);
-    assert.equal(unclosedResult.output, unclosed);
-    assert.deepEqual(unclosedResult.edits, []);
-    assert.equal(unclosedResult.diagnostics[0]?.reason, 'unclosed-table');
+    for (const ending of ['', '\n', '\r\n']) {
+        const unclosed = '#|' + (ending || '\n') + '|| Text {.cell-align-center}' + ending;
+        const unclosedResult = esm.migrateTableAlignment(unclosed);
+        assert.equal(unclosedResult.output, unclosed);
+        assert.deepEqual(unclosedResult.edits, []);
+        assert.equal(unclosedResult.diagnostics[0]?.reason, 'unclosed-table');
+    }
     assert.deepEqual(forbidden, []);
     assert.equal(require('@diplodoc/transform/log').log.isEmpty(), true);
 } finally {

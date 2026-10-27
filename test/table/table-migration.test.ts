@@ -220,8 +220,8 @@ describe('pure table alignment migration', () => {
         expect(log.get()).toEqual(before);
     });
 
-    it('diagnoses an unfinished first row without inventing a rendered row', () => {
-        const source = '#|\n|| Text {.cell-align-center}';
+    it.each(['', '\n', '\r\n'])('diagnoses an unfinished first row with ending %j', (ending) => {
+        const source = '#|' + (ending || '\n') + '|| Text {.cell-align-center}' + ending;
         const result = migrateTableAlignment(source, {path: 'unfinished.md'});
         expect(result.output).toBe(source);
         expect(result.edits).toEqual([]);
@@ -231,6 +231,19 @@ describe('pure table alignment migration', () => {
             path: 'unfinished.md',
             line: 2,
         });
+    });
+
+    it('diagnoses a multiline final suffix followed by newline before the row delimiter', () => {
+        const source = '#|\n||\nText {.cell-align-center}\n||\n|#';
+        const result = migrateTableAlignment(source);
+        expect(result.output).toBe(source);
+        expect(result.edits).toEqual([]);
+        expect(result.diagnostics[0]).toMatchObject({reason: 'multiline-cell', line: 3});
+    });
+
+    it('does not invent a final suffix by masking a later code example in the same cell', () => {
+        const source = '#|\n||\nText {.cell-align-center}\n\n```md\nexample\n```\n||\n|#';
+        expect(migrateTableAlignment(source)).toEqual({output: source, edits: [], diagnostics: []});
     });
 
     it.each([

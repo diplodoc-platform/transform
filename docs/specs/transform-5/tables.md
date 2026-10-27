@@ -263,6 +263,9 @@ Check the original unmasked token stream for nested tables as well: a standard
 Markdown code mask must not hide an indented nested YFM table inside a real cell.
 Unfinished first-row cells have diagnostic-only source spans; they do not become
 rendered rows merely to find a detectable final legacy suffix in an unclosed table.
+Final LF/CRLF whitespace does not hide such a suffix. Identify suffixes in the
+original cell text and confirm they are outside protected source: masking a later
+code example must not make an earlier, nonfinal attribute group look eligible.
 
 An unsafe candidate cell stays byte-for-byte unchanged and gets a diagnostic at
 its original location; safe independent cells may still migrate. Nested/span

@@ -183,13 +183,29 @@ function createParser(options: TableAlignmentMigrationOptions, captures?: Captur
     return md;
 }
 
-function candidates(capture: CapturedTable, source: string): Candidate[] {
+function candidates(capture: CapturedTable, source: string, protectedSource: string): Candidate[] {
     const cells = [...capture.rows.flatMap(({cols}) => cols), ...capture.unclosedCells];
     return cells.flatMap((cell) => {
         const raw = source.slice(cell.start.pos, cell.end.pos);
-        const suffix = /[ \t]*\{([^{}\n]*cell-align-[^{}\n]*)\}[ \t]*$/.exec(raw);
-        return suffix ? [{cell, suffix, raw}] : [];
+        const suffix = /[ \t]*\{([^{}\n]*cell-align-[^{}\n]*)\}[ \t\n]*$/.exec(raw);
+        if (!suffix) {
+            return [];
+        }
+        const start = cell.start.pos + suffix.index;
+        const end = start + suffix[0].length;
+        return source.slice(start, end) === protectedSource.slice(start, end)
+            ? [{cell, suffix, raw}]
+            : [];
     });
+}
+
+function hasExcludedStructure(tokens: Token[]): boolean {
+    return (
+        tokens.filter(({type}) => type === 'yfm_table_open').length > 1 ||
+        tokens.some(
+            (token) => token.attrGet('colspan') !== null || token.attrGet('rowspan') !== null,
+        )
+    );
 }
 
 function canonicalTokens(tokens: Token[]): unknown {
@@ -333,7 +349,7 @@ export function migrateTableAlignment(
         });
     };
     for (const capture of captures) {
-        const found = candidates(capture, input);
+        const found = candidates(capture, normalized, input);
         if (!found.length) {
             continue;
         }
@@ -348,7 +364,7 @@ export function migrateTableAlignment(
         const originalTokens = proofParser.parse(originalTable, {});
         // Standard Markdown masking can hide an indented table inside a real YFM cell.
         // Check the actual unmasked table before considering any edits to its cells.
-        if (originalTokens.filter(({type}) => type === 'yfm_table_open').length > 1) {
+        if (hasExcludedStructure(originalTokens)) {
             found.forEach((candidate) => diagnose(candidate, 'nested-or-spanning-table'));
             continue;
         }
