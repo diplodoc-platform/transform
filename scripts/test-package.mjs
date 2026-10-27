@@ -122,6 +122,8 @@ import log, {getLogger} from '@diplodoc/transform/log';
 import {createDeprecationReporter} from '@diplodoc/transform/deprecation';
 import {getFileTokens} from '@diplodoc/transform/utils/fs';
 import {builtinPluginIds, definePlugin, defineTransformOptions} from '@diplodoc/transform/configuration';
+import {createHighlightJsHighlighter} from '@diplodoc/transform/highlighter';
+import {createLegacyHighlighter} from '@diplodoc/transform/highlighter/legacy';
 const require = createRequire(import.meta.url);
 assert.equal(transform, namedTransform);
 assert.equal(transform, require('@diplodoc/transform'));
@@ -134,6 +136,8 @@ assert.equal(log, require('@diplodoc/transform/log').default);
 assert.equal(definePlugin, require('@diplodoc/transform/configuration').definePlugin);
 assert.equal(builtinPluginIds, require('@diplodoc/transform/configuration').builtinPluginIds);
 assert.equal(defineTransformOptions, require('@diplodoc/transform/configuration').defineTransformOptions);
+assert.equal(createHighlightJsHighlighter, require('@diplodoc/transform/highlighter').createHighlightJsHighlighter);
+assert.equal(createLegacyHighlighter, require('@diplodoc/transform/highlighter/legacy').createLegacyHighlighter);
 assert.match(transform('Static ESM', defineTransformOptions()).result.html, /Static ESM/);
 `,
     );

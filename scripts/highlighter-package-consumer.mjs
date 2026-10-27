@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import Module, {createRequire} from 'node:module';
 
+const packageName = '@diplodoc/transform';
 const require = createRequire(import.meta.url);
 const resolutions = [];
 const originalResolve = Module._resolveFilename;
@@ -11,11 +12,11 @@ Module._resolveFilename = function (request, ...args) {
     }
     return originalResolve.call(this, request, ...args);
 };
-const transform = require('@diplodoc/transform');
-require('@diplodoc/transform/parser');
-require('@diplodoc/transform/configuration');
-const adapter = require('@diplodoc/transform/highlighter');
-const native = await import('@diplodoc/transform/highlighter');
+const transform = require(packageName);
+require(`${packageName}/parser`);
+require(`${packageName}/configuration`);
+const adapter = require(`${packageName}/highlighter`);
+const native = await import(`${packageName}/highlighter`);
 assert.equal(native.createHighlightJsHighlighter, adapter.createHighlightJsHighlighter);
 const source = '```javascript\nconst x = "<script>&";\n```';
 const plain = transform(source).result.html;
@@ -68,7 +69,7 @@ if (process.argv.includes('--selected-core')) {
     );
     console.log(`Native selected-core/grammar imports passed for ${version}`);
 } else if (process.argv.includes('--without-peer')) {
-    const {createLegacyHighlighter} = require('@diplodoc/transform/highlighter/legacy');
+    const {createLegacyHighlighter} = require(`${packageName}/highlighter/legacy`);
     const warnings = [];
     const log = {warn: (message) => warnings.push(message), info() {}, error() {}};
     const highlighter = createLegacyHighlighter({}, {log});
@@ -111,8 +112,8 @@ if (process.argv.includes('--selected-core')) {
                 /hljs-keyword/,
             );
         }
-        const legacy = require('@diplodoc/transform/lib/highlight');
-        assert.equal(legacy, require('@diplodoc/transform/lib/highlight.js'));
+        const legacy = require(`${packageName}/lib/highlight`);
+        assert.equal(legacy, require(`${packageName}/lib/highlight.js`));
         assert.match(legacy()('const x = 1;', 'javascript'), /hljs-keyword/);
     } finally {
         console.warn = oldWarn;
