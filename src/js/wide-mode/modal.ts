@@ -58,7 +58,7 @@ const container = () => {
     title.classList.add('wide-entity-name');
 
     template.label = (content?: string) => {
-        title.innerHTML = content || '';
+        title.textContent = content || '';
     };
 
     const content = document.createElement('div');
