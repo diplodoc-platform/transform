@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 
-import liquidDocument, {liquidSnippet} from '@diplodoc/transform/lib/liquid';
-import yfmlint from '@diplodoc/transform/lib/yfmlint';
-import {createDeprecationReporter} from '@diplodoc/transform/deprecation';
-import {getLogger} from '@diplodoc/transform/log';
+const packageName = '@diplodoc/transform';
+const {default: liquidDocument, liquidSnippet} = await import(`${packageName}/lib/liquid`);
+const {default: yfmlint} = await import(`${packageName}/lib/yfmlint`);
+const {createDeprecationReporter} = await import(`${packageName}/deprecation`);
+const {getLogger} = await import(`${packageName}/log`);
 
 const load = createRequire(import.meta.url);
 const cjsLiquid = load('@diplodoc/transform/lib/liquid');
