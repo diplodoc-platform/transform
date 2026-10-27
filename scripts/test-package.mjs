@@ -274,13 +274,15 @@ void mappedOutput; void sourceMap; void invalidOutput;
     });
     const documentTypes = `
 import {createDocumentEnv, type DocumentEnv, type ParsedDocument} from '@diplodoc/transform/document';
+import type {ParserEnv} from '@diplodoc/transform/types';
 declare module '@diplodoc/transform/types' {
     interface ParserEnv {requestLabel?: string;}
 }
 const documents = DOCUMENT_FACTORY({});
 const firstDocument: ParsedDocument = documents.parseDocument('A', (env) => {env.requestLabel = 'A';});
 const secondDocument = documents.parseDocument('B');
-const typedLabel: string | undefined = firstDocument.env.requestLabel;
+const typedContext: ParserEnv = firstDocument.env;
+const typedLabel: string | undefined = typedContext.requestLabel;
 const plainEnv: DocumentEnv = createDocumentEnv();
 documents.compile(firstDocument.tokens.slice(), firstDocument);
 documents.compileDocument(secondDocument);

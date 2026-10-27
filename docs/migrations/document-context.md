@@ -38,6 +38,25 @@ Do not freeze/seal the forwarding view; the error points to the plain document e
 Read and write metadata/assets through `state.env.meta` and `state.env.assets`.
 Custom context fields can augment `ParserEnv` from `@diplodoc/transform/types`;
 make application fields optional unless your own initializer guarantees them.
+Import the augmentation target in your declaration/module file so TypeScript
+loads the public interface before extending it:
+
+```typescript
+import type {ParserEnv} from '@diplodoc/transform/types';
+
+declare module '@diplodoc/transform/types' {
+  interface ParserEnv {
+    requestLabel?: string;
+  }
+}
+
+function initialize(env: ParserEnv) {
+  env.requestLabel = 'page';
+}
+
+md.parseDocument(source, initialize);
+```
+
 The options object passed when installing a plugin remains parser configuration.
 
 Use `parseDocumentFragment(md, source, state.env, options)` from
