@@ -280,6 +280,10 @@ md-field consumers. Do not initialize shared metadata at plugin installation.
 Native `md.render(source)` must create or receive a fresh env; explicit supplied
 raw env reuse remains the native caller's responsibility. Internal direct calls
 must use the active env and restore nesting, never reset the outer document.
+Each native `md.render`/`md.renderInline` call encloses both parsing and rendering
+in one scope. A renderer exception cannot promote its already parsed env to the
+last successful root: legacy fields retain the previous successful objects by
+identity, and the next render uses a fresh env.
 
 ## Nested contexts and resources
 

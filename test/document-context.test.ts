@@ -9,6 +9,7 @@ import {vi} from 'vitest';
 
 import transform from '../src/transform';
 import parser from '../src/transform/md';
+import log from '../src/transform/log';
 import {
     IncludeCycleError,
     createDocumentEnv,
@@ -261,6 +262,54 @@ describe('document lifecycle', () => {
         expect(a.meta).toEqual({name: 'A'});
         expect(b.meta).toEqual({});
     });
+
+    test.each(['render', 'renderInline'] as const)(
+        'raw native %s restores the previous successful fields after renderer failure',
+        (method) => {
+            const native = new NativeMarkdownIt().use(meta, {
+                path: '',
+                root: '',
+                rootPublicPath: '',
+                lang: 'en',
+                log,
+                isLintRun: false,
+            }) as MarkdownIt;
+            const environments: ParserEnv[] = [];
+            native.core.ruler.push('document-resources', (state) => {
+                const env = state.env as ParserEnv;
+                if (state.inlineMode) {
+                    env.meta = {name: state.src};
+                }
+                env.assets = [String(env.meta?.name)];
+                environments.push(env);
+            });
+            native.renderer.rules.text = (tokens, index, _options, env) => {
+                expect(env).toBeDefined();
+                expect(native.meta).toBe(env?.meta);
+                expect(native.assets).toBe(env?.assets);
+                if (tokens[index].content === 'B') {
+                    throw new Error('native render failure');
+                }
+                return tokens[index].content;
+            };
+            const input = (name: string) =>
+                method === 'render' ? `---\nname: ${name}\n---\n${name}` : name;
+
+            expect(native[method](input('A'))).toContain('A');
+            const previousMeta = native.meta;
+            const previousAssets = native.assets;
+            expect(previousMeta).toEqual({name: 'A'});
+            expect(() => native[method](input('B'))).toThrow('native render failure');
+            expect(environments[1].meta).toEqual({name: 'B'});
+            expect(native.meta).toBe(previousMeta);
+            expect(native.assets).toBe(previousAssets);
+            expect(native[method](input('C'))).toContain('C');
+            expect(native.meta).toBe(environments[2].meta);
+            expect(native.assets).toBe(environments[2].assets);
+            expect(native.meta).toEqual({name: 'C'});
+            expect(new Set(environments).size).toBe(3);
+        },
+    );
 });
 
 describe('nested document contexts', () => {

@@ -74,6 +74,13 @@ export function installDocumentContext(md: MarkdownIt, reporter?: DeprecationRep
             return withDocumentEnv(md, env, () => original.call(this, input, env));
         };
     }
+    // Native rendering owns both phases: parsing alone must not commit a failed render.
+    for (const name of ['render', 'renderInline'] as const) {
+        const original = md[name];
+        md[name] = function (input, env = {}) {
+            return withDocumentEnv(md, env, () => original.call(this, input, env));
+        };
+    }
     for (const name of ['render', 'renderInline'] as const) {
         const original = md.renderer[name];
         md.renderer[name] = function (tokens, options, env = {}) {
