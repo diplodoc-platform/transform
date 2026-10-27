@@ -207,6 +207,32 @@ describe('pure table alignment migration', () => {
         expect(result.diagnostics[0]?.reason).toBe('mixed-attributes');
     });
 
+    it('does not let indented-code masking hide a nested table in an actual cell', () => {
+        const source =
+            '#|\n|| A {.cell-align-center} |\n\n    #|\n    || inner ||\n    |#\n\n||\n|#';
+        const tokens = new MarkdownIt().use(table).parse(source, {});
+        expect(tokens.filter(({type}) => type === 'yfm_table_open')).toHaveLength(2);
+        const before = JSON.parse(JSON.stringify(log.get()));
+        const result = migrateTableAlignment(source);
+        expect(result.output).toBe(source);
+        expect(result.edits).toEqual([]);
+        expect(result.diagnostics[0]?.reason).toBe('nested-or-spanning-table');
+        expect(log.get()).toEqual(before);
+    });
+
+    it('diagnoses an unfinished first row without inventing a rendered row', () => {
+        const source = '#|\n|| Text {.cell-align-center}';
+        const result = migrateTableAlignment(source, {path: 'unfinished.md'});
+        expect(result.output).toBe(source);
+        expect(result.edits).toEqual([]);
+        expect(result.diagnostics).toHaveLength(1);
+        expect(result.diagnostics[0]).toMatchObject({
+            reason: 'unclosed-table',
+            path: 'unfinished.md',
+            line: 2,
+        });
+    });
+
     it.each([
         `\`\`\`md\n${wrap('A {.cell-align-center}')}\n\`\`\``,
         wrap('A {.cell-align-center}')

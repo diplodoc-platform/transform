@@ -259,6 +259,10 @@ metadata (`data-align`, `meta.align`, and its raw attribute representation).
 Source maps naturally move and are not rendered semantics. If this check fails,
 discard that table's proposed edits and return diagnostics. It is an additional
 guard on the finite subset, not permission to rewrite arbitrary Markdown.
+Check the original unmasked token stream for nested tables as well: a standard
+Markdown code mask must not hide an indented nested YFM table inside a real cell.
+Unfinished first-row cells have diagnostic-only source spans; they do not become
+rendered rows merely to find a detectable final legacy suffix in an unclosed table.
 
 An unsafe candidate cell stays byte-for-byte unchanged and gets a diagnostic at
 its original location; safe independent cells may still migrate. Nested/span

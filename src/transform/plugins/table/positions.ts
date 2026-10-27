@@ -229,6 +229,7 @@ type RowData = {start: number; end: number; cols: CellData[]; rawAttrs: TableAtt
 
 export interface RowPositions {
     nested: boolean;
+    unclosedCells: CellData[];
     rows: RowData[];
     endOfTable: number | null;
     pos: number;
@@ -508,7 +509,20 @@ export function getTableRowPositions(
 
     const {pos} = iter;
 
-    return {rows, endOfTable, pos, tableAttrs, nested};
+    // Diagnostic-only source spans; unfinished cells never become rendered rows.
+    const unclosedCells = endOfTable === null ? [...currentRow] : [];
+    if (endOfTable === null && colStart) {
+        unclosedCells.push({
+            start: colStart,
+            end: {
+                pos: Math.min(endPosition, state.src.length),
+                line: Math.min(iter.line, state.lineMax - 1),
+            },
+            markerEnd,
+            rawAttrs: pendingCellAttrs,
+        });
+    }
+    return {rows, endOfTable, pos, tableAttrs, nested, unclosedCells};
 }
 
 function parseInlineAttrs(state: StateBlock, iter: StateIterator, prefixLen: number): TableAttrs {

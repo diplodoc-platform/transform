@@ -23,6 +23,16 @@ try {
     assert.equal(result.edits.length, 2);
     assert.deepEqual(result.diagnostics, []);
     assert.deepEqual(esm.migrateTableAlignment(result.output).edits, []);
+    const nested = '#|\n|| A {.cell-align-center} |\n\n    #|\n    || inner ||\n    |#\n\n||\n|#';
+    const nestedResult = esm.migrateTableAlignment(nested);
+    assert.equal(nestedResult.output, nested);
+    assert.deepEqual(nestedResult.edits, []);
+    assert.equal(nestedResult.diagnostics[0]?.reason, 'nested-or-spanning-table');
+    const unclosed = '#|\n|| Text {.cell-align-center}';
+    const unclosedResult = esm.migrateTableAlignment(unclosed);
+    assert.equal(unclosedResult.output, unclosed);
+    assert.deepEqual(unclosedResult.edits, []);
+    assert.equal(unclosedResult.diagnostics[0]?.reason, 'unclosed-table');
     assert.deepEqual(forbidden, []);
     assert.equal(require('@diplodoc/transform/log').log.isEmpty(), true);
 } finally {

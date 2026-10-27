@@ -184,13 +184,12 @@ function createParser(options: TableAlignmentMigrationOptions, captures?: Captur
 }
 
 function candidates(capture: CapturedTable, source: string): Candidate[] {
-    return capture.rows.flatMap(({cols}) =>
-        cols.flatMap((cell) => {
-            const raw = source.slice(cell.start.pos, cell.end.pos);
-            const suffix = /[ \t]*\{([^{}\n]*cell-align-[^{}\n]*)\}[ \t]*$/.exec(raw);
-            return suffix ? [{cell, suffix, raw}] : [];
-        }),
-    );
+    const cells = [...capture.rows.flatMap(({cols}) => cols), ...capture.unclosedCells];
+    return cells.flatMap((cell) => {
+        const raw = source.slice(cell.start.pos, cell.end.pos);
+        const suffix = /[ \t]*\{([^{}\n]*cell-align-[^{}\n]*)\}[ \t]*$/.exec(raw);
+        return suffix ? [{cell, suffix, raw}] : [];
+    });
 }
 
 function canonicalTokens(tokens: Token[]): unknown {
@@ -343,6 +342,16 @@ export function migrateTableAlignment(
             found.forEach((candidate) => diagnose(candidate, reason));
             continue;
         }
+        const originalStart = offsets[capture.start];
+        const originalEnd = offsets[capture.pos];
+        const originalTable = source.slice(originalStart, originalEnd);
+        const originalTokens = proofParser.parse(originalTable, {});
+        // Standard Markdown masking can hide an indented table inside a real YFM cell.
+        // Check the actual unmasked table before considering any edits to its cells.
+        if (originalTokens.filter(({type}) => type === 'yfm_table_open').length > 1) {
+            found.forEach((candidate) => diagnose(candidate, 'nested-or-spanning-table'));
+            continue;
+        }
         const proposed: TableAlignmentEdit[] = [];
         const proposedCandidates: Candidate[] = [];
         for (const candidate of found) {
@@ -367,15 +376,12 @@ export function migrateTableAlignment(
         if (!proposed.length) {
             continue;
         }
-        const originalStart = offsets[capture.start];
-        const originalEnd = offsets[capture.pos];
-        const originalTable = source.slice(originalStart, originalEnd);
         const relativeEdits = proposed.map((edit) => ({
             ...edit,
             start: edit.start - originalStart,
             end: edit.end - originalStart,
         }));
-        const before = canonicalTokens(proofParser.parse(originalTable, {}));
+        const before = canonicalTokens(originalTokens);
         const after = canonicalTokens(
             proofParser.parse(applyEdits(originalTable, relativeEdits), {}),
         );
