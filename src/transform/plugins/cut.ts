@@ -7,4 +7,4 @@ const cut: (md: MarkdownIt, options?: {output?: string}) => void = transform({
     directiveSyntax: 'disabled',
 });
 
-export = cut;
+export default cut;

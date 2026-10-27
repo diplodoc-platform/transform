@@ -6,7 +6,7 @@ function isHtmlComment(token: Token) {
     return token.type === 'html_block' && htmlComment.test(token.content);
 }
 
-export = function extractTitle(tokens: Token[]) {
+export default function extractTitle(tokens: Token[]) {
     let title = '',
         contentTokens = tokens,
         titleTokens: Token[] = [];
@@ -28,4 +28,4 @@ export = function extractTitle(tokens: Token[]) {
         title,
         tokens: contentTokens,
     };
-};
+}

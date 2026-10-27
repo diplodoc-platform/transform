@@ -13,4 +13,4 @@ const imsize = (md: MarkdownIt, opts?: ImsizeOptions) => {
     md.inline.ruler.before('emphasis', 'image', imageWithSize(md, opts));
 };
 
-export = imsize;
+export default imsize;

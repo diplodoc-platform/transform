@@ -468,4 +468,5 @@ const imagesPlugin: typeof index & {
     replaceSvgContent,
 });
 
-export = imagesPlugin;
+export {replaceSvgContent};
+export default imagesPlugin;

@@ -169,4 +169,4 @@ const changelog: MarkdownItPluginCb<Options> = function (md, {extractChangelogs,
     }
 };
 
-export = changelog;
+export default changelog;

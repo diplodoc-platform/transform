@@ -1,4 +1,3 @@
-import type {LanguageFn} from 'highlight.js';
 import type {
     MarkdownIt as DefaultMarkdownIt,
     StateBlock as DefaultStateBlock,
@@ -46,7 +45,14 @@ export interface CacheContext {
     set(key: string, value: string | null | undefined): void;
 }
 
-export type HighlightLangMap = Record<string, LanguageFn>;
+/**
+ * Opaque registration callback forwarded to the installed optional highlighter.
+ * Annotate callbacks with that library's LanguageFn to access its API; Transform
+ * does not invoke callbacks or promise a particular highlighter API version.
+ */
+export type HighlightLanguageFactory = (highlighter: never) => object;
+
+export type HighlightLangMap = Record<string, HighlightLanguageFactory>;
 
 export type Heading = {
     title: string;

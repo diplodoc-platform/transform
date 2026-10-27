@@ -164,7 +164,7 @@ type Tag = {
     forRaw: string;
 };
 
-export = function cycles(
+export default function cycles(
     originInput: string,
     vars: Record<string, unknown>,
     path?: string,
@@ -254,4 +254,4 @@ export = function cycles(
     }
 
     return input;
-};
+}

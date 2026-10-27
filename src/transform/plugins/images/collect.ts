@@ -59,4 +59,4 @@ const collect = (input: string, options: Options) => {
     return null;
 };
 
-export = collect;
+export default collect;

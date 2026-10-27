@@ -13,7 +13,8 @@
     "generator"
   ],
   "engines": {
-    "npm": ">=11.5.1"
+    "npm": ">=11.5.1",
+    "node": ">=24"
   },
   "homepage": "https://github.com/diplodoc-platform/transform#readme",
   "bugs": {
@@ -25,8 +26,9 @@
   },
   "license": "MIT",
   "author": "YFM Team <yfm-team@yandex.ru>",
-  "main": "lib/index.js",
+  "main": "./api/index.cjs",
   "files": [
+    "api",
     "dist",
     "lib",
     "src"
@@ -34,8 +36,8 @@
   "scripts": {
     "build": "npm run build:lib && npm run build:dist",
     "build:dist": "node ./scripts/build-static.mjs",
-    "build:lib": "npm run patch:svgo && tsc -p tsconfig.transform.json && node scripts/build-svgo.mjs",
-    "dev:lib": "tsc -w -p tsconfig.transform.json",
+    "build:lib": "npm run patch:svgo && tsc -p tsconfig.transform.json && node scripts/build-svgo.mjs && node scripts/build-vendor-declarations.mjs && node scripts/build-public-api.mjs",
+    "dev:lib": "npm run build:lib && tsc -w -p tsconfig.transform.json",
     "dev:playground": "node ./scripts/dev.mjs",
     "preplayground": "cd playground && npm ci --ignore-scripts || (exit 0)",
     "playground": "run-p dev:*",
@@ -53,7 +55,8 @@
     "lock": "npm install --no-workspaces --package-lock-only --ignore-scripts",
     "patch:svgo": "node scripts/patch-svgo.mjs",
     "prepack": "npm run patch:svgo",
-    "test:package": "npm run build && node scripts/test-package.mjs"
+    "test:package": "npm run build && node scripts/test-package.mjs",
+    "exports:update": "node scripts/build-public-api.mjs --write-manifest"
   },
   "dependencies": {
     "@diplodoc/cut-extension": "^1.1.6",
@@ -78,17 +81,17 @@
     "quick-lru": "^5.1.1",
     "sanitize-html": "^2.18.0",
     "slugify": "1.6.6",
-    "ts-dedent": "^2.2.0"
+    "ts-dedent": "^2.2.0",
+    "@types/lodash": "^4.17.23",
+    "@types/sanitize-html": "^2.9.3"
   },
   "devDependencies": {
     "@diplodoc/infra": "2.3.0",
     "@types/css": "0.0.34",
     "@types/github-slugger": "^1.3.0",
     "@types/js-yaml": "^4.0.5",
-    "@types/lodash": "^4.17.23",
     "@types/markdown-it-attrs": "4.1.0",
     "@types/node": "^22.19.7",
-    "@types/sanitize-html": "^2.9.3",
     "@vitest/coverage-v8": "^2.1.9",
     "@vitest/ui": "^2.1.8",
     "autoprefixer": "^10.4.15",
@@ -115,5 +118,2623 @@
     "highlight.js": {
       "optional": true
     }
+  },
+  "module": "./api/index.mjs",
+  "types": "./api/index.d.cts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./api/index.d.mts",
+        "default": "./api/index.mjs"
+      },
+      "require": {
+        "types": "./api/index.d.cts",
+        "default": "./api/index.cjs"
+      }
+    },
+    "./parser": {
+      "import": {
+        "types": "./api/md.d.mts",
+        "default": "./api/md.mjs"
+      },
+      "require": {
+        "types": "./api/md.d.cts",
+        "default": "./api/md.cjs"
+      }
+    },
+    "./types": {
+      "import": {
+        "types": "./api/typings.d.mts",
+        "default": "./api/typings.mjs"
+      },
+      "require": {
+        "types": "./api/typings.d.cts",
+        "default": "./api/typings.cjs"
+      }
+    },
+    "./plugins": {
+      "import": {
+        "types": "./api/plugins.d.mts",
+        "default": "./api/plugins.mjs"
+      },
+      "require": {
+        "types": "./api/plugins.d.cts",
+        "default": "./api/plugins.cjs"
+      }
+    },
+    "./preprocessors": {
+      "import": {
+        "types": "./api/preprocessors/index.d.mts",
+        "default": "./api/preprocessors/index.mjs"
+      },
+      "require": {
+        "types": "./api/preprocessors/index.d.cts",
+        "default": "./api/preprocessors/index.cjs"
+      }
+    },
+    "./frontmatter": {
+      "import": {
+        "types": "./api/frontmatter.d.mts",
+        "default": "./api/frontmatter.mjs"
+      },
+      "require": {
+        "types": "./api/frontmatter.d.cts",
+        "default": "./api/frontmatter.cjs"
+      }
+    },
+    "./utils": {
+      "import": {
+        "types": "./api/utils.d.mts",
+        "default": "./api/utils.mjs"
+      },
+      "require": {
+        "types": "./api/utils.d.cts",
+        "default": "./api/utils.cjs"
+      }
+    },
+    "./utils/fs": {
+      "import": {
+        "types": "./api/utilsFS.d.mts",
+        "default": "./api/utilsFS.mjs"
+      },
+      "require": {
+        "types": "./api/utilsFS.d.cts",
+        "default": "./api/utilsFS.cjs"
+      }
+    },
+    "./sanitize": {
+      "import": {
+        "types": "./api/sanitize.d.mts",
+        "default": "./api/sanitize.mjs"
+      },
+      "require": {
+        "types": "./api/sanitize.d.cts",
+        "default": "./api/sanitize.cjs"
+      }
+    },
+    "./log": {
+      "import": {
+        "types": "./api/log.d.mts",
+        "default": "./api/log.mjs"
+      },
+      "require": {
+        "types": "./api/log.d.cts",
+        "default": "./api/log.cjs"
+      }
+    },
+    "./deprecation": {
+      "import": {
+        "types": "./api/deprecation.d.mts",
+        "default": "./api/deprecation.mjs"
+      },
+      "require": {
+        "types": "./api/deprecation.d.cts",
+        "default": "./api/deprecation.cjs"
+      }
+    },
+    "./plugins/anchors/collect": {
+      "import": {
+        "types": "./api/plugins/anchors/collect.d.mts",
+        "default": "./api/plugins/anchors/collect.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/anchors/collect.d.cts",
+        "default": "./api/plugins/anchors/collect.cjs"
+      }
+    },
+    "./plugins/anchors": {
+      "import": {
+        "types": "./api/plugins/anchors/index.d.mts",
+        "default": "./api/plugins/anchors/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/anchors/index.d.cts",
+        "default": "./api/plugins/anchors/index.cjs"
+      }
+    },
+    "./plugins/block-anchor": {
+      "import": {
+        "types": "./api/plugins/block-anchor/index.d.mts",
+        "default": "./api/plugins/block-anchor/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/block-anchor/index.d.cts",
+        "default": "./api/plugins/block-anchor/index.cjs"
+      }
+    },
+    "./plugins/changelog/collect": {
+      "import": {
+        "types": "./api/plugins/changelog/collect.d.mts",
+        "default": "./api/plugins/changelog/collect.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/changelog/collect.d.cts",
+        "default": "./api/plugins/changelog/collect.cjs"
+      }
+    },
+    "./plugins/changelog": {
+      "import": {
+        "types": "./api/plugins/changelog/index.d.mts",
+        "default": "./api/plugins/changelog/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/changelog/index.d.cts",
+        "default": "./api/plugins/changelog/index.cjs"
+      }
+    },
+    "./plugins/checkbox": {
+      "import": {
+        "types": "./api/plugins/checkbox/index.d.mts",
+        "default": "./api/plugins/checkbox/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/checkbox/index.d.cts",
+        "default": "./api/plugins/checkbox/index.cjs"
+      }
+    },
+    "./plugins/code": {
+      "import": {
+        "types": "./api/plugins/code.d.mts",
+        "default": "./api/plugins/code.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/code.d.cts",
+        "default": "./api/plugins/code.cjs"
+      }
+    },
+    "./plugins/cut": {
+      "import": {
+        "types": "./api/plugins/cut.d.mts",
+        "default": "./api/plugins/cut.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/cut.d.cts",
+        "default": "./api/plugins/cut.cjs"
+      }
+    },
+    "./plugins/deflist": {
+      "import": {
+        "types": "./api/plugins/deflist.d.mts",
+        "default": "./api/plugins/deflist.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/deflist.d.cts",
+        "default": "./api/plugins/deflist.cjs"
+      }
+    },
+    "./plugins/file": {
+      "import": {
+        "types": "./api/plugins/file/index.d.mts",
+        "default": "./api/plugins/file/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/file/index.d.cts",
+        "default": "./api/plugins/file/index.cjs"
+      }
+    },
+    "./plugins/images/collect": {
+      "import": {
+        "types": "./api/plugins/images/collect.d.mts",
+        "default": "./api/plugins/images/collect.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/images/collect.d.cts",
+        "default": "./api/plugins/images/collect.cjs"
+      }
+    },
+    "./plugins/images": {
+      "import": {
+        "types": "./api/plugins/images/index.d.mts",
+        "default": "./api/plugins/images/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/images/index.d.cts",
+        "default": "./api/plugins/images/index.cjs"
+      }
+    },
+    "./plugins/imsize": {
+      "import": {
+        "types": "./api/plugins/imsize/index.d.mts",
+        "default": "./api/plugins/imsize/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/imsize/index.d.cts",
+        "default": "./api/plugins/imsize/index.cjs"
+      }
+    },
+    "./plugins/includes/collect": {
+      "import": {
+        "types": "./api/plugins/includes/collect.d.mts",
+        "default": "./api/plugins/includes/collect.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/includes/collect.d.cts",
+        "default": "./api/plugins/includes/collect.cjs"
+      }
+    },
+    "./plugins/includes": {
+      "import": {
+        "types": "./api/plugins/includes/index.d.mts",
+        "default": "./api/plugins/includes/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/includes/index.d.cts",
+        "default": "./api/plugins/includes/index.cjs"
+      }
+    },
+    "./plugins/inline-code": {
+      "import": {
+        "types": "./api/plugins/inline-code/index.d.mts",
+        "default": "./api/plugins/inline-code/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/inline-code/index.d.cts",
+        "default": "./api/plugins/inline-code/index.cjs"
+      }
+    },
+    "./plugins/inline-svg-marker": {
+      "import": {
+        "types": "./api/plugins/inline-svg-marker.d.mts",
+        "default": "./api/plugins/inline-svg-marker.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/inline-svg-marker.d.cts",
+        "default": "./api/plugins/inline-svg-marker.cjs"
+      }
+    },
+    "./plugins/linkify-strikethrough": {
+      "import": {
+        "types": "./api/plugins/linkify-strikethrough.d.mts",
+        "default": "./api/plugins/linkify-strikethrough.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/linkify-strikethrough.d.cts",
+        "default": "./api/plugins/linkify-strikethrough.cjs"
+      }
+    },
+    "./plugins/links/collect": {
+      "import": {
+        "types": "./api/plugins/links/collect.d.mts",
+        "default": "./api/plugins/links/collect.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/links/collect.d.cts",
+        "default": "./api/plugins/links/collect.cjs"
+      }
+    },
+    "./plugins/links": {
+      "import": {
+        "types": "./api/plugins/links/index.d.mts",
+        "default": "./api/plugins/links/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/links/index.d.cts",
+        "default": "./api/plugins/links/index.cjs"
+      }
+    },
+    "./plugins/meta": {
+      "import": {
+        "types": "./api/plugins/meta.d.mts",
+        "default": "./api/plugins/meta.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/meta.d.cts",
+        "default": "./api/plugins/meta.cjs"
+      }
+    },
+    "./plugins/monospace": {
+      "import": {
+        "types": "./api/plugins/monospace.d.mts",
+        "default": "./api/plugins/monospace.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/monospace.d.cts",
+        "default": "./api/plugins/monospace.cjs"
+      }
+    },
+    "./plugins/notes": {
+      "import": {
+        "types": "./api/plugins/notes/index.d.mts",
+        "default": "./api/plugins/notes/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/notes/index.d.cts",
+        "default": "./api/plugins/notes/index.cjs"
+      }
+    },
+    "./plugins/ol-attr-conversion": {
+      "import": {
+        "types": "./api/plugins/ol-attr-conversion.d.mts",
+        "default": "./api/plugins/ol-attr-conversion.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/ol-attr-conversion.d.cts",
+        "default": "./api/plugins/ol-attr-conversion.cjs"
+      }
+    },
+    "./plugins/sup": {
+      "import": {
+        "types": "./api/plugins/sup.d.mts",
+        "default": "./api/plugins/sup.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/sup.d.cts",
+        "default": "./api/plugins/sup.cjs"
+      }
+    },
+    "./plugins/table": {
+      "import": {
+        "types": "./api/plugins/table/index.d.mts",
+        "default": "./api/plugins/table/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/table/index.d.cts",
+        "default": "./api/plugins/table/index.cjs"
+      }
+    },
+    "./plugins/tabs": {
+      "import": {
+        "types": "./api/plugins/tabs.d.mts",
+        "default": "./api/plugins/tabs.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/tabs.d.cts",
+        "default": "./api/plugins/tabs.cjs"
+      }
+    },
+    "./plugins/term": {
+      "import": {
+        "types": "./api/plugins/term/index.d.mts",
+        "default": "./api/plugins/term/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/term/index.d.cts",
+        "default": "./api/plugins/term/index.cjs"
+      }
+    },
+    "./plugins/video": {
+      "import": {
+        "types": "./api/plugins/video/index.d.mts",
+        "default": "./api/plugins/video/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/video/index.d.cts",
+        "default": "./api/plugins/video/index.cjs"
+      }
+    },
+    "./plugins/visibility": {
+      "import": {
+        "types": "./api/plugins/visibility.d.mts",
+        "default": "./api/plugins/visibility.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/visibility.d.cts",
+        "default": "./api/plugins/visibility.cjs"
+      }
+    },
+    "./plugins/utils": {
+      "import": {
+        "types": "./api/plugins/utils.d.mts",
+        "default": "./api/plugins/utils.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/utils.d.cts",
+        "default": "./api/plugins/utils.cjs"
+      }
+    },
+    "./lib/constants": {
+      "import": {
+        "types": "./api/constants.d.mts",
+        "default": "./api/constants.mjs"
+      },
+      "require": {
+        "types": "./api/constants.d.cts",
+        "default": "./api/constants.cjs"
+      }
+    },
+    "./lib/constants.js": {
+      "import": {
+        "types": "./api/constants.d.mts",
+        "default": "./api/constants.mjs"
+      },
+      "require": {
+        "types": "./api/constants.d.cts",
+        "default": "./api/constants.cjs"
+      }
+    },
+    "./lib/deprecation": {
+      "import": {
+        "types": "./api/deprecation.d.mts",
+        "default": "./api/deprecation.mjs"
+      },
+      "require": {
+        "types": "./api/deprecation.d.cts",
+        "default": "./api/deprecation.cjs"
+      }
+    },
+    "./lib/deprecation.js": {
+      "import": {
+        "types": "./api/deprecation.d.mts",
+        "default": "./api/deprecation.mjs"
+      },
+      "require": {
+        "types": "./api/deprecation.d.cts",
+        "default": "./api/deprecation.cjs"
+      }
+    },
+    "./lib/frontmatter": {
+      "import": {
+        "types": "./api/frontmatter.d.mts",
+        "default": "./api/frontmatter.mjs"
+      },
+      "require": {
+        "types": "./api/frontmatter.d.cts",
+        "default": "./api/frontmatter.cjs"
+      }
+    },
+    "./lib/frontmatter.js": {
+      "import": {
+        "types": "./api/frontmatter.d.mts",
+        "default": "./api/frontmatter.mjs"
+      },
+      "require": {
+        "types": "./api/frontmatter.d.cts",
+        "default": "./api/frontmatter.cjs"
+      }
+    },
+    "./lib/getObject": {
+      "import": {
+        "types": "./api/getObject.d.mts",
+        "default": "./api/getObject.mjs"
+      },
+      "require": {
+        "types": "./api/getObject.d.cts",
+        "default": "./api/getObject.cjs"
+      }
+    },
+    "./lib/getObject.js": {
+      "import": {
+        "types": "./api/getObject.d.mts",
+        "default": "./api/getObject.mjs"
+      },
+      "require": {
+        "types": "./api/getObject.d.cts",
+        "default": "./api/getObject.cjs"
+      }
+    },
+    "./lib/headings": {
+      "import": {
+        "types": "./api/headings.d.mts",
+        "default": "./api/headings.mjs"
+      },
+      "require": {
+        "types": "./api/headings.d.cts",
+        "default": "./api/headings.cjs"
+      }
+    },
+    "./lib/headings.js": {
+      "import": {
+        "types": "./api/headings.d.mts",
+        "default": "./api/headings.mjs"
+      },
+      "require": {
+        "types": "./api/headings.d.cts",
+        "default": "./api/headings.cjs"
+      }
+    },
+    "./lib/highlight": {
+      "import": {
+        "types": "./api/highlight.d.mts",
+        "default": "./api/highlight.mjs"
+      },
+      "require": {
+        "types": "./api/highlight.d.cts",
+        "default": "./api/highlight.cjs"
+      }
+    },
+    "./lib/highlight.js": {
+      "import": {
+        "types": "./api/highlight.d.mts",
+        "default": "./api/highlight.mjs"
+      },
+      "require": {
+        "types": "./api/highlight.d.cts",
+        "default": "./api/highlight.cjs"
+      }
+    },
+    "./lib/index": {
+      "import": {
+        "types": "./api/index.d.mts",
+        "default": "./api/index.mjs"
+      },
+      "require": {
+        "types": "./api/index.d.cts",
+        "default": "./api/index.cjs"
+      }
+    },
+    "./lib/index.js": {
+      "import": {
+        "types": "./api/index.d.mts",
+        "default": "./api/index.mjs"
+      },
+      "require": {
+        "types": "./api/index.d.cts",
+        "default": "./api/index.cjs"
+      }
+    },
+    "./lib/liquid/conditions": {
+      "import": {
+        "types": "./api/liquid/conditions.d.mts",
+        "default": "./api/liquid/conditions.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/conditions.d.cts",
+        "default": "./api/liquid/conditions.cjs"
+      }
+    },
+    "./lib/liquid/conditions.js": {
+      "import": {
+        "types": "./api/liquid/conditions.d.mts",
+        "default": "./api/liquid/conditions.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/conditions.d.cts",
+        "default": "./api/liquid/conditions.cjs"
+      }
+    },
+    "./lib/liquid/cycles": {
+      "import": {
+        "types": "./api/liquid/cycles.d.mts",
+        "default": "./api/liquid/cycles.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/cycles.d.cts",
+        "default": "./api/liquid/cycles.cjs"
+      }
+    },
+    "./lib/liquid/cycles.js": {
+      "import": {
+        "types": "./api/liquid/cycles.d.mts",
+        "default": "./api/liquid/cycles.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/cycles.d.cts",
+        "default": "./api/liquid/cycles.cjs"
+      }
+    },
+    "./lib/liquid/errors": {
+      "import": {
+        "types": "./api/liquid/errors.d.mts",
+        "default": "./api/liquid/errors.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/errors.d.cts",
+        "default": "./api/liquid/errors.cjs"
+      }
+    },
+    "./lib/liquid/errors.js": {
+      "import": {
+        "types": "./api/liquid/errors.d.mts",
+        "default": "./api/liquid/errors.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/errors.d.cts",
+        "default": "./api/liquid/errors.cjs"
+      }
+    },
+    "./lib/liquid/evaluation": {
+      "import": {
+        "types": "./api/liquid/evaluation.d.mts",
+        "default": "./api/liquid/evaluation.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/evaluation.d.cts",
+        "default": "./api/liquid/evaluation.cjs"
+      }
+    },
+    "./lib/liquid/evaluation.js": {
+      "import": {
+        "types": "./api/liquid/evaluation.d.mts",
+        "default": "./api/liquid/evaluation.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/evaluation.d.cts",
+        "default": "./api/liquid/evaluation.cjs"
+      }
+    },
+    "./lib/liquid/filters": {
+      "import": {
+        "types": "./api/liquid/filters.d.mts",
+        "default": "./api/liquid/filters.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/filters.d.cts",
+        "default": "./api/liquid/filters.cjs"
+      }
+    },
+    "./lib/liquid/filters.js": {
+      "import": {
+        "types": "./api/liquid/filters.d.mts",
+        "default": "./api/liquid/filters.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/filters.d.cts",
+        "default": "./api/liquid/filters.cjs"
+      }
+    },
+    "./lib/liquid/index": {
+      "import": {
+        "types": "./api/liquid/index.d.mts",
+        "default": "./api/liquid/index.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/index.d.cts",
+        "default": "./api/liquid/index.cjs"
+      }
+    },
+    "./lib/liquid/index.js": {
+      "import": {
+        "types": "./api/liquid/index.d.mts",
+        "default": "./api/liquid/index.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/index.d.cts",
+        "default": "./api/liquid/index.cjs"
+      }
+    },
+    "./lib/liquid": {
+      "import": {
+        "types": "./api/liquid/index.d.mts",
+        "default": "./api/liquid/index.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/index.d.cts",
+        "default": "./api/liquid/index.cjs"
+      }
+    },
+    "./lib/liquid/legacyConditions": {
+      "import": {
+        "types": "./api/liquid/legacyConditions.d.mts",
+        "default": "./api/liquid/legacyConditions.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/legacyConditions.d.cts",
+        "default": "./api/liquid/legacyConditions.cjs"
+      }
+    },
+    "./lib/liquid/legacyConditions.js": {
+      "import": {
+        "types": "./api/liquid/legacyConditions.d.mts",
+        "default": "./api/liquid/legacyConditions.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/legacyConditions.d.cts",
+        "default": "./api/liquid/legacyConditions.cjs"
+      }
+    },
+    "./lib/liquid/lexical": {
+      "import": {
+        "types": "./api/liquid/lexical.d.mts",
+        "default": "./api/liquid/lexical.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/lexical.d.cts",
+        "default": "./api/liquid/lexical.cjs"
+      }
+    },
+    "./lib/liquid/lexical.js": {
+      "import": {
+        "types": "./api/liquid/lexical.d.mts",
+        "default": "./api/liquid/lexical.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/lexical.d.cts",
+        "default": "./api/liquid/lexical.cjs"
+      }
+    },
+    "./lib/liquid/services/argv": {
+      "import": {
+        "types": "./api/liquid/services/argv.d.mts",
+        "default": "./api/liquid/services/argv.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/services/argv.d.cts",
+        "default": "./api/liquid/services/argv.cjs"
+      }
+    },
+    "./lib/liquid/services/argv.js": {
+      "import": {
+        "types": "./api/liquid/services/argv.d.mts",
+        "default": "./api/liquid/services/argv.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/services/argv.d.cts",
+        "default": "./api/liquid/services/argv.cjs"
+      }
+    },
+    "./lib/liquid/sourceMap": {
+      "import": {
+        "types": "./api/liquid/sourceMap.d.mts",
+        "default": "./api/liquid/sourceMap.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/sourceMap.d.cts",
+        "default": "./api/liquid/sourceMap.cjs"
+      }
+    },
+    "./lib/liquid/sourceMap.js": {
+      "import": {
+        "types": "./api/liquid/sourceMap.d.mts",
+        "default": "./api/liquid/sourceMap.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/sourceMap.d.cts",
+        "default": "./api/liquid/sourceMap.cjs"
+      }
+    },
+    "./lib/liquid/substitutions": {
+      "import": {
+        "types": "./api/liquid/substitutions.d.mts",
+        "default": "./api/liquid/substitutions.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/substitutions.d.cts",
+        "default": "./api/liquid/substitutions.cjs"
+      }
+    },
+    "./lib/liquid/substitutions.js": {
+      "import": {
+        "types": "./api/liquid/substitutions.d.mts",
+        "default": "./api/liquid/substitutions.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/substitutions.d.cts",
+        "default": "./api/liquid/substitutions.cjs"
+      }
+    },
+    "./lib/liquid/utils": {
+      "import": {
+        "types": "./api/liquid/utils.d.mts",
+        "default": "./api/liquid/utils.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/utils.d.cts",
+        "default": "./api/liquid/utils.cjs"
+      }
+    },
+    "./lib/liquid/utils.js": {
+      "import": {
+        "types": "./api/liquid/utils.d.mts",
+        "default": "./api/liquid/utils.mjs"
+      },
+      "require": {
+        "types": "./api/liquid/utils.d.cts",
+        "default": "./api/liquid/utils.cjs"
+      }
+    },
+    "./lib/log": {
+      "import": {
+        "types": "./api/log.d.mts",
+        "default": "./api/log.mjs"
+      },
+      "require": {
+        "types": "./api/log.d.cts",
+        "default": "./api/log.cjs"
+      }
+    },
+    "./lib/log.js": {
+      "import": {
+        "types": "./api/log.d.mts",
+        "default": "./api/log.mjs"
+      },
+      "require": {
+        "types": "./api/log.d.cts",
+        "default": "./api/log.cjs"
+      }
+    },
+    "./lib/markdown-it-utils": {
+      "import": {
+        "types": "./api/markdown-it-utils.d.mts",
+        "default": "./api/markdown-it-utils.mjs"
+      },
+      "require": {
+        "types": "./api/markdown-it-utils.d.cts",
+        "default": "./api/markdown-it-utils.cjs"
+      }
+    },
+    "./lib/markdown-it-utils.js": {
+      "import": {
+        "types": "./api/markdown-it-utils.d.mts",
+        "default": "./api/markdown-it-utils.mjs"
+      },
+      "require": {
+        "types": "./api/markdown-it-utils.d.cts",
+        "default": "./api/markdown-it-utils.cjs"
+      }
+    },
+    "./lib/md": {
+      "import": {
+        "types": "./api/md.d.mts",
+        "default": "./api/md.mjs"
+      },
+      "require": {
+        "types": "./api/md.d.cts",
+        "default": "./api/md.cjs"
+      }
+    },
+    "./lib/md.js": {
+      "import": {
+        "types": "./api/md.d.mts",
+        "default": "./api/md.mjs"
+      },
+      "require": {
+        "types": "./api/md.d.cts",
+        "default": "./api/md.cjs"
+      }
+    },
+    "./lib/plugins/anchors/collect": {
+      "import": {
+        "types": "./api/plugins/anchors/collect.d.mts",
+        "default": "./api/plugins/anchors/collect.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/anchors/collect.d.cts",
+        "default": "./api/plugins/anchors/collect.cjs"
+      }
+    },
+    "./lib/plugins/anchors/collect.js": {
+      "import": {
+        "types": "./api/plugins/anchors/collect.d.mts",
+        "default": "./api/plugins/anchors/collect.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/anchors/collect.d.cts",
+        "default": "./api/plugins/anchors/collect.cjs"
+      }
+    },
+    "./lib/plugins/anchors/constants": {
+      "import": {
+        "types": "./api/plugins/anchors/constants.d.mts",
+        "default": "./api/plugins/anchors/constants.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/anchors/constants.d.cts",
+        "default": "./api/plugins/anchors/constants.cjs"
+      }
+    },
+    "./lib/plugins/anchors/constants.js": {
+      "import": {
+        "types": "./api/plugins/anchors/constants.d.mts",
+        "default": "./api/plugins/anchors/constants.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/anchors/constants.d.cts",
+        "default": "./api/plugins/anchors/constants.cjs"
+      }
+    },
+    "./lib/plugins/anchors/custom-id": {
+      "import": {
+        "types": "./api/plugins/anchors/custom-id.d.mts",
+        "default": "./api/plugins/anchors/custom-id.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/anchors/custom-id.d.cts",
+        "default": "./api/plugins/anchors/custom-id.cjs"
+      }
+    },
+    "./lib/plugins/anchors/custom-id.js": {
+      "import": {
+        "types": "./api/plugins/anchors/custom-id.d.mts",
+        "default": "./api/plugins/anchors/custom-id.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/anchors/custom-id.d.cts",
+        "default": "./api/plugins/anchors/custom-id.cjs"
+      }
+    },
+    "./lib/plugins/anchors/index": {
+      "import": {
+        "types": "./api/plugins/anchors/index.d.mts",
+        "default": "./api/plugins/anchors/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/anchors/index.d.cts",
+        "default": "./api/plugins/anchors/index.cjs"
+      }
+    },
+    "./lib/plugins/anchors/index.js": {
+      "import": {
+        "types": "./api/plugins/anchors/index.d.mts",
+        "default": "./api/plugins/anchors/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/anchors/index.d.cts",
+        "default": "./api/plugins/anchors/index.cjs"
+      }
+    },
+    "./lib/plugins/anchors": {
+      "import": {
+        "types": "./api/plugins/anchors/index.d.mts",
+        "default": "./api/plugins/anchors/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/anchors/index.d.cts",
+        "default": "./api/plugins/anchors/index.cjs"
+      }
+    },
+    "./lib/plugins/block-anchor/block-anchor": {
+      "import": {
+        "types": "./api/plugins/block-anchor/block-anchor.d.mts",
+        "default": "./api/plugins/block-anchor/block-anchor.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/block-anchor/block-anchor.d.cts",
+        "default": "./api/plugins/block-anchor/block-anchor.cjs"
+      }
+    },
+    "./lib/plugins/block-anchor/block-anchor.js": {
+      "import": {
+        "types": "./api/plugins/block-anchor/block-anchor.d.mts",
+        "default": "./api/plugins/block-anchor/block-anchor.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/block-anchor/block-anchor.d.cts",
+        "default": "./api/plugins/block-anchor/block-anchor.cjs"
+      }
+    },
+    "./lib/plugins/block-anchor/index": {
+      "import": {
+        "types": "./api/plugins/block-anchor/index.d.mts",
+        "default": "./api/plugins/block-anchor/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/block-anchor/index.d.cts",
+        "default": "./api/plugins/block-anchor/index.cjs"
+      }
+    },
+    "./lib/plugins/block-anchor/index.js": {
+      "import": {
+        "types": "./api/plugins/block-anchor/index.d.mts",
+        "default": "./api/plugins/block-anchor/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/block-anchor/index.d.cts",
+        "default": "./api/plugins/block-anchor/index.cjs"
+      }
+    },
+    "./lib/plugins/block-anchor": {
+      "import": {
+        "types": "./api/plugins/block-anchor/index.d.mts",
+        "default": "./api/plugins/block-anchor/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/block-anchor/index.d.cts",
+        "default": "./api/plugins/block-anchor/index.cjs"
+      }
+    },
+    "./lib/plugins/changelog/collect": {
+      "import": {
+        "types": "./api/plugins/changelog/collect.d.mts",
+        "default": "./api/plugins/changelog/collect.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/changelog/collect.d.cts",
+        "default": "./api/plugins/changelog/collect.cjs"
+      }
+    },
+    "./lib/plugins/changelog/collect.js": {
+      "import": {
+        "types": "./api/plugins/changelog/collect.d.mts",
+        "default": "./api/plugins/changelog/collect.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/changelog/collect.d.cts",
+        "default": "./api/plugins/changelog/collect.cjs"
+      }
+    },
+    "./lib/plugins/changelog/index": {
+      "import": {
+        "types": "./api/plugins/changelog/index.d.mts",
+        "default": "./api/plugins/changelog/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/changelog/index.d.cts",
+        "default": "./api/plugins/changelog/index.cjs"
+      }
+    },
+    "./lib/plugins/changelog/index.js": {
+      "import": {
+        "types": "./api/plugins/changelog/index.d.mts",
+        "default": "./api/plugins/changelog/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/changelog/index.d.cts",
+        "default": "./api/plugins/changelog/index.cjs"
+      }
+    },
+    "./lib/plugins/changelog": {
+      "import": {
+        "types": "./api/plugins/changelog/index.d.mts",
+        "default": "./api/plugins/changelog/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/changelog/index.d.cts",
+        "default": "./api/plugins/changelog/index.cjs"
+      }
+    },
+    "./lib/plugins/changelog/types": {
+      "import": {
+        "types": "./api/plugins/changelog/types.d.mts",
+        "default": "./api/plugins/changelog/types.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/changelog/types.d.cts",
+        "default": "./api/plugins/changelog/types.cjs"
+      }
+    },
+    "./lib/plugins/changelog/types.js": {
+      "import": {
+        "types": "./api/plugins/changelog/types.d.mts",
+        "default": "./api/plugins/changelog/types.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/changelog/types.d.cts",
+        "default": "./api/plugins/changelog/types.cjs"
+      }
+    },
+    "./lib/plugins/checkbox/checkbox": {
+      "import": {
+        "types": "./api/plugins/checkbox/checkbox.d.mts",
+        "default": "./api/plugins/checkbox/checkbox.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/checkbox/checkbox.d.cts",
+        "default": "./api/plugins/checkbox/checkbox.cjs"
+      }
+    },
+    "./lib/plugins/checkbox/checkbox.js": {
+      "import": {
+        "types": "./api/plugins/checkbox/checkbox.d.mts",
+        "default": "./api/plugins/checkbox/checkbox.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/checkbox/checkbox.d.cts",
+        "default": "./api/plugins/checkbox/checkbox.cjs"
+      }
+    },
+    "./lib/plugins/checkbox/index": {
+      "import": {
+        "types": "./api/plugins/checkbox/index.d.mts",
+        "default": "./api/plugins/checkbox/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/checkbox/index.d.cts",
+        "default": "./api/plugins/checkbox/index.cjs"
+      }
+    },
+    "./lib/plugins/checkbox/index.js": {
+      "import": {
+        "types": "./api/plugins/checkbox/index.d.mts",
+        "default": "./api/plugins/checkbox/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/checkbox/index.d.cts",
+        "default": "./api/plugins/checkbox/index.cjs"
+      }
+    },
+    "./lib/plugins/checkbox": {
+      "import": {
+        "types": "./api/plugins/checkbox/index.d.mts",
+        "default": "./api/plugins/checkbox/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/checkbox/index.d.cts",
+        "default": "./api/plugins/checkbox/index.cjs"
+      }
+    },
+    "./lib/plugins/code": {
+      "import": {
+        "types": "./api/plugins/code.d.mts",
+        "default": "./api/plugins/code.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/code.d.cts",
+        "default": "./api/plugins/code.cjs"
+      }
+    },
+    "./lib/plugins/code.js": {
+      "import": {
+        "types": "./api/plugins/code.d.mts",
+        "default": "./api/plugins/code.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/code.d.cts",
+        "default": "./api/plugins/code.cjs"
+      }
+    },
+    "./lib/plugins/cut": {
+      "import": {
+        "types": "./api/plugins/cut.d.mts",
+        "default": "./api/plugins/cut.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/cut.d.cts",
+        "default": "./api/plugins/cut.cjs"
+      }
+    },
+    "./lib/plugins/cut.js": {
+      "import": {
+        "types": "./api/plugins/cut.d.mts",
+        "default": "./api/plugins/cut.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/cut.d.cts",
+        "default": "./api/plugins/cut.cjs"
+      }
+    },
+    "./lib/plugins/deflist": {
+      "import": {
+        "types": "./api/plugins/deflist.d.mts",
+        "default": "./api/plugins/deflist.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/deflist.d.cts",
+        "default": "./api/plugins/deflist.cjs"
+      }
+    },
+    "./lib/plugins/deflist.js": {
+      "import": {
+        "types": "./api/plugins/deflist.d.mts",
+        "default": "./api/plugins/deflist.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/deflist.d.cts",
+        "default": "./api/plugins/deflist.cjs"
+      }
+    },
+    "./lib/plugins/file/const": {
+      "import": {
+        "types": "./api/plugins/file/const.d.mts",
+        "default": "./api/plugins/file/const.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/file/const.d.cts",
+        "default": "./api/plugins/file/const.cjs"
+      }
+    },
+    "./lib/plugins/file/const.js": {
+      "import": {
+        "types": "./api/plugins/file/const.d.mts",
+        "default": "./api/plugins/file/const.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/file/const.d.cts",
+        "default": "./api/plugins/file/const.cjs"
+      }
+    },
+    "./lib/plugins/file/file": {
+      "import": {
+        "types": "./api/plugins/file/file.d.mts",
+        "default": "./api/plugins/file/file.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/file/file.d.cts",
+        "default": "./api/plugins/file/file.cjs"
+      }
+    },
+    "./lib/plugins/file/file.js": {
+      "import": {
+        "types": "./api/plugins/file/file.d.mts",
+        "default": "./api/plugins/file/file.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/file/file.d.cts",
+        "default": "./api/plugins/file/file.cjs"
+      }
+    },
+    "./lib/plugins/file/index": {
+      "import": {
+        "types": "./api/plugins/file/index.d.mts",
+        "default": "./api/plugins/file/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/file/index.d.cts",
+        "default": "./api/plugins/file/index.cjs"
+      }
+    },
+    "./lib/plugins/file/index.js": {
+      "import": {
+        "types": "./api/plugins/file/index.d.mts",
+        "default": "./api/plugins/file/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/file/index.d.cts",
+        "default": "./api/plugins/file/index.cjs"
+      }
+    },
+    "./lib/plugins/file": {
+      "import": {
+        "types": "./api/plugins/file/index.d.mts",
+        "default": "./api/plugins/file/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/file/index.d.cts",
+        "default": "./api/plugins/file/index.cjs"
+      }
+    },
+    "./lib/plugins/images/collect": {
+      "import": {
+        "types": "./api/plugins/images/collect.d.mts",
+        "default": "./api/plugins/images/collect.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/images/collect.d.cts",
+        "default": "./api/plugins/images/collect.cjs"
+      }
+    },
+    "./lib/plugins/images/collect.js": {
+      "import": {
+        "types": "./api/plugins/images/collect.d.mts",
+        "default": "./api/plugins/images/collect.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/images/collect.d.cts",
+        "default": "./api/plugins/images/collect.cjs"
+      }
+    },
+    "./lib/plugins/images/index": {
+      "import": {
+        "types": "./api/plugins/images/index.d.mts",
+        "default": "./api/plugins/images/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/images/index.d.cts",
+        "default": "./api/plugins/images/index.cjs"
+      }
+    },
+    "./lib/plugins/images/index.js": {
+      "import": {
+        "types": "./api/plugins/images/index.d.mts",
+        "default": "./api/plugins/images/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/images/index.d.cts",
+        "default": "./api/plugins/images/index.cjs"
+      }
+    },
+    "./lib/plugins/images": {
+      "import": {
+        "types": "./api/plugins/images/index.d.mts",
+        "default": "./api/plugins/images/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/images/index.d.cts",
+        "default": "./api/plugins/images/index.cjs"
+      }
+    },
+    "./lib/plugins/imsize/const": {
+      "import": {
+        "types": "./api/plugins/imsize/const.d.mts",
+        "default": "./api/plugins/imsize/const.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/imsize/const.d.cts",
+        "default": "./api/plugins/imsize/const.cjs"
+      }
+    },
+    "./lib/plugins/imsize/const.js": {
+      "import": {
+        "types": "./api/plugins/imsize/const.d.mts",
+        "default": "./api/plugins/imsize/const.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/imsize/const.d.cts",
+        "default": "./api/plugins/imsize/const.cjs"
+      }
+    },
+    "./lib/plugins/imsize/helpers": {
+      "import": {
+        "types": "./api/plugins/imsize/helpers.d.mts",
+        "default": "./api/plugins/imsize/helpers.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/imsize/helpers.d.cts",
+        "default": "./api/plugins/imsize/helpers.cjs"
+      }
+    },
+    "./lib/plugins/imsize/helpers.js": {
+      "import": {
+        "types": "./api/plugins/imsize/helpers.d.mts",
+        "default": "./api/plugins/imsize/helpers.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/imsize/helpers.d.cts",
+        "default": "./api/plugins/imsize/helpers.cjs"
+      }
+    },
+    "./lib/plugins/imsize/index": {
+      "import": {
+        "types": "./api/plugins/imsize/index.d.mts",
+        "default": "./api/plugins/imsize/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/imsize/index.d.cts",
+        "default": "./api/plugins/imsize/index.cjs"
+      }
+    },
+    "./lib/plugins/imsize/index.js": {
+      "import": {
+        "types": "./api/plugins/imsize/index.d.mts",
+        "default": "./api/plugins/imsize/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/imsize/index.d.cts",
+        "default": "./api/plugins/imsize/index.cjs"
+      }
+    },
+    "./lib/plugins/imsize": {
+      "import": {
+        "types": "./api/plugins/imsize/index.d.mts",
+        "default": "./api/plugins/imsize/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/imsize/index.d.cts",
+        "default": "./api/plugins/imsize/index.cjs"
+      }
+    },
+    "./lib/plugins/imsize/plugin": {
+      "import": {
+        "types": "./api/plugins/imsize/plugin.d.mts",
+        "default": "./api/plugins/imsize/plugin.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/imsize/plugin.d.cts",
+        "default": "./api/plugins/imsize/plugin.cjs"
+      }
+    },
+    "./lib/plugins/imsize/plugin.js": {
+      "import": {
+        "types": "./api/plugins/imsize/plugin.d.mts",
+        "default": "./api/plugins/imsize/plugin.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/imsize/plugin.d.cts",
+        "default": "./api/plugins/imsize/plugin.cjs"
+      }
+    },
+    "./lib/plugins/includes/collect": {
+      "import": {
+        "types": "./api/plugins/includes/collect.d.mts",
+        "default": "./api/plugins/includes/collect.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/includes/collect.d.cts",
+        "default": "./api/plugins/includes/collect.cjs"
+      }
+    },
+    "./lib/plugins/includes/collect.js": {
+      "import": {
+        "types": "./api/plugins/includes/collect.d.mts",
+        "default": "./api/plugins/includes/collect.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/includes/collect.d.cts",
+        "default": "./api/plugins/includes/collect.cjs"
+      }
+    },
+    "./lib/plugins/includes/index": {
+      "import": {
+        "types": "./api/plugins/includes/index.d.mts",
+        "default": "./api/plugins/includes/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/includes/index.d.cts",
+        "default": "./api/plugins/includes/index.cjs"
+      }
+    },
+    "./lib/plugins/includes/index.js": {
+      "import": {
+        "types": "./api/plugins/includes/index.d.mts",
+        "default": "./api/plugins/includes/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/includes/index.d.cts",
+        "default": "./api/plugins/includes/index.cjs"
+      }
+    },
+    "./lib/plugins/includes": {
+      "import": {
+        "types": "./api/plugins/includes/index.d.mts",
+        "default": "./api/plugins/includes/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/includes/index.d.cts",
+        "default": "./api/plugins/includes/index.cjs"
+      }
+    },
+    "./lib/plugins/includes/types": {
+      "import": {
+        "types": "./api/plugins/includes/types.d.mts",
+        "default": "./api/plugins/includes/types.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/includes/types.d.cts",
+        "default": "./api/plugins/includes/types.cjs"
+      }
+    },
+    "./lib/plugins/includes/types.js": {
+      "import": {
+        "types": "./api/plugins/includes/types.d.mts",
+        "default": "./api/plugins/includes/types.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/includes/types.d.cts",
+        "default": "./api/plugins/includes/types.cjs"
+      }
+    },
+    "./lib/plugins/inline-code/constant": {
+      "import": {
+        "types": "./api/plugins/inline-code/constant.d.mts",
+        "default": "./api/plugins/inline-code/constant.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/inline-code/constant.d.cts",
+        "default": "./api/plugins/inline-code/constant.cjs"
+      }
+    },
+    "./lib/plugins/inline-code/constant.js": {
+      "import": {
+        "types": "./api/plugins/inline-code/constant.d.mts",
+        "default": "./api/plugins/inline-code/constant.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/inline-code/constant.d.cts",
+        "default": "./api/plugins/inline-code/constant.cjs"
+      }
+    },
+    "./lib/plugins/inline-code/index": {
+      "import": {
+        "types": "./api/plugins/inline-code/index.d.mts",
+        "default": "./api/plugins/inline-code/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/inline-code/index.d.cts",
+        "default": "./api/plugins/inline-code/index.cjs"
+      }
+    },
+    "./lib/plugins/inline-code/index.js": {
+      "import": {
+        "types": "./api/plugins/inline-code/index.d.mts",
+        "default": "./api/plugins/inline-code/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/inline-code/index.d.cts",
+        "default": "./api/plugins/inline-code/index.cjs"
+      }
+    },
+    "./lib/plugins/inline-code": {
+      "import": {
+        "types": "./api/plugins/inline-code/index.d.mts",
+        "default": "./api/plugins/inline-code/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/inline-code/index.d.cts",
+        "default": "./api/plugins/inline-code/index.cjs"
+      }
+    },
+    "./lib/plugins/inline-svg-marker": {
+      "import": {
+        "types": "./api/plugins/inline-svg-marker.d.mts",
+        "default": "./api/plugins/inline-svg-marker.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/inline-svg-marker.d.cts",
+        "default": "./api/plugins/inline-svg-marker.cjs"
+      }
+    },
+    "./lib/plugins/inline-svg-marker.js": {
+      "import": {
+        "types": "./api/plugins/inline-svg-marker.d.mts",
+        "default": "./api/plugins/inline-svg-marker.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/inline-svg-marker.d.cts",
+        "default": "./api/plugins/inline-svg-marker.cjs"
+      }
+    },
+    "./lib/plugins/linkify-strikethrough": {
+      "import": {
+        "types": "./api/plugins/linkify-strikethrough.d.mts",
+        "default": "./api/plugins/linkify-strikethrough.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/linkify-strikethrough.d.cts",
+        "default": "./api/plugins/linkify-strikethrough.cjs"
+      }
+    },
+    "./lib/plugins/linkify-strikethrough.js": {
+      "import": {
+        "types": "./api/plugins/linkify-strikethrough.d.mts",
+        "default": "./api/plugins/linkify-strikethrough.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/linkify-strikethrough.d.cts",
+        "default": "./api/plugins/linkify-strikethrough.cjs"
+      }
+    },
+    "./lib/plugins/links/collect": {
+      "import": {
+        "types": "./api/plugins/links/collect.d.mts",
+        "default": "./api/plugins/links/collect.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/links/collect.d.cts",
+        "default": "./api/plugins/links/collect.cjs"
+      }
+    },
+    "./lib/plugins/links/collect.js": {
+      "import": {
+        "types": "./api/plugins/links/collect.d.mts",
+        "default": "./api/plugins/links/collect.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/links/collect.d.cts",
+        "default": "./api/plugins/links/collect.cjs"
+      }
+    },
+    "./lib/plugins/links/index": {
+      "import": {
+        "types": "./api/plugins/links/index.d.mts",
+        "default": "./api/plugins/links/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/links/index.d.cts",
+        "default": "./api/plugins/links/index.cjs"
+      }
+    },
+    "./lib/plugins/links/index.js": {
+      "import": {
+        "types": "./api/plugins/links/index.d.mts",
+        "default": "./api/plugins/links/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/links/index.d.cts",
+        "default": "./api/plugins/links/index.cjs"
+      }
+    },
+    "./lib/plugins/links": {
+      "import": {
+        "types": "./api/plugins/links/index.d.mts",
+        "default": "./api/plugins/links/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/links/index.d.cts",
+        "default": "./api/plugins/links/index.cjs"
+      }
+    },
+    "./lib/plugins/meta": {
+      "import": {
+        "types": "./api/plugins/meta.d.mts",
+        "default": "./api/plugins/meta.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/meta.d.cts",
+        "default": "./api/plugins/meta.cjs"
+      }
+    },
+    "./lib/plugins/meta.js": {
+      "import": {
+        "types": "./api/plugins/meta.d.mts",
+        "default": "./api/plugins/meta.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/meta.d.cts",
+        "default": "./api/plugins/meta.cjs"
+      }
+    },
+    "./lib/plugins/monospace": {
+      "import": {
+        "types": "./api/plugins/monospace.d.mts",
+        "default": "./api/plugins/monospace.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/monospace.d.cts",
+        "default": "./api/plugins/monospace.cjs"
+      }
+    },
+    "./lib/plugins/monospace.js": {
+      "import": {
+        "types": "./api/plugins/monospace.d.mts",
+        "default": "./api/plugins/monospace.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/monospace.d.cts",
+        "default": "./api/plugins/monospace.cjs"
+      }
+    },
+    "./lib/plugins/notes/constants": {
+      "import": {
+        "types": "./api/plugins/notes/constants.d.mts",
+        "default": "./api/plugins/notes/constants.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/notes/constants.d.cts",
+        "default": "./api/plugins/notes/constants.cjs"
+      }
+    },
+    "./lib/plugins/notes/constants.js": {
+      "import": {
+        "types": "./api/plugins/notes/constants.d.mts",
+        "default": "./api/plugins/notes/constants.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/notes/constants.d.cts",
+        "default": "./api/plugins/notes/constants.cjs"
+      }
+    },
+    "./lib/plugins/notes/index": {
+      "import": {
+        "types": "./api/plugins/notes/index.d.mts",
+        "default": "./api/plugins/notes/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/notes/index.d.cts",
+        "default": "./api/plugins/notes/index.cjs"
+      }
+    },
+    "./lib/plugins/notes/index.js": {
+      "import": {
+        "types": "./api/plugins/notes/index.d.mts",
+        "default": "./api/plugins/notes/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/notes/index.d.cts",
+        "default": "./api/plugins/notes/index.cjs"
+      }
+    },
+    "./lib/plugins/notes": {
+      "import": {
+        "types": "./api/plugins/notes/index.d.mts",
+        "default": "./api/plugins/notes/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/notes/index.d.cts",
+        "default": "./api/plugins/notes/index.cjs"
+      }
+    },
+    "./lib/plugins/ol-attr-conversion": {
+      "import": {
+        "types": "./api/plugins/ol-attr-conversion.d.mts",
+        "default": "./api/plugins/ol-attr-conversion.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/ol-attr-conversion.d.cts",
+        "default": "./api/plugins/ol-attr-conversion.cjs"
+      }
+    },
+    "./lib/plugins/ol-attr-conversion.js": {
+      "import": {
+        "types": "./api/plugins/ol-attr-conversion.d.mts",
+        "default": "./api/plugins/ol-attr-conversion.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/ol-attr-conversion.d.cts",
+        "default": "./api/plugins/ol-attr-conversion.cjs"
+      }
+    },
+    "./lib/plugins/sup": {
+      "import": {
+        "types": "./api/plugins/sup.d.mts",
+        "default": "./api/plugins/sup.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/sup.d.cts",
+        "default": "./api/plugins/sup.cjs"
+      }
+    },
+    "./lib/plugins/sup.js": {
+      "import": {
+        "types": "./api/plugins/sup.d.mts",
+        "default": "./api/plugins/sup.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/sup.d.cts",
+        "default": "./api/plugins/sup.cjs"
+      }
+    },
+    "./lib/plugins/table/index": {
+      "import": {
+        "types": "./api/plugins/table/index.d.mts",
+        "default": "./api/plugins/table/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/table/index.d.cts",
+        "default": "./api/plugins/table/index.cjs"
+      }
+    },
+    "./lib/plugins/table/index.js": {
+      "import": {
+        "types": "./api/plugins/table/index.d.mts",
+        "default": "./api/plugins/table/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/table/index.d.cts",
+        "default": "./api/plugins/table/index.cjs"
+      }
+    },
+    "./lib/plugins/table": {
+      "import": {
+        "types": "./api/plugins/table/index.d.mts",
+        "default": "./api/plugins/table/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/table/index.d.cts",
+        "default": "./api/plugins/table/index.cjs"
+      }
+    },
+    "./lib/plugins/table/types": {
+      "import": {
+        "types": "./api/plugins/table/types.d.mts",
+        "default": "./api/plugins/table/types.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/table/types.d.cts",
+        "default": "./api/plugins/table/types.cjs"
+      }
+    },
+    "./lib/plugins/table/types.js": {
+      "import": {
+        "types": "./api/plugins/table/types.d.mts",
+        "default": "./api/plugins/table/types.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/table/types.d.cts",
+        "default": "./api/plugins/table/types.cjs"
+      }
+    },
+    "./lib/plugins/tabs": {
+      "import": {
+        "types": "./api/plugins/tabs.d.mts",
+        "default": "./api/plugins/tabs.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/tabs.d.cts",
+        "default": "./api/plugins/tabs.cjs"
+      }
+    },
+    "./lib/plugins/tabs.js": {
+      "import": {
+        "types": "./api/plugins/tabs.d.mts",
+        "default": "./api/plugins/tabs.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/tabs.d.cts",
+        "default": "./api/plugins/tabs.cjs"
+      }
+    },
+    "./lib/plugins/term/constants": {
+      "import": {
+        "types": "./api/plugins/term/constants.d.mts",
+        "default": "./api/plugins/term/constants.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/term/constants.d.cts",
+        "default": "./api/plugins/term/constants.cjs"
+      }
+    },
+    "./lib/plugins/term/constants.js": {
+      "import": {
+        "types": "./api/plugins/term/constants.d.mts",
+        "default": "./api/plugins/term/constants.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/term/constants.d.cts",
+        "default": "./api/plugins/term/constants.cjs"
+      }
+    },
+    "./lib/plugins/term/index": {
+      "import": {
+        "types": "./api/plugins/term/index.d.mts",
+        "default": "./api/plugins/term/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/term/index.d.cts",
+        "default": "./api/plugins/term/index.cjs"
+      }
+    },
+    "./lib/plugins/term/index.js": {
+      "import": {
+        "types": "./api/plugins/term/index.d.mts",
+        "default": "./api/plugins/term/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/term/index.d.cts",
+        "default": "./api/plugins/term/index.cjs"
+      }
+    },
+    "./lib/plugins/term": {
+      "import": {
+        "types": "./api/plugins/term/index.d.mts",
+        "default": "./api/plugins/term/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/term/index.d.cts",
+        "default": "./api/plugins/term/index.cjs"
+      }
+    },
+    "./lib/plugins/term/termDefinitions": {
+      "import": {
+        "types": "./api/plugins/term/termDefinitions.d.mts",
+        "default": "./api/plugins/term/termDefinitions.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/term/termDefinitions.d.cts",
+        "default": "./api/plugins/term/termDefinitions.cjs"
+      }
+    },
+    "./lib/plugins/term/termDefinitions.js": {
+      "import": {
+        "types": "./api/plugins/term/termDefinitions.d.mts",
+        "default": "./api/plugins/term/termDefinitions.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/term/termDefinitions.d.cts",
+        "default": "./api/plugins/term/termDefinitions.cjs"
+      }
+    },
+    "./lib/plugins/typings": {
+      "import": {
+        "types": "./api/plugins/typings.d.mts",
+        "default": "./api/plugins/typings.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/typings.d.cts",
+        "default": "./api/plugins/typings.cjs"
+      }
+    },
+    "./lib/plugins/typings.js": {
+      "import": {
+        "types": "./api/plugins/typings.d.mts",
+        "default": "./api/plugins/typings.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/typings.d.cts",
+        "default": "./api/plugins/typings.cjs"
+      }
+    },
+    "./lib/plugins/utils": {
+      "import": {
+        "types": "./api/plugins/utils.d.mts",
+        "default": "./api/plugins/utils.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/utils.d.cts",
+        "default": "./api/plugins/utils.cjs"
+      }
+    },
+    "./lib/plugins/utils.js": {
+      "import": {
+        "types": "./api/plugins/utils.d.mts",
+        "default": "./api/plugins/utils.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/utils.d.cts",
+        "default": "./api/plugins/utils.cjs"
+      }
+    },
+    "./lib/plugins/video/const": {
+      "import": {
+        "types": "./api/plugins/video/const.d.mts",
+        "default": "./api/plugins/video/const.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/video/const.d.cts",
+        "default": "./api/plugins/video/const.cjs"
+      }
+    },
+    "./lib/plugins/video/const.js": {
+      "import": {
+        "types": "./api/plugins/video/const.d.mts",
+        "default": "./api/plugins/video/const.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/video/const.d.cts",
+        "default": "./api/plugins/video/const.cjs"
+      }
+    },
+    "./lib/plugins/video/index": {
+      "import": {
+        "types": "./api/plugins/video/index.d.mts",
+        "default": "./api/plugins/video/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/video/index.d.cts",
+        "default": "./api/plugins/video/index.cjs"
+      }
+    },
+    "./lib/plugins/video/index.js": {
+      "import": {
+        "types": "./api/plugins/video/index.d.mts",
+        "default": "./api/plugins/video/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/video/index.d.cts",
+        "default": "./api/plugins/video/index.cjs"
+      }
+    },
+    "./lib/plugins/video": {
+      "import": {
+        "types": "./api/plugins/video/index.d.mts",
+        "default": "./api/plugins/video/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/video/index.d.cts",
+        "default": "./api/plugins/video/index.cjs"
+      }
+    },
+    "./lib/plugins/video/parsers": {
+      "import": {
+        "types": "./api/plugins/video/parsers.d.mts",
+        "default": "./api/plugins/video/parsers.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/video/parsers.d.cts",
+        "default": "./api/plugins/video/parsers.cjs"
+      }
+    },
+    "./lib/plugins/video/parsers.js": {
+      "import": {
+        "types": "./api/plugins/video/parsers.d.mts",
+        "default": "./api/plugins/video/parsers.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/video/parsers.d.cts",
+        "default": "./api/plugins/video/parsers.cjs"
+      }
+    },
+    "./lib/plugins/video/types": {
+      "import": {
+        "types": "./api/plugins/video/types.d.mts",
+        "default": "./api/plugins/video/types.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/video/types.d.cts",
+        "default": "./api/plugins/video/types.cjs"
+      }
+    },
+    "./lib/plugins/video/types.js": {
+      "import": {
+        "types": "./api/plugins/video/types.d.mts",
+        "default": "./api/plugins/video/types.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/video/types.d.cts",
+        "default": "./api/plugins/video/types.cjs"
+      }
+    },
+    "./lib/plugins/video/utils": {
+      "import": {
+        "types": "./api/plugins/video/utils.d.mts",
+        "default": "./api/plugins/video/utils.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/video/utils.d.cts",
+        "default": "./api/plugins/video/utils.cjs"
+      }
+    },
+    "./lib/plugins/video/utils.js": {
+      "import": {
+        "types": "./api/plugins/video/utils.d.mts",
+        "default": "./api/plugins/video/utils.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/video/utils.d.cts",
+        "default": "./api/plugins/video/utils.cjs"
+      }
+    },
+    "./lib/plugins/visibility": {
+      "import": {
+        "types": "./api/plugins/visibility.d.mts",
+        "default": "./api/plugins/visibility.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/visibility.d.cts",
+        "default": "./api/plugins/visibility.cjs"
+      }
+    },
+    "./lib/plugins/visibility.js": {
+      "import": {
+        "types": "./api/plugins/visibility.d.mts",
+        "default": "./api/plugins/visibility.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/visibility.d.cts",
+        "default": "./api/plugins/visibility.cjs"
+      }
+    },
+    "./lib/plugins": {
+      "import": {
+        "types": "./api/plugins.d.mts",
+        "default": "./api/plugins.mjs"
+      },
+      "require": {
+        "types": "./api/plugins.d.cts",
+        "default": "./api/plugins.cjs"
+      }
+    },
+    "./lib/plugins.js": {
+      "import": {
+        "types": "./api/plugins.d.mts",
+        "default": "./api/plugins.mjs"
+      },
+      "require": {
+        "types": "./api/plugins.d.cts",
+        "default": "./api/plugins.cjs"
+      }
+    },
+    "./lib/preprocessors/included/index": {
+      "import": {
+        "types": "./api/preprocessors/included/index.d.mts",
+        "default": "./api/preprocessors/included/index.mjs"
+      },
+      "require": {
+        "types": "./api/preprocessors/included/index.d.cts",
+        "default": "./api/preprocessors/included/index.cjs"
+      }
+    },
+    "./lib/preprocessors/included/index.js": {
+      "import": {
+        "types": "./api/preprocessors/included/index.d.mts",
+        "default": "./api/preprocessors/included/index.mjs"
+      },
+      "require": {
+        "types": "./api/preprocessors/included/index.d.cts",
+        "default": "./api/preprocessors/included/index.cjs"
+      }
+    },
+    "./lib/preprocessors/included": {
+      "import": {
+        "types": "./api/preprocessors/included/index.d.mts",
+        "default": "./api/preprocessors/included/index.mjs"
+      },
+      "require": {
+        "types": "./api/preprocessors/included/index.d.cts",
+        "default": "./api/preprocessors/included/index.cjs"
+      }
+    },
+    "./lib/preprocessors/index": {
+      "import": {
+        "types": "./api/preprocessors/index.d.mts",
+        "default": "./api/preprocessors/index.mjs"
+      },
+      "require": {
+        "types": "./api/preprocessors/index.d.cts",
+        "default": "./api/preprocessors/index.cjs"
+      }
+    },
+    "./lib/preprocessors/index.js": {
+      "import": {
+        "types": "./api/preprocessors/index.d.mts",
+        "default": "./api/preprocessors/index.mjs"
+      },
+      "require": {
+        "types": "./api/preprocessors/index.d.cts",
+        "default": "./api/preprocessors/index.cjs"
+      }
+    },
+    "./lib/preprocessors": {
+      "import": {
+        "types": "./api/preprocessors/index.d.mts",
+        "default": "./api/preprocessors/index.mjs"
+      },
+      "require": {
+        "types": "./api/preprocessors/index.d.cts",
+        "default": "./api/preprocessors/index.cjs"
+      }
+    },
+    "./lib/sanitize": {
+      "import": {
+        "types": "./api/sanitize.d.mts",
+        "default": "./api/sanitize.mjs"
+      },
+      "require": {
+        "types": "./api/sanitize.d.cts",
+        "default": "./api/sanitize.cjs"
+      }
+    },
+    "./lib/sanitize.js": {
+      "import": {
+        "types": "./api/sanitize.d.mts",
+        "default": "./api/sanitize.mjs"
+      },
+      "require": {
+        "types": "./api/sanitize.d.cts",
+        "default": "./api/sanitize.cjs"
+      }
+    },
+    "./lib/svgo": {
+      "import": {
+        "types": "./api/svgo.d.mts",
+        "default": "./api/svgo.mjs"
+      },
+      "require": {
+        "types": "./api/svgo.d.cts",
+        "default": "./api/svgo.cjs"
+      }
+    },
+    "./lib/svgo.js": {
+      "import": {
+        "types": "./api/svgo.d.mts",
+        "default": "./api/svgo.mjs"
+      },
+      "require": {
+        "types": "./api/svgo.d.cts",
+        "default": "./api/svgo.cjs"
+      }
+    },
+    "./lib/title": {
+      "import": {
+        "types": "./api/title.d.mts",
+        "default": "./api/title.mjs"
+      },
+      "require": {
+        "types": "./api/title.d.cts",
+        "default": "./api/title.cjs"
+      }
+    },
+    "./lib/title.js": {
+      "import": {
+        "types": "./api/title.d.mts",
+        "default": "./api/title.mjs"
+      },
+      "require": {
+        "types": "./api/title.d.cts",
+        "default": "./api/title.cjs"
+      }
+    },
+    "./lib/typings": {
+      "import": {
+        "types": "./api/typings.d.mts",
+        "default": "./api/typings.mjs"
+      },
+      "require": {
+        "types": "./api/typings.d.cts",
+        "default": "./api/typings.cjs"
+      }
+    },
+    "./lib/typings.js": {
+      "import": {
+        "types": "./api/typings.d.mts",
+        "default": "./api/typings.mjs"
+      },
+      "require": {
+        "types": "./api/typings.d.cts",
+        "default": "./api/typings.cjs"
+      }
+    },
+    "./lib/utils": {
+      "import": {
+        "types": "./api/utils.d.mts",
+        "default": "./api/utils.mjs"
+      },
+      "require": {
+        "types": "./api/utils.d.cts",
+        "default": "./api/utils.cjs"
+      }
+    },
+    "./lib/utils.js": {
+      "import": {
+        "types": "./api/utils.d.mts",
+        "default": "./api/utils.mjs"
+      },
+      "require": {
+        "types": "./api/utils.d.cts",
+        "default": "./api/utils.cjs"
+      }
+    },
+    "./lib/utilsFS": {
+      "import": {
+        "types": "./api/utilsFS.d.mts",
+        "default": "./api/utilsFS.mjs"
+      },
+      "require": {
+        "types": "./api/utilsFS.d.cts",
+        "default": "./api/utilsFS.cjs"
+      }
+    },
+    "./lib/utilsFS.js": {
+      "import": {
+        "types": "./api/utilsFS.d.mts",
+        "default": "./api/utilsFS.mjs"
+      },
+      "require": {
+        "types": "./api/utilsFS.d.cts",
+        "default": "./api/utilsFS.cjs"
+      }
+    },
+    "./lib/yfmlint/index": {
+      "import": {
+        "types": "./api/yfmlint/index.d.mts",
+        "default": "./api/yfmlint/index.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/index.d.cts",
+        "default": "./api/yfmlint/index.cjs"
+      }
+    },
+    "./lib/yfmlint/index.js": {
+      "import": {
+        "types": "./api/yfmlint/index.d.mts",
+        "default": "./api/yfmlint/index.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/index.d.cts",
+        "default": "./api/yfmlint/index.cjs"
+      }
+    },
+    "./lib/yfmlint": {
+      "import": {
+        "types": "./api/yfmlint/index.d.mts",
+        "default": "./api/yfmlint/index.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/index.d.cts",
+        "default": "./api/yfmlint/index.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/index": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/index.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/index.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/index.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/index.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/index.js": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/index.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/index.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/index.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/index.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/index.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/index.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/index.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/index.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm001": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm001.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm001.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm001.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm001.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm001.js": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm001.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm001.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm001.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm001.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm002": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm002.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm002.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm002.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm002.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm002.js": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm002.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm002.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm002.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm002.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm003": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm003.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm003.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm003.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm003.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm003.js": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm003.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm003.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm003.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm003.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm004": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm004.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm004.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm004.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm004.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm004.js": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm004.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm004.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm004.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm004.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm005": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm005.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm005.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm005.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm005.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm005.js": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm005.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm005.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm005.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm005.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm006": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm006.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm006.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm006.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm006.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm006.js": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm006.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm006.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm006.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm006.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm007": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm007.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm007.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm007.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm007.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm007.js": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm007.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm007.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm007.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm007.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm008": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm008.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm008.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm008.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm008.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm008.js": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm008.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm008.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm008.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm008.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm009": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm009.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm009.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm009.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm009.cjs"
+      }
+    },
+    "./lib/yfmlint/markdownlint-custom-rule/yfm009.js": {
+      "import": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm009.d.mts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm009.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/markdownlint-custom-rule/yfm009.d.cts",
+        "default": "./api/yfmlint/markdownlint-custom-rule/yfm009.cjs"
+      }
+    },
+    "./lib/yfmlint/typings": {
+      "import": {
+        "types": "./api/yfmlint/typings.d.mts",
+        "default": "./api/yfmlint/typings.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/typings.d.cts",
+        "default": "./api/yfmlint/typings.cjs"
+      }
+    },
+    "./lib/yfmlint/typings.js": {
+      "import": {
+        "types": "./api/yfmlint/typings.d.mts",
+        "default": "./api/yfmlint/typings.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/typings.d.cts",
+        "default": "./api/yfmlint/typings.cjs"
+      }
+    },
+    "./lib/yfmlint/utils": {
+      "import": {
+        "types": "./api/yfmlint/utils.d.mts",
+        "default": "./api/yfmlint/utils.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/utils.d.cts",
+        "default": "./api/yfmlint/utils.cjs"
+      }
+    },
+    "./lib/yfmlint/utils.js": {
+      "import": {
+        "types": "./api/yfmlint/utils.d.mts",
+        "default": "./api/yfmlint/utils.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/utils.d.cts",
+        "default": "./api/yfmlint/utils.cjs"
+      }
+    },
+    "./lib/yfmlint/yfmlint": {
+      "import": {
+        "types": "./api/yfmlint/yfmlint.d.mts",
+        "default": "./api/yfmlint/yfmlint.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/yfmlint.d.cts",
+        "default": "./api/yfmlint/yfmlint.cjs"
+      }
+    },
+    "./lib/yfmlint/yfmlint.js": {
+      "import": {
+        "types": "./api/yfmlint/yfmlint.d.mts",
+        "default": "./api/yfmlint/yfmlint.mjs"
+      },
+      "require": {
+        "types": "./api/yfmlint/yfmlint.d.cts",
+        "default": "./api/yfmlint/yfmlint.cjs"
+      }
+    },
+    "./lib": {
+      "import": {
+        "types": "./api/index.d.mts",
+        "default": "./api/index.mjs"
+      },
+      "require": {
+        "types": "./api/index.d.cts",
+        "default": "./api/index.cjs"
+      }
+    },
+    "./runtime": "./dist/js/yfm.js",
+    "./runtime/base": "./dist/js/base.js",
+    "./runtime/yfm-only": "./dist/js/_yfm-only.js",
+    "./runtime/print": "./dist/js/print.js",
+    "./styles": "./dist/css/yfm.css",
+    "./styles/base": "./dist/css/base.css",
+    "./styles/yfm-only": "./dist/css/_yfm-only.css",
+    "./styles/print": "./dist/css/print.css",
+    "./scss/*": "./dist/scss/*",
+    "./dist/scss/*": "./dist/scss/*",
+    "./src/*": "./src/*",
+    "./package.json": "./package.json",
+    "./dist/js/yfm": "./dist/js/yfm.js",
+    "./dist/js/yfm.js": "./dist/js/yfm.js",
+    "./dist/js/yfm.js.map": "./dist/js/yfm.js.map",
+    "./dist/js/yfm.min": "./dist/js/yfm.min.js",
+    "./dist/js/yfm.min.js": "./dist/js/yfm.min.js",
+    "./dist/js/yfm.min.js.map": "./dist/js/yfm.min.js.map",
+    "./dist/css/yfm": "./dist/css/yfm.css",
+    "./dist/css/yfm.css": "./dist/css/yfm.css",
+    "./dist/css/yfm.css.map": "./dist/css/yfm.css.map",
+    "./dist/css/yfm.min": "./dist/css/yfm.min.css",
+    "./dist/css/yfm.min.css": "./dist/css/yfm.min.css",
+    "./dist/css/yfm.min.css.map": "./dist/css/yfm.min.css.map",
+    "./dist/js/base": "./dist/js/base.js",
+    "./dist/js/base.js": "./dist/js/base.js",
+    "./dist/js/base.js.map": "./dist/js/base.js.map",
+    "./dist/js/base.min": "./dist/js/base.min.js",
+    "./dist/js/base.min.js": "./dist/js/base.min.js",
+    "./dist/js/base.min.js.map": "./dist/js/base.min.js.map",
+    "./dist/css/base": "./dist/css/base.css",
+    "./dist/css/base.css": "./dist/css/base.css",
+    "./dist/css/base.css.map": "./dist/css/base.css.map",
+    "./dist/css/base.min": "./dist/css/base.min.css",
+    "./dist/css/base.min.css": "./dist/css/base.min.css",
+    "./dist/css/base.min.css.map": "./dist/css/base.min.css.map",
+    "./dist/js/_yfm-only": "./dist/js/_yfm-only.js",
+    "./dist/js/_yfm-only.js": "./dist/js/_yfm-only.js",
+    "./dist/js/_yfm-only.js.map": "./dist/js/_yfm-only.js.map",
+    "./dist/js/_yfm-only.min": "./dist/js/_yfm-only.min.js",
+    "./dist/js/_yfm-only.min.js": "./dist/js/_yfm-only.min.js",
+    "./dist/js/_yfm-only.min.js.map": "./dist/js/_yfm-only.min.js.map",
+    "./dist/css/_yfm-only": "./dist/css/_yfm-only.css",
+    "./dist/css/_yfm-only.css": "./dist/css/_yfm-only.css",
+    "./dist/css/_yfm-only.css.map": "./dist/css/_yfm-only.css.map",
+    "./dist/css/_yfm-only.min": "./dist/css/_yfm-only.min.css",
+    "./dist/css/_yfm-only.min.css": "./dist/css/_yfm-only.min.css",
+    "./dist/css/_yfm-only.min.css.map": "./dist/css/_yfm-only.min.css.map",
+    "./dist/js/print": "./dist/js/print.js",
+    "./dist/js/print.js": "./dist/js/print.js",
+    "./dist/js/print.js.map": "./dist/js/print.js.map",
+    "./dist/css/print": "./dist/css/print.css",
+    "./dist/css/print.css": "./dist/css/print.css",
+    "./dist/css/print.css.map": "./dist/css/print.css.map"
   }
 }

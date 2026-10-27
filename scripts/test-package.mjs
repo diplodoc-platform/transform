@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {
+    copyFileSync,
     existsSync,
     mkdirSync,
     mkdtempSync,
@@ -73,18 +74,21 @@ try {
     const consumerRoot = join(temporaryRoot, 'consumer');
     mkdirSync(consumerRoot);
     const manifest = JSON.parse(readFileSync(join(projectRoot, 'package.json'), 'utf8'));
-    const typeDependencies = Object.fromEntries(
-        Object.entries(manifest.devDependencies).filter(([name]) => name.startsWith('@types/')),
-    );
+    const companions = process.env.TRANSFORM_PACKAGE_COMPANIONS
+        ? JSON.parse(readFileSync(process.env.TRANSFORM_PACKAGE_COMPANIONS, 'utf8'))
+        : {};
     writeFileSync(
         join(consumerRoot, 'package.json'),
         JSON.stringify({
             private: true,
             dependencies: {
                 '@diplodoc/transform': `file:${join(temporaryRoot, packed[0].filename)}`,
-                'highlight.js': '^11.8.0',
-                ...typeDependencies,
+                '@types/node': manifest.devDependencies['@types/node'],
+                ...companions,
             },
+            overrides: Object.fromEntries(
+                Object.keys(companions).map((name) => [name, `$${name}`]),
+            ),
         }),
     );
     execFileSync(
@@ -95,10 +99,20 @@ try {
             stdio: 'inherit',
         },
     );
+    copyFileSync(
+        join(projectRoot, 'scripts/package-consumer.mjs'),
+        join(consumerRoot, 'consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
     const consumerRequire = createRequire(join(consumerRoot, 'package.json'));
     assert.throws(() => consumerRequire.resolve('svgo'), {code: 'MODULE_NOT_FOUND'});
+    assert.throws(() => consumerRequire.resolve('highlight.js'), {code: 'MODULE_NOT_FOUND'});
 
     const installedTransform = consumerRequire('@diplodoc/transform');
+    assert.match(installedTransform('```js\nconst x = "<";\n```').result.html, /&lt;/);
     const installedEsm = await import(
         pathToFileURL(consumerRequire.resolve('@diplodoc/transform'))
     );
@@ -127,9 +141,11 @@ try {
         `
 import transform = require('@diplodoc/transform');
 import images = require('@diplodoc/transform/lib/plugins/images');
-import init = require('@diplodoc/transform/lib/md');
+import init = require('@diplodoc/transform/parser');
 const options: transform.Options = {svgMaxEntityCount: 1024};
-transform('example', options);
+transform.transform('example', options);
+const output: transform.Output = transform('example', options);
+void output;
 init(options);
 images.replaceSvgContent('<svg/>', {width: null, height: null, title: null, svgMaxEntityCount: 1024});
 `,
@@ -137,7 +153,15 @@ images.replaceSvgContent('<svg/>', {width: null, height: null, title: null, svgM
     writeFileSync(
         join(consumerRoot, 'consumer.mts'),
         `
-import transform from '@diplodoc/transform';
+import transform, {transform as named} from '@diplodoc/transform';
+import parser from '@diplodoc/transform/parser';
+import images from '@diplodoc/transform/plugins/images';
+import {type OptionsType} from '@diplodoc/transform/types';
+const options: OptionsType = {};
+const legacyOptions: transform.Options = options;
+named('text', legacyOptions);
+parser(options);
+images.replaceSvgContent('<svg/>', {width: null, height: null, title: null});
 import {getFileTokens} from '@diplodoc/transform/lib/utilsFS.js';
 const tokens = transform('example', {tokens: true});
 const tokenType: string = tokens[0].type;
@@ -152,7 +176,8 @@ void getFileTokens;
                 strict: true,
                 skipLibCheck: false,
                 noEmit: true,
-                esModuleInterop: true,
+                esModuleInterop: false,
+                ignoreDeprecations: '6.0',
                 module: 'Node16',
                 moduleResolution: 'Node16',
                 target: 'ES2022',
@@ -161,16 +186,149 @@ void getFileTokens;
             files: ['consumer.cts', 'consumer.mts'],
         }),
     );
-    execFileSync(
-        process.execPath,
-        [projectRequire.resolve('typescript/lib/tsc.js'), '-p', consumerRoot],
-        {stdio: 'inherit'},
+    const typeEntries = Object.entries(manifest.exports).filter(
+        ([, entry]) => typeof entry !== 'string',
     );
+    for (const extension of ['cts', 'mts']) {
+        const typeImports = typeEntries
+            .map(([subpath], index) => {
+                const name = `@diplodoc/transform${subpath === '.' ? '' : subpath.slice(1)}`;
+                return extension === 'cts'
+                    ? `import type API${index} = require('${name}');`
+                    : `import type * as API${index} from '${name}';`;
+            })
+            .join('\n');
+        const path = join(consumerRoot, `consumer.${extension}`);
+        writeFileSync(path, `${readFileSync(path, 'utf8')}\n${typeImports}\n`);
+    }
+    for (const module of ['Node16', 'NodeNext', 'Preserve']) {
+        const configPath = join(consumerRoot, 'tsconfig.json');
+        const config = JSON.parse(readFileSync(configPath, 'utf8'));
+        config.compilerOptions.module = module;
+        config.compilerOptions.moduleResolution = module === 'Preserve' ? 'Bundler' : module;
+        // Bundler consumers use ESM; native CJS is checked separately without interop.
+        config.files = module === 'Preserve' ? ['consumer.mts'] : ['consumer.cts', 'consumer.mts'];
+        writeFileSync(configPath, JSON.stringify(config));
+        execFileSync(
+            process.execPath,
+            [projectRequire.resolve('typescript/lib/tsc.js'), '-p', consumerRoot],
+            {stdio: 'inherit'},
+        );
+    }
+
+    writeFileSync(
+        join(consumerRoot, 'with-highlighter.mts'),
+        `
+import transform from '@diplodoc/transform';
+import type hljs from 'highlight.js';
+type LanguageFn = Parameters<typeof hljs.registerLanguage>[1];
+const language: LanguageFn = () => ({contains: []});
+transform('text', {highlightLangs: {custom: language}});
+`,
+    );
+    writeFileSync(
+        join(consumerRoot, 'with-highlighter.cjs'),
+        `
+const assert = require('node:assert/strict');
+const transform = require('@diplodoc/transform');
+const hljs = require('highlight.js');
+let registeredWithActualApi = false;
+const language = (api) => {
+    registeredWithActualApi = api === hljs;
+    return {contains: [{begin: /fixture/, className: 'keyword'}]};
+};
+const html = transform('~~~custom\\nfixture\\n~~~', {highlightLangs: {custom: language}}).result.html;
+assert.equal(registeredWithActualApi, true);
+assert.match(html, /hljs-keyword/);
+`,
+    );
+    const withHighlighterConfig = JSON.parse(
+        readFileSync(join(consumerRoot, 'tsconfig.json'), 'utf8'),
+    );
+    withHighlighterConfig.compilerOptions.module = 'NodeNext';
+    withHighlighterConfig.compilerOptions.moduleResolution = 'NodeNext';
+    withHighlighterConfig.files = ['consumer.cts', 'consumer.mts', 'with-highlighter.mts'];
+    writeFileSync(join(consumerRoot, 'tsconfig.json'), JSON.stringify(withHighlighterConfig));
+    for (const version of ['10.7.3', '^11.8.0']) {
+        execFileSync(
+            process.execPath,
+            [
+                process.env.npm_execpath,
+                'install',
+                '--ignore-scripts',
+                '--no-audit',
+                '--no-fund',
+                `highlight.js@${version}`,
+            ],
+            {cwd: consumerRoot, stdio: 'inherit'},
+        );
+        execFileSync(
+            process.execPath,
+            [projectRequire.resolve('typescript/lib/tsc.js'), '-p', consumerRoot],
+            {stdio: 'inherit'},
+        );
+        execFileSync(process.execPath, [join(consumerRoot, 'with-highlighter.cjs')], {
+            cwd: consumerRoot,
+            stdio: 'inherit',
+        });
+        execFileSync(process.execPath, [join(consumerRoot, 'consumer.mjs')], {
+            cwd: consumerRoot,
+            stdio: 'inherit',
+        });
+    }
+
+    // Bundle the installed browser entry points independently: base/yfm-only must
+    // retain their split contents rather than silently resolving to the full runtime.
+    const {buildSync} = projectRequire('esbuild');
+    const {JSDOM} = projectRequire('jsdom');
+    for (const variant of ['', '/base', '/yfm-only', '/print']) {
+        const result = buildSync({
+            stdin: {
+                contents: `import '@diplodoc/transform/runtime${variant}';`,
+                resolveDir: consumerRoot,
+            },
+            bundle: true,
+            platform: 'browser',
+            target: 'es2018',
+            write: false,
+        });
+        const browser = new JSDOM('<main class="yfm"><p>Browser runtime fixture</p></main>', {
+            runScripts: 'outside-only',
+            url: 'https://example.test',
+        });
+        browser.window.matchMedia = () => ({
+            matches: false,
+            addEventListener() {},
+            removeEventListener() {},
+        });
+        browser.window.eval(result.outputFiles[0].text);
+        browser.window.close();
+        buildSync({
+            stdin: {
+                contents: `import '@diplodoc/transform/styles${variant}';`,
+                resolveDir: consumerRoot,
+            },
+            bundle: true,
+            platform: 'browser',
+            outdir: join(consumerRoot, 'browser-styles'),
+            write: false,
+        });
+    }
+    const sass = projectRequire('sass');
+    const stylesheet = sass.compileString('@use "pkg:@diplodoc/transform/scss/yfm-base.scss";', {
+        importers: [new sass.NodePackageImporter(consumerRoot)],
+        logger: sass.Logger.silent,
+    });
+    assert.match(stylesheet.css, /\.yfm/);
 
     // eslint-disable-next-line no-console
     console.log(
         'The npm tarball renders through native CJS/ESM loading, contains the patched SVG parser and licenses, and compiles CJS/ESM consumers with skipLibCheck disabled.',
     );
 } finally {
-    rmSync(temporaryRoot, {recursive: true, force: true});
+    if (process.env.TRANSFORM_KEEP_PACKAGE_FIXTURE) {
+        process.stdout.write(`Package fixture retained at ${temporaryRoot}\n`);
+    } else {
+        rmSync(temporaryRoot, {recursive: true, force: true});
+    }
 }

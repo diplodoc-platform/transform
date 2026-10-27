@@ -16,4 +16,4 @@ const tabs: (md: MarkdownIt, options?: {output?: string; generateID?: IDGenerato
         },
     });
 
-export = tabs;
+export default tabs;

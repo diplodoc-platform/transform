@@ -102,4 +102,4 @@ const collect = (input: string, options: Options) => {
     return result;
 };
 
-export = collect;
+export default collect;

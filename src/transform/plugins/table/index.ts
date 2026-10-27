@@ -879,4 +879,4 @@ const yfmTable = (md: MarkdownIt, opts: YfmTablePluginOptions & {log?: Logger} =
     );
 };
 
-export = yfmTable;
+export default yfmTable;

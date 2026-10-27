@@ -266,4 +266,4 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
     };
 };
 
-export = index;
+export default index;

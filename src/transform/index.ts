@@ -57,10 +57,14 @@ function transform(originInput: string, options: OptionsType = {}): OutputType |
     }
 }
 
-export = transform;
+export {transform};
+export default transform;
+
+const transformImplementation = transform;
 
 // eslint-disable-next-line @typescript-eslint/no-namespace, @typescript-eslint/no-redeclare -- backward compatibility
 namespace transform {
+    export const transform = transformImplementation;
     export type Options = OptionsType;
     export type Output = OutputType;
     export type ContentAudience = VisibilityContentAudience;

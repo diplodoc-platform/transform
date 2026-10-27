@@ -67,4 +67,4 @@ const meta: MarkdownItPluginCb = (md) => {
     );
 };
 
-export = meta;
+export default meta;

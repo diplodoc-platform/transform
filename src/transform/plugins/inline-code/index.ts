@@ -13,4 +13,4 @@ const inlineCode: MarkdownItPluginCb = (md, options) => {
     };
 };
 
-export = inlineCode;
+export default inlineCode;

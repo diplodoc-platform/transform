@@ -109,7 +109,7 @@ function yfmlint(opts: Options) {
     }
 }
 
-export = yfmlint;
+export default yfmlint;
 
 // eslint-disable-next-line @typescript-eslint/no-namespace, no-redeclare
 namespace yfmlint {
@@ -135,3 +135,8 @@ namespace yfmlint {
 
     export type LintRule = Rule;
 }
+
+export type LintConfig = yfmlint.LintConfig;
+export type PluginOptions = yfmlint.PluginOptions;
+export type LintRule = yfmlint.LintRule;
+export type LintMarkdownFunctionOptions = yfmlint.LintMarkdownFunctionOptions;

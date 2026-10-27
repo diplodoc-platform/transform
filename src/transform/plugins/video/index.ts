@@ -148,4 +148,4 @@ function videoEmbed(
     };
 }
 
-export = video;
+export default video;

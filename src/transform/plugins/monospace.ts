@@ -138,4 +138,4 @@ const monospace: MarkdownItPluginCb = (md) => {
     });
 };
 
-export = monospace;
+export default monospace;

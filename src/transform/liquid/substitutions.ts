@@ -72,4 +72,4 @@ function substituteVariable(varPath: string, builtVars: Record<string, unknown>)
     return value;
 }
 
-export = substitutions;
+export default substitutions;

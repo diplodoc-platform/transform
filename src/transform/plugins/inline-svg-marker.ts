@@ -70,4 +70,4 @@ const inlineSvgMarker: MarkdownItPluginCb = (md) => {
     });
 };
 
-export = inlineSvgMarker;
+export default inlineSvgMarker;
