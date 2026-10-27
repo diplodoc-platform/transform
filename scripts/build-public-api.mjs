@@ -8,18 +8,19 @@ import {legacyModules, stableEntries, staticEntries} from './public-api.mjs';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const packagePath = resolve(root, 'package.json');
 const manifest = JSON.parse(readFileSync(packagePath, 'utf8'));
-const bySource = new Map(legacyModules.map((entry) => [entry.source, entry]));
+// Newly introduced stable modules are not automatically compatibility aliases.
+const modules = new Map(legacyModules.map((entry) => [entry.source, entry]));
+for (const source of Object.values(stableEntries)) {
+    if (!modules.has(source)) {
+        modules.set(source, {source});
+    }
+}
 const moduleExport = (source) => ({
     import: {types: `./api/${source}.d.mts`, default: `./api/${source}.mjs`},
     require: {types: `./api/${source}.d.cts`, default: `./api/${source}.cjs`},
 });
 const exports = Object.fromEntries(
-    Object.entries(stableEntries).map(([name, source]) => {
-        if (!bySource.has(source)) {
-            throw new Error(`Unknown public API implementation: ${source}`);
-        }
-        return [name, moduleExport(source)];
-    }),
+    Object.entries(stableEntries).map(([name, source]) => [name, moduleExport(source)]),
 );
 for (const {source} of legacyModules) {
     const entry = moduleExport(source);
@@ -49,14 +50,14 @@ if (readFileSync(packagePath, 'utf8') !== serialized) {
 
 // Derive every type and value export from compiler-emitted declarations. No API
 // signatures are copied into the facades, so overloads and namespace types survive.
-const files = legacyModules.map(({source}) => resolve(root, `lib/${source}.d.ts`));
+const files = [...modules.values()].map(({source}) => resolve(root, `lib/${source}.d.ts`));
 const program = ts.createProgram(files, {
     module: ts.ModuleKind.Node16,
     moduleResolution: ts.ModuleResolutionKind.Node16,
     skipLibCheck: false,
 });
 const checker = program.getTypeChecker();
-for (const {source, legacyDefault} of legacyModules) {
+for (const {source, legacyDefault} of modules.values()) {
     const declaration = program.getSourceFile(resolve(root, `lib/${source}.d.ts`));
     const symbol = declaration && checker.getSymbolAtLocation(declaration);
     if (!symbol) {

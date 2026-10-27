@@ -12,9 +12,11 @@ const {default: images, replaceSvgContent} = await import(`${packageName}/plugin
 const {default: log, getLogger} = await import(`${packageName}/log`);
 const {createDeprecationReporter} = await import(`${packageName}/deprecation`);
 const {getFileTokens} = await import(`${packageName}/utils/fs`);
+const configuration = await import(`${packageName}/configuration`);
 
 const require = createRequire(import.meta.url);
 const manifest = require(`${packageName}/package.json`);
+const cjsConfiguration = require(`${packageName}/configuration`);
 assert.equal(typeof globalThis.document, 'undefined');
 assert.equal(typeof globalThis.window, 'undefined');
 assert.equal(transform, namedTransform);
@@ -50,6 +52,61 @@ assert.match(instance.compile(instance.parse('# Heading')), /<h1/);
 assert.match(transform('SSR text').result.html, /SSR text/);
 assert.deepEqual(createRequire(require.resolve(packageName))('js-yaml').load('key: value'), {
     key: 'value',
+});
+
+assert.equal(configuration.definePlugin, cjsConfiguration.definePlugin);
+assert.equal(configuration.defineTransformOptions, cjsConfiguration.defineTransformOptions);
+assert.equal(configuration.builtinPluginIds, cjsConfiguration.builtinPluginIds);
+assert.equal(Object.isFrozen(configuration.builtinPluginIds), true);
+assert.equal(
+    transform('**default preset**', configuration.defineTransformOptions()).result.html,
+    transform('**default preset**').result.html,
+);
+for (const api of [configuration, cjsConfiguration]) {
+    let seenContext;
+    const collect = (input, options) => `${options.label}:${input}`;
+    const badge = api.definePlugin({
+        id: 'package/badge',
+        requires: ['notes'],
+        setup(md, options, context) {
+            seenContext = context;
+            md.renderer.rules.text = (tokens, index) =>
+                options.label + md.utils.escapeHtml(tokens[index].content);
+        },
+        collect,
+    })({label: 'configured:'});
+    assert.equal(badge.plugin.collect, collect);
+    assert.equal(
+        badge.plugin.collect('source', {label: 'collected', tokenStream: []}),
+        'collected:source',
+    );
+    const options = api.defineTransformOptions({
+        core: {disableLiquid: true},
+        plugins: {preset: 'none', enable: ['notes'], options: {notes: undefined}, plugins: [badge]},
+    });
+    assert.match(transform('text', options).result.html, /configured:text/);
+    assert.equal(seenContext.path, undefined);
+    assert.equal(seenContext.log, log);
+    assert.equal(typeof seenContext.deprecations.warn, 'function');
+    assert.equal(typeof seenContext.generateID, 'function');
+    assert.throws(
+        () => transform('text', {...options, plugins: []}),
+        /either plugins or pluginConfiguration/,
+    );
+    assert.throws(
+        () =>
+            transform(
+                'text',
+                api.defineTransformOptions({plugins: {preset: 'none', plugins: [badge]}}),
+            ),
+        /unselected plugin/,
+    );
+}
+assert.throws(() => require.resolve(`${packageName}/lib/plugin-configuration`), {
+    code: 'ERR_PACKAGE_PATH_NOT_EXPORTED',
+});
+assert.throws(() => require.resolve(`${packageName}/lib/plugin-registry`), {
+    code: 'ERR_PACKAGE_PATH_NOT_EXPORTED',
 });
 
 for (const [subpath, target] of Object.entries(manifest.exports)) {
