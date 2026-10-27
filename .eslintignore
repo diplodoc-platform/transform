@@ -12,7 +12,12 @@ node_modules
 /coverage
 /pages-build
 /playground
-/e2e
+/e2e/*
+!/e2e/fixtures/
+/e2e/fixtures/*
+!/e2e/fixtures/utils/
+/e2e/fixtures/utils/*
+!/e2e/fixtures/utils/transformPreset.ts
 /external
 .lintstagedrc.js
 .eslintrc.js
