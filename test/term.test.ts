@@ -1,5 +1,4 @@
-import type MarkdownIt from 'markdown-it';
-import type StateCore from 'markdown-it/lib/rules_core/state_core';
+import type {MarkdownIt, StateCore} from 'markdown-it';
 
 import {dirname, resolve} from 'path';
 import {readFileSync} from 'fs';

@@ -1,4 +1,4 @@
-import type Token from 'markdown-it/lib/token';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {VideoService} from './const';
 
 export type VideoToken = Token & {

@@ -1,13 +1,11 @@
-import type MarkdownIt from 'markdown-it';
-import type Token from 'markdown-it/lib/token';
-import type Renderer from 'markdown-it/lib/renderer';
+import type {MarkdownIt, Renderer, Token} from 'markdown-it';
 import type {MarkdownItPluginOpts} from '../src/transform/plugins/typings';
 import type {Mock} from 'vitest';
 
-import {escapeHtml} from 'markdown-it/lib/common/utils';
 import {describe, expect, it, vi} from 'vitest';
 import dd from 'ts-dedent';
 
+import {escapeHtml} from '../src/transform/markdown-it-utils';
 import code from '../src/transform/plugins/code';
 
 // same as in markdown-it

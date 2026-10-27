@@ -1,6 +1,5 @@
-import type MarkdownIt from 'markdown-it';
-import type ParserInline from 'markdown-it/lib/parser_inline';
-import type Token from 'markdown-it/lib/token';
+import type {MarkdownIt, Token} from 'markdown-it' with {'resolution-mode': 'import'};
+import type {StateInline} from '../../typings';
 
 import {ImsizeAttr} from './const';
 import {parseImageSize} from './helpers';
@@ -9,7 +8,10 @@ export type ImsizeOptions = {
     enableInlineStyling?: boolean;
 };
 
-export const imageWithSize = (md: MarkdownIt, opts?: ImsizeOptions): ParserInline.RuleInline => {
+export const imageWithSize = (
+    md: MarkdownIt,
+    opts?: ImsizeOptions,
+): ((state: StateInline, silent: boolean) => boolean) => {
     // eslint-disable-next-line complexity
     return (state, silent) => {
         if (state.src.charCodeAt(state.pos) !== 0x21 /* ! */) {
@@ -321,7 +323,9 @@ function resolveDataAttr(key: string, value: string): [string, string] | null {
     }
 
     if (key === 'gallery-id' || key === 'gallery-src') {
-        if (value === '') return null;
+        if (value === '') {
+            return null;
+        }
 
         return [`data-${key}`, value];
     }

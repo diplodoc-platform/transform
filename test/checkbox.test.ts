@@ -1,7 +1,5 @@
 'use strict';
 
-import type {CheckboxOptions} from '../src/transform/plugins/checkbox/checkbox';
-
 import path from 'node:path';
 import MarkdownIt from 'markdown-it';
 import dd from 'ts-dedent';
@@ -25,9 +23,7 @@ describe('markdown-it-checkbox', () => {
     describe('markdown-it-checkbox()', () => {
         const md = new MarkdownIt({breaks: true});
 
-        md.use(plugin, {
-            divWrap: false,
-        });
+        md.use(plugin);
         generate(path.join(__dirname, 'data/checkbox/checkbox.txt'), md);
         return it('should pass irrelevant markdown', () => {
             const res = md.render('# test');
@@ -49,7 +45,7 @@ describe('markdown-it-checkbox', () => {
         });
 
         it('should optionally change class of div layer', () => {
-            const md = new MarkdownIt({}).use<CheckboxOptions>(plugin, {divClass: 'cb'});
+            const md = new MarkdownIt({}).use(plugin, {divClass: 'cb'});
             const res = md.render('[X] test written');
             assert.equal(
                 res,
@@ -61,7 +57,7 @@ describe('markdown-it-checkbox', () => {
         });
 
         it('should optionally change the id', () => {
-            const md = new MarkdownIt({}).use<CheckboxOptions>(plugin, {idPrefix: 'cb'});
+            const md = new MarkdownIt({}).use(plugin, {idPrefix: 'cb'});
             const res = md.render('[X] test written');
             assert.equal(
                 res,
@@ -73,7 +69,7 @@ describe('markdown-it-checkbox', () => {
         });
 
         it('should not set disable attr to checkbox', () => {
-            const md = new MarkdownIt({}).use<CheckboxOptions>(plugin, {disabled: false});
+            const md = new MarkdownIt({}).use(plugin, {disabled: false});
             const res = md.render('[X] check');
             assert.equal(
                 res,

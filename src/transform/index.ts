@@ -1,4 +1,4 @@
-import type Token from 'markdown-it/lib/token';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {EnvType, OptionsType, OutputType} from './typings';
 import type {
     ContentAudience as VisibilityContentAudience,

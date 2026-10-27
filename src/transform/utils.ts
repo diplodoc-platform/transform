@@ -1,4 +1,4 @@
-import type Token from 'markdown-it/lib/token';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 
 import {formatHref, parseHref} from '@diplodoc/utils';
 
@@ -87,7 +87,7 @@ export function transformLinkToOriginalArticle(opts: {root: string; currentPath:
 }
 
 export function getHrefTokenAttr(token: Token) {
-    let href = token.attrGet('href') || '';
+    let href = String(token.attrGet('href') ?? '');
     try {
         href = decodeURI(href);
     } catch {}
@@ -96,7 +96,7 @@ export function getHrefTokenAttr(token: Token) {
 }
 
 export function getSrcTokenAttr(token: Token) {
-    let src = token.attrGet('src') || '';
+    let src = String(token.attrGet('src') ?? '');
     try {
         // decodeURI can throw an error https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError
         src = decodeURI(src);

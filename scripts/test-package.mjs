@@ -97,8 +97,33 @@ try {
     );
     const consumerRequire = createRequire(join(consumerRoot, 'package.json'));
     assert.throws(() => consumerRequire.resolve('svgo'), {code: 'MODULE_NOT_FOUND'});
+
+    const installedTransform = consumerRequire('@diplodoc/transform');
+    const installedEsm = await import(
+        pathToFileURL(consumerRequire.resolve('@diplodoc/transform'))
+    );
+    assert.equal(installedEsm.default, installedTransform);
+    const installedParserRequire = createRequire(consumerRequire.resolve('@diplodoc/transform'));
+    assert.equal(installedParserRequire('markdown-it/package.json').version, '15.0.3');
+
+    for (const transform of [installedTransform, installedEsm.default]) {
+        assert.equal(
+            transform('a\nb\n: definition').result.html,
+            '<p>a<br />\nb<br />\n: definition</p>\n',
+        );
+        assert.equal(
+            transform('example.com', {plugins: [], linkify: true}).result.html,
+            '<p><a href="http://example.com">example.com</a></p>\n',
+        );
+        assert.match(
+            transform(
+                '{% list tabs %}\n\n- First\n\n  Content\n\n- Second\n\n  More\n\n{% endlist %}',
+            ).result.html,
+            /role="tabpanel"/,
+        );
+    }
     writeFileSync(
-        join(consumerRoot, 'consumer.ts'),
+        join(consumerRoot, 'consumer.cts'),
         `
 import transform = require('@diplodoc/transform');
 import images = require('@diplodoc/transform/lib/plugins/images');
@@ -107,6 +132,17 @@ const options: transform.Options = {svgMaxEntityCount: 1024};
 transform('example', options);
 init(options);
 images.replaceSvgContent('<svg/>', {width: null, height: null, title: null, svgMaxEntityCount: 1024});
+`,
+    );
+    writeFileSync(
+        join(consumerRoot, 'consumer.mts'),
+        `
+import transform from '@diplodoc/transform';
+import {getFileTokens} from '@diplodoc/transform/lib/utilsFS.js';
+const tokens = transform('example', {tokens: true});
+const tokenType: string = tokens[0].type;
+void tokenType;
+void getFileTokens;
 `,
     );
     writeFileSync(
@@ -122,7 +158,7 @@ images.replaceSvgContent('<svg/>', {width: null, height: null, title: null, svgM
                 target: 'ES2022',
                 types: ['node'],
             },
-            files: ['consumer.ts'],
+            files: ['consumer.cts', 'consumer.mts'],
         }),
     );
     execFileSync(
@@ -133,7 +169,7 @@ images.replaceSvgContent('<svg/>', {width: null, height: null, title: null, svgM
 
     // eslint-disable-next-line no-console
     console.log(
-        'The npm tarball contains the patched parser and licenses; public types compile without SVGO and with skipLibCheck disabled.',
+        'The npm tarball renders through native CJS/ESM loading, contains the patched SVG parser and licenses, and compiles CJS/ESM consumers with skipLibCheck disabled.',
     );
 } finally {
     rmSync(temporaryRoot, {recursive: true, force: true});

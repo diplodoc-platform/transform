@@ -2,6 +2,8 @@ import MarkdownIt from 'markdown-it';
 import {sep} from 'path';
 import {parseHref} from '@diplodoc/utils';
 
+import {getLogger} from '../../log';
+import {DEFAULT_LANG} from '../../constants';
 import {PAGE_LINK_REGEXP, getHrefTokenAttr, isLocalUrl} from '../../utils';
 import {getSinglePageAnchorId, resolveRelativePath} from '../../utilsFS';
 
@@ -33,7 +35,17 @@ const collect = (input: string, options: Options) => {
     /* Syntax "{% include [Text](_includes/file.md) %}" is parsed as link. Need to ignore errors */
     const needSkipLinkFn = (href: string) => href.includes(`_includes${sep}`);
     const transformLink = (href: string) => href;
-    const md = new MarkdownIt().use(index, {...options, transformLink, needSkipLinkFn});
+    const md = new MarkdownIt().use(index, {
+        ...options,
+        transformLink,
+        needSkipLinkFn,
+        log: getLogger(),
+        lang: DEFAULT_LANG,
+        rootPublicPath: '',
+        isLintRun: false,
+        notFoundCb: () => {},
+        getPublicPath: undefined,
+    });
     const tokens = md.parse(result, {});
 
     let i = 0;

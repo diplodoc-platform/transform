@@ -1,10 +1,9 @@
 import type {MarkdownItPluginCb} from '../../typings';
 
-import {escapeHtml} from 'markdown-it/lib/common/utils';
-
 import {generateID as globalGenerateID} from '../utils';
 
 const inlineCode: MarkdownItPluginCb = (md, options) => {
+    const {escapeHtml} = md.utils;
     const generateID = options.generateID ?? globalGenerateID;
 
     md.renderer.rules.code_inline = function (tokens, idx) {

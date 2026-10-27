@@ -1,6 +1,5 @@
-import type StateCore from 'markdown-it/lib/rules_core/state_core';
-import type StateInline from 'markdown-it/lib/rules_inline/state_inline';
-import type Token from 'markdown-it/lib/token';
+import type {StateCore, StateInline} from '../../typings';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {MarkdownItPluginCb} from '../typings';
 import type {IDGenerator} from '../utils';
 
@@ -167,7 +166,7 @@ function collectTermsFromRawContent(tokens: Token[], reg: RegExp, out: Set<strin
 function collectTermKeysFromInlineChildren(children: Token[], out: Set<string>) {
     for (const child of children) {
         if (child.type === 'term_open') {
-            const key = child.attrGet('term-key');
+            const key = String(child.attrGet('term-key') ?? '');
 
             if (key) {
                 out.add(key);
@@ -201,7 +200,7 @@ function collectTermsFromDfns(tokens: Token[], out: Set<string>, referencedDfns:
 
     for (const token of tokens) {
         if (token.type === 'dfn_open') {
-            const key = (token.attrGet('id') || '').replace(/_element$/, '');
+            const key = String(token.attrGet('id') ?? '').replace(/_element$/, '');
 
             inReferencedDfn = Boolean(key) && referencedDfns.has(key);
             continue;
@@ -235,7 +234,7 @@ function removeUnreferencedDefinitions(tokens: Token[], referencedTerms: Set<str
         const tok = tokens[idx];
 
         if (tok.type === 'dfn_open') {
-            const termKey = (tok.attrGet('id') || '').replace(/_element$/, '');
+            const termKey = String(tok.attrGet('id') ?? '').replace(/_element$/, '');
 
             if (termKey && !referencedTerms.has(termKey)) {
                 const endIdx = findDfnCloseIdx(tokens, idx + 1);
@@ -348,7 +347,7 @@ const term: MarkdownItPluginCb = (md, options) => {
                     ...new Set([...text.matchAll(regexAllTerms)].map((el) => `:${el[3]}`)),
                 ];
                 const notDefinedTerms = uniqueTerms.filter(
-                    (el) => !Object.keys(state.env.terms).includes(el),
+                    (el) => !Object.keys(state.env.terms || {}).includes(el),
                 );
 
                 if (notDefinedTerms.length && isLintRun) {

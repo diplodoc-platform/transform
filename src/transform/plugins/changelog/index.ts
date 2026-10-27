@@ -1,6 +1,5 @@
-import type Core from 'markdown-it/lib/parser_core';
-import type Token from 'markdown-it/lib/token';
-import type StateCore from 'markdown-it/lib/rules_core/state_core';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
+import type {StateCore} from '../../typings';
 import type {MarkdownItPluginCb} from '../typings';
 
 import {bold} from 'chalk';
@@ -82,7 +81,7 @@ function parseBody(tokens: Token[], state: StateCore) {
             if (Number.isFinite(width) && Number.isFinite(height)) {
                 ratio = height / width;
             }
-            let alt = imageToken.attrGet('title') || '';
+            let alt = String(imageToken.attrGet('title') ?? '');
             if (!alt && imageToken.children) {
                 alt = md.renderer.renderInlineAsText(imageToken.children, md.options, env);
             }
@@ -109,12 +108,14 @@ function parseBody(tokens: Token[], state: StateCore) {
 }
 
 const changelog: MarkdownItPluginCb<Options> = function (md, {extractChangelogs, log, path}) {
-    const plugin: Core.RuleCore = (state) => {
+    const plugin: (state: StateCore) => void = (state) => {
         const {tokens, env} = state;
 
         for (let i = 0, len = tokens.length; i < len; i++) {
             const isOpen = isOpenToken(tokens, i);
-            if (!isOpen) continue;
+            if (!isOpen) {
+                continue;
+            }
 
             const openAt = i;
             let isCloseFound = false;

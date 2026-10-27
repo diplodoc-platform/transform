@@ -8,11 +8,8 @@
 // Process @[rutube](videoID)
 // Process @[url](fullLink)
 
-import type MarkdownIt from 'markdown-it';
-// eslint-disable-next-line no-duplicate-imports
-import type {PluginWithOptions} from 'markdown-it';
-import type ParserInline from 'markdown-it/lib/parser_inline';
-import type Renderer from 'markdown-it/lib/renderer';
+import type {MarkdownIt, RendererRule} from 'markdown-it' with {'resolution-mode': 'import'};
+import type {StateInline} from '../../typings';
 import type {VideoFullOptions, VideoPluginOptions, VideoToken} from './types';
 
 import {append} from '../utils';
@@ -25,7 +22,7 @@ import {VideoService, defaults} from './const';
  * Video plugin for markdown-it.
  * Forked from https://github.com/CenterForOpenScience/markdown-it-video/tree/0.6.3
  */
-const video: PluginWithOptions<VideoPluginOptions> = (md, options) => {
+const video = (md: MarkdownIt, options?: VideoPluginOptions) => {
     const theOptions: VideoFullOptions = {...defaults, ...options};
     const theMd = md;
 
@@ -33,7 +30,7 @@ const video: PluginWithOptions<VideoPluginOptions> = (md, options) => {
     theMd.inline.ruler.before('emphasis', 'video', videoEmbed(theMd, theOptions));
 };
 
-function tokenizeVideo(md: MarkdownIt, options: VideoFullOptions): Renderer.RenderRule {
+function tokenizeVideo(md: MarkdownIt, options: VideoFullOptions): RendererRule {
     return (tokens, idx) => {
         const videoID = md.utils.escapeHtml((tokens[idx] as VideoToken).videoID);
         const service = md.utils.escapeHtml((tokens[idx] as VideoToken).service).toLowerCase();
@@ -85,7 +82,10 @@ function tokenizeVideo(md: MarkdownIt, options: VideoFullOptions): Renderer.Rend
 
 const EMBED_REGEX = /@\[([a-zA-Z]*?)]\([\s]*(.*?)[\s]*[)]/im;
 
-function videoEmbed(md: MarkdownIt, _options: VideoFullOptions): ParserInline.RuleInline {
+function videoEmbed(
+    md: MarkdownIt,
+    _options: VideoFullOptions,
+): (state: StateInline, silent: boolean) => boolean {
     return (state, silent) => {
         const theState = state;
         const oldPos = state.pos;
@@ -141,7 +141,7 @@ function videoEmbed(md: MarkdownIt, _options: VideoFullOptions): ParserInline.Ru
 
         if (csp) {
             state.env.meta ??= {};
-            append(state.env.meta, 'csp', csp);
+            append(state.env.meta as Record<string, Record<string, string[]>[]>, 'csp', csp);
         }
 
         return true;

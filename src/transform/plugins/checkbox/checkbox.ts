@@ -1,7 +1,5 @@
-import type MarkdownIt from 'markdown-it';
-import type Core from 'markdown-it/lib/parser_core';
-import type StateCore from 'markdown-it/lib/rules_core/state_core';
-import type Token from 'markdown-it/lib/token';
+import type {MarkdownIt, Token} from 'markdown-it' with {'resolution-mode': 'import'};
+import type {StateCore} from '../../typings';
 
 // eslint-disable-next-line no-useless-escape
 export const pattern = /^\[(X|\s|\_|\-)\]\s(.*)/i;
@@ -44,7 +42,10 @@ export type CheckboxOptions = {
     disabled?: boolean;
 };
 
-export const checkboxReplace = function (_md: MarkdownIt, opts?: CheckboxOptions): Core.RuleCore {
+export const checkboxReplace = function (
+    _md: MarkdownIt,
+    opts?: CheckboxOptions,
+): (state: StateCore) => void {
     let lastId = 0;
     const defaults: Required<CheckboxOptions> = {
         divClass: 'checkbox',

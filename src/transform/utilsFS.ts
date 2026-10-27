@@ -1,4 +1,5 @@
 import type {Dictionary} from 'lodash';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {StateCore} from './typings';
 
 import {readFileSync, realpathSync, statSync} from 'fs';
@@ -47,7 +48,7 @@ export function getFileTokens(
     state: StateCore,
     options: GetFileTokensOpts,
     content?: string,
-) {
+): Token[] {
     const {
         getVarsPerFile,
         vars,

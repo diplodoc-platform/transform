@@ -1,6 +1,5 @@
-import type {Delimiter} from 'markdown-it/lib/rules_inline/state_inline';
-import type StateInline from 'markdown-it/lib/rules_inline/state_inline';
-import type {MarkdownIt} from '../typings';
+import type {Delimiter} from 'markdown-it' with {'resolution-mode': 'import'};
+import type {MarkdownIt, StateInline} from '../typings';
 
 // Matches the scheme expression used by markdown-it's built-in linkify rule.
 const SCHEME_RE = /(?:^|[^a-z0-9.+-])([a-z][a-z0-9.+-]*)$/i;

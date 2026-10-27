@@ -1,6 +1,4 @@
-import type StateBlock from 'markdown-it/lib/rules_block/state_block';
-import type StateCore from 'markdown-it/lib/rules_core/state_core';
-import type StateInline from 'markdown-it/lib/rules_inline/state_inline';
+import type {StateBlock, StateCore, StateInline} from '../typings';
 import type {MarkdownItPluginCb} from './typings';
 
 const MARKER = /^<!--[ \t]*diplodoc:svg[ \t][^\r\n]*?-->(?=<svg\b)/;

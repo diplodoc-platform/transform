@@ -1,6 +1,5 @@
-import type StateBlock from 'markdown-it/lib/rules_block/state_block';
-import type Token from 'markdown-it/lib/token';
-import type {MarkdownItPluginCb} from '../typings';
+import type {MarkdownIt, StateBlock} from '../../typings';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {Logger} from '../../log';
 import type {TableAttrs, YfmTablePluginOptions} from './types';
 
@@ -299,7 +298,7 @@ function getTableRowPositions(
     startPosition: number,
     endPosition: number,
     startLine: number,
-    opts: YfmTablePluginOptions = {},
+    opts: YfmTablePluginOptions & {log?: Logger} = {},
 ): RowPositions {
     let endOfTable = null;
     let tableLevel = 0;
@@ -567,7 +566,9 @@ const VALID_ALIGN_VALUES: ReadonlySet<string> = new Set([
 ]);
 
 function parseHeaderRows(rawAttrs: TableAttrs, log?: Logger): number | null {
-    if (!('header-rows' in rawAttrs)) return null;
+    if (!('header-rows' in rawAttrs)) {
+        return null;
+    }
     const raw = rawAttrs['header-rows'];
     const trimmed = raw.trim();
     const parsed = Number.parseInt(trimmed, 10);
@@ -700,7 +701,7 @@ const clearTokens = (tableStart: number, tokens: Token[]): void => {
     });
 };
 
-const yfmTable: MarkdownItPluginCb<YfmTablePluginOptions> = (md, opts) => {
+const yfmTable = (md: MarkdownIt, opts: YfmTablePluginOptions & {log?: Logger} = {}) => {
     md.block.ruler.before(
         'code',
         pluginName,

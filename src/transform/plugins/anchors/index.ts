@@ -1,5 +1,5 @@
-import type StateCore from 'markdown-it/lib/rules_core/state_core';
-import type Token from 'markdown-it/lib/token';
+import type {StateCore} from '../../typings';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {MarkdownItPluginCb} from '../typings';
 
 import {bold} from 'chalk';
@@ -112,7 +112,7 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
         });
     };
     const getSlugTitle = (token: Token, visibleTitle: string) => {
-        if (token.attrGet('id')) {
+        if (String(token.attrGet('id') ?? '')) {
             return visibleTitle;
         }
         return titlesBeforeAttrs.get(token) ?? visibleTitle;
@@ -144,7 +144,7 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
                 const {title, level} = headingInfo(tokens, i);
 
                 const inlineToken = tokens[i + 1];
-                let id = token.attrGet('id');
+                let id = String(token.attrGet('id') ?? '');
                 let ghId: string;
 
                 if (!title) {
