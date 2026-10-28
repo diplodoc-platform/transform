@@ -397,3 +397,29 @@ it('preserves child scopes parsed by real term definitions before the root tail'
     expect($('dfn .footnote-item').text()).toContain('term body');
     expect($('.footnote-item').text()).toContain('root body');
 });
+
+it('keeps inline-only semantics when a previously plain root admits a child later', () => {
+    let native: Native | undefined;
+    const generateID = vi.fn(() => 'unused');
+    const md = parser({
+        disableLiquid: true,
+        renderInline: true,
+        generateID,
+        plugins: [
+            ...DefaultPlugins,
+            (value) => {
+                native = value;
+            },
+        ],
+    });
+    const root = md.parseDocument('plain');
+    if (!native) throw new Error('Missing parser');
+    const child = parseDocumentFragmentResult(native, 'Child[^a]\n\n[^a]: body', root.env, {
+        purpose: 'reference',
+    });
+    root.tokens.push(...materializeFootnoteTokens(child.tokens));
+    const html = md.compileDocument(root);
+    expect(html).toContain('Child[^a]');
+    expect(html).not.toContain('footnote');
+    expect(generateID).not.toHaveBeenCalled();
+});

@@ -374,5 +374,6 @@ function initCompiler(
                 return sanitizedHtml;
             },
             generateID,
+            renderInline,
         );
 }

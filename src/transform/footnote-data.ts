@@ -532,13 +532,18 @@ export function compileFootnoteOutput(
     tokens: Token[],
     renderBody: RenderBody,
     generateID: () => string,
+    renderInline = false,
 ): string {
     const service = footnoteService(env);
     if (service) return compileWithService(md, env, tokens, renderBody, service);
     if (!hasFootnoteTokens(tokens)) return renderBody(tokens);
     // A previously plain owned root may receive a materialized child later.
     // Commit the optional service only after rendering succeeds.
-    const candidate: FootnoteService = {rootScope: {definitions: new Map()}, generateID};
+    const candidate: FootnoteService = {
+        rootScope: {definitions: new Map()},
+        generateID,
+        renderInline,
+    };
     const result = compileWithService(md, env, tokens, renderBody, candidate);
     setFootnoteService(env, candidate);
     return result;
