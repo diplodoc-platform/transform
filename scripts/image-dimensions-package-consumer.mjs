@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import Module, {createRequire} from 'node:module';
 
-const require = createRequire(import.meta.url);
+const consumerRequire = createRequire(import.meta.url);
 const originalResolve = Module._resolveFilename;
 const forbidden = [];
 Module._resolveFilename = function (request, ...args) {
@@ -16,7 +16,7 @@ Module._resolveFilename = function (request, ...args) {
     return originalResolve.call(this, request, ...args);
 };
 try {
-    const cjs = require('@diplodoc/transform/migrations/image-dimensions');
+    const cjs = consumerRequire('@diplodoc/transform/migrations/image-dimensions');
     const esm = await import('@diplodoc/transform/migrations/image-dimensions');
     assert.equal(cjs.migrateImageDimensions, esm.migrateImageDimensions);
     const source = '😀\r\n![alt](image.png "title" =00x20)\r\n';
@@ -35,10 +35,9 @@ try {
 } finally {
     Module._resolveFilename = originalResolve;
 }
-assert.equal(require('@diplodoc/transform/log').log.isEmpty(), true);
-const MarkdownIt = require('markdown-it');
-
-const imsize = require('@diplodoc/transform/plugins/imsize');
+assert.equal(consumerRequire('@diplodoc/transform/log').log.isEmpty(), true);
+const MarkdownIt = consumerRequire('markdown-it');
+const imsize = consumerRequire('@diplodoc/transform/plugins/imsize');
 const warnings = [];
 const md = new MarkdownIt().use(imsize, {
     log: {warn: (message) => warnings.push(message), info() {}, error() {}},
