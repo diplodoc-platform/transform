@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.78.12](https://github.com/diplodoc-platform/transform/compare/v4.78.11...v4.78.12) (2026-10-28)
+
+
+### Bug Fixes
+
+* **deps:** Update @diplodoc/cut-extension@1.1.7, @diplodoc/file-extension@0.2.6, @diplodoc/utils@2.3.6 ([37923bf](https://github.com/diplodoc-platform/transform/commit/37923bfdeada11d1307d814cf164f4eb929413e4))
+* render wide-mode titles as plain text ([c4ba314](https://github.com/diplodoc-platform/transform/commit/c4ba31468acf7229deef0fb64846eed00b0730a5))
+
 ## [4.78.11](https://github.com/diplodoc-platform/transform/compare/v4.78.10...v4.78.11) (2026-10-26)
 
 
