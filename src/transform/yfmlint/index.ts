@@ -10,6 +10,7 @@ import union from 'lodash/union';
 import attrs from 'markdown-it-attrs';
 
 import {preprocess} from '../preprocessors';
+import {resolveMarkdownAttrs} from '../parser-policy';
 import {warnBundledEngine} from '../legacy-engines';
 
 import baseDefaultLintConfig from './yfmlint';
@@ -69,9 +70,10 @@ function yfmlint(opts: Options) {
         lintRules = union(lintRules, customLintRules);
     }
 
-    // TODO: set to false in next major
-    const {enableMarkdownAttrs = true} = opts;
-    const plugins = customPlugins && [...(enableMarkdownAttrs ? [attrs] : []), ...customPlugins];
+    const plugins = [
+        ...(resolveMarkdownAttrs(opts.enableMarkdownAttrs) ? [attrs] : []),
+        ...(customPlugins || []),
+    ];
     const preparedPlugins = plugins && plugins.map((plugin) => [plugin, pluginOptions]);
 
     // Run preprocessor

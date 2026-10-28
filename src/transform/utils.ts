@@ -2,6 +2,8 @@ import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 
 import {formatHref, parseHref} from '@diplodoc/utils';
 
+import {matchesCustomHeadingId} from './heading-id';
+
 export function isLocalUrl(url: string) {
     // A URL is local unless it has an external scheme: either `scheme://...`
     // / `//host...` (protocol-relative), or an opaque scheme URI without
@@ -32,9 +34,16 @@ export function findBlockTokens(tokens: Token[], id: string) {
             }
         }
 
+        const explicitId = token.attrGet('id');
+        // Child headings have no generated anchors yet. Recognize their existing
+        // standalone IDs, including aliases, without consuming attributes or mutating tokens.
+        const matchesHeadingId =
+            token.type === 'heading_open' &&
+            matchesCustomHeadingId(tokens[i + 1]?.content || '', id, String(explicitId ?? ''));
+
         if (
             (token.type === 'paragraph_open' || token.type === 'heading_open') &&
-            token.attrGet('id') === id &&
+            (explicitId === id || matchesHeadingId) &&
             typeof start === 'undefined'
         ) {
             startToken = token;

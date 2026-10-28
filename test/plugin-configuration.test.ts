@@ -92,7 +92,7 @@ describe('builtin composition', () => {
     });
 
     test('the empty preset retains core rules, their controls and sanitization', () => {
-        const core = {allowHTML: true, linkify: true};
+        const core = {allowHTML: true, linkify: true, enableMarkdownAttrs: true};
         const input = [
             '4. ordered',
             'paragraph{#explicit}',
