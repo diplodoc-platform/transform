@@ -148,15 +148,18 @@ describe('Terms', () => {
         expect(clearRandomId(result)).toMatchSnapshot();
     });
 
-    test('Term should be interactive when definition comes entirely from included file', () => {
-        const inputPath = resolve(__dirname, './mocks/term/includeDefinitions.md');
-        const input = readFileSync(inputPath, 'utf8');
-        const result = transformYfm(input, inputPath);
+    test.each([undefined, false, true])(
+        'included definitions remain interactive with attrs=%s',
+        (enableMarkdownAttrs) => {
+            const inputPath = resolve(__dirname, './mocks/term/includeDefinitions.md');
+            const input = readFileSync(inputPath, 'utf8');
+            const result = transformYfm(input, inputPath, {enableMarkdownAttrs});
 
-        expect(result).toContain('term-key=":html"');
-        expect(result).toContain('id=":html_element"');
-        expect(result).toContain('yfm-term_title');
-    });
+            expect(result).toContain('term-key=":html"');
+            expect(result).toContain('id=":html_element"');
+            expect(result).toContain('yfm-term_title');
+        },
+    );
 
     test('Term should use escape regexp like chars', () => {
         const inputPath = resolve(__dirname, './mocks/term/rxlike-term.md');

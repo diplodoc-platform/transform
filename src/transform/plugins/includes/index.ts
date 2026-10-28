@@ -72,7 +72,6 @@ function unfoldIncludes(state: StateCore, path: string, options: Options) {
                 let includedTokens;
                 if (hash) {
                     // TODO: add warning about missed block
-                    // TODO: findBlockTokens requires markdown-it-attrs plugin for find block with id=hash
                     includedTokens = findBlockTokens(fileTokens, hash);
                 } else {
                     includedTokens = fileTokens;
@@ -142,7 +141,8 @@ const index: MarkdownItPluginCb<Options> = (md: MarkdownItIncluded, options) => 
     try {
         md.core.ruler.before('curly_attributes', 'includes', plugin);
     } catch {
-        md.core.ruler.push('includes', plugin);
+        // Keep includes before linkification and later term processing without general attrs.
+        md.core.ruler.before('linkify', 'includes', plugin);
     }
 };
 

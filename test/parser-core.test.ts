@@ -42,7 +42,7 @@ function createHost(defaultPlugins: MarkdownItPluginCb[] = []) {
 
 beforeEach(() => nodeLog.clear());
 
-test('shared prelude retains Node attrs defaults and explicit false with custom plugins', () => {
+test('shared prelude and Node use the same opt-in attrs policy with custom plugins', () => {
     const source = '# Heading {#stable}\n\n1. item';
     for (const enableMarkdownAttrs of [undefined, true, false]) {
         const options = {plugins: [], enableMarkdownAttrs};

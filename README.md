@@ -26,6 +26,20 @@ Use it in your code to work with text during program execution. For example, to 
 
 > **Note**: Liquid template support and YFMLint integration are deprecated. Use separate packages (`@diplodoc/liquid` and `@diplodoc/yfmlint`) instead.
 
+## General Markdown attributes
+
+General-purpose attributes are opt-in. By default `Hello {name}` and
+`Hello { name }` remain text. Set `enableMarkdownAttrs: true` in flat options,
+or `core: {enableMarkdownAttrs: true}` with `defineTransformOptions`, to retain
+the pinned attributes parser for paragraph IDs, classes and extra attributes.
+Standalone heading IDs and image dimensions keep their dedicated plugin behavior.
+Mixed heading attributes and paragraph-fragment includes require the explicit
+compatibility setting until that content is migrated.
+
+The retained bundled linter uses the same default-off selector. Standalone
+`@diplodoc/yfmlint` has its own default-on compatibility policy; callers should
+pass the same explicit selector to their renderer and linter.
+
 ## Installation {#install}
 
 1. Install a package:

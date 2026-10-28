@@ -13,7 +13,6 @@ export interface Options {
     lintConfig?: LintConfig;
     customLintRules?: Rule[];
     sourceMap?: Dictionary<string>;
-    // TODO: set false in next major
-    /** @default true */
+    /** Enable general Markdown attributes explicitly; disabled by default. */
     enableMarkdownAttrs?: boolean;
 }

@@ -11,7 +11,9 @@ describe.each([false, true])(
             (title) => {
                 const width = followingAttrs ? ' width="100%"' : '';
                 const source = `| A |\n| --- |\n| B |\n\n{wide-content title="${title}"${width}}`;
-                const table = load(transform(source).result.html)('table');
+                const table = load(transform(source, {enableMarkdownAttrs: true}).result.html)(
+                    'table',
+                );
 
                 expect(table.attr('title')).toBe(title);
                 expect(table.attr('width')).toBe(followingAttrs ? '100%' : undefined);
