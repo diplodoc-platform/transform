@@ -1,6 +1,7 @@
 import type {Attributes, Tag} from 'sanitize-html';
 import type {LogConsumer, LogLevels} from './log-core';
-import type {CssWhiteList} from './typings';
+import type {CssWhiteList} from './shared-types';
+import type {SanitizeDataOptions} from './sanitize-settings';
 
 import sanitizeHtml from 'sanitize-html';
 // @ts-ignore
@@ -541,8 +542,7 @@ const useTagTransformer = (tagName: string, attribs: Attributes): Tag => {
     };
 };
 
-export interface SanitizeOptions extends sanitizeHtml.IOptions {
-    cssWhiteList?: CssWhiteList;
+export interface SanitizeOptions extends sanitizeHtml.IOptions, SanitizeDataOptions {
     disableStyleSanitizer?: boolean;
 }
 

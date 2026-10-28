@@ -1,6 +1,6 @@
 import type {MarkdownItPluginCb} from '../../typings';
 
-import {generateID as globalGenerateID} from '../utils';
+import {generateID as globalGenerateID} from '../pure-utils';
 
 const inlineCode: MarkdownItPluginCb = (md, options) => {
     const {escapeHtml} = md.utils;

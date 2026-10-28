@@ -15,6 +15,7 @@ import {tmpdir} from 'node:os';
 import {dirname, join} from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 
+import {verifyBrowserPackage} from './test-browser-package.mjs';
 import {verifyHighlighterGraph} from './test-highlighter-graph.mjs';
 import {verifyImageDimensionsGraph} from './test-image-dimensions-graph.mjs';
 import {verifyInlineSyntaxGraph} from './test-inline-syntax-graph.mjs';
@@ -453,7 +454,7 @@ custom({label: 'typed', unknown: true});
             .map(([subpath], index) => {
                 const name = `@diplodoc/transform${subpath === '.' ? '' : subpath.slice(1)}`;
                 return extension === 'cts'
-                    ? `import type API${index} = require('${name}');`
+                    ? `${manifest.exports[subpath].require ? '' : '// @ts-expect-error Browser subpaths are ESM-only.\n'}import type API${index} = require('${name}');`
                     : `import type * as API${index} from '${name}';`;
             })
             .join('\n');
@@ -474,6 +475,12 @@ custom({label: 'typed', unknown: true});
             {stdio: 'inherit'},
         );
     }
+
+    verifyBrowserPackage(
+        consumerRoot,
+        projectRequire.resolve('typescript/lib/tsc.js'),
+        projectRequire('esbuild').buildSync,
+    );
 
     // Translation currently owns native MarkdownIt 13: validate its honest structural writer boundary.
     const native13 = join(temporaryRoot, 'native13');

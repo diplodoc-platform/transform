@@ -1,4 +1,4 @@
-import type {DocumentEnv} from './document';
+import type {DocumentEnv} from './shared-types';
 
 /**
  * Create plain document data; rules and parser services remain caller-owned.

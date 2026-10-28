@@ -117,6 +117,15 @@ for (const [subpath, target] of Object.entries(manifest.exports)) {
         }
         continue;
     }
+    if (!target.require) {
+        assert.deepEqual(Object.keys(target), ['import'], specifier);
+        assert.throws(() => require(specifier), {code: 'ERR_PACKAGE_PATH_NOT_EXPORTED'});
+        const esm = await import(specifier);
+        assert.equal(typeof esm.default, 'function', specifier);
+        assert.equal(esm.default, esm.transform, specifier);
+        assert.match(esm.default('browser text').result.html, /browser text/);
+        continue;
+    }
     const cjs = require(specifier);
     const esm = await import(specifier);
     assert.equal(require.resolve(specifier).endsWith('.cjs'), true, specifier);

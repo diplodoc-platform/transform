@@ -1,4 +1,4 @@
-import type {HighlightLanguageFactory} from './typings';
+import type {HighlightLanguageFactory} from './shared-types';
 
 import {escapeHtml} from './markdown-it-utils';
 

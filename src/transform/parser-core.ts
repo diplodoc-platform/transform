@@ -32,6 +32,7 @@ import {DEFAULT_LANG} from './constants';
 /** Finite execution-host operations; parser state and lifecycle remain shared. */
 export interface ParserHost {
     defaultPlugins: NonNullable<OptionsType['plugins']>;
+    installGuard?(md: MarkdownIt): void;
     resolvePlugins(options: OptionsType): PluginInstallation[] | undefined;
     preprocess(
         input: string,
@@ -248,6 +249,7 @@ function initPlugins(
     md.use(inlineSvgMarker, pluginOptions);
 
     md.use(linkifyStrikethrough);
+    host.installGuard?.(md);
     if (configuredPlugins) {
         configuredPlugins.forEach(({plugin, options: settings}) => {
             md.use(plugin, settings ? {...pluginOptions, ...settings} : pluginOptions);

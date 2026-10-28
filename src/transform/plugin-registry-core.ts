@@ -1,48 +1,12 @@
 import type {OptionsType} from './typings';
-import type {BuiltinPluginId, PluginInstallation, PluginOrdering} from './plugin-configuration';
+import type {PluginInstallation, PluginOrdering} from './plugin-core';
+import type {BuiltinPluginId} from './plugin-ids';
 
-import {builtinPluginIds} from './plugin-configuration';
-
-const builtinOptions: Record<BuiltinPluginId, readonly string[]> = {
-    meta: [],
-    deflist: [],
-    cut: ['output'],
-    notes: ['notesAutotitle'],
-    anchors: ['supportGithubAnchors', 'disableCommonAnchors', 'useCommonAnchorButtons'],
-    tabs: ['output'],
-    code: ['codeLineWrapping'],
-    sup: [],
-    video: [
-        'videoUrl',
-        'youtube',
-        'vimeo',
-        'vine',
-        'prezi',
-        'osf',
-        'yandex',
-        'vk',
-        'rutube',
-        'url',
-    ],
-    monospace: [],
-    table: [
-        'table_ignoreSplittersInBlockCode',
-        'table_ignoreSplittersInInlineCode',
-        'table_ignoreSplittersInBlockMath',
-        'table_ignoreSplittersInInlineMath',
-    ],
-    file: ['output', 'fileExtraAttrs'],
-    imsize: ['enableInlineStyling'],
-    term: ['multilineTermDefinitions'],
-    'block-anchor': [],
-    'inline-code': [],
-    visibility: ['contentAudience'],
-    underline: [],
-    subscript: [],
-};
+import {builtinPluginIds} from './plugin-ids';
+import {builtinOptionKeys} from './plugin-settings';
 
 function requireBuiltin(id: string): asserts id is BuiltinPluginId {
-    if (!Object.prototype.hasOwnProperty.call(builtinOptions, id)) {
+    if (!Object.prototype.hasOwnProperty.call(builtinOptionKeys, id)) {
         throw new Error(`Unknown builtin plugin "${id}"`);
     }
 }
@@ -114,7 +78,7 @@ function sortPlugins(plugins: OrderedPlugin[]): PluginInstallation[] {
 
     let previous: BuiltinPluginId | undefined;
     for (const {id} of result) {
-        if (!Object.prototype.hasOwnProperty.call(builtinOptions, id)) {
+        if (!Object.prototype.hasOwnProperty.call(builtinOptionKeys, id)) {
             continue;
         }
         const builtin = id as BuiltinPluginId;
@@ -147,7 +111,7 @@ function resolveBuiltinSettings(
             throw new Error(`Options for plugin "${id}" must be an object`);
         }
         for (const key of Object.keys(value)) {
-            if (!builtinOptions[id].includes(key)) {
+            if (!builtinOptionKeys[id].includes(key)) {
                 throw new Error(`Unknown option "${key}" for plugin "${id}"`);
             }
             if (Object.prototype.hasOwnProperty.call(options, key)) {
@@ -164,11 +128,13 @@ function resolveBuiltinSettings(
  * Resolve and validate named composition before any feature plugin is installed.
  * @param options - Current transform options, including the additive configuration.
  * @param defaultPlugins - Host callbacks in the established builtin order.
+ * @param availableBuiltins - Host inventory in the canonical relative order; defaults to every Node builtin.
  * @returns Selected installations, or undefined to retain the legacy callback path.
  */
 export function resolvePluginConfiguration(
     options: OptionsType,
     defaultPlugins: NonNullable<OptionsType['plugins']>,
+    availableBuiltins: readonly BuiltinPluginId[] = builtinPluginIds,
 ): PluginInstallation[] | undefined {
     const configuration = options.pluginConfiguration;
     if (configuration === undefined) {
@@ -194,18 +160,18 @@ export function resolvePluginConfiguration(
     }
 
     const selected = new Set(
-        builtinPluginIds.filter(
+        availableBuiltins.filter(
             (id) => (preset === 'default' || enabled.has(id)) && !disabled.has(id),
         ),
     );
     const settings = resolveBuiltinSettings(options, selected);
 
-    const plugins: OrderedPlugin[] = builtinPluginIds.flatMap((id, index) =>
+    const plugins: OrderedPlugin[] = availableBuiltins.flatMap((id, index) =>
         selected.has(id) ? [{id, plugin: defaultPlugins[index], options: settings.get(id)}] : [],
     );
 
     for (const plugin of configuration.plugins ?? []) {
-        if (Object.prototype.hasOwnProperty.call(builtinOptions, plugin.id)) {
+        if (Object.prototype.hasOwnProperty.call(builtinOptionKeys, plugin.id)) {
             throw new Error(`Custom plugin ID "${plugin.id}" conflicts with a builtin plugin`);
         }
         plugins.push(plugin);

@@ -10,7 +10,9 @@ import {IncludeCycleError} from '../../document';
 import {findBlockTokens} from '../../utils';
 import {getFileTokens, getFullIncludePath, getRealPath, isFileExists} from '../../utilsFS';
 
-const INCLUDE_REGEXP = /^{%\s*include\s*(notitle)?\s*\[(.+?)]\((.+?)\)\s*%}$/;
+import {createIncludeRegExp} from './syntax';
+
+const INCLUDE_REGEXP = createIncludeRegExp();
 
 function stripTitleTokens(tokens: Token[]) {
     const [open, _, close] = tokens;

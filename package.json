@@ -36,7 +36,7 @@
   "scripts": {
     "build": "npm run build:lib && npm run build:dist",
     "build:dist": "node ./scripts/build-static.mjs",
-    "build:lib": "npm run patch:svgo && tsc -p tsconfig.transform.json && node scripts/build-svgo.mjs && node scripts/build-vendor-declarations.mjs && node scripts/build-public-api.mjs",
+    "build:lib": "npm run patch:svgo && tsc -p tsconfig.transform.json && node scripts/build-svgo.mjs && node scripts/build-vendor-declarations.mjs && node scripts/build-public-api.mjs && npm run build:browser",
     "dev:lib": "npm run build:lib && tsc -w -p tsconfig.transform.json",
     "dev:playground": "node ./scripts/dev.mjs",
     "preplayground": "cd playground && npm ci --ignore-scripts || (exit 0)",
@@ -56,14 +56,17 @@
     "patch:svgo": "node scripts/patch-svgo.mjs",
     "prepack": "npm run patch:svgo",
     "test:package": "npm run build && node scripts/test-package.mjs",
-    "exports:update": "node scripts/build-public-api.mjs --write-manifest"
+    "exports:update": "node scripts/build-public-api.mjs --write-manifest",
+    "build:browser": "node scripts/build-browser.mjs"
   },
   "dependencies": {
     "@diplodoc/cut-extension": "^1.1.6",
-    "@diplodoc/directive": "^0.4.0",
+    "@diplodoc/directive": "0.5.0-transform5.0",
     "@diplodoc/file-extension": "0.2.7-transform5.0",
     "@diplodoc/tabs-extension": "3.10.8-transform5.0",
     "@diplodoc/utils": "2.3.7-transform5.0",
+    "@types/lodash": "^4.17.23",
+    "@types/sanitize-html": "^2.9.3",
     "chalk": "^4.1.2",
     "cheerio": "^1.0.0",
     "css": "^3.0.0",
@@ -83,9 +86,7 @@
     "quick-lru": "^5.1.1",
     "sanitize-html": "^2.18.0",
     "slugify": "1.6.6",
-    "ts-dedent": "^2.2.0",
-    "@types/lodash": "^4.17.23",
-    "@types/sanitize-html": "^2.9.3"
+    "ts-dedent": "^2.2.0"
   },
   "devDependencies": {
     "@diplodoc/infra": "2.3.0",
@@ -622,6 +623,18 @@
       "require": {
         "types": "./api/plugins/utils.d.cts",
         "default": "./api/plugins/utils.cjs"
+      }
+    },
+    "./browser": {
+      "import": {
+        "types": "./dist/browser/standard.d.mts",
+        "default": "./dist/browser/standard.mjs"
+      }
+    },
+    "./browser/minimal": {
+      "import": {
+        "types": "./dist/browser/minimal.d.mts",
+        "default": "./dist/browser/minimal.mjs"
       }
     },
     "./lib/constants": {

@@ -1,5 +1,5 @@
 import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
-import type {Heading} from './typings';
+import type {Heading} from './shared-types';
 
 function getTitle(token: Token) {
     return (

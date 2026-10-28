@@ -1,3 +1,4 @@
+import type {ContentAudience, VisibilityMode} from '../shared-types';
 import type {MarkdownIt} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {ContainerDirectiveHandler, ContainerDirectiveParams} from '@diplodoc/directive';
 import type {MarkdownItPluginCb} from './typings';
@@ -9,8 +10,7 @@ import {
     tokenizeBlockContent,
 } from '@diplodoc/directive';
 
-export type ContentAudience = 'human' | 'agent';
-export type VisibilityMode = ContentAudience | 'preserve';
+export type {ContentAudience, VisibilityMode} from '../shared-types';
 
 export interface VisibilityError {
     line: number;
