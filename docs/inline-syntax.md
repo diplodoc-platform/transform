@@ -53,8 +53,9 @@ import subscript from '@diplodoc/transform/plugins/subscript';
 transform(source, {plugins: [...integrationPlugins, underline, subscript]});
 ```
 
-The CLI currently owns its callback list. Its existing extension hooks allow the
-same additive composition without replacing CLI includes/link/image handlers:
+For CLI releases whose own callback list does not already register these plugins,
+existing extension hooks allow additive composition without replacing CLI
+includes/link/image handlers. Do not append callbacks already registered by CLI:
 
 ```ts
 import type {Run} from '@diplodoc/cli/lib/run';
@@ -81,9 +82,10 @@ export class Extension implements IExtension {
 }
 ```
 
-This example follows the current CLI `mdit-plugins` extension's hook API. Actual
-CLI/Viewer/Translation/Yfmlint acceptance is a separate pending gate; a Transform
-preset change does not change an existing consumer-owned callback array.
+This example follows the CLI `mdit-plugins` extension's hook API. Local
+CLI, Viewer, Translation and Yfmlint consumer gates passed with their reviewed
+changes; those consumer changes remain local and unreleased. A Transform preset
+change does not change an existing consumer-owned callback array.
 
 ## Underline
 
@@ -145,5 +147,6 @@ The focused tests exercise native MarkdownIt 15.0.3 with attrs disabled and
 enabled, standard selection, explicit legacy callback lists, and the existing
 empty/none preset baseline. Packed package tests check native CJS/ESM callback
 identity, closed types, browser-safe leaf imports, and stylesheet graphs.
-Browser parser and actual consumer acceptance gates remain separate. This parser slice does
-not complete DOCSTOOLS-6948 or its four source issue acceptance gates.
+Actual CLI, Viewer, Translation and Yfmlint consumer checks passed locally.
+Browser parser acceptance remains separate. This parser slice does not complete
+DOCSTOOLS-6948 or its four source issue acceptance gates.
