@@ -1,5 +1,6 @@
 import type {MarkdownIt, Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {StateInline} from '../../typings';
+import type {ImageSizeObserver} from './positions';
 
 import {ImsizeAttr} from './const';
 import {parseImageSize} from './helpers';
@@ -11,6 +12,7 @@ export type ImsizeOptions = {
 export const imageWithSize = (
     md: MarkdownIt,
     opts?: ImsizeOptions,
+    observer?: ImageSizeObserver,
 ): ((state: StateInline, silent: boolean) => boolean) => {
     // eslint-disable-next-line complexity
     return (state, silent) => {
@@ -34,6 +36,8 @@ export const imageWithSize = (
         let title = '';
         let width = '';
         let height = '';
+        let sizeStart: number | undefined;
+        let sizeEnd = 0;
 
         const oldPos = state.pos;
         const max = state.posMax;
@@ -107,11 +111,15 @@ export const imageWithSize = (
                 // there must be at least one white spaces
                 // between previous field and the size
                 if (code === 0x20) {
+                    if (state.src[pos] === '=') {
+                        sizeStart = pos;
+                    }
                     const sizeResult = parseImageSize(state.src, pos, state.posMax);
                     if (sizeResult.ok) {
                         width = sizeResult.width;
                         height = sizeResult.height;
                         pos = sizeResult.pos;
+                        sizeEnd = pos;
 
                         // [link](  <href>  "title" =WxH  )
                         //                              ^^ skipping these spaces
@@ -127,6 +135,9 @@ export const imageWithSize = (
             }
 
             if (pos >= max || state.src.charCodeAt(pos) !== 0x29 /* ) */) {
+                if (!silent && sizeStart !== undefined && state.src.indexOf(')', pos) >= 0) {
+                    observer?.rejected?.(state.src, oldPos, sizeStart);
+                }
                 state.pos = oldPos;
                 return false;
             }
@@ -182,6 +193,9 @@ export const imageWithSize = (
         // so all that's left to do is to call tokenizer.
         //
         if (!silent) {
+            const imageEnd = pos;
+            const legacyWidth = width;
+            const legacyHeight = height;
             state.pos = labelStart;
             state.posMax = labelEnd;
 
@@ -257,6 +271,23 @@ export const imageWithSize = (
 
             if (height !== '') {
                 token.attrs.push([ImsizeAttr.Height, height]);
+            }
+
+            if (sizeStart !== undefined && sizeEnd > sizeStart) {
+                observer?.image(
+                    {
+                        source: state.src,
+                        path: typeof state.env.path === 'string' ? state.env.path : undefined,
+                        imageStart: oldPos,
+                        imageEnd,
+                        sizeStart,
+                        sizeEnd,
+                        width: legacyWidth,
+                        height: legacyHeight,
+                        adjacentAttributes: state.src[imageEnd] === '{',
+                    },
+                    token,
+                );
             }
 
             if (opts?.enableInlineStyling) {

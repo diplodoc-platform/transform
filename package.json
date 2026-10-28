@@ -162,6 +162,16 @@
         "default": "./api/plugin-configuration.cjs"
       }
     },
+    "./migrations/image-dimensions": {
+      "import": {
+        "types": "./api/migrations/image-dimensions.d.mts",
+        "default": "./api/migrations/image-dimensions.mjs"
+      },
+      "require": {
+        "types": "./api/migrations/image-dimensions.d.cts",
+        "default": "./api/migrations/image-dimensions.cjs"
+      }
+    },
     "./migrations/table-alignment": {
       "import": {
         "types": "./api/migrations/table-alignment.d.mts",
