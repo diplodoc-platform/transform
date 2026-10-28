@@ -1,8 +1,9 @@
 # Optional general Markdown attributes
 
 Status: approved SDD; phase A heading recognition and local standalone lint selector
-implemented. Phase B default-policy and consumer changes await coordinator sequencing.
-The current Transform default remains TRUE.
+implemented. Phase B is authorized on merged shared core `0e8ebb7a5a9970f7cf0c2c2aac43ba0a3850ed78`;
+the shared resolver and bundled lint now default FALSE. Consumer compatibility
+validation is required before integration.
 Task: [DOCSTOOLS-6944](https://st.yandex-team.ru/DOCSTOOLS-6944).
 Baseline: `551a675bc24b5eefacfb8bf92550b145f9ad94c1`.
 Branch: `codex/docstools-6944-optional-attrs`.
@@ -258,3 +259,27 @@ The coordinator has accepted the narrow heading-fragment and lint-companion
 direction; implementation remains pending final SDD review. No unresolved product
 question requires a human response now: the live issue,
 existing consumer corpus and compatibility choices determine a bounded proposal.
+
+## Phase B ordering and compatibility tests
+
+The shared `parser-policy.ts` resolver owns the default. Bundled lint reuses it
+and builds its attrs list independently of custom plugins; standalone lint retains
+its own default TRUE. No parser or dependency version changes are needed.
+
+Includes previously used `curly_attributes` as their ordering anchor and otherwise
+ran last. With attrs disabled this put includes after term replacement, leaving
+references to included definitions as raw text. The attrs-absent registration now
+uses `before('linkify')`, the same boundary occupied by the attrs rule. Explicit-on
+placement is unchanged. Actual included terms and materialized heading fragments
+cover omitted/FALSE/TRUE without rewriting expected HTML or snapshots.
+
+The isolated images/gallery suites install only `images`, so their general-attrs
+prelude is now explicitly enabled. The full default preset separately proves
+standalone imsize width/height and heading anchors work with attrs omitted/FALSE.
+Existing table extra-attribute/backslash, SVG forced-inline, numeric heading
+extra-attribute, styled-strong and empty-preset configuration fixtures explicitly
+opt in because those tests assert general attribute behavior. The document-context
+fixture installs the owning anchors plugin when asserting a generated heading ID.
+New default-off tests preserve both original #722 spellings, paragraph braces,
+flat/named default/none parity, real bundled lint/list combinations and parser
+handle isolation. No expected snapshots are regenerated.

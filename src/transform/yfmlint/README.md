@@ -1,5 +1,11 @@
 # YFM rules
 
+The retained bundled linter follows Transform’s opt-in general Markdown attributes
+policy. Pass `enableMarkdownAttrs: true` explicitly for compatibility; omitted and
+false settings keep braces literal, independently of the custom plugin list.
+Use the same resolved selector as the renderer. Standalone `@diplodoc/yfmlint`
+retains its separate default-on policy.
+
 [All markdownlint rules](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md)
 
 ## YFM001 - Inline code line length
@@ -11,7 +17,7 @@ Aliases: inline-code-length
 Parameters: maximum
 
 This rule is triggered when there are lines that are longer than the
-configured `value` (default: 100 characters). 
+configured `value` (default: 100 characters).
 
 ## YFM002 - No header found in the file for the link text
 
@@ -44,5 +50,3 @@ Tags: tab
 Aliases: tab-list-not-closed
 
 This rule is triggered when tab list don't have close token.
-
-

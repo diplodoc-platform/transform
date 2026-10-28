@@ -10,6 +10,8 @@ const transformYfm = (text: string) => {
     const {
         result: {html},
     } = transform(text, {
+        // This isolated images-plugin suite supplies attributes through the general prelude.
+        enableMarkdownAttrs: true,
         plugins: [images],
         path: mocksPath,
         root: dirname(mocksPath),

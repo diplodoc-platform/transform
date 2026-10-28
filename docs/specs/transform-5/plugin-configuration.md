@@ -152,7 +152,7 @@ infrastructure without selectable builtin IDs:
 
 | Registration           | Existing control and behavior                                                                                   |
 | ---------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `markdown-it-attrs`    | Installed unless `enableMarkdownAttrs === false`; uses `leftDelimiter` and `rightDelimiter`                     |
+| `markdown-it-attrs`    | Installed only when `enableMarkdownAttrs === true`; uses `leftDelimiter` and `rightDelimiter`                   |
 | `olAttrConversion`     | Always installed; converts ordered-list start to CSS custom property and extends the permitted style properties |
 | `inlineSvgMarker`      | Always installed; removes internal SVG markers during block/inline parsing                                      |
 | `linkifyStrikethrough` | Always installs replacement `linkify` rule; effect remains governed by `linkify` and `disableRules`             |

@@ -21,6 +21,7 @@ import meta from '../src/transform/plugins/meta';
 import includes from '../src/transform/plugins/includes';
 import links from '../src/transform/plugins/links';
 import images from '../src/transform/plugins/images';
+import anchors from '../src/transform/plugins/anchors';
 import DefaultPlugins from '../src/transform/plugins';
 import checkbox from '../src/transform/plugins/checkbox';
 
@@ -364,7 +365,11 @@ describe('nested document contexts', () => {
     test('materialized sources and image assets reset between roots; fragments retain parent metadata', () => {
         const files = fixture({'root.md': '', 'image.png': 'image'});
         try {
-            const md = parser({...files, plugins: [meta, images, includes], disableLiquid: true});
+            const md = parser({
+                ...files,
+                plugins: [meta, images, includes, anchors],
+                disableLiquid: true,
+            });
             const source = `---\nname: parent\n---\n{% include [child](child.md#part) %}\n\n{% included(child.md) %}\n---\nname: child\n---\n# Part {#part}\n\n![image](image.png)\n\n# Other\nOther text\n{% endincluded %}`;
             const a = md.parseDocument(source);
             expect(a.env.meta?.name).toBe('parent');

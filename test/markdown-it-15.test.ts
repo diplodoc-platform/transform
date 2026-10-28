@@ -134,6 +134,7 @@ describe('markdown-it 15 compatibility', () => {
         expect(html).toBe('<p><a href="0">link</a> <img src="0" alt="image" width="0" /></p>\n');
         const heading = transform('## Heading {title="extra"}', {
             plugins: [numericAttributes, anchors],
+            enableMarkdownAttrs: true,
             supportGithubAnchors: true,
         });
         expect(heading.result.html).toContain('id="0"');

@@ -105,13 +105,19 @@ describe('SVG option migration', () => {
     test('preserves forced inline and opt-out attributes independently of option precedence', () => {
         expect(
             render(
-                {inlineSvg: true, svgInline: {enabled: false, maxFileSize: 0}},
+                {
+                    inlineSvg: true,
+                    svgInline: {enabled: false, maxFileSize: 0},
+                    enableMarkdownAttrs: true,
+                },
                 `${MARKDOWN}{inline=true}`,
             ).result.html,
         ).toContain('<svg');
         expect(
-            render({inlineSvg: false, svgInline: {enabled: true}}, `${MARKDOWN}{inline=false}`)
-                .result.html,
+            render(
+                {inlineSvg: false, svgInline: {enabled: true}, enableMarkdownAttrs: true},
+                `${MARKDOWN}{inline=false}`,
+            ).result.html,
         ).toContain('<img');
     });
 
