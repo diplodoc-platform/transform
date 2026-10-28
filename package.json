@@ -544,6 +544,26 @@
         "default": "./api/plugins/sup.cjs"
       }
     },
+    "./plugins/underline": {
+      "import": {
+        "types": "./api/plugins/underline.d.mts",
+        "default": "./api/plugins/underline.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/underline.d.cts",
+        "default": "./api/plugins/underline.cjs"
+      }
+    },
+    "./plugins/subscript": {
+      "import": {
+        "types": "./api/plugins/subscript.d.mts",
+        "default": "./api/plugins/subscript.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/subscript.d.cts",
+        "default": "./api/plugins/subscript.cjs"
+      }
+    },
     "./plugins/table": {
       "import": {
         "types": "./api/plugins/table/index.d.mts",

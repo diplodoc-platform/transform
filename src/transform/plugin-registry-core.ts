@@ -37,6 +37,8 @@ const builtinOptions: Record<BuiltinPluginId, readonly string[]> = {
     'block-anchor': [],
     'inline-code': [],
     visibility: ['contentAudience'],
+    underline: [],
+    subscript: [],
 };
 
 function requireBuiltin(id: string): asserts id is BuiltinPluginId {

@@ -43,6 +43,8 @@ export const stableEntries = {
     './plugins/notes': 'plugins/notes/index',
     './plugins/ol-attr-conversion': 'plugins/ol-attr-conversion',
     './plugins/sup': 'plugins/sup',
+    './plugins/underline': 'plugins/underline',
+    './plugins/subscript': 'plugins/subscript',
     './plugins/table': 'plugins/table/index',
     './plugins/tabs': 'plugins/tabs',
     './plugins/term': 'plugins/term/index',

@@ -89,6 +89,13 @@ const {
 } = transform(content, {vars});
 ```
 
+### Underline and subscript
+
+The standard preset enables `++underlined++` and `H~2~O`. Each feature can be
+selected independently through `underline` and `subscript`, or appended to a
+legacy callback list using its stable `/plugins/underline` or `/plugins/subscript`
+entry. See [syntax, selection, and custom composition](docs/inline-syntax.md).
+
 ### Custom HTML Sanitizer
 
 You can replace the default HTML sanitizer with your own implementation by providing a `sanitize` function in the options:
