@@ -9,10 +9,14 @@ import {
     SOURCE_SCOPE,
     captureDefinitions,
     compileWithService,
+    hasFootnotePlan,
+    hasFootnoteTokens,
+    markFootnoteBody,
+    markFootnoteScope,
     requirePlan,
     restore,
-    sourceScope,
     scopeOf,
+    sourceScope,
     walk,
 } from '../../footnote-data';
 
@@ -36,16 +40,24 @@ export default function footnotes(md: MarkdownIt, options: FootnoteOptions = {})
         // Owned output planning rebuilds exactly the admitted backlinks later.
         state.tokens = state.tokens.filter((token) => token.type !== 'footnote_anchor');
         const scope = Reflect.get(state.env, FRAME) as Scope;
+        if (!state.inlineMode) scope.admittedLabels = new Set();
         let insideBody = false;
         for (const token of state.tokens) {
             if (token.type === 'footnote_block_open') insideBody = true;
-            const isBody = insideBody;
+            if (insideBody) markFootnoteBody([token]);
             walk([token], (child) => {
-                if (isBody) child.meta = {...child.meta, footnoteBody: true};
                 if (child.type.startsWith('footnote_') && !scopeOf(child)) {
-                    child.meta = {...child.meta, footnoteScope: scope};
+                    markFootnoteScope(child, scope);
                 }
             });
+            if (
+                !state.inlineMode &&
+                token.type === 'footnote_open' &&
+                scopeOf(token) === scope &&
+                typeof token.meta?.label === 'string'
+            ) {
+                scope.admittedLabels?.add(token.meta.label);
+            }
             if (token.type === 'footnote_block_close') insideBody = false;
         }
     });
@@ -63,6 +75,7 @@ export default function footnotes(md: MarkdownIt, options: FootnoteOptions = {})
                 configurable: true,
             });
             const tokens = parse.call(this, source, env);
+            if (!hasFootnoteTokens(tokens)) return tokens;
             captureDefinitions(tokens, scope);
             scope.rawOutput = {rootScope: scope, generateID};
             Object.defineProperty(tokens, SOURCE_SCOPE, {value: scope});
@@ -75,11 +88,33 @@ export default function footnotes(md: MarkdownIt, options: FootnoteOptions = {})
     {
         const parseInline = md.parseInline;
         md.parseInline = function (source, env = {}) {
-            if (Reflect.get(env, FRAME)) return parseInline.call(this, source, env);
+            const scope = Reflect.get(env, FRAME) as Scope | undefined;
+            if (scope && !scope.admittedLabels) return parseInline.call(this, source, env);
             const previous = Object.getOwnPropertyDescriptor(env, 'footnotes');
+            // A late inline-only title cannot admit a previously unused body.
+            // Existing bodies remain available without reparsing or replacing counts.
+            const upstreamState = env.footnotes;
+            let local: object = {};
+            if (
+                scope &&
+                upstreamState &&
+                typeof upstreamState === 'object' &&
+                'refs' in upstreamState &&
+                upstreamState.refs &&
+                typeof upstreamState.refs === 'object'
+            ) {
+                local = {
+                    ...upstreamState,
+                    refs: Object.fromEntries(
+                        Object.entries(upstreamState.refs).filter(([label]) =>
+                            scope.admittedLabels?.has(label.slice(1)),
+                        ),
+                    ),
+                };
+            }
             try {
                 Object.defineProperty(env, 'footnotes', {
-                    value: {},
+                    value: local,
                     writable: true,
                     enumerable: true,
                     configurable: true,
@@ -97,7 +132,7 @@ export default function footnotes(md: MarkdownIt, options: FootnoteOptions = {})
             if (!service) {
                 let hasUnplannedReferences = false;
                 walk(tokens, (token) => {
-                    if (token.type === 'footnote_ref' && !token.meta?.footnotePlan)
+                    if (token.type === 'footnote_ref' && !hasFootnotePlan(token))
                         hasUnplannedReferences = true;
                 });
                 if (hasUnplannedReferences)

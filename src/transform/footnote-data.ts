@@ -6,6 +6,49 @@ import {footnoteService, setFootnoteService} from './document-context-core';
 export const FRAME = Symbol('local-footnotes');
 export const SOURCE_SCOPE = Symbol('footnote-source');
 const SLOT = Symbol('footnote-section');
+const OWNED = Symbol('footnote-owned-data');
+type OwnedData = {
+    scope?: Scope;
+    body?: true;
+    plan?: Plan;
+    id?: number;
+    subId?: number;
+    label?: string;
+};
+type OwnedToken = Token & {[OWNED]?: OwnedData};
+function ownedData(token: Token): OwnedData | undefined {
+    return (token as OwnedToken)[OWNED];
+}
+function setOwnedData(token: Token, value: OwnedData): void {
+    Object.defineProperty(token, OWNED, {value, configurable: true, writable: true});
+}
+export function isFootnoteBody(token: Token): boolean {
+    return ownedData(token)?.body === true;
+}
+export function hasFootnotePlan(token: Token): boolean {
+    return Boolean(ownedData(token)?.plan);
+}
+export function markFootnoteScope(token: Token, scope: Scope): void {
+    const previous = ownedData(token);
+    setOwnedData(token, {
+        ...previous,
+        scope,
+        id: previous?.id ?? (typeof token.meta?.id === 'number' ? token.meta.id : undefined),
+        subId:
+            previous?.subId ??
+            (typeof token.meta?.subId === 'number' ? token.meta.subId : undefined),
+        label:
+            previous?.label ??
+            (typeof token.meta?.label === 'string' ? token.meta.label : undefined),
+    });
+}
+export function hasFootnoteTokens(tokens: readonly Token[]): boolean {
+    return tokens.some(
+        (token) =>
+            Boolean(ownedData(token)) ||
+            Boolean(token.children && hasFootnoteTokens(token.children)),
+    );
+}
 
 export interface Definition {
     open: Token;
@@ -14,6 +57,7 @@ export interface Definition {
 }
 export interface Scope {
     definitions: Map<number, Definition>;
+    admittedLabels?: Set<string>;
     origin?: Scope;
     blockOpen?: Token;
     blockClose?: Token;
@@ -63,13 +107,13 @@ function requireTemplate(token: Token | undefined): Token {
     return token;
 }
 function noteId(token: Token): number {
-    const id = token.meta?.id;
+    const id = ownedData(token)?.id ?? token.meta?.id;
     if (typeof id !== 'number' || !Number.isInteger(id) || id < 0)
         throw new Error('Invalid footnote id');
     return id;
 }
 function subId(token: Token): number {
-    const id = token.meta?.subId ?? 0;
+    const id = ownedData(token)?.subId ?? token.meta?.subId ?? 0;
     if (typeof id !== 'number' || !Number.isInteger(id) || id < 0)
         throw new Error('Invalid footnote reference id');
     return id;
@@ -82,7 +126,7 @@ function subId(token: Token): number {
  */
 export function markFootnoteBody(tokens: Token[]): void {
     walk(tokens, (token) => {
-        token.meta = {...token.meta, footnoteBody: true};
+        setOwnedData(token, {...ownedData(token), body: true});
     });
 }
 
@@ -94,13 +138,7 @@ export function walk(tokens: readonly Token[], visit: (token: Token) => void) {
 }
 
 export function scopeOf(token: Token): Scope | undefined {
-    const value = token.meta?.footnoteScope;
-    return value &&
-        typeof value === 'object' &&
-        'definitions' in value &&
-        value.definitions instanceof Map
-        ? (value as Scope)
-        : undefined;
+    return ownedData(token)?.scope;
 }
 function requireScope(token: Token): Scope {
     const scope = scopeOf(token);
@@ -111,28 +149,45 @@ function origin(scope: Scope): Scope {
     return scope.origin ?? scope;
 }
 
-export function copyToken(token: Token, mapScope: ScopeMapper = (scope) => scope): Token {
-    const copy: Token = Object.assign(Object.create(Object.getPrototypeOf(token)), token);
-    if (token.attrs) copy.attrs = token.attrs.map((pair) => [...pair]);
-    if (token.map) copy.map = [...token.map];
-    if (token.meta) {
-        copy.meta = {...token.meta};
-        const scope = scopeOf(token);
-        if (scope) copy.meta.footnoteScope = mapScope(scope);
+export function copyToken(
+    token: Token,
+    mapScope: ScopeMapper = (scope) => scope,
+    type = token.type,
+    literal = false,
+): Token {
+    // Preserve arbitrary custom properties and metadata without interpreting them.
+    // Only native token arrays and this feature's private data need independent copies.
+    const descriptors = Object.getOwnPropertyDescriptors(token);
+    if (descriptors.attrs?.value)
+        descriptors.attrs.value = descriptors.attrs.value.map((pair) => [...pair]);
+    if (descriptors.map?.value) descriptors.map.value = [...descriptors.map.value];
+    if (descriptors.children?.value)
+        descriptors.children.value = descriptors.children.value.map((child) =>
+            copyToken(child, mapScope, child.type, literal),
+        );
+    if (descriptors.type && 'value' in descriptors.type) descriptors.type.value = type;
+    if (literal && token.type === 'footnote_ref') {
+        descriptors.type.value = 'text';
+        descriptors.tag.value = '';
+        descriptors.content.value = `[^${ownedData(token)?.label ?? token.meta?.label}]`;
     }
-    if (token.children) copy.children = token.children.map((child) => copyToken(child, mapScope));
-    return copy;
+    const data = ownedData(token);
+    if (data)
+        Object.defineProperty(descriptors, OWNED, {
+            value: {
+                value: {...data, scope: data.scope ? mapScope(data.scope) : undefined},
+                configurable: true,
+                writable: true,
+                enumerable: false,
+            },
+            enumerable: true,
+        });
+    return Object.create(Object.getPrototypeOf(token), descriptors);
 }
 
-function featureToken(
-    template: Token,
-    type: string,
-    scope: Scope,
-    meta: Record<string, unknown> = {},
-): Token {
-    const copy = copyToken(template);
-    copy.type = type;
-    copy.meta = {...meta, footnoteScope: scope, footnoteBody: true};
+function featureToken(template: Token, type: string, scope: Scope): Token {
+    const copy = copyToken(template, (value) => value, type);
+    setOwnedData(copy, {...ownedData(copy), scope, body: true});
     return copy;
 }
 
@@ -146,22 +201,9 @@ export function restore(
 }
 
 export function requirePlan(token: Token): Plan {
-    const plan = token.meta?.footnotePlan;
-    if (
-        !plan ||
-        typeof plan !== 'object' ||
-        !('body' in plan) ||
-        typeof plan.body !== 'string' ||
-        !('ref' in plan) ||
-        typeof plan.ref !== 'string' ||
-        !('caption' in plan) ||
-        typeof plan.caption !== 'number' ||
-        !('reference' in plan) ||
-        typeof plan.reference !== 'number'
-    ) {
-        throw new Error('Footnote token rendered without an owned output plan');
-    }
-    return {body: plan.body, ref: plan.ref, caption: plan.caption, reference: plan.reference};
+    const plan = ownedData(token)?.plan;
+    if (!plan) throw new Error('Footnote token rendered without an owned output plan');
+    return plan;
 }
 
 export function captureDefinitions(tokens: Token[], scope: Scope) {
@@ -295,10 +337,10 @@ function completeForest(
         const result = [
             featureToken(requireTemplate(source.blockOpen), 'footnote_block_open', scope),
         ];
-        for (const [id, note] of notes) {
+        for (const note of notes.values()) {
             const definition = note.definition;
             if (!definition) throw new Error('Missing admitted footnote definition');
-            result.push(featureToken(definition.open, 'footnote_open', scope, {id}));
+            result.push(featureToken(definition.open, 'footnote_open', scope));
             const body = [...note.body];
             const candidate = body[body.length - 1];
             const last =
@@ -311,10 +353,10 @@ function completeForest(
                 else result.push(token);
             }
             for (const ref of note.refs) {
-                result.push(featureToken(ref, 'footnote_anchor', scope, {id, subId: subId(ref)}));
+                result.push(featureToken(ref, 'footnote_anchor', scope));
             }
             if (last) result.push(last);
-            result.push(featureToken(definition.close, 'footnote_close', scope, {id}));
+            result.push(featureToken(definition.close, 'footnote_close', scope));
         }
         result.push(
             featureToken(requireTemplate(source.blockClose), 'footnote_block_close', scope),
@@ -337,7 +379,7 @@ function completeForest(
  * Does not parse, render, replay resources, or invoke the ID generator.
  * @param allTokens - Original parsed source tokens (including unselected definitions).
  * @param selectedTokens - Optional subset retaining original top-level token identities.
- * @returns Independent occurrence tokens suitable for insertion or native rendering.
+ * @returns Independent footnote occurrences, or the unchanged selection without footnotes.
  * @throws When a selection cuts a footnote section or contains copied source tokens.
  */
 export function materializeFootnoteTokens(
@@ -347,6 +389,7 @@ export function materializeFootnoteTokens(
     if (!selectedTokens.every((token) => allTokens.includes(token))) {
         throw new TypeError('Selection must retain actual source-token identities');
     }
+    if (!hasFootnoteTokens(allTokens)) return selectedTokens;
     const occurrences = new Map<Scope, Scope>();
     const mapScope = (scope: Scope) => {
         if (!scope) throw new Error('Missing source scope');
@@ -401,15 +444,15 @@ function applyPlan(forest: Forest, namespace: string, rootScope: Scope) {
         if (authoredIds.has(body) || authoredIds.has(ref)) {
             throw new Error('An authored id collides with a generated footnote id');
         }
-        token.meta = {
-            ...token.meta,
-            footnotePlan: {
+        setOwnedData(token, {
+            ...ownedData(token),
+            plan: {
                 body,
                 ref,
                 caption: note.caption,
                 reference: subId(token) + 1,
             },
-        };
+        });
     });
 }
 
@@ -480,16 +523,7 @@ function titlePlanKey(tokens: Token[]): string {
 }
 
 function literalRefs(tokens: Token[]): Token[] {
-    return tokens.map((token) => {
-        const copy = copyToken(token);
-        if (copy.type === 'footnote_ref') {
-            copy.type = 'text';
-            copy.tag = '';
-            copy.content = `[^${copy.meta?.label}]`;
-        }
-        if (copy.children) copy.children = literalRefs(copy.children);
-        return copy;
-    });
+    return tokens.map((token) => copyToken(token, (scope) => scope, token.type, true));
 }
 
 export function compileFootnoteOutput(
@@ -497,10 +531,17 @@ export function compileFootnoteOutput(
     env: ParserEnv,
     tokens: Token[],
     renderBody: RenderBody,
+    generateID: () => string,
 ): string {
     const service = footnoteService(env);
-    if (!service) return renderBody(tokens);
-    return compileWithService(md, env, tokens, renderBody, service);
+    if (service) return compileWithService(md, env, tokens, renderBody, service);
+    if (!hasFootnoteTokens(tokens)) return renderBody(tokens);
+    // A previously plain owned root may receive a materialized child later.
+    // Commit the optional service only after rendering succeeds.
+    const candidate: FootnoteService = {rootScope: {definitions: new Map()}, generateID};
+    const result = compileWithService(md, env, tokens, renderBody, candidate);
+    setFootnoteService(env, candidate);
+    return result;
 }
 
 export function compileWithService(

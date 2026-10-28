@@ -41,6 +41,8 @@ replayDocumentFragment(md, child, parentEnv, {purpose: 'include'});
 parentTokens.push(...occurrence);
 ```
 
+When there are no owned footnote tokens, the helper returns the selection unchanged; retain any ordinary token-copying policy your host already needs. Footnote-free root compilation similarly preserves original token identity and creates no optional footnote service. With footnotes, copies preserve token prototypes/property descriptors and arbitrary custom metadata identity; only native arrays and private feature data are copied.
+
 Materialization keeps transitive definitions reachable from the selected references, even when the definitions are outside the selected heading. It preserves currently admitted transformed bodies, copies token trees, reconstructs local nested sections, and prunes backlinks to absent references. It has no parser, renderer, resource, or generator effects. Do it before replay so a malformed selection cannot commit child resources.
 
 The browser document API exports the same helper. Browser filesystem include directives remain unsupported: hosts prepare those sources before browser transformation. The helper is pure and does not import the footnote grammar into the minimal browser entry.
@@ -52,3 +54,9 @@ Replacing `document.env.title` with ordinary caller HTML/text remains supported 
 A native MarkdownIt callback supports reused environments and A/B/A rendering of the original parsed arrays. Temporary upstream fields are restored after parsing. For a selected standalone raw output, call `materializeFootnoteTokens(original, selection)` and render the returned array. Anonymous slices or assembled arrays containing unplanned references fail clearly because they have lost their source output record. An owned `compile(copiedTokens, document)` call retains its explicit document context and remains supported.
 
 Replacing MarkdownIt's renderer, as Translation's structural/XLIFF pipeline does, requires explicit feature adoption in that renderer. The raw callback contract does not claim support for arbitrary token serialization or anonymous array copies. CLI, Viewer, Translation and SDK acceptance is a separate gate from this source implementation.
+
+### Mixed and late inline contexts
+
+Reference syntax in ordinary note/cut titles is supported when the source parse has already admitted the corresponding local definition. Term definitions keep the provenance of their independently parsed child scopes, including when their block parsing precedes the root tail. Table cells, tab bodies and ordinary nested formatting use the same reference forest. The existing tabs extension renders tab labels as escaped text: a label `Tab[^a]` stays literal, contributes no reference, and cannot retain a phantom note body by itself.
+
+An active source's `parseInline` call after tail admission may resolve only labels whose bodies were already admitted by that source's local tail. A late synthetic metadata title cannot introduce a previously unused definition or resolve an unknown label: those references remain literal. Existing admitted references retain their source-local identity and counts. This finite host constraint does not reparse definitions or allocate another namespace. Inline parsing outside an active source also remains literal.

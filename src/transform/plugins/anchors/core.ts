@@ -5,6 +5,7 @@ import type {MarkdownItPluginCb} from '../typings';
 import GithubSlugger from 'github-slugger';
 import slugify from 'slugify';
 
+import {isFootnoteBody} from '../../footnote-data';
 import {headingInfo} from '../../utils';
 
 import {ANCHOR_TITLES} from './constants';
@@ -75,7 +76,7 @@ export interface Options {
 }
 
 function isPageHeading(token: Token): boolean {
-    return token.type === 'heading_open' && !token.meta?.footnoteBody;
+    return token.type === 'heading_open' && !isFootnoteBody(token);
 }
 
 /**
@@ -100,14 +101,14 @@ export function createAnchorsPlugin(formatPath: (path: string) => string) {
         const titlesBeforeAttrs = new WeakMap<Token, string>();
         const captureHeadingTitles = (state: StateCore) => {
             state.tokens.forEach((token, tokenIndex) => {
-                if (token.type === 'heading_open' && !token.meta?.footnoteBody) {
+                if (token.type === 'heading_open' && !isFootnoteBody(token)) {
                     titlesBeforeAttrs.set(token, headingInfo(state.tokens, tokenIndex).title);
                 }
             });
         };
         const markEmptyShorthandIds = (state: StateCore) => {
             state.tokens.forEach((token, tokenIndex) => {
-                if (token.type !== 'heading_open' || token.meta?.footnoteBody) {
+                if (token.type !== 'heading_open' || isFootnoteBody(token)) {
                     return;
                 }
                 const children = state.tokens[tokenIndex + 1].children;
