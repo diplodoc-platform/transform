@@ -6,6 +6,15 @@ import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 
 import escapeRegExp from 'lodash/escapeRegExp';
 
+import {removeCustomId} from '../../heading-id';
+
+export {
+    CUSTOM_ID_REGEXP,
+    CUSTOM_ID_EXCEPTION,
+    getCustomIds,
+    removeCustomId,
+} from '../../heading-id';
+
 /**
  * Detect empty shorthand IDs in terminal attributes using the parser's space separator.
  * @param content - The final text token before attributes are parsed.
@@ -41,39 +50,6 @@ export const trimHeadingWhitespace = (token: Token) => {
     if (last?.type === 'text') {
         last.content = last.content.trimEnd();
     }
-};
-
-export const CUSTOM_ID_REGEXP = /\[?{ ?#(\S+) ?}]?/g;
-export const CUSTOM_ID_EXCEPTION = '[{#T}]';
-
-export const getCustomIds = (content: string) => {
-    const ids: string[] = [];
-
-    content.replace(CUSTOM_ID_REGEXP, (match, customId) => {
-        if (match !== CUSTOM_ID_EXCEPTION) {
-            ids.push(customId);
-        }
-
-        return '';
-    });
-
-    return ids.length ? ids : null;
-};
-
-export const removeCustomId = (content: string) => {
-    if (CUSTOM_ID_REGEXP.test(content)) {
-        return content
-            .replace(CUSTOM_ID_REGEXP, (match) => {
-                if (match === CUSTOM_ID_EXCEPTION) {
-                    return match;
-                }
-
-                return '';
-            })
-            .trim();
-    }
-
-    return content;
 };
 
 export const removeCustomIds = (token: Token) => {
