@@ -4,6 +4,7 @@ import type {MarkdownIt, StateInline} from '../typings';
 // Matches the scheme expression used by markdown-it's built-in linkify rule.
 const SCHEME_RE = /(?:^|[^a-z0-9.+-])([a-z][a-z0-9.+-]*)$/i;
 const ASTERISK_MARKER = 0x2a;
+const PLUS_MARKER = 0x2b;
 const UNDERSCORE_MARKER = 0x5f;
 const TILDE_MARKER = 0x7e;
 
@@ -27,6 +28,7 @@ type DelimiterScanState = {
 function getUnmatchedOpeners(
     delimiters: Delimiter[],
     scanStates: WeakMap<Delimiter[], DelimiterScanState>,
+    underline: boolean,
 ) {
     let scanState = scanStates.get(delimiters);
     if (!scanState || scanState.scannedCount > delimiters.length) {
@@ -37,7 +39,11 @@ function getUnmatchedOpeners(
     // Process only new delimiters to keep the overall scan linear.
     for (let index = scanState.scannedCount; index < delimiters.length; index++) {
         const delimiter = delimiters[index];
-        if (delimiter.marker !== TILDE_MARKER && delimiter.marker !== UNDERSCORE_MARKER) {
+        if (
+            delimiter.marker !== TILDE_MARKER &&
+            delimiter.marker !== UNDERSCORE_MARKER &&
+            (!underline || delimiter.marker !== PLUS_MARKER)
+        ) {
             continue;
         }
 
@@ -77,6 +83,18 @@ function trimMarkdownSuffix(value: string, unmatchedOpeners: Map<number, number>
         }
         unmatchedOpeners.set(TILDE_MARKER, unmatchedStrikethrough);
 
+        let unmatchedUnderline = unmatchedOpeners.get(PLUS_MARKER) || 0;
+        while (
+            unmatchedUnderline > 0 &&
+            end >= 2 &&
+            value.codePointAt(end - 1) === PLUS_MARKER &&
+            value.codePointAt(end - 2) === PLUS_MARKER
+        ) {
+            end -= 2;
+            unmatchedUnderline--;
+        }
+        unmatchedOpeners.set(PLUS_MARKER, unmatchedUnderline);
+
         let unmatchedEmphasis = unmatchedOpeners.get(UNDERSCORE_MARKER) || 0;
         while (
             unmatchedEmphasis > 0 &&
@@ -107,7 +125,10 @@ function trimTrailingStars(value: string) {
     return value.slice(0, end);
 }
 
-export default function linkifyStrikethrough(md: MarkdownIt) {
+export default function linkifyStrikethrough(
+    md: MarkdownIt,
+    {underline = false}: {underline?: boolean} = {},
+) {
     // Each inline nesting level has its own delimiter array and scan progress.
     const delimiterScanStates = new WeakMap<Delimiter[], DelimiterScanState>();
 
@@ -140,7 +161,11 @@ export default function linkifyStrikethrough(md: MarkdownIt) {
             return false;
         }
 
-        const unmatchedOpeners = getUnmatchedOpeners(state.delimiters, delimiterScanStates);
+        const unmatchedOpeners = getUnmatchedOpeners(
+            state.delimiters,
+            delimiterScanStates,
+            underline,
+        );
         const linkSourceEnd = trimMarkdownSuffix(link.raw, unmatchedOpeners);
         if (linkSourceEnd < link.raw.length) {
             // Match again without closing markup so linkify can also restore punctuation boundaries.
