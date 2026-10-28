@@ -13,7 +13,6 @@ declare module 'markdown-it-sub' {
 }
 
 declare module 'markdown-it-footnote' {
-    import type {MarkdownIt} from 'markdown-it' with {'resolution-mode': 'import'};
-    function footnote(md: MarkdownIt): void;
+    function footnote(md: import('./footnotes/types').FootnoteGrammar): void;
     export = footnote;
 }

@@ -6,7 +6,7 @@ import type {MarkdownItIncluded} from './types';
 
 import {bold} from 'chalk';
 
-import {isFootnoteBody, markFootnoteBody, materializeFootnoteTokens} from '../../footnote-data';
+import {materializeFootnoteTokens} from '../../footnote-data';
 import {replayChildDocument} from '../../document-context';
 import {IncludeCycleError} from '../../document';
 import {findBlockTokens} from '../../utils';
@@ -91,8 +91,7 @@ function unfoldIncludes(state: StateCore, path: string, options: Options) {
                     stripTitleTokens(includedTokens);
                 }
 
-                includedTokens = materializeFootnoteTokens(fileTokens, includedTokens);
-                if (isFootnoteBody(openToken)) markFootnoteBody(includedTokens);
+                includedTokens = materializeFootnoteTokens(fileTokens, includedTokens, openToken);
                 replayChildDocument(state.md, fragment, state.env, {purpose: 'include'});
 
                 if (noReplaceInclude) {

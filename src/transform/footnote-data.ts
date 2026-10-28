@@ -1,7 +1,12 @@
 import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
-import type {MarkdownIt, ParserEnv} from './shared-types';
+import type {ParserEnv} from './shared-types';
 
 import {footnoteService, setFootnoteService} from './document-context-core';
+
+export interface FootnoteRenderer<Options> {
+    options: Options;
+    renderer: {render(tokens: Token[], options: Options, env: ParserEnv): string};
+}
 
 export const FRAME = Symbol('local-footnotes');
 export const SOURCE_SCOPE = Symbol('footnote-source');
@@ -374,22 +379,48 @@ function completeForest(
     return {tokens: output, title, scopes};
 }
 
+// Older native hosts expose string-only attributes. Materialization preserves
+// that representation: it copies native attributes and never adds numeric ones.
+interface StringAttributeToken extends Token {
+    children: StringAttributeToken[] | null;
+    attrs: [string, string][] | null;
+    attrGet(name: string): string | null;
+}
+
 /**
  * Copy one admitted occurrence, retaining reachable local footnote definitions.
  * Does not parse, render, replay resources, or invoke the ID generator.
  * @param allTokens - Original parsed source tokens (including unselected definitions).
  * @param selectedTokens - Optional subset retaining original top-level token identities.
- * @returns Independent footnote occurrences, or the unchanged selection without footnotes.
+ * @param insertionToken - Actual include placeholder; privately inherits footnote-body provenance.
+ * @returns Independent occurrences, or the unchanged selection when neither footnotes nor body inheritance apply.
  * @throws When a selection cuts a footnote section or contains copied source tokens.
  */
 export function materializeFootnoteTokens(
+    allTokens: StringAttributeToken[],
+    selectedTokens?: StringAttributeToken[],
+    insertionToken?: Token,
+): StringAttributeToken[];
+export function materializeFootnoteTokens(
+    allTokens: Token[],
+    selectedTokens?: Token[],
+    insertionToken?: Token,
+): Token[];
+export function materializeFootnoteTokens(
     allTokens: Token[],
     selectedTokens: Token[] = allTokens,
+    insertionToken?: Token,
 ): Token[] {
     if (!selectedTokens.every((token) => allTokens.includes(token))) {
         throw new TypeError('Selection must retain actual source-token identities');
     }
-    if (!hasFootnoteTokens(allTokens)) return selectedTokens;
+    const inheritBody = insertionToken !== undefined && isFootnoteBody(insertionToken);
+    if (!hasFootnoteTokens(allTokens)) {
+        if (!inheritBody) return selectedTokens;
+        const copies = selectedTokens.map((token) => copyToken(token));
+        markFootnoteBody(copies);
+        return copies;
+    }
     const occurrences = new Map<Scope, Scope>();
     const mapScope = (scope: Scope) => {
         if (!scope) throw new Error('Missing source scope');
@@ -400,6 +431,7 @@ export function materializeFootnoteTokens(
         return occurrence;
     };
     const result = completeForest(selectedTokens, [], mapScope).tokens;
+    if (inheritBody) markFootnoteBody(result);
     const sourceOutput = sourceScope(allTokens)?.rawOutput;
     if (sourceOutput) {
         // The same pure helper can admit a selected standalone raw output.
@@ -472,8 +504,8 @@ export function bindFootnoteRoot(
     service.renderInline = Boolean(renderInline);
 }
 
-export function prepareFootnoteTitle(
-    md: MarkdownIt,
+export function prepareFootnoteTitle<Options>(
+    md: FootnoteRenderer<Options>,
     env: ParserEnv,
     titleTokens: Token[],
     bodyTokens: Token[],
@@ -526,8 +558,8 @@ function literalRefs(tokens: Token[]): Token[] {
     return tokens.map((token) => copyToken(token, (scope) => scope, token.type, true));
 }
 
-export function compileFootnoteOutput(
-    md: MarkdownIt,
+export function compileFootnoteOutput<Options>(
+    md: FootnoteRenderer<Options>,
     env: ParserEnv,
     tokens: Token[],
     renderBody: RenderBody,
@@ -549,8 +581,8 @@ export function compileFootnoteOutput(
     return result;
 }
 
-export function compileWithService(
-    md: MarkdownIt,
+export function compileWithService<Options>(
+    md: FootnoteRenderer<Options>,
     env: ParserEnv,
     tokens: Token[],
     renderBody: RenderBody,

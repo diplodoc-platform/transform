@@ -1,5 +1,7 @@
-import type {Lang, MarkdownIt, MarkdownItPluginOpts} from '../../shared-types';
+import type {Lang, MarkdownItPluginOpts} from '../../shared-types';
 import type {Scope} from '../../footnote-data';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
+import type {FootnoteParser} from './types';
 
 import upstream from 'markdown-it-footnote';
 import {createIDGeneratorByStrategy} from '@diplodoc/utils';
@@ -30,9 +32,13 @@ export type FootnoteOptions = Partial<Pick<MarkdownItPluginOpts, 'generateID'>> 
  * @param options - Optional caller generator and backlink language.
  * @returns Nothing; installs rules and native entry wrappers.
  */
-export default function footnotes(md: MarkdownIt, options: FootnoteOptions = {}) {
+export default function footnotes<Options>(
+    md: FootnoteParser<Options>,
+    options: FootnoteOptions = {},
+) {
     const generateID = options.generateID ?? createIDGeneratorByStrategy('random');
-    md.use(upstream);
+    // The pinned installer is a plain function with no receiver dependence.
+    upstream(md);
     md.inline.ruler.disable(['footnote_inline']);
     md.core.ruler.after('footnote_tail', 'yfm_footnote_ownership', (state) => {
         // Upstream inserts a backlink before the final paragraph_close. Remove
@@ -156,13 +162,13 @@ export default function footnotes(md: MarkdownIt, options: FootnoteOptions = {})
         };
     }
     // Renderers consume a precomputed plan, never generate or mutate IDs.
-    md.renderer.rules.footnote_ref = (tokens, index) => {
+    md.renderer.rules.footnote_ref = (tokens: Token[], index: number) => {
         const ids = requirePlan(tokens[index]);
         return `<sup class="footnote-ref"><a href="#${ids.body}" id="${ids.ref}">[${ids.caption}]</a></sup>`;
     };
-    md.renderer.rules.footnote_open = (tokens, index) =>
+    md.renderer.rules.footnote_open = (tokens: Token[], index: number) =>
         `<li id="${requirePlan(tokens[index]).body}" class="footnote-item">`;
-    md.renderer.rules.footnote_anchor = (tokens, index) => {
+    md.renderer.rules.footnote_anchor = (tokens: Token[], index: number) => {
         const ids = requirePlan(tokens[index]);
         return ` <a href="#${ids.ref}" class="footnote-backref">${backLabel(options.lang ?? 'ru', ids.caption, ids.reference)}</a>`;
     };

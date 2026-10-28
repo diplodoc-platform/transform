@@ -36,12 +36,16 @@ import {
 
 const child = parseDocumentFragmentResult(md, source, parentEnv, {purpose: 'reference'});
 const selected = child.tokens.slice(start, end); // retain original token identities
-const occurrence = materializeFootnoteTokens(child.tokens, selected);
+const occurrence = materializeFootnoteTokens(child.tokens, selected, includePlaceholder);
 replayDocumentFragment(md, child, parentEnv, {purpose: 'include'});
 parentTokens.push(...occurrence);
 ```
 
-When there are no owned footnote tokens, the helper returns the selection unchanged; retain any ordinary token-copying policy your host already needs. Footnote-free root compilation similarly preserves original token identity and creates no optional footnote service. With footnotes, copies preserve token prototypes/property descriptors and arbitrary custom metadata identity; only native arrays and private feature data are copied.
+Pass the actual include placeholder as the optional third argument. If it belongs to a footnote body, the helper copies the selection and privately inherits that provenance, including plain children and selected headings. The cached source is unchanged. No private marker API is required.
+
+When there are no owned footnote tokens and no body provenance to inherit, the helper returns the selection unchanged; retain any ordinary token-copying policy your host already needs. Footnote-free root compilation similarly preserves original token identity and creates no optional footnote service. With footnotes, copies preserve token prototypes/property descriptors and arbitrary custom metadata identity; only native arrays and private feature data are copied.
+
+Keep the existing host inclusion context during child parsing: the include stack defers heading anchors until admission. Materialization does not reconstruct already generated heading anchors from arbitrary pre-anchored capsules. As with ordinary repeated includes, the host retains its existing copy and heading-admission policy outside footnote bodies.
 
 Materialization keeps transitive definitions reachable from the selected references, even when the definitions are outside the selected heading. It preserves currently admitted transformed bodies, copies token trees, reconstructs local nested sections, and prunes backlinks to absent references. It has no parser, renderer, resource, or generator effects. Do it before replay so a malformed selection cannot commit child resources.
 
@@ -50,6 +54,8 @@ The browser document API exports the same helper. Browser filesystem include dir
 ### Mutable titles and raw native callbacks
 
 Replacing `document.env.title` with ordinary caller HTML/text remains supported and authoritative. The replacement relinquishes references from the previously generated title. Retaining generated anchor HTML while editing that opaque string is outside the ownership contract. Exact previously generated reference IDs in the `id="..."` or `href="#..."` spellings emitted by the renderer fail clearly before compilation effects. This finite guard does not parse arbitrary HTML or infer ownership of rewritten references. Caller-manipulated HTML links remain the caller's responsibility.
+
+The callback uses finite public grammar, parsing, and rendering capabilities, without native private State or Ruler requirements. The pinned upstream installer is a plain function with no receiver dependence; the adapter invokes it directly.
 
 A native MarkdownIt callback supports reused environments and A/B/A rendering of the original parsed arrays. Temporary upstream fields are restored after parsing. For a selected standalone raw output, call `materializeFootnoteTokens(original, selection)` and render the returned array. Anonymous slices or assembled arrays containing unplanned references fail clearly because they have lost their source output record. An owned `compile(copiedTokens, document)` call retains its explicit document context and remains supported.
 
