@@ -16,6 +16,7 @@ import {dirname, join} from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 
 import {verifyHighlighterGraph} from './test-highlighter-graph.mjs';
+import {verifyImageDimensionsGraph} from './test-image-dimensions-graph.mjs';
 import {verifyTableAlignmentGraph} from './test-table-alignment-graph.mjs';
 
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -168,6 +169,14 @@ assert.match(transform('Static ESM', defineTransformOptions()).result.html, /Sta
         join(consumerRoot, 'table-alignment-consumer.mjs'),
     );
     execFileSync(process.execPath, [join(consumerRoot, 'table-alignment-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
+    copyFileSync(
+        join(projectRoot, 'scripts/image-dimensions-package-consumer.mjs'),
+        join(consumerRoot, 'image-dimensions-consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'image-dimensions-consumer.mjs')], {
         cwd: consumerRoot,
         stdio: 'inherit',
     });
@@ -325,6 +334,19 @@ void typedLabel; void pathIsNotGuaranteed;
         );
     }
     const configurationTypes = `
+import {migrateImageDimensions, type ImageDimensionsMigrationResult} from '@diplodoc/transform/migrations/image-dimensions';
+const imageMigration: ImageDimensionsMigrationResult = migrateImageDimensions('![a](a =20x30)', {path: 'guide.md'});
+const imageSource: string = imageMigration.output;
+// @ts-expect-error No document/plugin/generator execution hook in the pure migration API.
+migrateImageDimensions('', {generateID: () => 'id'});
+// @ts-expect-error Diagnostic label must be a string.
+migrateImageDimensions('', {path: 42});
+// @ts-expect-error Migration remains synchronous.
+const asyncImage: Promise<ImageDimensionsMigrationResult> = migrateImageDimensions('');
+// @ts-expect-error Parser diagnostic context is not a named builtin feature option.
+configuration.defineTransformOptions({plugins: {options: {imsize: {path: 'invented.md'}}}});
+void imageSource; void asyncImage;
+
 import {migrateTableAlignment, type TableAlignmentMigrationResult, type YfmTablePluginOptions} from '@diplodoc/transform/migrations/table-alignment';
 const tableOptions: YfmTablePluginOptions = {table_ignoreSplittersInInlineCode: false};
 const migration: TableAlignmentMigrationResult = migrateTableAlignment('', {path: 'guide.md', table: tableOptions});
@@ -591,6 +613,7 @@ assert.match(html, /hljs-keyword/);
     const {buildSync} = projectRequire('esbuild');
     verifyHighlighterGraph(consumerRoot, buildSync);
     verifyTableAlignmentGraph(consumerRoot, buildSync);
+    verifyImageDimensionsGraph(consumerRoot, buildSync);
     const {JSDOM} = projectRequire('jsdom');
     for (const variant of ['', '/base', '/yfm-only', '/print']) {
         const result = buildSync({
