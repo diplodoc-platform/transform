@@ -5,6 +5,7 @@ export const stableEntries = {
     './parser': 'md',
     './document': 'document',
     './configuration': 'plugin-configuration',
+    './migrations/table-alignment': 'migrations/table-alignment',
     './highlighter': 'highlighter',
     './highlighter/legacy': 'highlighter/legacy',
     './types': 'typings',

@@ -834,7 +834,10 @@ describe('Table plugin', () => {
                 ||
                 |#
                 `,
-                    {table_ignoreSplittersInBlockCode: false},
+                    {
+                        table_ignoreSplittersInBlockCode: false,
+                        table_ignoreSplittersInInlineCode: false,
+                    },
                 ),
             ).toBe(dd`
                 <table>
@@ -855,13 +858,16 @@ describe('Table plugin', () => {
         });
     });
 
-    it('should split cells by pipe in inline-code', () => {
+    it('should split cells by pipe in inline-code with explicit legacy false', () => {
         expect(
-            transformYfm(dd`
+            transformYfm(
+                dd`
             #|
             || code \`before|after\` code ||
             |#
-            `),
+            `,
+                {table_ignoreSplittersInInlineCode: false},
+            ),
         ).toBe(dd`
             <table>
             <tbody>
