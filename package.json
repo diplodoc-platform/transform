@@ -56,9 +56,9 @@
     "test:package": "npm run build && node scripts/test-package.mjs"
   },
   "dependencies": {
-    "@diplodoc/cut-extension": "^1.1.7",
+    "@diplodoc/cut-extension": "^1.1.8",
     "@diplodoc/directive": "^0.4.0",
-    "@diplodoc/file-extension": "^0.2.6",
+    "@diplodoc/file-extension": "^0.2.7",
     "@diplodoc/tabs-extension": "^3.10.7",
     "@diplodoc/utils": "^2.3.6",
     "chalk": "^4.1.2",
