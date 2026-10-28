@@ -49,16 +49,7 @@ export interface ChildParseOptions {
     disableCircularError?: boolean;
 }
 
-/**
- * Create plain document data; rules and parser services remain caller-owned.
- * @returns Fresh mutable environment, without installed parser rules.
- */
-export function createDocumentEnv(): DocumentEnv {
-    // Preserve ordinary Transform result keys even when their features are disabled.
-    const env: DocumentEnv = {meta: undefined, assets: undefined, headings: [], title: ''};
-    Object.defineProperty(env, 'included', {value: {}, writable: true, configurable: true});
-    return env;
-}
+export {createDocumentEnv} from './document-data';
 
 /**
  * Parse a synchronous child and commit only its purpose's document contributions.
