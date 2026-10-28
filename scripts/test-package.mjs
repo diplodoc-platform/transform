@@ -17,6 +17,7 @@ import {fileURLToPath, pathToFileURL} from 'node:url';
 
 import {verifyHighlighterGraph} from './test-highlighter-graph.mjs';
 import {verifyImageDimensionsGraph} from './test-image-dimensions-graph.mjs';
+import {verifyInlineSyntaxGraph} from './test-inline-syntax-graph.mjs';
 import {verifyTableAlignmentGraph} from './test-table-alignment-graph.mjs';
 
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -118,6 +119,8 @@ try {
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import transform, {transform as namedTransform} from '@diplodoc/transform';
+import underline from '@diplodoc/transform/plugins/underline';
+import subscript from '@diplodoc/transform/plugins/subscript';
 import parser from '@diplodoc/transform/parser';
 import images, {replaceSvgContent} from '@diplodoc/transform/plugins/images';
 import log, {getLogger} from '@diplodoc/transform/log';
@@ -128,6 +131,8 @@ import {createHighlightJsHighlighter} from '@diplodoc/transform/highlighter';
 import {createLegacyHighlighter} from '@diplodoc/transform/highlighter/legacy';
 const require = createRequire(import.meta.url);
 assert.equal(transform, namedTransform);
+assert.equal(underline, require('@diplodoc/transform/plugins/underline').default);
+assert.equal(subscript, require('@diplodoc/transform/plugins/subscript').default);
 assert.equal(transform, require('@diplodoc/transform'));
 assert.equal(parser, require('@diplodoc/transform/parser'));
 assert.equal(images.replaceSvgContent, replaceSvgContent);
@@ -177,6 +182,14 @@ assert.match(transform('Static ESM', defineTransformOptions()).result.html, /Sta
         join(consumerRoot, 'image-dimensions-consumer.mjs'),
     );
     execFileSync(process.execPath, [join(consumerRoot, 'image-dimensions-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
+    copyFileSync(
+        join(projectRoot, 'scripts/inline-syntax-package-consumer.mjs'),
+        join(consumerRoot, 'inline-syntax-consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'inline-syntax-consumer.mjs')], {
         cwd: consumerRoot,
         stdio: 'inherit',
     });
@@ -334,6 +347,19 @@ void typedLabel; void pathIsNotGuaranteed;
         );
     }
     const configurationTypes = `
+import underline from '@diplodoc/transform/plugins/underline';
+import subscript from '@diplodoc/transform/plugins/subscript';
+import type {MarkdownIt, MarkdownItPluginCb} from '@diplodoc/transform/types';
+const typedUnderline: MarkdownItPluginCb = underline;
+const typedSubscript: (md: MarkdownIt) => void = subscript;
+configuration.defineTransformOptions({plugins: {enable: ['underline', 'subscript'], options: {underline: {}, subscript: {}}}});
+// @ts-expect-error Underline has a closed empty options schema.
+configuration.defineTransformOptions({plugins: {options: {underline: {tag: 'ins'}}}});
+// @ts-expect-error Subscript has a closed empty options schema.
+configuration.defineTransformOptions({plugins: {options: {subscript: {parseInline: true}}}});
+// @ts-expect-error New syntax IDs are exact.
+configuration.defineTransformOptions({plugins: {enable: ['underlined']}});
+void typedUnderline; void typedSubscript;
 import {migrateImageDimensions, type ImageDimensionsMigrationResult} from '@diplodoc/transform/migrations/image-dimensions';
 const imageMigration: ImageDimensionsMigrationResult = migrateImageDimensions('![a](a =20x30)', {path: 'guide.md'});
 const imageSource: string = imageMigration.output;
@@ -649,6 +675,7 @@ assert.match(html, /hljs-keyword/);
         });
     }
     const sass = projectRequire('sass');
+    verifyInlineSyntaxGraph(consumerRoot, buildSync, sass, projectRequire('css').parse);
     const stylesheet = sass.compileString('@use "pkg:@diplodoc/transform/scss/yfm-base.scss";', {
         importers: [new sass.NodePackageImporter(consumerRoot)],
         logger: sass.Logger.silent,

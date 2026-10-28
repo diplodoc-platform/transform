@@ -75,6 +75,8 @@
     "markdown-it": "15.0.3",
     "markdown-it-attrs": "4.3.1",
     "markdown-it-deflist": "4.0.0",
+    "markdown-it-ins": "4.0.0",
+    "markdown-it-sub": "2.0.0",
     "markdown-it-sup": "1.0.0",
     "markdownlint": "^0.32.1",
     "markdownlint-rule-helpers": "0.17.2",
@@ -540,6 +542,26 @@
       "require": {
         "types": "./api/plugins/sup.d.cts",
         "default": "./api/plugins/sup.cjs"
+      }
+    },
+    "./plugins/underline": {
+      "import": {
+        "types": "./api/plugins/underline.d.mts",
+        "default": "./api/plugins/underline.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/underline.d.cts",
+        "default": "./api/plugins/underline.cjs"
+      }
+    },
+    "./plugins/subscript": {
+      "import": {
+        "types": "./api/plugins/subscript.d.mts",
+        "default": "./api/plugins/subscript.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/subscript.d.cts",
+        "default": "./api/plugins/subscript.cjs"
       }
     },
     "./plugins/table": {

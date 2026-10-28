@@ -12,7 +12,7 @@ import type {VideoPluginOptions} from './plugins/video/types';
 import type {YfmTablePluginOptions} from './plugins/table/types';
 import type {VisibilityMode} from './plugins/visibility';
 
-/** Stable IDs in the historical DefaultPlugins installation order. */
+/** Stable IDs retain the historical prefix, followed by additive standard features. */
 export const builtinPluginIds = Object.freeze([
     'meta',
     'deflist',
@@ -31,6 +31,8 @@ export const builtinPluginIds = Object.freeze([
     'block-anchor',
     'inline-code',
     'visibility',
+    'underline',
+    'subscript',
 ] as const);
 
 export type BuiltinPluginId = (typeof builtinPluginIds)[number];
@@ -60,6 +62,8 @@ export interface BuiltinPluginSettings {
     'block-anchor'?: NoPluginOptions;
     'inline-code'?: NoPluginOptions;
     visibility?: {contentAudience?: VisibilityMode};
+    underline?: NoPluginOptions;
+    subscript?: NoPluginOptions;
 }
 
 /** Previously unnamed flat options stay available to legacy callers. */

@@ -17,6 +17,8 @@ import term from './plugins/term';
 import blockAnchor from './plugins/block-anchor';
 import inlineCode from './plugins/inline-code';
 import visibility from './plugins/visibility';
+import underline from './plugins/underline';
+import subscript from './plugins/subscript';
 
 const defaultPlugins = [
     meta,
@@ -36,6 +38,8 @@ const defaultPlugins = [
     blockAnchor,
     inlineCode,
     visibility,
+    underline,
+    subscript,
 ] as MarkdownItPluginCb[];
 
 export default defaultPlugins;
