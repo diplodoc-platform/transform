@@ -562,9 +562,17 @@ md.renderer.render(copied, md.options, env);
 const name: unknown = env.meta?.name;
 void name;
 `;
+        const operationsStart = fixture.indexOf('const md =');
         writeFileSync(
             join(nativeRoot, 'consumer.cts'),
-            "import MarkdownIt = require('markdown-it');\n" + fixture,
+            version.startsWith('15.')
+                ? // Upstream 15.0.3's require declaration omits TS resolution-mode
+                  // on its own import types. Use its real ESM declaration from CJS.
+                  fixture.slice(0, operationsStart) +
+                      "async function check() { const {default: MarkdownIt} = await import('markdown-it');\n" +
+                      fixture.slice(operationsStart) +
+                      '\n} void check;\n'
+                : "import MarkdownIt = require('markdown-it');\n" + fixture,
         );
         writeFileSync(
             join(nativeRoot, 'consumer.mts'),

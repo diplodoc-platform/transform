@@ -57,6 +57,8 @@ Replacing `document.env.title` with ordinary caller HTML/text remains supported 
 
 The callback uses finite public grammar, parsing, and rendering capabilities, without native private State or Ruler requirements. The pinned upstream installer is a plain function with no receiver dependence; the adapter invokes it directly.
 
+Actual native13/14 hosts are checked with their published `@types/markdown-it` declarations in strict CJS and ESM modes. Native15 uses its bundled ESM declarations, including a dynamic ESM import from a CJS TypeScript fixture: the upstream 15.0.3 require declaration itself lacks required `resolution-mode` attributes under strict Node16 TypeScript. Its actual CommonJS runtime is separately exercised. Transform's stable CJS facade does not expose that broken declaration branch.
+
 A native MarkdownIt callback supports reused environments and A/B/A rendering of the original parsed arrays. Temporary upstream fields are restored after parsing. For a selected standalone raw output, call `materializeFootnoteTokens(original, selection)` and render the returned array. Anonymous slices or assembled arrays containing unplanned references fail clearly because they have lost their source output record. An owned `compile(copiedTokens, document)` call retains its explicit document context and remains supported.
 
 Replacing MarkdownIt's renderer, as Translation's structural/XLIFF pipeline does, requires explicit feature adoption in that renderer. The raw callback contract does not claim support for arbitrary token serialization or anonymous array copies. CLI, Viewer, Translation and SDK acceptance is a separate gate from this source implementation.

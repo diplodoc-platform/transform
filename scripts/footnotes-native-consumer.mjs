@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
 import MarkdownIt from 'markdown-it';
 import footnotes from '@diplodoc/transform/plugins/footnotes';
 import {materializeFootnoteTokens} from '@diplodoc/transform/document';
@@ -29,3 +30,10 @@ for (const html of [htmlA, htmlB, selectedHTML]) {
 }
 assert.equal(md.renderInline('inline[^a]', env), 'inline[^a]');
 assert.equal(calls, 3);
+
+const require = createRequire(import.meta.url);
+const CommonJS = require('markdown-it');
+const common = new CommonJS().use(require('@diplodoc/transform/plugins/footnotes').default, {
+    generateID: () => 'common',
+});
+assert.match(common.render('CJS[^a]\n\n[^a]: note'), /footnote-item/);
