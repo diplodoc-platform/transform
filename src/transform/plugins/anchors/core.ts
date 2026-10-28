@@ -74,6 +74,10 @@ export interface Options {
     getPublicPath?: (options: Options, v?: string) => string;
 }
 
+function isPageHeading(token: Token): boolean {
+    return token.type === 'heading_open' && !token.meta?.footnoteBody;
+}
+
 /**
  * Bind existing feature diagnostics to an execution-host path formatter.
  * @param formatPath - Original terminal or plain browser formatting.
@@ -96,14 +100,14 @@ export function createAnchorsPlugin(formatPath: (path: string) => string) {
         const titlesBeforeAttrs = new WeakMap<Token, string>();
         const captureHeadingTitles = (state: StateCore) => {
             state.tokens.forEach((token, tokenIndex) => {
-                if (token.type === 'heading_open') {
+                if (token.type === 'heading_open' && !token.meta?.footnoteBody) {
                     titlesBeforeAttrs.set(token, headingInfo(state.tokens, tokenIndex).title);
                 }
             });
         };
         const markEmptyShorthandIds = (state: StateCore) => {
             state.tokens.forEach((token, tokenIndex) => {
-                if (token.type !== 'heading_open') {
+                if (token.type !== 'heading_open' || token.meta?.footnoteBody) {
                     return;
                 }
                 const children = state.tokens[tokenIndex + 1].children;
@@ -142,7 +146,7 @@ export function createAnchorsPlugin(formatPath: (path: string) => string) {
 
             while (i < tokens.length) {
                 const token = tokens[i];
-                const isHeading = token.type === 'heading_open';
+                const isHeading = isPageHeading(token);
 
                 if (isHeading) {
                     trimHeadingWhitespace(tokens[i + 1]);

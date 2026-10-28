@@ -1,5 +1,6 @@
 import transform, {
     createParser,
+    materializeFootnoteTokens,
     definePlugin,
     type BrowserTransformOptions,
     type ParserEnv,
@@ -28,6 +29,8 @@ const document = parser.parseDocument('text');
 const env: ParserEnv = document.env;
 const documentEnv: DocumentEnv = document.env;
 parser.compileDocument(document);
+materializeFootnoteTokens(document.tokens, document.tokens.slice(0, 3));
+transform("ref[^a]", {pluginConfiguration: {enable: ["footnotes", "task-list"]}});
 minimal(html, {pluginConfiguration: {preset: 'none'}});
 // @ts-expect-error Node filesystem options are not browser capabilities.
 transform('text', {root: '/docs'});

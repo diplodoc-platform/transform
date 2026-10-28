@@ -19,6 +19,8 @@ export const builtinPluginIds = Object.freeze([
     'visibility',
     'underline',
     'subscript',
+    'footnotes',
+    'task-list',
 ] as const);
 
 export type BuiltinPluginId = (typeof builtinPluginIds)[number];

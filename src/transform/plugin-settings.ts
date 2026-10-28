@@ -30,6 +30,8 @@ export interface BuiltinPluginSettings {
     visibility?: {contentAudience?: VisibilityMode};
     underline?: NoPluginOptions;
     subscript?: NoPluginOptions;
+    footnotes?: NoPluginOptions;
+    'task-list'?: NoPluginOptions;
 }
 
 /** Previously unnamed flat options stay available to legacy callers. */
@@ -77,4 +79,6 @@ export const builtinOptionKeys: Record<BuiltinPluginId, readonly string[]> = {
     visibility: ['contentAudience'],
     underline: [],
     subscript: [],
+    footnotes: [],
+    'task-list': [],
 };

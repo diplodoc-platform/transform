@@ -87,3 +87,5 @@ export class IncludeCycleError extends Error {
         this.chain = [...chain];
     }
 }
+
+export {materializeFootnoteTokens} from './footnote-data';

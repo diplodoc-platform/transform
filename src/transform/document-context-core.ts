@@ -7,10 +7,11 @@ import type {
     ParserEnv,
 } from './shared-types';
 import type {DeprecationReporter} from './deprecation-core';
+import type {FootnoteService} from './footnote-data';
 
 import {createDocumentEnv} from './document-data';
 
-type Services = {checkbox: number};
+type Services = {checkbox: number; footnotes?: FootnoteService};
 type Context = {
     pending: DocumentEnv;
     current?: ParserEnv;
@@ -396,4 +397,14 @@ export function createLegacyEnvView(target: () => ParserEnv): DocumentEnv {
             throw new TypeError('Freeze or seal document.env, not the legacy env view');
         },
     });
+}
+
+// Finite optional output data; no feature grammar or callback registry lives here.
+export function footnoteService(env: ParserEnv): FootnoteService | undefined {
+    return services.get(env)?.footnotes;
+}
+export function setFootnoteService(env: ParserEnv, footnotes: FootnoteService): void {
+    const service = services.get(env) ?? {checkbox: 0};
+    service.footnotes = footnotes;
+    services.set(env, service);
 }

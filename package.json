@@ -65,9 +65,9 @@
     "@diplodoc/file-extension": "0.2.7-transform5.0",
     "@diplodoc/tabs-extension": "3.10.8-transform5.0",
     "@diplodoc/utils": "2.3.7-transform5.0",
+    "@mdit/plugin-tasklist": "1.1.4",
     "@types/lodash": "^4.17.23",
     "@types/sanitize-html": "^2.9.3",
-    "@mdit/plugin-tasklist": "1.1.4",
     "chalk": "^4.1.2",
     "cheerio": "^1.0.0",
     "css": "^3.0.0",
@@ -79,6 +79,7 @@
     "markdown-it": "15.0.3",
     "markdown-it-attrs": "4.3.1",
     "markdown-it-deflist": "4.0.0",
+    "markdown-it-footnote": "4.0.0",
     "markdown-it-ins": "4.0.0",
     "markdown-it-sub": "2.0.0",
     "markdown-it-sup": "1.0.0",
@@ -564,6 +565,26 @@
       "require": {
         "types": "./api/plugins/subscript.d.cts",
         "default": "./api/plugins/subscript.cjs"
+      }
+    },
+    "./plugins/footnotes": {
+      "import": {
+        "types": "./api/plugins/footnotes/index.d.mts",
+        "default": "./api/plugins/footnotes/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/footnotes/index.d.cts",
+        "default": "./api/plugins/footnotes/index.cjs"
+      }
+    },
+    "./plugins/task-list": {
+      "import": {
+        "types": "./api/plugins/task-list/index.d.mts",
+        "default": "./api/plugins/task-list/index.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/task-list/index.d.cts",
+        "default": "./api/plugins/task-list/index.cjs"
       }
     },
     "./plugins/table": {

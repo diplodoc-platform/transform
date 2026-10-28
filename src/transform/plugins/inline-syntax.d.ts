@@ -11,3 +11,9 @@ declare module 'markdown-it-sub' {
     function sub(md: MarkdownIt): void;
     export = sub;
 }
+
+declare module 'markdown-it-footnote' {
+    import type {MarkdownIt} from 'markdown-it' with {'resolution-mode': 'import'};
+    function footnote(md: MarkdownIt): void;
+    export = footnote;
+}

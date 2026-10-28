@@ -1,4 +1,5 @@
 export {
+    materializeFootnoteTokens,
     createDocumentEnv,
     envMeta,
     parseDocumentFragment,

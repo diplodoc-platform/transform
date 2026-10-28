@@ -113,6 +113,14 @@ try {
         cwd: consumerRoot,
         stdio: 'inherit',
     });
+    copyFileSync(
+        join(projectRoot, 'scripts/footnotes-package-consumer.mjs'),
+        join(consumerRoot, 'footnotes-consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'footnotes-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
     // Static imports are evaluated in the real installed consumer, independent of source self-resolution.
     writeFileSync(
         join(consumerRoot, 'static-consumer.mjs'),
@@ -122,6 +130,8 @@ import {createRequire} from 'node:module';
 import transform, {transform as namedTransform} from '@diplodoc/transform';
 import underline from '@diplodoc/transform/plugins/underline';
 import subscript from '@diplodoc/transform/plugins/subscript';
+import footnotes from '@diplodoc/transform/plugins/footnotes';
+import taskList from '@diplodoc/transform/plugins/task-list';
 import parser from '@diplodoc/transform/parser';
 import images, {replaceSvgContent} from '@diplodoc/transform/plugins/images';
 import log, {getLogger} from '@diplodoc/transform/log';
@@ -134,6 +144,8 @@ const require = createRequire(import.meta.url);
 assert.equal(transform, namedTransform);
 assert.equal(underline, require('@diplodoc/transform/plugins/underline').default);
 assert.equal(subscript, require('@diplodoc/transform/plugins/subscript').default);
+assert.equal(footnotes, require('@diplodoc/transform/plugins/footnotes').default);
+assert.equal(taskList, require('@diplodoc/transform/plugins/task-list').default);
 assert.equal(transform, require('@diplodoc/transform'));
 assert.equal(parser, require('@diplodoc/transform/parser'));
 assert.equal(images.replaceSvgContent, replaceSvgContent);
@@ -350,10 +362,19 @@ void typedLabel; void pathIsNotGuaranteed;
     const configurationTypes = `
 import underline from '@diplodoc/transform/plugins/underline';
 import subscript from '@diplodoc/transform/plugins/subscript';
+import footnotes from '@diplodoc/transform/plugins/footnotes';
+import taskList from '@diplodoc/transform/plugins/task-list';
 import type {MarkdownIt, MarkdownItPluginCb} from '@diplodoc/transform/types';
+const typedFootnotes: MarkdownItPluginCb = footnotes;
+const typedTaskList: MarkdownItPluginCb = taskList;
+void typedFootnotes; void typedTaskList;
 const typedUnderline: MarkdownItPluginCb = underline;
 const typedSubscript: (md: MarkdownIt) => void = subscript;
-configuration.defineTransformOptions({plugins: {enable: ['underline', 'subscript'], options: {underline: {}, subscript: {}}}});
+configuration.defineTransformOptions({plugins: {enable: ['underline', 'subscript', 'footnotes', 'task-list'], options: {underline: {}, subscript: {}, footnotes: {}, 'task-list': {}}}});
+// @ts-expect-error Footnotes has a closed empty options schema.
+configuration.defineTransformOptions({plugins: {options: {footnotes: {inline: true}}}});
+// @ts-expect-error Task-list has a closed empty options schema.
+configuration.defineTransformOptions({plugins: {options: {'task-list': {disabled: false}}}});
 // @ts-expect-error Underline has a closed empty options schema.
 configuration.defineTransformOptions({plugins: {options: {underline: {tag: 'ins'}}}});
 // @ts-expect-error Subscript has a closed empty options schema.

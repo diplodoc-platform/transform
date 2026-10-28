@@ -29,7 +29,7 @@ function getFilteredHeadings(tokens: Token[], href: string) {
     let prevLevel;
 
     for (let i = 0; i < tokens.length; i++) {
-        const isHeading = tokens[i].type === 'heading_open';
+        const isHeading = tokens[i].type === 'heading_open' && !tokens[i].meta?.footnoteBody;
         const level = Number.parseInt(tokens[i].tag.slice(1), 10);
 
         if (isHeading && level >= 2) {
@@ -73,7 +73,7 @@ function getFlatListHeadings(tokens: Token[], href: string) {
     const headings: Heading[] = [];
 
     for (let i = 0; i < tokens.length; i++) {
-        const isHeading = tokens[i].type === 'heading_open';
+        const isHeading = tokens[i].type === 'heading_open' && !tokens[i].meta?.footnoteBody;
         const level = Number.parseInt(tokens[i].tag.slice(1), 10);
 
         if (!isHeading) {
