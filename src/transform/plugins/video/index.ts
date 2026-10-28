@@ -12,7 +12,7 @@ import type {MarkdownIt, RendererRule} from 'markdown-it' with {'resolution-mode
 import type {StateInline} from '../../typings';
 import type {VideoFullOptions, VideoPluginOptions, VideoToken} from './types';
 
-import {append} from '../utils';
+import {append} from '../pure-utils';
 
 import {parseVideoUrl} from './parsers';
 import {VideoService, defaults} from './const';

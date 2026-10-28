@@ -1,53 +1,24 @@
 import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
-import type {EnvType, Heading, MarkdownIt, ParserEnv} from './typings';
+import type {
+    ChildParseOptions,
+    MarkdownIt,
+    ParsedDocumentFragment,
+    ParserEnv,
+} from './shared-types';
+
+export type {
+    DocumentMeta,
+    DocumentEnv,
+    ParsedDocument,
+    ParsedDocumentFragment,
+    DocumentParser,
+    ChildParseOptions,
+} from './shared-types';
 
 import {parseChildDocumentResult, replayChildDocument} from './document-context';
 
 export {envMeta} from './document-meta';
 export type {MetaParser} from './document-meta';
-
-export interface DocumentMeta {
-    [name: string]: unknown;
-    script?: string[];
-    style?: string[];
-    csp?: Record<string, string[]>[];
-}
-
-export interface DocumentEnv extends ParserEnv {
-    title: string;
-    headings: Heading[];
-    meta?: DocumentMeta;
-    assets?: string[];
-    included?: Record<string, string>;
-}
-
-export interface ParsedDocument {
-    readonly tokens: Token[];
-    readonly env: DocumentEnv;
-}
-
-declare const fragmentBrand: unique symbol;
-
-/** An in-process fragment owned by the configured parser that created it. */
-export interface ParsedDocumentFragment {
-    readonly tokens: Token[];
-    readonly [fragmentBrand]: true;
-}
-
-export interface DocumentParser {
-    parseDocument(input: string, initialize?: (env: DocumentEnv) => void): ParsedDocument;
-    compileDocument(document: ParsedDocument): string;
-    parse(input: string): Token[];
-    compile(tokens: Token[], document?: ParsedDocument): string;
-    readonly env: EnvType;
-}
-
-export interface ChildParseOptions {
-    purpose: 'include' | 'reference' | 'fragment';
-    path?: string;
-    disableTitleRefSubstitution?: boolean;
-    disableCircularError?: boolean;
-}
 
 export {createDocumentEnv} from './document-data';
 

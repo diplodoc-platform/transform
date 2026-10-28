@@ -2,10 +2,11 @@ import type {
     ChildParseOptions,
     DocumentEnv,
     DocumentMeta,
+    MarkdownIt,
     ParsedDocumentFragment,
-} from './document';
-import type {DeprecationReporter} from './deprecation';
-import type {MarkdownIt, ParserEnv} from './typings';
+    ParserEnv,
+} from './shared-types';
+import type {DeprecationReporter} from './deprecation-core';
 
 import {createDocumentEnv} from './document-data';
 

@@ -1,0 +1,46 @@
+import transform, {
+    createParser,
+    definePlugin,
+    type BrowserTransformOptions,
+    type ParserEnv,
+    type DocumentEnv,
+} from '@diplodoc/transform/browser';
+import minimal, {
+    type BrowserTransformOptions as MinimalOptions,
+} from '@diplodoc/transform/browser/minimal';
+
+const plugin = definePlugin({
+    id: 'typed',
+    setup(md, options: {word: string}, context) {
+        const id: string = context.generateID(options.word);
+        md.core.ruler.push(id, (state) => {
+            state.env.title = options.word;
+        });
+    },
+})({word: 'hello'});
+const options: BrowserTransformOptions = {
+    generateID: (prefix) => `${prefix}-1`,
+    pluginConfiguration: {plugins: [plugin]},
+};
+const html: string = transform('text', options).result.html;
+const parser = createParser(options);
+const document = parser.parseDocument('text');
+const env: ParserEnv = document.env;
+const documentEnv: DocumentEnv = document.env;
+parser.compileDocument(document);
+minimal(html, {pluginConfiguration: {preset: 'none'}});
+// @ts-expect-error Node filesystem options are not browser capabilities.
+transform('text', {root: '/docs'});
+// @ts-expect-error Filesystem output is not a browser plugin capability.
+transform('text', {pluginConfiguration: {options: {tabs: {output: '/tmp'}}}});
+// @ts-expect-error Minimal has no builtin implementations.
+const unavailable: MinimalOptions = {pluginConfiguration: {enable: ['notes']}};
+// @ts-expect-error Node ambient declarations are absent.
+process.exit(0);
+// @ts-expect-error Node ambient declarations are absent.
+Buffer.from('text');
+// @ts-expect-error Node ambient declarations are absent.
+require('fs');
+// @ts-expect-error Node ambient namespace is absent.
+type Process = NodeJS.Process;
+void [env, documentEnv, unavailable];

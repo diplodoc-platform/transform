@@ -1,11 +1,7 @@
-import type {MarkdownItPluginCb} from './typings';
-
 import {initializeDocumentField} from '../document-context';
-import {envMeta} from '../document-meta';
 
-const meta: MarkdownItPluginCb = (md) => {
-    initializeDocumentField(md, 'meta');
-    envMeta(md);
-};
+import {createMetaPlugin} from './meta-core';
+
+const meta = createMetaPlugin(initializeDocumentField);
 
 export default meta;

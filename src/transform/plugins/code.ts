@@ -1,11 +1,11 @@
 /* eslint-disable max-len */
 
 import type {MarkdownItPluginCb} from './typings';
-import type {IDGenerator} from './utils';
+import type {IDGenerator} from './pure-utils';
 
 import {escapeHtml} from '../markdown-it-utils';
 
-import {generateID as globalGenerateID} from './utils';
+import {generateID as globalGenerateID} from './pure-utils';
 
 const wrapInFloatingContainer = (
     element: string | undefined,
@@ -251,6 +251,10 @@ function restoreTermPlaceholders(html: string, {prefix, placeholders}: TermPlace
 /**
  * Fallback for fence renderers that do not render `token.content` verbatim:
  * replaces term references that are still intact in the rendered HTML.
+ * @param str - Rendered HTML that can still contain term references.
+ * @param reg - Existing term-reference expression.
+ * @param generateID - Caller-owned term ID generator.
+ * @returns Rendered HTML with remaining references replaced.
  */
 function termReplace(str: string, reg: RegExp, generateID: IDGenerator): string {
     reg.lastIndex = 0;

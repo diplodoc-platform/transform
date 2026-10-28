@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Diplodoc browser transform</title>
+        <link rel="stylesheet" href="./app.css" />
+    </head>
+    <body>
+        <main>
+            <h1>Diplodoc browser transform</h1>
+            <p>
+                Rendering is synchronous. The optional code backend loads only after clicking its
+                button.
+            </p>
+            <label
+                >Composition
+                <select id="composition">
+                    <option>standard</option>
+                    <option>minimal</option>
+                </select></label
+            >
+            <button id="highlight" type="button">Load JavaScript highlighting</button>
+            <p>
+                <label>Markdown <textarea id="source" rows="22" cols="85"></textarea></label>
+            </p>
+            <article class="yfm" id="result" aria-live="polite"></article>
+            <pre id="status" aria-label="Document metadata and diagnostics"></pre>
+        </main>
+        <script type="module" src="./app.js"></script>
+    </body>
+</html>

@@ -3,7 +3,7 @@ import {dirname, relative, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import ts from 'typescript';
 
-import {legacyModules, stableEntries, staticEntries} from './public-api.mjs';
+import {browserEntries, legacyModules, stableEntries, staticEntries} from './public-api.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const packagePath = resolve(root, 'package.json');
@@ -22,6 +22,11 @@ const moduleExport = (source) => ({
 const exports = Object.fromEntries(
     Object.entries(stableEntries).map(([name, source]) => [name, moduleExport(source)]),
 );
+for (const [name, source] of Object.entries(browserEntries)) {
+    exports[name] = {
+        import: {types: `./dist/browser/${source}.d.mts`, default: `./dist/browser/${source}.mjs`},
+    };
+}
 for (const {source} of legacyModules) {
     const entry = moduleExport(source);
     exports[`./lib/${source}`] = entry;

@@ -53,6 +53,12 @@ export const stableEntries = {
     './plugins/utils': 'plugins/utils',
 };
 
+// Browser contracts deliberately have import conditions only, with no Node fallback.
+export const browserEntries = {
+    './browser': 'standard',
+    './browser/minimal': 'minimal',
+};
+
 export const legacyModules = [
     {
         source: 'constants',

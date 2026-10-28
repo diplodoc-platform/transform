@@ -1,13 +1,16 @@
 # Browser transformation entry points
 
-Status: refreshed SDD for coordinator contract review. Architecture/sanitizer approach
-is approved in principle; implementation requires a separately assigned phase.
-The ESM-only subpath decision below is a coordinator decision, not an open choice.
+Status: shared-core phase1 is merged; browser-host implementation is authorized.
+The attrs contract follows the one shared resolver from merged DOCSTOOLS-6944B. The ESM-only decision remains fixed.
 
 Task: [DOCSTOOLS-6940](https://st.yandex-team.ru/DOCSTOOLS-6940).
-Design baseline: merged major `551a675bc24b5eefacfb8bf92550b145f9ad94c1`
-(DOCSTOOLS-6951 document contexts/capsules plus accepted table changes).
-Branch: `codex/docstools-6940-browser-entry-v2`.
+Implementation baseline: local dependent integration `6b05899e3b2bb472e89a86abdef93374e6a4dfb5`,
+combining the real nineteen-plugin inventory with merged major
+`ea8168f4c468a63b4dabee3d16df6d2c34fb839d` (DOCSTOOLS-6944B).
+The nineteen-plugin branch must reach actual major before this browser branch is
+published. The shared parser/context/diagnostic/sanitizer, table and image work
+remain present. Future footnote/task-list features are not advertised.
+Branch: `codex/docstools-6940-browser-entry-phase2`.
 The original 358-line proposal at `9fb11cb0bd8842cf5668863a2f5f59db9358ff43`
 and old branch remain preserved in the SDD evidence; no source reset/discard occurred.
 
@@ -209,7 +212,7 @@ no Node option. Keep final sanitization enabled for plugin/highlighter output.
 | CommonMark, links/images by URL, safe HTML/CSS sanitization                                                                                                            | Yes                                                                                | Yes                                                                                        |
 | YFM metadata, anchors, notes, code controls, definition lists, sup, monospace, tables, image dimensions, terms, block anchors, inline-code controls, visibility, video | Explicit supplied compatible plugins only                                          | Same finite builtin installation order/algorithms as Node, after the dependency cuts above |
 | Cut/tabs/file extension rendering                                                                                                                                      | Explicit compatible browser plugin                                                 | Existing browser implementations with `bundle:false`; URL/resource records only            |
-| General Markdown attrs                                                                                                                                                 | Explicit `enableMarkdownAttrs:true` using the pinned implementation; default false | Inherit the one shared Node default (true at551); no independent browser default flip      |
+| General Markdown attrs                                                                                                                                                 | Explicit `enableMarkdownAttrs:true` using the pinned implementation; default false | Final shared default false after6944B; explicit true retains compatibility                 |
 | Explicit synchronous highlighter                                                                                                                                       | Yes                                                                                | Yes                                                                                        |
 | Implicit highlight.js/lowlight, legacy highlighter loader                                                                                                              | No                                                                                 | No                                                                                         |
 | Liquid/YFMLint engines and implicit interpolation                                                                                                                      | No                                                                                 | No                                                                                         |
@@ -226,7 +229,7 @@ follow the integrated reviewed table task, not another browser scanner variant.
 
 The approval fixture `artifacts/browser-entry-sdd-v2/browser-contract.json` is
 executable data, with a stdlib-only verifier against this exact baseline. It
-freezes all17IDs, Node installation order, browser option keys, core prelude,
+historically froze all seventeen IDs, Node installation order, browser option keys, core prelude,
 export conditions and22source-recognition obligations. The verifier checks source
 identity/order/shape only; it does not pretend a browser implementation exists.
 An implementation phase must promote that data into ordinary repository tests and
@@ -252,32 +255,36 @@ const standardBuiltinIds = [
   'block-anchor',
   'inline-code',
   'visibility',
+  'underline',
+  'subscript',
 ] as const;
 const minimalBuiltinIds = [] as const;
 const defaultBuiltinSettings = {}; // No synthesized user settings.
 ```
 
-| ID                                                                  | Allowed browser `pluginConfiguration.options[id]` keys                                                                                   |
-| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| meta, deflist, cut, tabs, sup, monospace, block-anchor, inline-code | none                                                                                                                                     |
-| notes                                                               | notesAutotitle                                                                                                                           |
-| anchors                                                             | supportGithubAnchors, disableCommonAnchors, useCommonAnchorButtons                                                                       |
-| code                                                                | codeLineWrapping                                                                                                                         |
-| video                                                               | videoUrl, youtube, vimeo, vine, prezi, osf, yandex, vk, rutube, url                                                                      |
-| table                                                               | table_ignoreSplittersInBlockCode, table_ignoreSplittersInInlineCode, table_ignoreSplittersInBlockMath, table_ignoreSplittersInInlineMath |
-| file                                                                | fileExtraAttrs                                                                                                                           |
-| imsize                                                              | enableInlineStyling (preserve6946 warning contract when integrated)                                                                      |
-| term                                                                | multilineTermDefinitions                                                                                                                 |
-| visibility                                                          | contentAudience                                                                                                                          |
+| ID                                                                                        | Allowed browser `pluginConfiguration.options[id]` keys                                                                                   |
+| ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| meta, deflist, cut, tabs, sup, monospace, block-anchor, inline-code, underline, subscript | none                                                                                                                                     |
+| notes                                                                                     | notesAutotitle                                                                                                                           |
+| anchors                                                                                   | supportGithubAnchors, disableCommonAnchors, useCommonAnchorButtons                                                                       |
+| code                                                                                      | codeLineWrapping                                                                                                                         |
+| video                                                                                     | videoUrl, youtube, vimeo, vine, prezi, osf, yandex, vk, rutube, url                                                                      |
+| table                                                                                     | table_ignoreSplittersInBlockCode, table_ignoreSplittersInInlineCode, table_ignoreSplittersInBlockMath, table_ignoreSplittersInInlineMath |
+| file                                                                                      | fileExtraAttrs                                                                                                                           |
+| imsize                                                                                    | enableInlineStyling (preserve the integrated6946 warning contract)                                                                       |
+| term                                                                                      | multilineTermDefinitions                                                                                                                 |
+| visibility                                                                                | contentAudience                                                                                                                          |
 
 Validate containers/IDs/key shape with the shared resolver and browser value kinds
 against its closed declared contract, before feature installation. Node validation
 semantics are unchanged. In particular `output` is unavailable for cut/tabs/file.
-Their host wrappers force the existing `{bundle:false,directiveSyntax:'disabled'}`;
+All three wrappers retain `bundle:false`. Cut and file retain
+`directiveSyntax:'disabled'`; tabs retains its actual feature settings and directive
+default from the existing wrapper;
 no collector/copy callback runs. Missing user settings delegate to the current
 shared implementation defaults, rather than a copied browser defaults table.
 Notes default autotitle true, wrapping false, visibility human, multiline terms
-false and all accepted table splitter defaults follow551. Video service defaults
+false and all accepted table splitter defaults follow the integrated table implementation. Video service defaults
 remain the single existing constants object. Registry ordering/duplicate IDs/
 requires/before/after checks stay shared; runtime feature-rule ordering is not
 reinterpreted as plugin installation ordering.
@@ -299,8 +306,9 @@ The exact prelude/installation sequence is:
    urlAuth true, then disable requested rules.
 2. Install shared document activation/lifecycle and host diagnostics; validate and
    resolve the named feature composition before installing feature callbacks.
-3. Resolve attrs once: `enableMarkdownAttrs ?? host.attrsDefault`, then optionally
-   install the unchanged pinned attrs4.3.1 with delimiters `{` and `}` by default.
+3. Resolve attrs through the single shared `resolveMarkdownAttrs` policy. Minimal
+   first normalizes an omitted setting to false; standard forwards it unchanged.
+   Install pinned attrs4.3.1 only when enabled, with default delimiters `{` and `}`.
 4. Install ol-attr-conversion, inline-svg-marker and linkify-strikethrough in that
    exact order. These are core repairs, not members of either feature preset.
 5. Install the finite unsupported-content guard in actual parsing, respecting the
@@ -312,12 +320,12 @@ The exact prelude/installation sequence is:
    preprocessors, file collectors, root-path/base-URL rewriting or implicit Liquid.
 
 Core title/headings/inline flags default false; disabled rules default empty.
-Standard attrsDefault references the shared Node policy (true at551); minimal is
-explicit-only false. DOCSTOOLS-6944 owns the eventual shared false-default change.
-6940 may extract this resolver while preserving551 behavior, but cannot duplicate
-or concurrently change it. After root serializes6944, the standard inherits the
-new value and the frozen baseline fixture is reviewed/refreshed; minimal stays
-false. Anchor/image-dimension parsing is independent of general attrs enablement.
+The final omitted standard attrs default is false through the shared Node policy;
+explicit true retains compatibility. Minimal also defaults false. DOCSTOOLS-6944B
+owns changing that policy and consumer compatibility settings;6940 cannot edit
+or duplicate its resolver. The implementation baseline already includes merged6944B. Final browser
+declarations, package and consumer gates retain that exact default. Anchor/image-dimension parsing remains
+independent of general attrs enablement.
 
 ### Unsupported content and resource behavior
 
@@ -540,7 +548,7 @@ subpath is needed. Old10packages require their version-appropriate .js subpaths
 as already documented by6939. Never import `/highlighter/legacy`.
 No highlighter is required for the basic example; code stays correctly escaped.
 
-## Serialized implementation phases (not authorized by this refresh)
+## Implementation phases and serialized ownership
 
 1. **Shared core/diagnostics/registry/sanitizer, preserving Node.** Extract the
    finite host factories and pure types; keep one lifecycle/capsule implementation,
@@ -550,7 +558,7 @@ No highlighter is required for the basic example; code stays correctly escaped.
 2. **Minimal ESM entry.** Introduce the separate minimal graph, closed options,
    real CSS adapter and mandatory sanitizer/guard. Prove its exact empty preset,
    prelude, protected-source distinctions and lack of standard-only imports.
-3. **Standard ESM entry.** Reuse the frozen17-ID order/options and actual companion
+3. **Standard ESM entry.** Reuse the actual nineteen-ID order/options and actual companion
    browser branches; complete shared pure helper cuts while preserving semantics.
    Reuse current table code/true-inline default/false compatibility. Do not create
    another table scanner or optional-attrs implementation.
@@ -561,24 +569,28 @@ No highlighter is required for the basic example; code stays correctly escaped.
 5. **Regression/adoption review.** Current-head source/package CI plus actual CLI/
    Viewer regression gates and independent review before integration/publication.
 
-6946 currently owns imsize/\*, its legacy image-size warning/migrator and
-finite export insertion on another branch. Do not edit/copy551imsize into a browser
-variant or concurrently modify the export generator. Root must serialize6946
-first; then a pure imsize factory can be extracted once, preserving its accepted
-warning scope, native fallback, legacy grammar and no-removal-before6contract.
-Phase1 can avoid imsize and public export-manifest edits meanwhile.
+6946 is merged into this implementation baseline. Pure imsize adaptation must
+extract its accepted implementation once, retaining actual-use warning scope,
+native reporter fallback, private recognition markers, migration purity, grammar
+quirks and the no-removal-before6 contract. Do not copy an older imsize body.
 
-6944A may implement its narrow heading-ID/fragment correction and standalone
-YFMLint selector without changing defaults. Root ordering is6940 shared pure
-parser/prelude extraction first, preserving551 Node true;6944B then changes that
-one shared default to false and adds explicit CLI/Viewer compatibility choices.
-The two tasks cannot independently implement the same resolver or flip its
-default simultaneously. Root serialization/rebaseline and fixture review are
-required before the policy change. 6944 also owns the one
-authoritative standalone heading-ID helper used by anchor rendering and fragment
-selection; 6940 must preserve it as Node-free shared parsing, not copy the grammar
-into another browser selector. Viewer explicit attrs compatibility is separately
-owned. No source changes to either other task are part of this SDD refresh.
+Merged6944B owns the shared false default and the include/heading fixes. Its
+clean handoff authorizes canonical declarations in shared-types.ts and one pure
+include grammar factory. Node imports retain their public aliases and behavior.
+
+The local dependency6b05899 contains the reviewed6948 underline/subscript source,
+canonical nineteen-ID order, settings and styles. That owner handed off the
+canonical declaration/registry paths after committing them. Final browser PR
+publication still waits for that candidate's actual major merge and consumer
+acceptance. Future footnotes/tasklists are not part of this inventory.
+
+Browser modules, pure leaf factories/Node wrappers, real CSS binding, finite guard,
+ESM-only build/exports, example and tests belong to6940. Actual CLI/Viewer source,
+dependency and fixture writes remain serialized through the coordinator. Final
+DOM-only type/augmentation claims require the one physical carrier and installed
+trace/negative-global tests. Notes grammar/helper bodies remain frozen for the
+separate6942 relocation; the eventual bridge must remove the temporary body
+without changing its ru default, titles, maps or diagnostics.
 
 ## Acceptance and remaining gates
 
@@ -618,6 +630,7 @@ time. The v2 source-only contract verifier is additionally executed, not a rende
 proof. Existing6951/table installed evidence is baseline evidence, not browser acceptance.
 Full Transform graph, browser types, extension/runtime interactions, companion
 browser exports, size reports and immutable example acceptance remain open.
-No dependency/lock changes, publishing, consumer checkout edits, Tracker comments,
-or PR actions are authorized by this design task. Node-engine removal remains
-outside this task even if a browser bundle intentionally excludes those modules.
+Phase2 does not authorize PR/push/publication, Tracker changes or independent
+consumer writes. Dependency changes require coordination with their current owner.
+Node-engine removal remains outside this task even when the browser graph excludes
+those modules.
