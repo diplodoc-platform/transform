@@ -386,3 +386,14 @@ describe('footnote grammar, security, and rollback', () => {
         expect(generateID).toHaveBeenCalledTimes(1);
     });
 });
+
+it('preserves child scopes parsed by real term definitions before the root tail', () => {
+    const md = parser({disableLiquid: true, generateID: () => 'term'});
+    const doc = md.parseDocument(
+        'Root[^a]\n\n[^a]: root body\n\n[API](*api)\n\n[*api]: Term[^a]\n[^a]: term body',
+    );
+    const $ = verify(md.compileDocument(doc));
+    expect($('.footnote-item').length).toBe(2);
+    expect($('dfn .footnote-item').text()).toContain('term body');
+    expect($('.footnote-item').text()).toContain('root body');
+});

@@ -12,6 +12,7 @@ import {
     requirePlan,
     restore,
     sourceScope,
+    scopeOf,
     walk,
 } from '../../footnote-data';
 
@@ -41,7 +42,7 @@ export default function footnotes(md: MarkdownIt, options: FootnoteOptions = {})
             const isBody = insideBody;
             walk([token], (child) => {
                 if (isBody) child.meta = {...child.meta, footnoteBody: true};
-                if (child.type.startsWith('footnote_')) {
+                if (child.type.startsWith('footnote_') && !scopeOf(child)) {
                     child.meta = {...child.meta, footnoteScope: scope};
                 }
             });
