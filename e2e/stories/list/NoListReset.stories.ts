@@ -9,6 +9,8 @@ export default {...getSnippetMeta(), title: 'Builtins/List/NoListReset'};
 export const OrderedNestedNoHier: MarkdownSnippetStory = {
     name: 'Nested ordered list (no sublist numbering cascade)',
     args: {
+        // Legacy attrs fixture: this visual contract explicitly depends on general attributes.
+        extraOptions: {enableMarkdownAttrs: true},
         snippet: dedent`
         1. This ordered list will be nested.
         2. This item has additional sub-items.
