@@ -1,10 +1,19 @@
 import type {DeprecationReporter} from './deprecation';
 import type {EnvType, MarkdownIt, MarkdownItPluginOpts, OptionsType} from './typings';
+import type {DocumentEnv, DocumentParser, ParsedDocument} from './document';
 import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 
 import DefaultMarkdownIt from 'markdown-it';
 import attrs from 'markdown-it-attrs';
 
+import {createDocumentEnv} from './document';
+import {
+    createLegacyEnvView,
+    installDocumentContext,
+    normalizeDocumentResources,
+    resetPendingDocument,
+    withDocumentEnv,
+} from './document-context';
 import DefaultPlugins from './plugins';
 import {preprocess} from './preprocessors';
 import {getLogger} from './log';
@@ -27,10 +36,23 @@ const applyAttrs = attrs as (
     options: {leftDelimiter: string; rightDelimiter: string},
 ) => void;
 
-function initMarkdownIt(options: OptionsType, firstDocumentReporter?: DeprecationReporter) {
+function initMarkdownIt(
+    options: OptionsType,
+    firstDocumentReporter?: DeprecationReporter,
+): DocumentParser {
     const {allowHTML = false, linkify = false, breaks = true, disableRules = []} = options;
 
-    const pluginOptions = getPluginOptions(options, firstDocumentReporter);
+    const setupReporter = createDeprecationReporter(options);
+    let activeReporter: DeprecationReporter | undefined;
+    let completedReporter: DeprecationReporter | undefined;
+    const reporter: DeprecationReporter = {
+        warn: (descriptor, usage) =>
+            (activeReporter ?? completedReporter ?? setupReporter).warn(descriptor, usage),
+        reset: () => (activeReporter ?? completedReporter ?? setupReporter).reset(),
+        compatibility: (code) =>
+            (activeReporter ?? completedReporter ?? setupReporter).compatibility(code),
+    };
+    const pluginOptions = getPluginOptions(options, reporter);
     const highlight = configureHighlighter(options, pluginOptions.deprecations);
     const md = new DefaultMarkdownIt({html: allowHTML, linkify, highlight, breaks}) as MarkdownIt;
 
@@ -41,42 +63,112 @@ function initMarkdownIt(options: OptionsType, firstDocumentReporter?: Deprecatio
         md.disable(disableRules);
     }
 
-    const env = {
-        // TODO: move md.meta directly to env
-        get meta() {
-            return md.meta;
-        },
-
-        set meta(value) {
-            md.meta = value;
-        },
-
-        // TODO: move md.assets directly to env
-        get assets() {
-            return md.assets;
-        },
-
-        set assets(value) {
-            md.assets = value;
-        },
-
-        headings: [],
-        title: '',
-    } as EnvType;
-
-    // Init the plugins. Which install the md rules (core, block, ...)
+    const context = installDocumentContext(md, reporter);
     initPlugins(md, options, pluginOptions);
 
-    // Init preprocessor and MD parser
-    const parse = initParser(md, options, env, pluginOptions);
+    let pending = true;
+    let active: DocumentEnv | undefined;
+    let last: DocumentEnv | undefined;
+    const owned = new WeakMap<ParsedDocument, {reporter: DeprecationReporter; valid: boolean}>();
+    const associated = new WeakMap<Token[], ParsedDocument>();
+    const reporters = new WeakMap<DocumentEnv, DeprecationReporter>();
+    const env = createLegacyEnvView(() => active ?? last ?? context.pending);
 
-    // Init render to HTML compiler
-    const compile = initCompiler(md, options, env);
+    function run<T>(documentEnv: DocumentEnv, scope: DeprecationReporter, action: () => T): T {
+        if (active) {
+            throw new Error(
+                'Top-level document parsing or compilation cannot be reentered; use parseDocumentFragment for nested content',
+            );
+        }
+        active = documentEnv;
+        activeReporter = scope;
+        const previousLast = context.last;
+        try {
+            const value = withDocumentEnv(md, documentEnv, action);
+            normalizeDocumentResources(documentEnv);
+            last = documentEnv;
+            completedReporter = scope;
+            return value;
+        } catch (error) {
+            context.last = previousLast;
+            if (!last) {
+                resetPendingDocument(md);
+            }
+            throw error;
+        } finally {
+            active = undefined;
+            activeReporter = undefined;
+        }
+    }
 
-    return {parse, compile, env};
+    function parseDocument(input: string, initialize?: (env: DocumentEnv) => void): ParsedDocument {
+        if (active) {
+            throw new Error(
+                'Top-level document parsing cannot be reentered; use parseDocumentFragment',
+            );
+        }
+        const documentEnv = pending ? context.pending : createDocumentEnv();
+        const scope =
+            pending && firstDocumentReporter
+                ? firstDocumentReporter
+                : createDeprecationReporter(options);
+        pending = false;
+        reporters.set(documentEnv, scope);
+        return run(documentEnv, scope, () => {
+            initialize?.(documentEnv);
+            const tokens = initParser(md, options, documentEnv, pluginOptions)(input);
+            const document = Object.freeze({tokens, env: documentEnv});
+            owned.set(document, {reporter: scope, valid: true});
+            associated.set(tokens, document);
+            return document;
+        });
+    }
+
+    function compile(tokens: Token[], explicit?: ParsedDocument): string {
+        if (active) {
+            throw new Error('Top-level document compilation cannot be reentered');
+        }
+        const document = explicit ?? associated.get(tokens);
+        if (!document) {
+            const documentEnv = last ?? context.pending;
+            const scope = reporters.get(documentEnv) ?? setupReporter;
+            return run(documentEnv, scope, () => {
+                scope.warn(
+                    {
+                        code: 'UNASSOCIATED_DOCUMENT_TOKENS',
+                        feature: 'Compiling tokens without their document context',
+                        replacement: 'compile(tokens, document) or compileDocument(document)',
+                        removal: {version: '6.0.0'},
+                    },
+                    {option: 'compile.tokens'},
+                );
+                return initCompiler(md, options, documentEnv)(tokens);
+            });
+        }
+        const state = owned.get(document);
+        if (!state || !state.valid) {
+            throw new TypeError('Expected a valid document handle created by this parser');
+        }
+        try {
+            return run(document.env, state.reporter, () =>
+                initCompiler(md, options, document.env)(tokens),
+            );
+        } catch (error) {
+            state.valid = false;
+            throw error;
+        }
+    }
+
+    return {
+        parseDocument,
+        compileDocument: (document) => compile(document.tokens, document),
+        parse: (input) => parseDocument(input).tokens,
+        compile,
+        env,
+    };
 }
 
-function getPluginOptions(options: OptionsType, firstDocumentReporter?: DeprecationReporter) {
+function getPluginOptions(options: OptionsType, deprecations: DeprecationReporter) {
     const {
         vars = {},
         path,
@@ -98,7 +190,7 @@ function getPluginOptions(options: OptionsType, firstDocumentReporter?: Deprecat
         extractTitle,
         disableLiquid,
         log: getLogger(options.log),
-        deprecations: firstDocumentReporter ?? createDeprecationReporter(options),
+        deprecations,
         lang,
         inlineSvg,
         svgInline: normalizeSvgInline({svgInline, inlineSvg}),

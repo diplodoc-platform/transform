@@ -6,6 +6,7 @@ import type {MarkdownItIncluded} from './types';
 
 import {bold} from 'chalk';
 
+import {IncludeCycleError} from '../../document';
 import {findBlockTokens} from '../../utils';
 import {getFileTokens, getFullIncludePath, getRealPath, isFileExists} from '../../utilsFS';
 
@@ -25,7 +26,7 @@ type Options = MarkdownItPluginOpts &
         noReplaceInclude: boolean;
     };
 
-function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, options: Options) {
+function unfoldIncludes(state: StateCore, path: string, options: Options) {
     const {root, notFoundCb, log, noReplaceInclude = false} = options;
     const {tokens} = state;
     let i = 0;
@@ -64,7 +65,7 @@ function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, 
                 }
 
                 // Check the existed included store and extract it
-                const included = md.included?.[pathname];
+                const included = state.env.included?.[pathname];
 
                 const fileTokens = getFileTokens(pathname, state, options, included);
 
@@ -89,6 +90,9 @@ function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, 
                     i += includedTokens.length;
                 }
             } catch (e) {
+                if (e instanceof IncludeCycleError) {
+                    throw e;
+                }
                 // @ts-ignore for some reason typescript fails here
                 const errPath = e.path?.replace(root, '');
                 // Normalize path separators to forward slashes for cross-platform compatibility
@@ -124,12 +128,15 @@ const index: MarkdownItPluginCb<Options> = (md: MarkdownItIncluded, options) => 
 
         if (isCircularInclude) {
             log.error(`Circular includes: ${bold(env.includes.concat(path).join(' ▶ '))}`);
-            process.exit(1);
+            throw new IncludeCycleError(env.includes.concat(path));
         }
 
         env.includes.push(path);
-        unfoldIncludes(md, state, path, options);
-        env.includes.pop();
+        try {
+            unfoldIncludes(state, path, options);
+        } finally {
+            env.includes.pop();
+        }
     };
 
     try {

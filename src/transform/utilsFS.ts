@@ -8,6 +8,7 @@ import escapeRegExp from 'lodash/escapeRegExp';
 import {basename, join, parse, relative, resolve, sep} from 'path';
 import QuickLRU from 'quick-lru';
 
+import {parseChildDocument} from './document-context';
 import liquidSnippet from './liquid';
 import {defaultTransformLink} from './utils';
 import {preprocess} from './preprocessors';
@@ -41,6 +42,7 @@ export type GetFileTokensOpts = LegacyEngineDiagnostics & {
     inheritVars?: boolean;
     conditionsInCode?: boolean;
     content?: string;
+    purpose?: 'include' | 'reference';
     root?: string;
 };
 
@@ -74,7 +76,7 @@ export function getFileTokens(
         }
     }
 
-    let sourceMap;
+    let sourceMap: Dictionary<string> | undefined;
 
     if (!disableLiquid) {
         const liquidResult = liquidSnippet(content, builtVars, path, {
@@ -89,47 +91,54 @@ export function getFileTokens(
         sourceMap = liquidResult.sourceMap;
     }
 
-    // Run preprocessor
-    content = preprocess(content, options);
+    const tokens = parseChildDocument(
+        state.md,
+        content,
+        state.env,
+        {
+            purpose: options.purpose ?? 'include',
+            path,
+            disableTitleRefSubstitution,
+            disableCircularError,
+        },
+        (childSource) => {
+            content = childSource;
+            // Run preprocessor
+            content = preprocess(content, {...options, path}, undefined, state.md);
 
-    if (!disableLint && lintMarkdown) {
-        // Make path relative to root if root is provided, otherwise use absolute path
-        let lintPath = path;
-        if (options.root) {
-            try {
-                // Use path.relative for proper cross-platform path handling
-                const relativePath = relative(options.root, path);
-                // If relative path doesn't start with '..', it's within root
-                if (!relativePath.startsWith('..')) {
-                    lintPath = relativePath;
+            if (!disableLint && lintMarkdown) {
+                // Make path relative to root if root is provided, otherwise use absolute path
+                let lintPath = path;
+                if (options.root) {
+                    try {
+                        // Use path.relative for proper cross-platform path handling
+                        const relativePath = relative(options.root, path);
+                        // If relative path doesn't start with '..', it's within root
+                        if (!relativePath.startsWith('..')) {
+                            lintPath = relativePath;
+                        }
+                    } catch {
+                        // If relative fails, fall back to string replacement
+                        if (path.startsWith(options.root)) {
+                            lintPath = path.replace(options.root, '').replace(/^[/\\]/, '');
+                        }
+                    }
                 }
-            } catch {
-                // If relative fails, fall back to string replacement
-                if (path.startsWith(options.root)) {
-                    lintPath = path.replace(options.root, '').replace(/^[/\\]/, '');
-                }
+                // Normalize path separators to forward slashes for cross-platform compatibility
+                const normalizedPath = lintPath.replace(/\\/g, '/');
+                // Use only basename for lint error messages to match test expectations
+                // This ensures consistent error message format across platforms
+                const lintPathForMessage = basename(normalizedPath);
+                lintMarkdown({
+                    input: content,
+                    path: lintPathForMessage,
+                    sourceMap,
+                });
             }
-        }
-        // Normalize path separators to forward slashes for cross-platform compatibility
-        const normalizedPath = lintPath.replace(/\\/g, '/');
-        // Use only basename for lint error messages to match test expectations
-        // This ensures consistent error message format across platforms
-        const lintPathForMessage = basename(normalizedPath);
-        lintMarkdown({
-            input: content,
-            path: lintPathForMessage,
-            sourceMap,
-        });
-    }
 
-    const meta = state.md.meta;
-    const tokens = state.md.parse(content, {
-        ...state.env,
-        path,
-        disableTitleRefSubstitution,
-        disableCircularError,
-    });
-    state.md.meta = meta;
+            return content;
+        },
+    );
 
     return tokens;
 }

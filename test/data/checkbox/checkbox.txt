@@ -11,8 +11,8 @@
 [_] unchecked
 .
 <div class="checkbox">
-<input type="checkbox" id="checkbox1" disabled="">
-<label for="checkbox1">unchecked</label>
+<input type="checkbox" id="checkbox0" disabled="">
+<label for="checkbox0">unchecked</label>
 </div>
 .
 
@@ -20,8 +20,8 @@
 [x] checked
 .
 <div class="checkbox">
-<input type="checkbox" id="checkbox2" disabled="" checked="true">
-<label for="checkbox2">checked</label>
+<input type="checkbox" id="checkbox0" disabled="" checked="true">
+<label for="checkbox0">checked</label>
 </div>
 .
 
@@ -29,8 +29,8 @@
 [X] checked
 .
 <div class="checkbox">
-<input type="checkbox" id="checkbox3" disabled="" checked="true">
-<label for="checkbox3">checked</label>
+<input type="checkbox" id="checkbox0" disabled="" checked="true">
+<label for="checkbox0">checked</label>
 </div>
 .
 
@@ -41,14 +41,14 @@
 <ul>
 <li>
 <div class="checkbox">
-<input type="checkbox" id="checkbox4" disabled="">
-<label for="checkbox4">unchecked</label>
+<input type="checkbox" id="checkbox0" disabled="">
+<label for="checkbox0">unchecked</label>
 </div>
 </li>
 <li>
 <div class="checkbox">
-<input type="checkbox" id="checkbox5" disabled="" checked="true">
-<label for="checkbox5">checked</label>
+<input type="checkbox" id="checkbox1" disabled="" checked="true">
+<label for="checkbox1">checked</label>
 </div>
 </li>
 </ul>
@@ -62,24 +62,24 @@
 [ ] five
 .
 <div class="checkbox">
-<input type="checkbox" id="checkbox6" disabled="">
-<label for="checkbox6">one</label>
+<input type="checkbox" id="checkbox0" disabled="">
+<label for="checkbox0">one</label>
 </div>
 <div class="checkbox">
-<input type="checkbox" id="checkbox7" disabled="">
-<label for="checkbox7">two</label>
+<input type="checkbox" id="checkbox1" disabled="">
+<label for="checkbox1">two</label>
 </div>
 <div class="checkbox">
-<input type="checkbox" id="checkbox8" disabled="" checked="true">
-<label for="checkbox8">tree</label>
+<input type="checkbox" id="checkbox2" disabled="" checked="true">
+<label for="checkbox2">tree</label>
 </div>
 <div class="checkbox">
-<input type="checkbox" id="checkbox9" disabled="" checked="true">
-<label for="checkbox9">four</label>
+<input type="checkbox" id="checkbox3" disabled="" checked="true">
+<label for="checkbox3">four</label>
 </div>
 <div class="checkbox">
-<input type="checkbox" id="checkbox10" disabled="">
-<label for="checkbox10">five</label>
+<input type="checkbox" id="checkbox4" disabled="">
+<label for="checkbox4">five</label>
 </div>
 .
 
@@ -101,8 +101,8 @@ not
 [ ] text [ ] text2
 .
 <div class="checkbox">
-<input type="checkbox" id="checkbox11" disabled="">
-<label for="checkbox11">text [ ] text2</label>
+<input type="checkbox" id="checkbox0" disabled="">
+<label for="checkbox0">text [ ] text2</label>
 </div>
 .
 
@@ -110,8 +110,8 @@ not
 [x] text **bold** text
 .
 <div class="checkbox">
-<input type="checkbox" id="checkbox12" disabled="" checked="true">
-<label for="checkbox12">text <strong>bold</strong> text</label>
+<input type="checkbox" id="checkbox0" disabled="" checked="true">
+<label for="checkbox0">text <strong>bold</strong> text</label>
 </div>
 .
 
@@ -121,8 +121,8 @@ long
 text
 .
 <div class="checkbox">
-<input type="checkbox" id="checkbox13" disabled="">
-<label for="checkbox13">long<br>
+<input type="checkbox" id="checkbox0" disabled="">
+<label for="checkbox0">long<br>
 long<br>
 text</label>
 </div>
@@ -135,13 +135,13 @@ checkbox
 checkbox
 .
 <div class="checkbox">
-<input type="checkbox" id="checkbox14" disabled="">
-<label for="checkbox14">first<br>
+<input type="checkbox" id="checkbox0" disabled="">
+<label for="checkbox0">first<br>
 checkbox</label>
 </div>
 <div class="checkbox">
-<input type="checkbox" id="checkbox15" disabled="" checked="true">
-<label for="checkbox15">second<br>
+<input type="checkbox" id="checkbox1" disabled="" checked="true">
+<label for="checkbox1">second<br>
 checkbox</label>
 </div>
 .

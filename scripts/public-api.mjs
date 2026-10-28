@@ -3,6 +3,7 @@
 export const stableEntries = {
     '.': 'index',
     './parser': 'md',
+    './document': 'document',
     './configuration': 'plugin-configuration',
     './migrations/table-alignment': 'migrations/table-alignment',
     './highlighter': 'highlighter',

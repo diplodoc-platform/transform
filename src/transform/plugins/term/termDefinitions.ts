@@ -1,6 +1,8 @@
 import type {MarkdownIt, StateBlock} from '../../typings';
 import type {MarkdownItPluginOpts} from '../typings';
 
+import {parseDocumentFragment} from '../../document';
+
 import {BASIC_TERM_REGEXP} from './constants';
 
 const INCLUDE_LINE_RE = /^{%\s*include\s/;
@@ -211,7 +213,7 @@ function processTermDefinition(
 
     state.tokens.push(token);
 
-    const titleTokens = md.parse(title, state.env);
+    const titleTokens = parseDocumentFragment(md, title, state.env, {purpose: 'fragment'});
 
     for (const titleToken of titleTokens) {
         if (titleToken.children?.length) {
