@@ -232,6 +232,12 @@ assert.match(transform('Static ESM', defineTransformOptions()).result.html, /Sta
     assert.equal(installedParserRequire('markdown-it/package.json').version, '15.0.3');
 
     for (const transform of [installedTransform, installedEsm.default]) {
+        const forwardedOutputs = [];
+        const captureOutput = (_md, options) => forwardedOutputs.push(options.output);
+        transform('plain', {plugins: [captureOutput], output: '/consumer/runtime-assets'});
+        transform('plain', {plugins: [captureOutput]});
+        assert.deepEqual(forwardedOutputs, ['/consumer/runtime-assets', undefined]);
+
         assert.equal(
             transform('a\nb\n: definition').result.html,
             '<p>a<br />\nb<br />\n: definition</p>\n',
@@ -395,6 +401,16 @@ import legacyTabs from '@diplodoc/transform/lib/plugins/tabs';
 import footnotes from '@diplodoc/transform/plugins/footnotes';
 import taskList from '@diplodoc/transform/plugins/task-list';
 import type {MarkdownIt, MarkdownItPluginCb} from '@diplodoc/transform/types';
+import {transform as createCut} from '@diplodoc/cut-extension';
+import {transform as createTabs} from '@diplodoc/tabs-extension';
+const directCut: MarkdownItPluginCb = createCut({bundle: false, directiveSyntax: 'disabled'});
+const directTabs: MarkdownItPluginCb = createTabs({bundle: false});
+const assetOptions: import('@diplodoc/transform/types').OptionsType = {output: '/consumer/runtime-assets'};
+// @ts-expect-error Runtime asset destinations must be strings.
+const invalidAssetOptions: import('@diplodoc/transform/types').OptionsType = {output: 42};
+// @ts-expect-error Plugin runtime asset destinations must be strings.
+const invalidPluginOutput: Pick<import('@diplodoc/transform/types').MarkdownItPluginOpts, 'output'> = {output: 42};
+void [directCut, directTabs, assetOptions, invalidAssetOptions, invalidPluginOutput];
 const typedFootnotes: MarkdownItPluginCb = footnotes;
 const typedTaskList: MarkdownItPluginCb = taskList;
 void typedFootnotes; void typedTaskList;
