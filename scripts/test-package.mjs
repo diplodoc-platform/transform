@@ -113,6 +113,14 @@ try {
         cwd: consumerRoot,
         stdio: 'inherit',
     });
+    copyFileSync(
+        join(projectRoot, 'scripts/footnotes-package-consumer.mjs'),
+        join(consumerRoot, 'footnotes-consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'footnotes-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
     // Static imports are evaluated in the real installed consumer, independent of source self-resolution.
     writeFileSync(
         join(consumerRoot, 'static-consumer.mjs'),
@@ -122,6 +130,8 @@ import {createRequire} from 'node:module';
 import transform, {transform as namedTransform} from '@diplodoc/transform';
 import underline from '@diplodoc/transform/plugins/underline';
 import subscript from '@diplodoc/transform/plugins/subscript';
+import footnotes from '@diplodoc/transform/plugins/footnotes';
+import taskList from '@diplodoc/transform/plugins/task-list';
 import parser from '@diplodoc/transform/parser';
 import images, {replaceSvgContent} from '@diplodoc/transform/plugins/images';
 import log, {getLogger} from '@diplodoc/transform/log';
@@ -134,6 +144,8 @@ const require = createRequire(import.meta.url);
 assert.equal(transform, namedTransform);
 assert.equal(underline, require('@diplodoc/transform/plugins/underline').default);
 assert.equal(subscript, require('@diplodoc/transform/plugins/subscript').default);
+assert.equal(footnotes, require('@diplodoc/transform/plugins/footnotes').default);
+assert.equal(taskList, require('@diplodoc/transform/plugins/task-list').default);
 assert.equal(transform, require('@diplodoc/transform'));
 assert.equal(parser, require('@diplodoc/transform/parser'));
 assert.equal(images.replaceSvgContent, replaceSvgContent);
@@ -350,10 +362,19 @@ void typedLabel; void pathIsNotGuaranteed;
     const configurationTypes = `
 import underline from '@diplodoc/transform/plugins/underline';
 import subscript from '@diplodoc/transform/plugins/subscript';
+import footnotes from '@diplodoc/transform/plugins/footnotes';
+import taskList from '@diplodoc/transform/plugins/task-list';
 import type {MarkdownIt, MarkdownItPluginCb} from '@diplodoc/transform/types';
+const typedFootnotes: MarkdownItPluginCb = footnotes;
+const typedTaskList: MarkdownItPluginCb = taskList;
+void typedFootnotes; void typedTaskList;
 const typedUnderline: MarkdownItPluginCb = underline;
 const typedSubscript: (md: MarkdownIt) => void = subscript;
-configuration.defineTransformOptions({plugins: {enable: ['underline', 'subscript'], options: {underline: {}, subscript: {}}}});
+configuration.defineTransformOptions({plugins: {enable: ['underline', 'subscript', 'footnotes', 'task-list'], options: {underline: {}, subscript: {}, footnotes: {}, 'task-list': {}}}});
+// @ts-expect-error Footnotes has a closed empty options schema.
+configuration.defineTransformOptions({plugins: {options: {footnotes: {inline: true}}}});
+// @ts-expect-error Task-list has a closed empty options schema.
+configuration.defineTransformOptions({plugins: {options: {'task-list': {disabled: false}}}});
 // @ts-expect-error Underline has a closed empty options schema.
 configuration.defineTransformOptions({plugins: {options: {underline: {tag: 'ins'}}}});
 // @ts-expect-error Subscript has a closed empty options schema.
@@ -482,68 +503,107 @@ custom({label: 'typed', unknown: true});
         projectRequire('esbuild').buildSync,
     );
 
-    // Translation currently owns native MarkdownIt 13: validate its honest structural writer boundary.
-    const native13 = join(temporaryRoot, 'native13');
-    mkdirSync(native13);
-    writeFileSync(
-        join(native13, 'package.json'),
-        JSON.stringify({
-            private: true,
-            dependencies: {
-                '@diplodoc/transform': `file:${join(temporaryRoot, packed[0].filename)}`,
-                'markdown-it': '13.0.2',
-                '@types/markdown-it': '13.0.9',
-                '@types/node': manifest.devDependencies['@types/node'],
-            },
-        }),
-    );
-    execFileSync(
-        process.execPath,
-        [process.env.npm_execpath, 'install', '--ignore-scripts', '--no-audit', '--no-fund'],
-        {cwd: native13, stdio: 'inherit'},
-    );
-    copyFileSync(
-        join(projectRoot, 'scripts/document-package-consumer.mjs'),
-        join(native13, 'document-consumer.mjs'),
-    );
-    execFileSync(process.execPath, [join(native13, 'document-consumer.mjs'), '--native13'], {
-        cwd: native13,
-        stdio: 'inherit',
-    });
-    writeFileSync(
-        join(native13, 'consumer.cts'),
-        `
-import MarkdownIt = require('markdown-it');
-import {envMeta} from '@diplodoc/transform/document';
-import {createDocumentEnv} from '@diplodoc/transform/document';
-const md = new MarkdownIt().use(envMeta);
+    // Actual native hosts must accept the finite callback in both module modes.
+    for (const [version, types] of [
+        ['13.0.2', '13.0.9'],
+        ['14.1.0', '14.1.2'],
+        ['15.0.3', undefined],
+    ]) {
+        const nativeRoot = join(temporaryRoot, `native${version.split('.')[0]}`);
+        mkdirSync(nativeRoot);
+        writeFileSync(
+            join(nativeRoot, 'package.json'),
+            JSON.stringify({
+                private: true,
+                dependencies: {
+                    '@diplodoc/transform': `file:${join(temporaryRoot, packed[0].filename)}`,
+                    'markdown-it': version,
+                    '@types/markdown-it': types,
+                    '@types/node': manifest.devDependencies['@types/node'],
+                },
+            }),
+        );
+        execFileSync(
+            process.execPath,
+            [process.env.npm_execpath, 'install', '--ignore-scripts', '--no-audit', '--no-fund'],
+            {cwd: nativeRoot, stdio: 'inherit'},
+        );
+        if (version.startsWith('13.')) {
+            copyFileSync(
+                join(projectRoot, 'scripts/document-package-consumer.mjs'),
+                join(nativeRoot, 'document-consumer.mjs'),
+            );
+            execFileSync(
+                process.execPath,
+                [join(nativeRoot, 'document-consumer.mjs'), '--native13'],
+                {
+                    cwd: nativeRoot,
+                    stdio: 'inherit',
+                },
+            );
+        }
+        copyFileSync(
+            join(projectRoot, 'scripts/footnotes-native-consumer.mjs'),
+            join(nativeRoot, 'footnotes-native.mjs'),
+        );
+        execFileSync(process.execPath, [join(nativeRoot, 'footnotes-native.mjs')], {
+            cwd: nativeRoot,
+            stdio: 'inherit',
+        });
+        const fixture = `
+import footnotes from '@diplodoc/transform/plugins/footnotes';
+import taskList from '@diplodoc/transform/plugins/task-list';
+import {envMeta, createDocumentEnv, materializeFootnoteTokens} from '@diplodoc/transform/document';
+const md = new MarkdownIt().use(envMeta).use(footnotes, {generateID: () => 'host'}).use(taskList);
+taskList(new MarkdownIt());
+footnotes(new MarkdownIt(), {generateID: () => 'direct'});
 const env = createDocumentEnv();
-md.render('---\\nname: A\\n---\\nbody', env);
+const tokens = md.parse('body[^a]\\n\\n[^a]: note', env);
+const copied = materializeFootnoteTokens(tokens, tokens.slice(0, 3), tokens[0]);
+md.renderer.render(copied, md.options, env);
 const name: unknown = env.meta?.name;
 void name;
-`,
-    );
-    writeFileSync(
-        join(native13, 'tsconfig.json'),
-        JSON.stringify({
-            compilerOptions: {
-                target: 'ES2022',
-                module: 'Node16',
-                moduleResolution: 'Node16',
-                strict: true,
-                noEmit: true,
-                skipLibCheck: false,
-                esModuleInterop: false,
-                ignoreDeprecations: '6.0',
-            },
-            files: ['consumer.cts'],
-        }),
-    );
-    execFileSync(
-        process.execPath,
-        [projectRequire.resolve('typescript/lib/tsc.js'), '-p', native13],
-        {stdio: 'inherit'},
-    );
+`;
+        const operationsStart = fixture.indexOf('const md =');
+        writeFileSync(
+            join(nativeRoot, 'consumer.cts'),
+            version.startsWith('15.')
+                ? // Upstream 15.0.3's require declaration omits TS resolution-mode
+                  // on its own import types. Use its real ESM declaration from CJS.
+                  fixture.slice(0, operationsStart) +
+                      "async function check() { const {default: MarkdownIt} = await import('markdown-it');\n" +
+                      fixture.slice(operationsStart) +
+                      '\n} void check;\n'
+                : "import MarkdownIt = require('markdown-it');\n" + fixture,
+        );
+        writeFileSync(
+            join(nativeRoot, 'consumer.mts'),
+            "import MarkdownIt from 'markdown-it';\n" + fixture,
+        );
+        for (const module of ['Node16', 'NodeNext']) {
+            writeFileSync(
+                join(nativeRoot, 'tsconfig.json'),
+                JSON.stringify({
+                    compilerOptions: {
+                        target: 'ES2022',
+                        module,
+                        moduleResolution: module,
+                        strict: true,
+                        noEmit: true,
+                        skipLibCheck: false,
+                        esModuleInterop: false,
+                        ignoreDeprecations: '6.0',
+                    },
+                    files: ['consumer.cts', 'consumer.mts'],
+                }),
+            );
+            execFileSync(
+                process.execPath,
+                [projectRequire.resolve('typescript/lib/tsc.js'), '-p', nativeRoot],
+                {stdio: 'inherit'},
+            );
+        }
+    }
 
     writeFileSync(
         join(consumerRoot, 'with-highlighter.mts'),

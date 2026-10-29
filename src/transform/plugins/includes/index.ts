@@ -6,9 +6,11 @@ import type {MarkdownItIncluded} from './types';
 
 import {bold} from 'chalk';
 
+import {materializeFootnoteTokens} from '../../footnote-data';
+import {replayChildDocument} from '../../document-context';
 import {IncludeCycleError} from '../../document';
 import {findBlockTokens} from '../../utils';
-import {getFileTokens, getFullIncludePath, getRealPath, isFileExists} from '../../utilsFS';
+import {getFileFragment, getFullIncludePath, getRealPath, isFileExists} from '../../utilsFS';
 
 import {createIncludeRegExp} from './syntax';
 
@@ -69,19 +71,28 @@ function unfoldIncludes(state: StateCore, path: string, options: Options) {
                 // Check the existed included store and extract it
                 const included = state.env.included?.[pathname];
 
-                const fileTokens = getFileTokens(pathname, state, options, included);
+                const fragment = getFileFragment(
+                    pathname,
+                    state,
+                    {...options, purpose: 'reference'},
+                    included,
+                );
+                const fileTokens = fragment.tokens;
 
                 let includedTokens;
                 if (hash) {
                     // TODO: add warning about missed block
                     includedTokens = findBlockTokens(fileTokens, hash);
                 } else {
-                    includedTokens = fileTokens;
+                    includedTokens = fileTokens.slice();
                 }
 
                 if (keyword === 'notitle') {
                     stripTitleTokens(includedTokens);
                 }
+
+                includedTokens = materializeFootnoteTokens(fileTokens, includedTokens, openToken);
+                replayChildDocument(state.md, fragment, state.env, {purpose: 'include'});
 
                 if (noReplaceInclude) {
                     i++;

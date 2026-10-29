@@ -1,5 +1,7 @@
 import type {MarkdownItPluginCb} from './plugins/typings';
 
+import footnotes from './plugins/footnotes';
+import taskList from './plugins/task-list';
 import meta from './plugins/meta';
 import deflist from './plugins/deflist';
 import cut from './plugins/cut';
@@ -40,6 +42,8 @@ const defaultPlugins = [
     visibility,
     underline,
     subscript,
+    footnotes,
+    taskList,
 ] as MarkdownItPluginCb[];
 
 export default defaultPlugins;

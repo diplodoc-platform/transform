@@ -8,7 +8,7 @@ import escapeRegExp from 'lodash/escapeRegExp';
 import {basename, join, parse, relative, resolve, sep} from 'path';
 import QuickLRU from 'quick-lru';
 
-import {parseChildDocument} from './document-context';
+import {parseChildDocumentResult} from './document-context';
 import liquidSnippet from './liquid';
 import {defaultTransformLink} from './utils';
 import {preprocess} from './preprocessors';
@@ -52,6 +52,15 @@ export function getFileTokens(
     options: GetFileTokensOpts,
     content?: string,
 ): Token[] {
+    return getFileFragment(path, state, options, content).tokens;
+}
+
+export function getFileFragment(
+    path: string,
+    state: StateCore,
+    options: GetFileTokensOpts,
+    content?: string,
+) {
     const {
         getVarsPerFile,
         vars,
@@ -91,7 +100,7 @@ export function getFileTokens(
         sourceMap = liquidResult.sourceMap;
     }
 
-    const tokens = parseChildDocument(
+    const tokens = parseChildDocumentResult(
         state.md,
         content,
         state.env,

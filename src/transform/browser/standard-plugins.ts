@@ -1,6 +1,8 @@
 import type {BuiltinPluginId} from '../plugin-ids';
 import type {MarkdownIt} from '../typings';
 
+import footnotes from '../plugins/footnotes';
+import taskList from '../plugins/task-list';
 import {builtinPluginIds} from '../plugin-ids';
 import {initializeDocumentField} from '../document-context-core';
 import {createMetaPlugin} from '../plugins/meta-core';
@@ -51,6 +53,8 @@ const callbacks = {
     visibility,
     underline,
     subscript,
+    footnotes,
+    'task-list': taskList,
 } satisfies Record<BuiltinPluginId, (md: MarkdownIt, options: never) => void>;
 
 /** Current actual builtin callbacks in the one authoritative installation order. */

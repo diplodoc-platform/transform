@@ -45,6 +45,8 @@ export const stableEntries = {
     './plugins/sup': 'plugins/sup',
     './plugins/underline': 'plugins/underline',
     './plugins/subscript': 'plugins/subscript',
+    './plugins/footnotes': 'plugins/footnotes/index',
+    './plugins/task-list': 'plugins/task-list/index',
     './plugins/table': 'plugins/table/index',
     './plugins/tabs': 'plugins/tabs',
     './plugins/term': 'plugins/term/index',
