@@ -1,10 +1,11 @@
 # Underline and subscript parser adapters
 
-The underline and subscript callbacks are the first bounded part of
-DOCSTOOLS-6948. They use the official `markdown-it-ins@4.0.0` and
-`markdown-it-sub@2.0.0` parsers. Both are enabled in the standard preset, after
-the historical 17 callbacks. This interim standard inventory has 19 features;
-footnotes and task lists remain outside this slice. Neither feature has options.
+Underline and subscript use the official `markdown-it-ins@4.0.0` and
+`markdown-it-sub@2.0.0` parsers. The standard preset has 21 callbacks: the
+previous 19 retain their order, followed by `footnotes` and `task-list`.
+Underline, subscript, footnotes, and task lists are enabled by default and each
+has empty closed settings. See [footnotes and task lists](footnotes.md) for
+their independent selection, ownership, and callback contracts.
 
 ## Selection and public callbacks
 
@@ -148,5 +149,5 @@ enabled, standard selection, explicit legacy callback lists, and the existing
 empty/none preset baseline. Packed package tests check native CJS/ESM callback
 identity, closed types, browser-safe leaf imports, and stylesheet graphs.
 Actual CLI, Viewer, Translation and Yfmlint consumer checks passed locally.
-Browser parser acceptance remains separate. This parser slice does not complete
-DOCSTOOLS-6948 or its four source issue acceptance gates.
+These tests describe underline and subscript; see the footnotes documentation for
+their separate parser and ownership contracts.

@@ -15,6 +15,85 @@ Definitions are local to their parsed source. An include cannot resolve a parent
 
 Footnote bodies retain ordinary Markdown formatting and sanitizer policy. Headings inside them do not enter page navigation. Backlinks have localized visible text in the configured language, defaulting to Russian. No script, resource metadata, CSP permission, enabled checkbox behavior, or broader HTML allowlist is added.
 
+## Selection and public callbacks
+
+The standard Node and browser presets enable both features. Disable either
+independently, or select just one on the core-only preset:
+
+```ts
+import transform from '@diplodoc/transform';
+import {defineTransformOptions} from '@diplodoc/transform/configuration';
+
+transform(source, defineTransformOptions({plugins: {disable: ['footnotes']}}));
+transform(source, defineTransformOptions({plugins: {disable: ['task-list']}}));
+transform(
+  source,
+  defineTransformOptions({
+    plugins: {preset: 'none', enable: ['footnotes'], options: {footnotes: {}}},
+  }),
+);
+transform(
+  source,
+  defineTransformOptions({
+    plugins: {preset: 'none', enable: ['task-list'], options: {'task-list': {}}},
+  }),
+);
+```
+
+Both settings objects are empty and closed: unknown keys and settings for an
+unselected feature are rejected. `preset: 'none'` retains core Markdown and
+sanitization. Task-list checkboxes are disabled; inline caret notes remain
+superscript syntax rather than footnotes.
+
+The stable ESM callback exports can be added to an integration's existing
+legacy callback array, which replaces the standard list. Preserve the callbacks
+already owned by that integration:
+
+```ts
+import transform from '@diplodoc/transform';
+import footnotes from '@diplodoc/transform/plugins/footnotes';
+import taskList from '@diplodoc/transform/plugins/task-list';
+
+transform(source, {plugins: [...integrationPlugins, footnotes, taskList]});
+```
+
+CommonJS exposes the same default callbacks:
+
+```js
+const {default: footnotes} = require('@diplodoc/transform/plugins/footnotes');
+const {default: taskList} = require('@diplodoc/transform/plugins/task-list');
+```
+
+For a CLI integration that does not already register these callbacks, the
+existing extension hook can add them without replacing its other plugins:
+
+```js
+const {getHooks: getBaseHooks} = require('@diplodoc/cli/lib/program');
+const {getHooks: getMarkdownHooks} = require('@diplodoc/cli/lib/markdown');
+const {default: footnotes} = require('@diplodoc/transform/plugins/footnotes');
+const {default: taskList} = require('@diplodoc/transform/plugins/task-list');
+
+class Extension {
+  apply(program) {
+    getBaseHooks(program).BeforeAnyRun.tap('FootnoteSyntax', (run) => {
+      if (run.markdown) {
+        getMarkdownHooks(run.markdown).Plugins.tap('FootnoteSyntax', (plugins) =>
+          plugins.concat(footnotes, taskList),
+        );
+      }
+    });
+  }
+}
+
+module.exports = {Extension};
+```
+
+Do not append callbacks already registered by the CLI. Adding callbacks alone
+does not implement source-local footnote ownership for include expansion: a host
+that selects or caches child tokens must also follow the document ownership
+contract below. A Transform preset does not modify a consumer-owned callback
+array.
+
 ## Document ownership
 
 Use the normal synchronous document API for independently compiled roots. A namespace is allocated lazily when actual note anchors are emitted. An extracted H1 containing a reference is already rendered during parsing and therefore needs the same namespace early. `needTitle` retains its established precedence, including a second H1; a discarded extracted title does not contribute phantom references. Stable repeated compilation preserves IDs and does not repeat title renderer effects.
