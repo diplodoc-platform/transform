@@ -99,7 +99,7 @@ export default function footnotes<Options>(
             const previous = Object.getOwnPropertyDescriptor(env, 'footnotes');
             // A late inline-only title cannot admit a previously unused body.
             // Existing bodies remain available without reparsing or replacing counts.
-            const upstreamState = env.footnotes;
+            const upstreamState = scope ? env.footnotes : undefined;
             let local: object = {};
             if (
                 scope &&

@@ -37,3 +37,28 @@ const common = new CommonJS().use(require('@diplodoc/transform/plugins/footnotes
     generateID: () => 'common',
 });
 assert.match(common.render('CJS[^a]\n\n[^a]: note'), /footnote-item/);
+
+let gets = 0;
+let sets = 0;
+const guarded = Object.defineProperty({}, 'footnotes', {
+    configurable: true,
+    enumerable: true,
+    get() {
+        gets++;
+        throw new Error('caller getter invoked');
+    },
+    set() {
+        sets++;
+        throw new Error('caller setter invoked');
+    },
+});
+const descriptor = Object.getOwnPropertyDescriptor(guarded, 'footnotes');
+for (const input of ['plain text', 'plain[^a] and ^[inline]']) {
+    const bare = new MarkdownIt().renderInline(input, guarded);
+    assert.equal(md.renderInline(input, guarded), bare);
+    assert.equal(md.renderer.render(md.parseInline(input, guarded), md.options, guarded), bare);
+    assert.deepEqual(Object.getOwnPropertyDescriptor(guarded, 'footnotes'), descriptor);
+}
+assert.equal(gets, 0);
+assert.equal(sets, 0);
+assert.equal(calls, 3);

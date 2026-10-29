@@ -201,6 +201,66 @@ describe('owned footnote output', () => {
 });
 
 describe('native footnote callback', () => {
+    it.each(['plain text', 'plain[^a] and ^[inline]'])(
+        'does not access caller footnotes for outside-source inline output: %s',
+        (source) => {
+            const get = vi.fn(() => {
+                throw new Error('caller getter invoked');
+            });
+            const set = vi.fn(() => {
+                throw new Error('caller setter invoked');
+            });
+            const env = Object.defineProperty({}, 'footnotes', {
+                get,
+                set,
+                configurable: true,
+                enumerable: true,
+            });
+            const descriptor = Object.getOwnPropertyDescriptor(env, 'footnotes');
+            const generateID = vi.fn(() => 'unused');
+            const bare = new MarkdownIt();
+            const md = new MarkdownIt().use(footnotes, {generateID});
+            expect(md.renderInline(source, env)).toBe(bare.renderInline(source, env));
+            const tokens = md.parseInline(source, env);
+            expect(md.renderer.render(tokens, md.options, env)).toBe(
+                bare.renderInline(source, env),
+            );
+            expect(get).not.toHaveBeenCalled();
+            expect(set).not.toHaveBeenCalled();
+            expect(generateID).not.toHaveBeenCalled();
+            expect(Object.getOwnPropertyDescriptor(env, 'footnotes')).toEqual(descriptor);
+        },
+    );
+
+    it.each([true, false])(
+        'keeps active admitted-label behavior with caller accessors: %s',
+        (admitted) => {
+            const get = vi.fn(() => {
+                throw new Error('caller getter invoked');
+            });
+            const set = vi.fn(() => {
+                throw new Error('caller setter invoked');
+            });
+            const env = Object.defineProperty({}, 'footnotes', {get, set, configurable: true});
+            const descriptor = Object.getOwnPropertyDescriptor(env, 'footnotes');
+            const generateID = vi.fn(() => 'active');
+            const md = new MarkdownIt().use(footnotes, {generateID});
+            md.core.ruler.after('yfm_footnote_ownership', 'late_accessor_probe', (state) => {
+                if (!state.inlineMode)
+                    state.tokens.unshift(...md.parseInline('late[^a]', state.env));
+            });
+            const html = md.render((admitted ? 'body[^a]\n\n' : '') + '[^a]: definition', env);
+            const $ = verify(html);
+            expect($('.footnote-ref').length).toBe(admitted ? 2 : 0);
+            expect($('.footnote-backref').length).toBe(admitted ? 2 : 0);
+            if (!admitted) expect(html).toContain('late[^a]');
+            expect(get).not.toHaveBeenCalled();
+            expect(set).not.toHaveBeenCalled();
+            expect(Object.getOwnPropertyDescriptor(env, 'footnotes')).toEqual(descriptor);
+            expect(generateID.mock.calls.length).toBe(admitted ? 1 : 0);
+        },
+    );
+
     it('isolates reused env, preserves parsed-array ownership and consumes callbacks only for successful candidate attempts', () => {
         const generateID = vi.fn(() => `raw${generateID.mock.calls.length}`);
         const md = new MarkdownIt().use(footnotes, {generateID, lang: 'en'});
