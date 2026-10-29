@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           repository: diplodoc-platform/infra
-          ref: 308409081193c44f2b020856f82637d9d7d2bf16
+          ref: 39373e66bdfdb9b4f8c72bed7aef73acf224c10b
           path: trusted-infra
           persist-credentials: false
       - name: Install locked dependencies safely

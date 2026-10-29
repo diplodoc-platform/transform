@@ -3,6 +3,7 @@ import {createRequire} from 'node:module';
 import {copyFile, mkdir, readdir} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {sassPlugin} from 'esbuild-sass-plugin';
+import {NodePackageImporter} from 'sass';
 import autoprefixer from 'autoprefixer';
 import postcssPresetEnv from 'postcss-preset-env';
 import postcss from 'postcss';
@@ -25,6 +26,7 @@ const require = createRequire(import.meta.url);
 
 const plugins = [
     sassPlugin({
+        importers: [new NodePackageImporter(projectRoot)],
         importMapper: (path) => {
             if (path.startsWith('@diplodoc')) {
                 return dirname(require.resolve(path));
