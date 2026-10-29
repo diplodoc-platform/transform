@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import MarkdownIt from 'markdown-it';
 
-import parser from '@diplodoc/transform/parser';
-import {materializeFootnoteTokens} from '@diplodoc/transform/document';
-import footnotes from '@diplodoc/transform/plugins/footnotes';
-import taskList from '@diplodoc/transform/plugins/task-list';
+const packageName = '@diplodoc/transform';
+const {default: parser} = await import(`${packageName}/parser`);
+const {materializeFootnoteTokens} = await import(`${packageName}/document`);
+const {default: footnotes} = await import(`${packageName}/plugins/footnotes`);
+const {default: taskList} = await import(`${packageName}/plugins/task-list`);
 
 function verify(html) {
     const ids = [...html.matchAll(/id="([^"]+)"/g)].map((match) => match[1]);

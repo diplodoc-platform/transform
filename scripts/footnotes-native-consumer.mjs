@@ -2,9 +2,10 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import MarkdownIt from 'markdown-it';
 
-import footnotes from '@diplodoc/transform/plugins/footnotes';
-import taskList from '@diplodoc/transform/plugins/task-list';
-import {materializeFootnoteTokens} from '@diplodoc/transform/document';
+const packageName = '@diplodoc/transform';
+const {default: footnotes} = await import(`${packageName}/plugins/footnotes`);
+const {default: taskList} = await import(`${packageName}/plugins/task-list`);
+const {materializeFootnoteTokens} = await import(`${packageName}/document`);
 
 let calls = 0;
 const generateID = () => `native-${++calls}`;
