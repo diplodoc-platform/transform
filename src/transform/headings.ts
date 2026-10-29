@@ -1,6 +1,8 @@
 import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {Heading} from './shared-types';
 
+import {isFootnoteBody} from './footnote-data';
+
 function getTitle(token: Token) {
     return (
         token.children?.reduce((acc, tok) => {
@@ -29,7 +31,7 @@ function getFilteredHeadings(tokens: Token[], href: string) {
     let prevLevel;
 
     for (let i = 0; i < tokens.length; i++) {
-        const isHeading = tokens[i].type === 'heading_open';
+        const isHeading = tokens[i].type === 'heading_open' && !isFootnoteBody(tokens[i]);
         const level = Number.parseInt(tokens[i].tag.slice(1), 10);
 
         if (isHeading && level >= 2) {
@@ -73,7 +75,7 @@ function getFlatListHeadings(tokens: Token[], href: string) {
     const headings: Heading[] = [];
 
     for (let i = 0; i < tokens.length; i++) {
-        const isHeading = tokens[i].type === 'heading_open';
+        const isHeading = tokens[i].type === 'heading_open' && !isFootnoteBody(tokens[i]);
         const level = Number.parseInt(tokens[i].tag.slice(1), 10);
 
         if (!isHeading) {

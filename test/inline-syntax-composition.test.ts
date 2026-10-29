@@ -38,9 +38,15 @@ const rendered =
 
 describe('standard underline and subscript composition', () => {
     it('appends two stable callbacks to the unchanged historical prefix', () => {
-        expect(builtinPluginIds).toEqual([...historicalIds, 'underline', 'subscript']);
-        expect(DefaultPlugins).toHaveLength(19);
-        expect(DefaultPlugins.slice(17)).toEqual([underline, subscript]);
+        expect(builtinPluginIds).toEqual([
+            ...historicalIds,
+            'underline',
+            'subscript',
+            'footnotes',
+            'task-list',
+        ]);
+        expect(DefaultPlugins).toHaveLength(21);
+        expect(DefaultPlugins.slice(17, 19)).toEqual([underline, subscript]);
         expect(
             resolvePluginConfiguration({pluginConfiguration: {}})?.map(({plugin}) => plugin),
         ).toEqual(DefaultPlugins);

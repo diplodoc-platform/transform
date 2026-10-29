@@ -103,12 +103,12 @@ const {
 } = transform(content, {vars});
 ```
 
-### Underline and subscript
+### Inline syntax and footnotes
 
-The standard preset enables `++underlined++` and `H~2~O`. Each feature can be
-selected independently through `underline` and `subscript`, or appended to a
-legacy callback list using its stable `/plugins/underline` or `/plugins/subscript`
-entry. See [syntax, selection, and custom composition](docs/inline-syntax.md).
+The standard preset enables underline, subscript, reference footnotes, and task
+lists. Select each independently or compose its stable callback with your own
+plugin list. See [inline syntax](docs/inline-syntax.md) and
+[footnotes and task lists](docs/footnotes.md) for configuration and composition.
 
 ### Custom HTML Sanitizer
 

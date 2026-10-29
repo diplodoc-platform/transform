@@ -1,5 +1,5 @@
 import type {DeprecationReporter} from './deprecation';
-import type {EnvType, MarkdownIt, MarkdownItPluginOpts, OptionsType} from './typings';
+import type {MarkdownIt, MarkdownItPluginOpts, OptionsType} from './typings';
 import type {DocumentEnv, DocumentParser, ParsedDocument} from './document';
 import type {LogConsumer, Logger} from './log-core';
 import type {PluginInstallation} from './plugin-configuration';
@@ -10,6 +10,7 @@ import DefaultMarkdownIt from 'markdown-it';
 import attrs from 'markdown-it-attrs';
 import {createIDGeneratorByStrategy} from '@diplodoc/utils';
 
+import {bindFootnoteRoot, compileFootnoteOutput, prepareFootnoteTitle} from './footnote-data';
 import {createDocumentEnv} from './document-data';
 import {builtinOptions} from './builtin-invocation';
 import {
@@ -169,7 +170,13 @@ export function createParser(
                     },
                     {option: 'compile.tokens'},
                 );
-                return initCompiler(md, options, documentEnv, host)(tokens);
+                return initCompiler(
+                    md,
+                    options,
+                    documentEnv,
+                    host,
+                    pluginOptions.generateID,
+                )(tokens);
             });
         }
         const state = owned.get(document);
@@ -178,7 +185,7 @@ export function createParser(
         }
         try {
             return run(document.env, state.reporter, () =>
-                initCompiler(md, options, document.env, host)(tokens),
+                initCompiler(md, options, document.env, host, pluginOptions.generateID)(tokens),
             );
         } catch (error) {
             state.valid = false;
@@ -226,7 +233,10 @@ function getPluginOptions(
         inlineSvg,
         svgInline: normalizeSvgInline({svgInline, inlineSvg}),
         generateID: generateID ?? createIDGeneratorByStrategy('random'),
-    } as MarkdownItPluginOpts & {deprecations: DeprecationReporter};
+    } as MarkdownItPluginOpts & {
+        deprecations: DeprecationReporter;
+        generateID: NonNullable<MarkdownItPluginOpts['generateID']>;
+    };
 }
 
 function initPlugins(
@@ -280,7 +290,7 @@ function initPlugins(
 function initParser(
     md: MarkdownIt,
     options: OptionsType,
-    env: EnvType,
+    env: DocumentEnv,
     pluginOptions: MarkdownItPluginOpts,
     host: ParserHost,
 ) {
@@ -300,6 +310,7 @@ function initParser(
 
         // Generate MD tokens
         let tokens = md.parse(input, env);
+        bindFootnoteRoot(env, tokens, pluginOptions.generateID, options.renderInline);
 
         if (extractTitleOption) {
             const {title, tokens: slicedTokens, titleTokens} = extractTitle(tokens);
@@ -308,7 +319,7 @@ function initParser(
 
             // title tokens include other tokens that need to be transformed
             if (titleTokens.length > 1) {
-                env.title = md.renderer.render(titleTokens, md.options, env);
+                env.title = prepareFootnoteTitle(md, env, titleTokens, tokens, needTitle);
             } else {
                 env.title = title;
             }
@@ -324,45 +335,59 @@ function initParser(
     };
 }
 
-function initCompiler(md: MarkdownIt, options: OptionsType, env: EnvType, host: ParserHost) {
+function initCompiler(
+    md: MarkdownIt,
+    options: OptionsType,
+    env: DocumentEnv,
+    host: ParserHost,
+    generateID: () => string,
+) {
     const {needToSanitizeHtml = true, renderInline = false, sanitizeOptions, sanitize} = options;
 
-    return (tokens: Token[]) => {
-        // Remove inline tokens if inline mode is activated
-        if (renderInline) {
-            tokens = tokens.filter((token) => token.type === 'inline');
-        }
+    return (tokens: Token[]) =>
+        compileFootnoteOutput(
+            md,
+            env,
+            tokens,
+            (tokens) => {
+                // Remove inline tokens if inline mode is activated
+                if (renderInline) {
+                    tokens = tokens.filter((token) => token.type === 'inline');
+                }
 
-        // Generate HTML
-        let html = md.renderer.render(tokens, md.options, env);
+                // Generate HTML
+                let html = md.renderer.render(tokens, md.options, env);
 
-        if (!needToSanitizeHtml) {
-            return html;
-        }
+                if (!needToSanitizeHtml) {
+                    return html;
+                }
 
-        // If a custom sanitizer was used, we need to ensure styles are sanitized
-        // unless explicitly disabled via disableStyleSanitizer option
-        if (sanitize && !(sanitizeOptions?.disableStyleSanitizer ?? false)) {
-            const baseOptions = sanitizeOptions || defaultOptions;
+                // If a custom sanitizer was used, we need to ensure styles are sanitized
+                // unless explicitly disabled via disableStyleSanitizer option
+                if (sanitize && !(sanitizeOptions?.disableStyleSanitizer ?? false)) {
+                    const baseOptions = sanitizeOptions || defaultOptions;
 
-            const mergedOptions = {
-                ...baseOptions,
-                cssWhiteList: {
-                    ...(defaultOptions.cssWhiteList || {}),
-                    ...(baseOptions.cssWhiteList || {}),
-                    ...(env.additionalOptionsCssWhiteList || {}),
-                },
-            };
+                    const mergedOptions = {
+                        ...baseOptions,
+                        cssWhiteList: {
+                            ...(defaultOptions.cssWhiteList || {}),
+                            ...(baseOptions.cssWhiteList || {}),
+                            ...(env.additionalOptionsCssWhiteList || {}),
+                        },
+                    };
 
-            html = host.sanitizeStyles(html, mergedOptions);
-        }
+                    html = host.sanitizeStyles(html, mergedOptions);
+                }
 
-        const sanitizedHtml = sanitize
-            ? sanitize(html, sanitizeOptions)
-            : host.sanitize(html, sanitizeOptions, {
-                  cssWhiteList: env.additionalOptionsCssWhiteList,
-              });
+                const sanitizedHtml = sanitize
+                    ? sanitize(html, sanitizeOptions)
+                    : host.sanitize(html, sanitizeOptions, {
+                          cssWhiteList: env.additionalOptionsCssWhiteList,
+                      });
 
-        return sanitizedHtml;
-    };
+                return sanitizedHtml;
+            },
+            generateID,
+            renderInline,
+        );
 }

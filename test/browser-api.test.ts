@@ -8,6 +8,7 @@ import standard, {
     createDocumentEnv,
     createParser,
     definePlugin,
+    materializeFootnoteTokens,
     parseDocumentFragmentResult,
     replayDocumentFragment,
 } from '../src/transform/browser/standard';
@@ -54,7 +55,7 @@ test('standard binds the real additive underline/subscript callbacks while minim
     const paths = Object.keys(metafile.inputs);
     expect(
         paths.some((path) =>
-            /(?:standard-plugins|plugins\/(?:table|notes|imsize|includes\/index)|(?:cut|file|tabs)-extension)/.test(
+            /(?:standard-plugins|plugins\/(?:table|notes|footnotes|task-list|imsize|includes\/index)|(?:cut|file|tabs)-extension|markdown-it-footnote|@mdit\/plugin-tasklist)/.test(
                 path,
             ),
         ),
@@ -222,4 +223,57 @@ test('browser sanitizer normalization cannot inherit a Node bypass option', () =
         sanitizeOptions,
     });
     expect(result.result.html).not.toContain('position:fixed');
+});
+
+test('browser admits selected cached footnotes through the canonical document API', () => {
+    let native: MarkdownIt | undefined;
+    const generateID = vi.fn(() => 'browser');
+    const host = definePlugin({
+        id: 'capture-parser',
+        setup(md) {
+            native = md;
+        },
+    })({});
+    const parser = createParser({
+        generateID,
+        extractTitle: true,
+        pluginConfiguration: {plugins: [host]},
+    });
+    const root = parser.parseDocument('# Title[^a]\n\n[^a]: - [x] root');
+    if (!native) throw new Error('Missing native parser');
+    const child = parseDocumentFragmentResult(native, 'child[^a]\n\n[^a]: child note', root.env, {
+        purpose: 'reference',
+    });
+    const first = materializeFootnoteTokens(child.tokens, child.tokens.slice(0, 3));
+    const second = materializeFootnoteTokens(child.tokens, child.tokens.slice(0, 3));
+    replayDocumentFragment(native, child, root.env, {purpose: 'include'});
+    root.tokens.push(...first, ...second);
+    const html = root.env.title + parser.compileDocument(root);
+    const ids = [...html.matchAll(/id="([^"]+)"/g)].map((match) => match[1]);
+    for (const match of html.matchAll(/href="#([^"]+)"/g)) expect(ids).toContain(match[1]);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(html).toContain('disabled');
+    expect(generateID).toHaveBeenCalledTimes(1);
+});
+
+test.each([
+    'unknown',
+    '',
+    'constructor',
+    '__proto__',
+    'prototype',
+    'toString',
+    'valueOf',
+    'hasOwnProperty',
+    '__defineGetter__',
+])('rejects an unsupported JavaScript browser language %s before generation', (lang) => {
+    const generateID = vi.fn(() => 'unused');
+    expect(() =>
+        standard('note[^a]\n\n[^a]: text', {
+            // @ts-expect-error Deliberately exercise untyped JavaScript caller input.
+            lang,
+            generateID,
+        }),
+    ).toThrow('Invalid browser option "lang"');
+    expect(generateID).not.toHaveBeenCalled();
 });

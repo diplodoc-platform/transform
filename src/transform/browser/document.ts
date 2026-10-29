@@ -75,3 +75,5 @@ export function replayDocumentFragment(
 ): void {
     replayChildDocument(md, fragment, parentEnv, options);
 }
+
+export {materializeFootnoteTokens} from '../footnote-data';
