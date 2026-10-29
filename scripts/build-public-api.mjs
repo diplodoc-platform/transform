@@ -29,6 +29,10 @@ for (const [name, source] of Object.entries(browserEntries)) {
 }
 for (const {source} of legacyModules) {
     const entry = moduleExport(source);
+    if (source === 'typings' || source === 'plugins/typings') {
+        entry.import.types = './api/legacy-typings.d.mts';
+        entry.require.types = './api/legacy-typings.d.cts';
+    }
     exports[`./lib/${source}`] = entry;
     exports[`./lib/${source}.js`] = entry;
     if (source.endsWith('/index')) {
@@ -119,3 +123,18 @@ for (const {source, legacyDefault} of modules.values()) {
                 : cjsTypes),
     );
 }
+
+// Legacy type-only paths have separate declarations so the stable /types facade
+// does not inherit the deprecation annotations.
+const legacyDeclaration = program.getSourceFile(resolve(root, 'lib/typings.d.ts'));
+const legacySymbol = legacyDeclaration && checker.getSymbolAtLocation(legacyDeclaration);
+if (!legacySymbol) throw new Error('Missing typings declaration');
+const legacyTypes = checker
+    .getExportsOfModule(legacySymbol)
+    .map(
+        ({name}) =>
+            `/** @deprecated Import from @diplodoc/transform/types. Removal: 6.0.0. */\nexport type {${name}} from '../lib/typings.js';\n`,
+    )
+    .join('');
+writeFileSync(resolve(root, 'api/legacy-typings.d.mts'), legacyTypes);
+writeFileSync(resolve(root, 'api/legacy-typings.d.cts'), legacyTypes);

@@ -11,6 +11,7 @@ import attrs from 'markdown-it-attrs';
 import {createIDGeneratorByStrategy} from '@diplodoc/utils';
 
 import {createDocumentEnv} from './document-data';
+import {builtinOptions} from './builtin-invocation';
 import {
     createLegacyEnvView,
     installDocumentContext,
@@ -32,6 +33,10 @@ import {DEFAULT_LANG} from './constants';
 /** Finite execution-host operations; parser state and lifecycle remain shared. */
 export interface ParserHost {
     defaultPlugins: NonNullable<OptionsType['plugins']>;
+    deprecatedBuiltinAdapters?: {
+        cut: NonNullable<OptionsType['plugins']>[number];
+        tabs: NonNullable<OptionsType['plugins']>[number];
+    };
     installGuard?(md: MarkdownIt): void;
     resolvePlugins(options: OptionsType): PluginInstallation[] | undefined;
     preprocess(
@@ -251,11 +256,20 @@ function initPlugins(
     md.use(linkifyStrikethrough);
     host.installGuard?.(md);
     if (configuredPlugins) {
-        configuredPlugins.forEach(({plugin, options: settings}) => {
-            md.use(plugin, settings ? {...pluginOptions, ...settings} : pluginOptions);
+        configuredPlugins.forEach(({id, plugin, options: settings}) => {
+            const context = settings ? {...pluginOptions, ...settings} : pluginOptions;
+            const isBuiltin =
+                (id === 'cut' || id === 'tabs') && host.deprecatedBuiltinAdapters?.[id] === plugin;
+            md.use(plugin, isBuiltin ? builtinOptions(context, plugin) : context);
         });
     } else {
-        plugins.forEach((plugin) => md.use(plugin, pluginOptions));
+        plugins.forEach((plugin) => {
+            const adapters = host.deprecatedBuiltinAdapters;
+            const isBuiltin =
+                options.plugins === undefined &&
+                Boolean(adapters && (plugin === adapters.cut || plugin === adapters.tabs));
+            md.use(plugin, isBuiltin ? builtinOptions(pluginOptions, plugin) : pluginOptions);
+        });
     }
 
     if (linkify && linkifyTlds) {
