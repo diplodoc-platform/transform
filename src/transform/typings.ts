@@ -43,6 +43,8 @@ export interface OptionsType extends CoreParserOptions, LegacyBuiltinOptions {
     tokens?: boolean;
     vars?: Record<string, string>;
     path?: string;
+    /** Optional destination directory forwarded to plugins that bundle runtime assets. */
+    output?: string;
     conditionsInCode?: boolean;
     disableLiquid?: boolean;
     isLiquided?: boolean;

@@ -148,3 +148,16 @@ test.each([
     const {host} = createHost();
     expect(host.sanitize(html, {...defaultOptions})).toBe(sanitize(html, {...defaultOptions}));
 });
+
+test('does not add builtin metadata to unrelated host callbacks', () => {
+    const seen: symbol[][] = [];
+    const plugins = builtinPluginIds.map(
+        (): MarkdownItPluginCb => (_md, options) => {
+            seen.push(Object.getOwnPropertySymbols(options));
+        },
+    );
+    const {host} = createHost(plugins);
+    createParser({}, host);
+    expect(seen).toHaveLength(builtinPluginIds.length);
+    expect(seen.every((symbols) => symbols.length === 0)).toBe(true);
+});

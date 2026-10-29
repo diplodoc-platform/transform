@@ -130,6 +130,10 @@ import {createRequire} from 'node:module';
 import transform, {transform as namedTransform} from '@diplodoc/transform';
 import underline from '@diplodoc/transform/plugins/underline';
 import subscript from '@diplodoc/transform/plugins/subscript';
+import cut from '@diplodoc/transform/plugins/cut';
+import tabs from '@diplodoc/transform/plugins/tabs';
+import legacyCut from '@diplodoc/transform/lib/plugins/cut';
+import legacyTabs from '@diplodoc/transform/lib/plugins/tabs';
 import footnotes from '@diplodoc/transform/plugins/footnotes';
 import taskList from '@diplodoc/transform/plugins/task-list';
 import parser from '@diplodoc/transform/parser';
@@ -142,6 +146,14 @@ import {createHighlightJsHighlighter} from '@diplodoc/transform/highlighter';
 import {createLegacyHighlighter} from '@diplodoc/transform/highlighter/legacy';
 const require = createRequire(import.meta.url);
 assert.equal(transform, namedTransform);
+const preset = require('@diplodoc/transform/plugins');
+assert.equal(cut, legacyCut);
+assert.equal(tabs, legacyTabs);
+assert.equal(cut, require('@diplodoc/transform/plugins/cut'));
+assert.equal(tabs, require('@diplodoc/transform/lib/plugins/tabs'));
+assert.ok(preset.includes(cut));
+assert.ok(preset.includes(tabs));
+assert.equal(typeof cut.collect, 'function');
 assert.equal(underline, require('@diplodoc/transform/plugins/underline').default);
 assert.equal(subscript, require('@diplodoc/transform/plugins/subscript').default);
 assert.equal(footnotes, require('@diplodoc/transform/plugins/footnotes').default);
@@ -220,6 +232,12 @@ assert.match(transform('Static ESM', defineTransformOptions()).result.html, /Sta
     assert.equal(installedParserRequire('markdown-it/package.json').version, '15.0.3');
 
     for (const transform of [installedTransform, installedEsm.default]) {
+        const forwardedOutputs = [];
+        const captureOutput = (_md, options) => forwardedOutputs.push(options.output);
+        transform('plain', {plugins: [captureOutput], output: '/consumer/runtime-assets'});
+        transform('plain', {plugins: [captureOutput]});
+        assert.deepEqual(forwardedOutputs, ['/consumer/runtime-assets', undefined]);
+
         assert.equal(
             transform('a\nb\n: definition').result.html,
             '<p>a<br />\nb<br />\n: definition</p>\n',
@@ -239,6 +257,11 @@ assert.match(transform('Static ESM', defineTransformOptions()).result.html, /Sta
         join(consumerRoot, 'consumer.cts'),
         `
 import transform = require('@diplodoc/transform');
+import typedCut = require('@diplodoc/transform/plugins/cut');
+import typedLegacyCut = require('@diplodoc/transform/lib/plugins/cut');
+const sameCollector: typeof typedCut.collect = typedLegacyCut.collect;
+typedCut.collect('', {destRoot: '.'});
+void sameCollector;
 import images = require('@diplodoc/transform/lib/plugins/images');
 import init = require('@diplodoc/transform/parser');
 const options: transform.Options = {svgMaxEntityCount: 1024};
@@ -253,9 +276,18 @@ images.replaceSvgContent('<svg/>', {width: null, height: null, title: null, svgM
         join(consumerRoot, 'consumer.mts'),
         `
 import transform, {transform as named} from '@diplodoc/transform';
+import typedCut from '@diplodoc/transform/plugins/cut';
+import typedLegacyCut from '@diplodoc/transform/lib/plugins/cut';
+const sameCollector: typeof typedCut.collect = typedLegacyCut.collect;
+typedCut.collect('', {destRoot: '.'});
+void sameCollector;
 import parser from '@diplodoc/transform/parser';
 import images from '@diplodoc/transform/plugins/images';
 import {type OptionsType} from '@diplodoc/transform/types';
+import type {OptionsType as LegacyOptions} from '@diplodoc/transform/lib/typings';
+import type {OptionsType as LegacyPluginOptions} from '@diplodoc/transform/lib/plugins/typings';
+const legacyTypeCheck: LegacyOptions & LegacyPluginOptions = {};
+void legacyTypeCheck;
 const options: OptionsType = {};
 const legacyOptions: transform.Options = options;
 named('text', legacyOptions);
@@ -362,9 +394,23 @@ void typedLabel; void pathIsNotGuaranteed;
     const configurationTypes = `
 import underline from '@diplodoc/transform/plugins/underline';
 import subscript from '@diplodoc/transform/plugins/subscript';
+import cut from '@diplodoc/transform/plugins/cut';
+import tabs from '@diplodoc/transform/plugins/tabs';
+import legacyCut from '@diplodoc/transform/lib/plugins/cut';
+import legacyTabs from '@diplodoc/transform/lib/plugins/tabs';
 import footnotes from '@diplodoc/transform/plugins/footnotes';
 import taskList from '@diplodoc/transform/plugins/task-list';
 import type {MarkdownIt, MarkdownItPluginCb} from '@diplodoc/transform/types';
+import {transform as createCut} from '@diplodoc/cut-extension';
+import {transform as createTabs} from '@diplodoc/tabs-extension';
+const directCut: MarkdownItPluginCb = createCut({bundle: false, directiveSyntax: 'disabled'});
+const directTabs: MarkdownItPluginCb = createTabs({bundle: false});
+const assetOptions: import('@diplodoc/transform/types').OptionsType = {output: '/consumer/runtime-assets'};
+// @ts-expect-error Runtime asset destinations must be strings.
+const invalidAssetOptions: import('@diplodoc/transform/types').OptionsType = {output: 42};
+// @ts-expect-error Plugin runtime asset destinations must be strings.
+const invalidPluginOutput: Pick<import('@diplodoc/transform/types').MarkdownItPluginOpts, 'output'> = {output: 42};
+void [directCut, directTabs, assetOptions, invalidAssetOptions, invalidPluginOutput];
 const typedFootnotes: MarkdownItPluginCb = footnotes;
 const typedTaskList: MarkdownItPluginCb = taskList;
 void typedFootnotes; void typedTaskList;

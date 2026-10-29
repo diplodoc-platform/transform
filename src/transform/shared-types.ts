@@ -99,6 +99,8 @@ export type EnvType<Extras extends {} = {}> = {
 
 export interface MarkdownItPluginOpts {
     path: string;
+    /** Optional destination directory forwarded to plugins that bundle runtime assets. */
+    output?: string;
     log: Logger;
     /** Provided by Transform; optional for callers constructing plugin options themselves. */
     deprecations?: DeprecationReporter;

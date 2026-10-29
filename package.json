@@ -60,11 +60,11 @@
     "build:browser": "node scripts/build-browser.mjs"
   },
   "dependencies": {
-    "@diplodoc/cut-extension": "^1.1.6",
-    "@diplodoc/directive": "0.5.0-transform5.0",
+    "@diplodoc/cut-extension": "1.1.9-transform5.1",
+    "@diplodoc/directive": "0.5.0-transform5.2",
     "@diplodoc/file-extension": "0.2.7-transform5.0",
     "@diplodoc/notes-extension": "0.1.0-transform5.0",
-    "@diplodoc/tabs-extension": "3.10.8-transform5.0",
+    "@diplodoc/tabs-extension": "3.10.8-transform5.2",
     "@diplodoc/utils": "2.3.7-transform5.0",
     "@mdit/plugin-tasklist": "1.1.4",
     "@types/lodash": "^4.17.23",
@@ -2122,21 +2122,21 @@
     },
     "./lib/plugins/typings": {
       "import": {
-        "types": "./api/plugins/typings.d.mts",
+        "types": "./api/legacy-typings.d.mts",
         "default": "./api/plugins/typings.mjs"
       },
       "require": {
-        "types": "./api/plugins/typings.d.cts",
+        "types": "./api/legacy-typings.d.cts",
         "default": "./api/plugins/typings.cjs"
       }
     },
     "./lib/plugins/typings.js": {
       "import": {
-        "types": "./api/plugins/typings.d.mts",
+        "types": "./api/legacy-typings.d.mts",
         "default": "./api/plugins/typings.mjs"
       },
       "require": {
-        "types": "./api/plugins/typings.d.cts",
+        "types": "./api/legacy-typings.d.cts",
         "default": "./api/plugins/typings.cjs"
       }
     },
@@ -2432,21 +2432,21 @@
     },
     "./lib/typings": {
       "import": {
-        "types": "./api/typings.d.mts",
+        "types": "./api/legacy-typings.d.mts",
         "default": "./api/typings.mjs"
       },
       "require": {
-        "types": "./api/typings.d.cts",
+        "types": "./api/legacy-typings.d.cts",
         "default": "./api/typings.cjs"
       }
     },
     "./lib/typings.js": {
       "import": {
-        "types": "./api/typings.d.mts",
+        "types": "./api/legacy-typings.d.mts",
         "default": "./api/typings.mjs"
       },
       "require": {
-        "types": "./api/typings.d.cts",
+        "types": "./api/legacy-typings.d.cts",
         "default": "./api/typings.cjs"
       }
     },

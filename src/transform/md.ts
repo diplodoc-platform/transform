@@ -4,6 +4,8 @@ import type {ParserHost} from './parser-core';
 
 import {createParser} from './parser-core';
 import DefaultPlugins from './plugins';
+import cut from './plugins/cut';
+import tabs from './plugins/tabs';
 import {preprocess} from './preprocessors';
 import {getLogger} from './log';
 import {createDeprecationReporter} from './deprecation';
@@ -12,6 +14,7 @@ import sanitize, {sanitizeStyles} from './sanitize';
 
 const nodeHost: ParserHost = {
     defaultPlugins: DefaultPlugins,
+    deprecatedBuiltinAdapters: {cut, tabs},
     resolvePlugins: resolvePluginConfiguration,
     preprocess,
     getLogger,
