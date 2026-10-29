@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import MarkdownIt from 'markdown-it';
 import footnotes from '@diplodoc/transform/plugins/footnotes';
+import taskList from '@diplodoc/transform/plugins/task-list';
 import {materializeFootnoteTokens} from '@diplodoc/transform/document';
 
 let calls = 0;
@@ -62,3 +63,22 @@ for (const input of ['plain text', 'plain[^a] and ^[inline]']) {
 assert.equal(gets, 0);
 assert.equal(sets, 0);
 assert.equal(calls, 3);
+
+for (const make of [() => new MarkdownIt(), () => new CommonJS()]) {
+    const used = make().use(taskList);
+    const direct = make();
+    taskList(direct);
+    const input = '- [x] outer\n  - [ ] nested';
+    const expected = used.render(input);
+    assert.equal(direct.render(input), expected);
+    assert.equal([...expected.matchAll(/disabled="disabled"/g)].length, 2);
+    assert.doesNotMatch(expected, /\s(?:id|for)=/);
+    for (const order of [
+        [footnotes, taskList],
+        [taskList, footnotes],
+    ]) {
+        const mixed = make();
+        for (const plugin of order) mixed.use(plugin);
+        assert.match(mixed.render('note[^a]\n\n[^a]: - [x] body'), /disabled="disabled"/);
+    }
+}

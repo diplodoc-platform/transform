@@ -1,13 +1,12 @@
-import type {MarkdownIt} from '../../typings';
-import type * as TaskListModule from '@mdit/plugin-tasklist' with {'resolution-mode': 'import'};
+import type {TaskListInstaller, TaskListParser} from './capture';
 
 import {captureTaskRule} from './capture';
 
-const {tasklist}: typeof TaskListModule = require('@mdit/plugin-tasklist');
+const {tasklist}: {tasklist: TaskListInstaller} = require('@mdit/plugin-tasklist');
 
 // Capture the one rule installed by the pinned upstream plugin, without installing
 // its env counter on the caller's parser.
-export default function taskList(md: MarkdownIt) {
+export default function taskList(md: TaskListParser) {
     const ruler = md.core.ruler;
     const runUpstream = captureTaskRule(md, (parser) => {
         tasklist(parser, {disabled: true, label: true, labelClass: 'yfm-task-label'});

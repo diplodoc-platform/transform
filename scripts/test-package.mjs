@@ -552,8 +552,10 @@ custom({label: 'typed', unknown: true});
         });
         const fixture = `
 import footnotes from '@diplodoc/transform/plugins/footnotes';
+import taskList from '@diplodoc/transform/plugins/task-list';
 import {envMeta, createDocumentEnv, materializeFootnoteTokens} from '@diplodoc/transform/document';
-const md = new MarkdownIt().use(envMeta).use(footnotes, {generateID: () => 'host'});
+const md = new MarkdownIt().use(envMeta).use(footnotes, {generateID: () => 'host'}).use(taskList);
+taskList(new MarkdownIt());
 footnotes(new MarkdownIt(), {generateID: () => 'direct'});
 const env = createDocumentEnv();
 const tokens = md.parse('body[^a]\\n\\n[^a]: note', env);
