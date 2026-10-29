@@ -11,8 +11,3 @@ declare module 'markdown-it-sub' {
     function sub(md: MarkdownIt): void;
     export = sub;
 }
-
-declare module 'markdown-it-footnote' {
-    function footnote(md: import('./footnotes/types').FootnoteGrammar): void;
-    export = footnote;
-}

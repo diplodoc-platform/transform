@@ -1,9 +1,8 @@
 import type {Lang, MarkdownItPluginOpts} from '../../shared-types';
 import type {Scope} from '../../footnote-data';
 import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
-import type {FootnoteParser} from './types';
+import type {FootnoteGrammar, FootnoteParser} from './types';
 
-import upstream from 'markdown-it-footnote';
 import {createIDGeneratorByStrategy} from '@diplodoc/utils';
 
 import {
@@ -23,6 +22,8 @@ import {
 } from '../../footnote-data';
 
 import {backLabel} from './labels';
+
+const upstream: (md: FootnoteGrammar) => void = require('markdown-it-footnote');
 
 export type FootnoteOptions = Partial<Pick<MarkdownItPluginOpts, 'generateID'>> & {lang?: Lang};
 

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import MarkdownIt from 'markdown-it';
+
 import footnotes from '@diplodoc/transform/plugins/footnotes';
 import taskList from '@diplodoc/transform/plugins/task-list';
 import {materializeFootnoteTokens} from '@diplodoc/transform/document';
