@@ -41,4 +41,29 @@ assert.match(selectedHtml, /disabled/);
 assert.equal(raw.renderer.render(selected, raw.options, env), selectedHtml);
 assert.equal(calls, 3);
 assert.deepEqual(env, {footnotes: {caller: true}});
-process.stdout.write('Installed footnotes/task-list ownership: pass\n');
+for (const lang of [
+    'unknown',
+    '',
+    'constructor',
+    '__proto__',
+    'prototype',
+    'toString',
+    'valueOf',
+    'hasOwnProperty',
+    '__defineGetter__',
+]) {
+    const owned = parser({disableLiquid: true, lang, generateID: () => 'language'});
+    const document = owned.parseDocument('note[^a]\n\n[^a]: text');
+    assert.match(
+        owned.compileDocument(document),
+        /class="footnote-backref">Назад к ссылке 1:1<\/a>/,
+    );
+    const raw = new MarkdownIt().use(footnotes, {lang, generateID: () => 'raw-language'});
+    assert.match(
+        raw.render('note[^a]\n\n[^a]: text'),
+        /class="footnote-backref">Назад к ссылке 1:1<\/a>/,
+    );
+}
+process.stdout.write(
+    'Installed footnotes/task-list ownership and nine unknown-language fallbacks: pass\n',
+);

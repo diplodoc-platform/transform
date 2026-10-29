@@ -255,3 +255,25 @@ test('browser admits selected cached footnotes through the canonical document AP
     expect(html).toContain('disabled');
     expect(generateID).toHaveBeenCalledTimes(1);
 });
+
+test.each([
+    'unknown',
+    '',
+    'constructor',
+    '__proto__',
+    'prototype',
+    'toString',
+    'valueOf',
+    'hasOwnProperty',
+    '__defineGetter__',
+])('rejects an unsupported JavaScript browser language %s before generation', (lang) => {
+    const generateID = vi.fn(() => 'unused');
+    expect(() =>
+        standard('note[^a]\n\n[^a]: text', {
+            // @ts-expect-error Deliberately exercise untyped JavaScript caller input.
+            lang,
+            generateID,
+        }),
+    ).toThrow('Invalid browser option "lang"');
+    expect(generateID).not.toHaveBeenCalled();
+});

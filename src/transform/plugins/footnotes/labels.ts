@@ -20,5 +20,6 @@ const labels: Record<Lang, string> = {
     uz: 'Havolaga qaytish',
 };
 export function backLabel(lang: Lang, caption: number, reference: number): string {
-    return `${labels[lang] ?? labels.ru} ${caption}:${reference}`;
+    const label = Object.prototype.hasOwnProperty.call(labels, lang) ? labels[lang] : labels.ru;
+    return `${label} ${caption}:${reference}`;
 }

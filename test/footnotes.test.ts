@@ -256,29 +256,52 @@ describe('footnote grammar, security, and rollback', () => {
     });
 
     it('keeps localized readable backlink text in sanitized output', () => {
-        for (const lang of [
-            'ru',
-            'en',
-            'ar',
-            'cs',
-            'fr',
-            'es',
-            'he',
-            'bg',
-            'et',
-            'el',
-            'pt',
-            'zh',
-            'zh-tw',
-            'kk',
-            'tr',
-            'uz',
-        ] as const) {
+        const labels = [
+            ['ru', 'Назад к ссылке'],
+            ['en', 'Back to reference'],
+            ['ar', 'العودة إلى المرجع'],
+            ['cs', 'Zpět na odkaz'],
+            ['fr', 'Retour à la référence'],
+            ['es', 'Volver a la referencia'],
+            ['he', 'חזרה להפניה'],
+            ['bg', 'Обратно към препратката'],
+            ['et', 'Tagasi viite juurde'],
+            ['el', 'Επιστροφή στην παραπομπή'],
+            ['pt', 'Voltar à referência'],
+            ['zh', '返回引用'],
+            ['zh-tw', '返回引用'],
+            ['kk', 'Сілтемеге оралу'],
+            ['tr', 'Referansa dön'],
+            ['uz', 'Havolaga qaytish'],
+        ] as const;
+        for (const [lang, label] of labels) {
             const md = parser({disableLiquid: true, lang});
             const doc = md.parseDocument('note[^a]\n\n[^a]: text');
             const $ = verify(md.compileDocument(doc));
-            expect($('.footnote-backref').text()).toMatch(/\S.+ 1/);
+            expect($('.footnote-backref').text()).toBe(`${label} 1:1`);
         }
+    });
+
+    it.each([
+        'unknown',
+        '',
+        'constructor',
+        '__proto__',
+        'prototype',
+        'toString',
+        'valueOf',
+        'hasOwnProperty',
+        '__defineGetter__',
+    ])('uses the Russian fallback for an unknown JavaScript language %s', (lang) => {
+        const md = parser({
+            disableLiquid: true,
+            // @ts-expect-error Deliberately exercise untyped JavaScript caller input.
+            lang,
+        });
+        const doc = md.parseDocument('note[^a]\n\n[^a]: text');
+        expect(verify(md.compileDocument(doc))('.footnote-backref').text()).toBe(
+            'Назад к ссылке 1:1',
+        );
     });
 
     it.each([true, false])(
