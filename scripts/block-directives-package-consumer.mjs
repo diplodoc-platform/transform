@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 
-import transform from '@diplodoc/transform';
-import {transform as browserTransform} from '@diplodoc/transform/browser';
-import {migrateBlockDirectives} from '@diplodoc/transform/migrations/block-directives';
+// Resolve the installed package after this fixture is copied to its consumer.
+const packageName = '@diplodoc/transform';
+const {default: transform} = await import(packageName);
+const {transform: browserTransform} = await import(`${packageName}/browser`);
+const {migrateBlockDirectives} = await import(`${packageName}/migrations/block-directives`);
 
 const require = createRequire(import.meta.url);
 const cjs = require('@diplodoc/transform/migrations/block-directives');

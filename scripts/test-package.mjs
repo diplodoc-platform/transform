@@ -266,6 +266,7 @@ assert.match(transform('Static ESM', defineTransformOptions()).result.html, /Sta
         join(consumerRoot, 'consumer.cts'),
         `
 import transform = require('@diplodoc/transform');
+import type {Options as NamedOptions, Output as NamedOutput, ContentAudience, VisibilityMode} from '@diplodoc/transform';
 import typedCut = require('@diplodoc/transform/plugins/cut');
 import typedLegacyCut = require('@diplodoc/transform/lib/plugins/cut');
 const sameCollector: typeof typedCut.collect = typedLegacyCut.collect;
@@ -276,6 +277,13 @@ import init = require('@diplodoc/transform/parser');
 const options: transform.Options = {svgMaxEntityCount: 1024};
 transform.transform('example', options);
 const output: transform.Output = transform('example', options);
+const namedOptions: NamedOptions = options;
+const namedOutput: NamedOutput = output;
+const audience: ContentAudience = 'human';
+const visibility: VisibilityMode = 'preserve';
+const namespaceAudience: transform.ContentAudience = audience;
+const namespaceVisibility: transform.VisibilityMode = visibility;
+void [namedOptions, namedOutput, namespaceAudience, namespaceVisibility];
 void output;
 init(options);
 images.replaceSvgContent('<svg/>', {width: null, height: null, title: null, svgMaxEntityCount: 1024});
@@ -285,6 +293,7 @@ images.replaceSvgContent('<svg/>', {width: null, height: null, title: null, svgM
         join(consumerRoot, 'consumer.mts'),
         `
 import transform, {transform as named} from '@diplodoc/transform';
+import type {Options as NamedOptions, Output as NamedOutput, ContentAudience, VisibilityMode} from '@diplodoc/transform';
 import typedCut from '@diplodoc/transform/plugins/cut';
 import typedLegacyCut from '@diplodoc/transform/lib/plugins/cut';
 const sameCollector: typeof typedCut.collect = typedLegacyCut.collect;
@@ -299,6 +308,14 @@ const legacyTypeCheck: LegacyOptions & LegacyPluginOptions = {};
 void legacyTypeCheck;
 const options: OptionsType = {};
 const legacyOptions: transform.Options = options;
+const namedOptions: NamedOptions = options;
+const namedOutput: NamedOutput = named('text', namedOptions);
+const namespaceOutput: transform.Output = namedOutput;
+const audience: ContentAudience = 'human';
+const visibility: VisibilityMode = 'preserve';
+const namespaceAudience: transform.ContentAudience = audience;
+const namespaceVisibility: transform.VisibilityMode = visibility;
+void [namespaceOutput, namespaceAudience, namespaceVisibility];
 named('text', legacyOptions);
 parser(options);
 images.replaceSvgContent('<svg/>', {width: null, height: null, title: null});
