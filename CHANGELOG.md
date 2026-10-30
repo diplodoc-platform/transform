@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased: Transform 5
+## 5.0.0 (2026-10-30)
 
 ### Changes
 
