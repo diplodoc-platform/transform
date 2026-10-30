@@ -310,6 +310,9 @@ This ensures the `DOCKER_HOST` is set as necessary.
 
 For detailed information about architecture, development, and contributing, see [AGENTS.md](./AGENTS.md).
 
+See the [Transform 5 migration guide](docs/migrations/transform-5.md) for the
+major-version changes, accepted local consumer checks and known validation limits.
+
 ## Public module entry points
 
 Use the package root with either native ESM or CommonJS. Both resolve to the same
