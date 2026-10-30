@@ -1,5 +1,26 @@
 # Changelog
 
+## Unreleased: Transform 5
+
+### Changes
+
+- Add ESM and CJS public entries, browser integration, named plugin configuration and document-owned parser contexts.
+- Update MarkdownIt, make general Markdown attributes opt-in, and support explicit highlighting.
+- Add table and image-dimension migration helpers; retain deprecated syntax with actual-use diagnostics.
+- Extract Notes to its extension while retaining Transform paths and styles; add independently selectable inline syntax, footnotes and task lists.
+- Deprecate explicit legacy cut/tabs callbacks and type forwarding paths for removal in Transform 6, subject to release gates.
+
+Block directives are integrated in the major branch: the standard preset accepts
+legacy and colon Cut/Notes/Tabs syntax by default. Standalone factories and
+explicit legacy callbacks retain their disabled directive default. Genuine
+Transform 5 local consumer and canonical browser runtime/style delivery checks
+are accepted; consumer changes remain local. Legacy block-syntax warnings remain
+conditional and unwired, with no approved syntax-removal target. See the
+[Transform 5 migration guide](docs/migrations/transform-5.md)
+for contracts and validation limits.
+
+<!-- prettier-ignore-start -->
+
 ## [4.78.11](https://github.com/diplodoc-platform/transform/compare/v4.78.10...v4.78.11) (2026-10-26)
 
 
@@ -2016,3 +2037,5 @@
 
 - Add autorelease ([a946626](https://github.com/yandex-cloud/yfm-transform/commit/a946626804f76afc9e1fe7fbd472931df24e73e1))
 - Fix autorelease ([2d6bcf7](https://github.com/yandex-cloud/yfm-transform/commit/2d6bcf75ee8c38ed9c913c03eb92dc844fb2beae))
+
+<!-- prettier-ignore-end -->
