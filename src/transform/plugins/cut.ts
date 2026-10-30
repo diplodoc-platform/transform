@@ -1,13 +1,20 @@
 import type {MarkdownIt} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {DeprecationReporter} from '../deprecation-core';
+import type {DirectiveSyntax} from '../plugin-settings';
 
 import {transform} from '@diplodoc/cut-extension';
 
-import {unwrapBuiltin} from '../builtin-invocation';
+import {directiveMode, reportDirectiveDiagnostic, unwrapBuiltin} from '../builtin-invocation';
 
 const implementation = transform({bundle: false, directiveSyntax: 'disabled'});
 
-type AdapterOptions = {output?: string; path?: string; deprecations?: DeprecationReporter};
+type AdapterOptions = {
+    output?: string;
+    path?: string;
+    deprecations?: DeprecationReporter;
+    directiveSyntax?: DirectiveSyntax;
+    log?: {warn(message: string): void};
+};
 type CutCollector = {collect(input: string, options: {destRoot: string}): void};
 
 const cutCallback = (md: MarkdownIt, options?: AdapterOptions) => {
@@ -25,7 +32,16 @@ const cutCallback = (md: MarkdownIt, options?: AdapterOptions) => {
             {option: 'plugins.cut', ...(context.path ? {location: {path: context.path}} : {})},
         );
     }
-    implementation(md, invocation.options);
+    const mode = directiveMode(invocation.options?.directiveSyntax, invocation.automatic);
+    if (mode === 'disabled') {
+        implementation(md, invocation.options);
+    } else {
+        transform({
+            bundle: false,
+            directiveSyntax: mode,
+            onDiagnostic: (item) => reportDirectiveDiagnostic(md, invocation.options, 'cut', item),
+        })(md, invocation.options);
+    }
 };
 
 /** @deprecated Use transform({bundle: false, directiveSyntax: 'disabled'}) from @diplodoc/cut-extension. Removal: 6.0.0. */

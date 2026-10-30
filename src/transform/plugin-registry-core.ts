@@ -118,6 +118,15 @@ function resolveBuiltinSettings(
                 throw new Error(`Plugin "${id}" option "${key}" is configured both flat and by ID`);
             }
         }
+        if (
+            (id === 'cut' || id === 'notes' || id === 'tabs') &&
+            value.directiveSyntax !== undefined &&
+            value.directiveSyntax !== 'disabled' &&
+            value.directiveSyntax !== 'enabled' &&
+            value.directiveSyntax !== 'only'
+        ) {
+            throw new Error(`Invalid directiveSyntax for plugin "${id}"`);
+        }
         settings.set(id, value);
     }
 

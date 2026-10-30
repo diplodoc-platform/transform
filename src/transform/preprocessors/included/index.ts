@@ -4,8 +4,7 @@ import type {MarkdownItIncluded} from '../../plugins/includes/types';
 import {getDocumentEnv} from '../../document-context';
 import {getFullIncludePath} from '../../utilsFS';
 
-const INCLUDE_REGEXP = /^\s*{%\s*included\s*\((.+?)\)\s*%}\s*$/;
-const INCLUDE_END_REGEXP = /^\s*{% endincluded %}\s*$/;
+import {includedPathKey, isIncludedEnd} from './boundaries';
 
 const preprocessLine = (
     lines: string[],
@@ -21,16 +20,9 @@ const preprocessLine = (
 ) => {
     const hasIncludedCache = md && root && path;
     const str = lines[start];
-    const match = str?.match(INCLUDE_REGEXP);
+    const includePathKey = includedPathKey(str);
 
     // Protect from unmatched results
-    if (!match) {
-        return false;
-    }
-
-    const includePathKey = match[1];
-
-    // Protect from empty path
     if (!includePathKey) {
         return false;
     }
@@ -46,7 +38,7 @@ const preprocessLine = (
         if (str === null) {
             break;
         }
-        if (str?.match(INCLUDE_END_REGEXP)) {
+        if (isIncludedEnd(str)) {
             break;
         }
         data.push(str);

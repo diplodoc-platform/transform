@@ -37,6 +37,7 @@ export interface ParserHost {
     deprecatedBuiltinAdapters?: {
         cut: NonNullable<OptionsType['plugins']>[number];
         tabs: NonNullable<OptionsType['plugins']>[number];
+        notes: NonNullable<OptionsType['plugins']>[number];
     };
     installGuard?(md: MarkdownIt): void;
     resolvePlugins(options: OptionsType): PluginInstallation[] | undefined;
@@ -269,7 +270,8 @@ function initPlugins(
         configuredPlugins.forEach(({id, plugin, options: settings}) => {
             const context = settings ? {...pluginOptions, ...settings} : pluginOptions;
             const isBuiltin =
-                (id === 'cut' || id === 'tabs') && host.deprecatedBuiltinAdapters?.[id] === plugin;
+                (id === 'cut' || id === 'tabs' || id === 'notes') &&
+                host.deprecatedBuiltinAdapters?.[id] === plugin;
             md.use(plugin, isBuiltin ? builtinOptions(context, plugin) : context);
         });
     } else {
@@ -277,7 +279,12 @@ function initPlugins(
             const adapters = host.deprecatedBuiltinAdapters;
             const isBuiltin =
                 options.plugins === undefined &&
-                Boolean(adapters && (plugin === adapters.cut || plugin === adapters.tabs));
+                Boolean(
+                    adapters &&
+                    (plugin === adapters.cut ||
+                        plugin === adapters.tabs ||
+                        plugin === adapters.notes),
+                );
             md.use(plugin, isBuiltin ? builtinOptions(pluginOptions, plugin) : pluginOptions);
         });
     }

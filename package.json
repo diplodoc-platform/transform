@@ -60,11 +60,11 @@
     "build:browser": "node scripts/build-browser.mjs"
   },
   "dependencies": {
-    "@diplodoc/cut-extension": "1.1.9-transform5.1",
+    "@diplodoc/cut-extension": "1.1.9-transform5.2",
     "@diplodoc/directive": "0.5.0-transform5.2",
-    "@diplodoc/file-extension": "0.2.7-transform5.0",
-    "@diplodoc/notes-extension": "0.1.0-transform5.0",
-    "@diplodoc/tabs-extension": "3.10.8-transform5.2",
+    "@diplodoc/file-extension": "0.2.7-transform5.1",
+    "@diplodoc/notes-extension": "0.1.0-transform5.1",
+    "@diplodoc/tabs-extension": "3.10.8-transform5.3",
     "@diplodoc/utils": "2.3.7-transform5.0",
     "@mdit/plugin-tasklist": "1.1.4",
     "@types/lodash": "^4.17.23",
@@ -176,6 +176,16 @@
       "require": {
         "types": "./api/migrations/image-dimensions.d.cts",
         "default": "./api/migrations/image-dimensions.cjs"
+      }
+    },
+    "./migrations/block-directives": {
+      "import": {
+        "types": "./api/migrations/block-directives.d.mts",
+        "default": "./api/migrations/block-directives.mjs"
+      },
+      "require": {
+        "types": "./api/migrations/block-directives.d.cts",
+        "default": "./api/migrations/block-directives.cjs"
       }
     },
     "./migrations/table-alignment": {

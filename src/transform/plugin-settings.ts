@@ -3,20 +3,22 @@ import type {YfmTablePluginOptions} from './plugins/table/types';
 import type {VisibilityMode} from './shared-types';
 import type {BuiltinPluginId} from './plugin-ids';
 
+export type DirectiveSyntax = 'disabled' | 'enabled' | 'only';
+
 type NoPluginOptions = Record<string, never>;
 
 /** Options are scoped to the selected builtin, rather than shared with every plugin. */
 export interface BuiltinPluginSettings {
     meta?: NoPluginOptions;
     deflist?: NoPluginOptions;
-    cut?: {output?: string};
-    notes?: {notesAutotitle?: boolean};
+    cut?: {output?: string; directiveSyntax?: DirectiveSyntax};
+    notes?: {notesAutotitle?: boolean; directiveSyntax?: DirectiveSyntax};
     anchors?: {
         supportGithubAnchors?: boolean;
         disableCommonAnchors?: boolean;
         useCommonAnchorButtons?: boolean;
     };
-    tabs?: {output?: string};
+    tabs?: {output?: string; directiveSyntax?: DirectiveSyntax};
     code?: {codeLineWrapping?: boolean};
     sup?: NoPluginOptions;
     video?: VideoPluginOptions;
@@ -46,10 +48,10 @@ export interface LegacyBuiltinOptions extends VideoPluginOptions, YfmTablePlugin
 export const builtinOptionKeys: Record<BuiltinPluginId, readonly string[]> = {
     meta: [],
     deflist: [],
-    cut: ['output'],
-    notes: ['notesAutotitle'],
+    cut: ['output', 'directiveSyntax'],
+    notes: ['notesAutotitle', 'directiveSyntax'],
     anchors: ['supportGithubAnchors', 'disableCommonAnchors', 'useCommonAnchorButtons'],
-    tabs: ['output'],
+    tabs: ['output', 'directiveSyntax'],
     code: ['codeLineWrapping'],
     sup: [],
     video: [

@@ -33,11 +33,13 @@ const plainPath = (path: string) => path;
 
 // Check exhaustiveness/callability while retaining each callback's exact inferred options.
 // A merged inventory change deliberately requires new real bindings.
+export const standardNotes = createNotesPlugin(plainPath);
+
 const callbacks = {
     meta: createMetaPlugin(initializeDocumentField),
     deflist,
     cut,
-    notes: createNotesPlugin(plainPath),
+    notes: standardNotes,
     anchors: createAnchorsPlugin(plainPath),
     tabs,
     code,

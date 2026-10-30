@@ -104,6 +104,12 @@ export function validSanitizeValue(key: string, value: unknown): boolean {
  * @returns Whether the value satisfies the existing builtin's declared contract.
  */
 export function validBuiltinValue(key: string, value: unknown): boolean {
+    if (key === 'directiveSyntax')
+        return ['disabled', 'enabled', 'only'].some((mode) => mode === value);
+    return validOtherBuiltinValue(key, value);
+}
+
+function validOtherBuiltinValue(key: string, value: unknown): boolean {
     switch (key) {
         case 'videoUrl':
             return typeof value === 'function';

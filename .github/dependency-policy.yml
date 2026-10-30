@@ -59,19 +59,20 @@ entries:
     dependency: '@diplodoc/notes-extension'
     repositories:
       - transform
-    allowed-version: 0.1.0-transform5.0
+    allowed-version: 0.1.0-transform5.1
     ignored-versions: []
     risk: critical
     category: parser-migration
     verification-profile: ecosystem
     reason: >-
-      The Transform notes bridge uses the reviewed published prerelease and its native parser contract; actual consumer
-      integration remains pending.
+      The exact published Notes prerelease adds opt-in container syntax and pure legacy-boundary recognition while
+      preserving standalone defaults; native/mixed installed declarations, browser resources and two post-CI reviews
+      passed. Final combined consumer acceptance remains required.
     evidence:
-      review: https://github.com/diplodoc-platform/notes-extension/pull/1
-      artifact: https://registry.npmjs.org/@diplodoc/notes-extension/-/notes-extension-0.1.0-transform5.0.tgz
-      sha256: eeb91f83f88d52569bcc8ccdb082db0dd148ef9e8eff68f566a630172013d518
-      task: https://st.yandex-team.ru/DOCSTOOLS-6942
+      review: https://github.com/diplodoc-platform/notes-extension/pull/3
+      artifact: https://registry.npmjs.org/@diplodoc/notes-extension/-/notes-extension-0.1.0-transform5.1.tgz
+      sha256: 4ffc29527b8427e649331edb726ce6f8ddaecc9eb44abb2a0779db2e2e4ccb19
+      task: https://st.yandex-team.ru/DOCSTOOLS-6943
     owner: diplodoc-platform/team
     introduced-at: 2026-10-29T00:00:00.000Z
     review-after: 2026-11-17T00:00:00.000Z
@@ -128,19 +129,19 @@ entries:
     dependency: '@diplodoc/directive'
     repositories:
       - transform
-    allowed-version: 0.5.0-transform5.0
+    allowed-version: 0.5.0-transform5.2
     ignored-versions: []
     risk: critical
     category: prerelease-compatibility
     verification-profile: ecosystem
     reason: >-
-      Transform 5 requires the approved directive scanner and portable declarations from the public parser API for
-      strict browser types; the published prerelease remains isolated from stable consumers while this parser boundary
-      is accepted.
+      Transform 5 requires the reviewed scanner and finite public host ports for native and coexisting Markdown-it 13
+      and 15; this exact published artifact passed strict CJS/ESM declarations, runtime matrices and two post-CI
+      reviews. Final combined consumer acceptance remains required.
     evidence:
-      portability: https://github.com/diplodoc-platform/directive/pull/60
+      portability: https://github.com/diplodoc-platform/directive/pull/62
       task: https://st.yandex-team.ru/DOCSTOOLS-6943
-      registry-archive: https://registry.npmjs.org/@diplodoc/directive/-/directive-0.5.0-transform5.0.tgz
+      registry-archive: https://registry.npmjs.org/@diplodoc/directive/-/directive-0.5.0-transform5.2.tgz
     owner: diplodoc-platform/team
     introduced-at: 2026-10-28T00:00:00.000Z
     review-after: 2026-11-17T00:00:00.000Z
@@ -220,17 +221,19 @@ entries:
     dependency: '@diplodoc/file-extension'
     repositories:
       - transform
-    allowed-version: 0.2.7-transform5.0
+    allowed-version: 0.2.7-transform5.1
     ignored-versions: []
-    risk: high
+    risk: critical
     category: prerelease-compatibility
-    verification-profile: document-transform
+    verification-profile: ecosystem
     reason: >-
-      Transform 5 needs the reviewed markdown-it 13/15 peer and metadata contract; unchanged Transform 4 source does not
-      typecheck against these declarations, so the candidate stays isolated.
+      The exact published File prerelease uses Directive 5.2 finite host ports and typed collect, normalizes repeated
+      allowed attributes and repairs runtime declarations. Strict native/mixed 13/15 installed and exact CLI gates
+      passed; final combined consumer acceptance remains required.
     evidence:
-      parser-contract: https://github.com/diplodoc-platform/file-extension/pull/48
-      consumers: https://github.com/diplodoc-platform/transform/pull/1126
+      parser-contract: https://github.com/diplodoc-platform/file-extension/pull/51
+      sha256: 65e3f9fe3528721e7ac147da2ac47219a6ee6ed7de6189f0b201c69ccefbcc8d
+      task: https://st.yandex-team.ru/DOCSTOOLS-6943
     owner: diplodoc-platform/team
     introduced-at: 2026-10-27T00:00:00.000Z
     review-after: 2026-11-17T00:00:00.000Z
@@ -242,16 +245,20 @@ entries:
     dependency: '@diplodoc/tabs-extension'
     repositories:
       - transform
-    allowed-version: 3.10.8-transform5.0
+    allowed-version: 3.10.8-transform5.3
     ignored-versions: []
-    risk: high
+    risk: critical
     category: prerelease-compatibility
-    verification-profile: document-transform
+    verification-profile: ecosystem
     reason: >-
-      Transform 5 needs the reviewed public Token constructor and native parser declarations, with the matching Utils
-      prerelease instead of the stable dependency graph.
+      Transform 5 needs the canonical colon Tabs container and public legacy-boundary observations with finite
+      mixed-host ports and valid runtime declarations; the exact published Tabs artifact passed installed native/mixed
+      checks, full metapackage E2E and two post-CI reviews. Final combined consumer acceptance remains required.
     evidence:
-      parser-contract: https://github.com/diplodoc-platform/tabs-extension/pull/171
+      parser-contract: https://github.com/diplodoc-platform/tabs-extension/pull/172
+      runtime-declarations: https://github.com/diplodoc-platform/tabs-extension/pull/173
+      block-directives: https://github.com/diplodoc-platform/tabs-extension/pull/174
+      sha256: 403473b15a27b25b0394f0d297f359d267266c7c3e8dd3690950cfbede5d81a9
       native-types: https://github.com/diplodoc-platform/utils/pull/81
     owner: diplodoc-platform/team
     introduced-at: 2026-10-27T00:00:00.000Z
@@ -260,6 +267,30 @@ entries:
     exit-criteria:
       - Accept the exact registry prerelease and matching Utils in Transform and real consumers
       - Agree a compatible stable release and replace the prerelease pin
+  - id: DEP-0023
+    dependency: '@diplodoc/cut-extension'
+    repositories:
+      - transform
+    allowed-version: 1.1.9-transform5.2
+    ignored-versions: []
+    risk: critical
+    category: parser-migration
+    verification-profile: ecosystem
+    reason: >-
+      Transform 5 needs the reviewed finite Cut host ports, portable callback declarations, typed collect contract and
+      pure legacy-boundary recognizer; this exact published artifact passed native and mixed installed checks and two
+      post-CI reviews. Final combined consumer acceptance remains required.
+    evidence:
+      review: https://github.com/diplodoc-platform/cut-extension/pull/103
+      sha256: 4e261b9a5a836395ff93f70969744dbe74d7ed29bad26b093143cd0f1511b3b5
+      task: https://st.yandex-team.ru/DOCSTOOLS-6943
+    owner: diplodoc-platform/team
+    introduced-at: 2026-10-29T00:00:00.000Z
+    review-after: 2026-11-17T00:00:00.000Z
+    expires-at: 2026-12-01T00:00:00.000Z
+    exit-criteria:
+      - Complete actual combined CLI, Viewer, Translation, SDK and VSC migration checks
+      - Agree a compatible stable release and revalidate before replacing the prerelease pin
   - id: DEP-0003
     dependency: '@diplodoc/infra'
     pin-policy: managed-infra
