@@ -310,7 +310,7 @@ This ensures the `DOCKER_HOST` is set as necessary.
 
 For detailed information about architecture, development, and contributing, see [AGENTS.md](./AGENTS.md).
 
-See the [Transform 5 migration guide](docs/migrations/transform-5.md) for the
+See the [Transform 5 migration guide](https://github.com/diplodoc-platform/transform/blob/aacb847463e98c4025f05078134b910841e729a2/docs/migrations/transform-5.md) for the
 major-version changes, accepted local consumer checks and known validation limits.
 
 ## Public module entry points
