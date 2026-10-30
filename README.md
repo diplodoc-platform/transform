@@ -110,6 +110,10 @@ lists. Select each independently or compose its stable callback with your own
 plugin list. See [inline syntax](docs/inline-syntax.md) and
 [footnotes and task lists](docs/footnotes.md) for configuration and composition.
 
+Cut, Notes and Tabs also have per-feature colon-syntax modes and a pure source
+migrator. See [block directives](docs/block-directives.md) for the grammar,
+examples, diagnostic limits and conservative migration contract.
+
 ### Custom HTML Sanitizer
 
 You can replace the default HTML sanitizer with your own implementation by providing a `sanitize` function in the options:

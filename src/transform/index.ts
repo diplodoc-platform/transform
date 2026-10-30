@@ -62,6 +62,8 @@ function transform(originInput: string, options: OptionsType = {}): OutputType |
 
 export {transform};
 export default transform;
+export type {OptionsType as Options, OutputType as Output} from './typings';
+export type {ContentAudience, VisibilityMode} from './plugins/visibility';
 
 const transformImplementation = transform;
 

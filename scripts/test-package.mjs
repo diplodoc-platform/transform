@@ -18,6 +18,7 @@ import {fileURLToPath, pathToFileURL} from 'node:url';
 import {verifyBrowserPackage} from './test-browser-package.mjs';
 import {verifyHighlighterGraph} from './test-highlighter-graph.mjs';
 import {verifyImageDimensionsGraph} from './test-image-dimensions-graph.mjs';
+import {verifyBlockDirectivesGraph} from './test-block-directives-graph.mjs';
 import {verifyInlineSyntaxGraph} from './test-inline-syntax-graph.mjs';
 import {verifyTableAlignmentGraph} from './test-table-alignment-graph.mjs';
 
@@ -211,6 +212,14 @@ assert.match(transform('Static ESM', defineTransformOptions()).result.html, /Sta
         stdio: 'inherit',
     });
     copyFileSync(
+        join(projectRoot, 'scripts/block-directives-package-consumer.mjs'),
+        join(consumerRoot, 'block-directives-consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'block-directives-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
+    copyFileSync(
         join(projectRoot, 'scripts/inline-syntax-package-consumer.mjs'),
         join(consumerRoot, 'inline-syntax-consumer.mjs'),
     );
@@ -257,6 +266,7 @@ assert.match(transform('Static ESM', defineTransformOptions()).result.html, /Sta
         join(consumerRoot, 'consumer.cts'),
         `
 import transform = require('@diplodoc/transform');
+import type {Options as NamedOptions, Output as NamedOutput, ContentAudience, VisibilityMode} from '@diplodoc/transform';
 import typedCut = require('@diplodoc/transform/plugins/cut');
 import typedLegacyCut = require('@diplodoc/transform/lib/plugins/cut');
 const sameCollector: typeof typedCut.collect = typedLegacyCut.collect;
@@ -267,6 +277,13 @@ import init = require('@diplodoc/transform/parser');
 const options: transform.Options = {svgMaxEntityCount: 1024};
 transform.transform('example', options);
 const output: transform.Output = transform('example', options);
+const namedOptions: NamedOptions = options;
+const namedOutput: NamedOutput = output;
+const audience: ContentAudience = 'human';
+const visibility: VisibilityMode = 'preserve';
+const namespaceAudience: transform.ContentAudience = audience;
+const namespaceVisibility: transform.VisibilityMode = visibility;
+void [namedOptions, namedOutput, namespaceAudience, namespaceVisibility];
 void output;
 init(options);
 images.replaceSvgContent('<svg/>', {width: null, height: null, title: null, svgMaxEntityCount: 1024});
@@ -276,6 +293,7 @@ images.replaceSvgContent('<svg/>', {width: null, height: null, title: null, svgM
         join(consumerRoot, 'consumer.mts'),
         `
 import transform, {transform as named} from '@diplodoc/transform';
+import type {Options as NamedOptions, Output as NamedOutput, ContentAudience, VisibilityMode} from '@diplodoc/transform';
 import typedCut from '@diplodoc/transform/plugins/cut';
 import typedLegacyCut from '@diplodoc/transform/lib/plugins/cut';
 const sameCollector: typeof typedCut.collect = typedLegacyCut.collect;
@@ -290,6 +308,14 @@ const legacyTypeCheck: LegacyOptions & LegacyPluginOptions = {};
 void legacyTypeCheck;
 const options: OptionsType = {};
 const legacyOptions: transform.Options = options;
+const namedOptions: NamedOptions = options;
+const namedOutput: NamedOutput = named('text', namedOptions);
+const namespaceOutput: transform.Output = namedOutput;
+const audience: ContentAudience = 'human';
+const visibility: VisibilityMode = 'preserve';
+const namespaceAudience: transform.ContentAudience = audience;
+const namespaceVisibility: transform.VisibilityMode = visibility;
+void [namespaceOutput, namespaceAudience, namespaceVisibility];
 named('text', legacyOptions);
 parser(options);
 images.replaceSvgContent('<svg/>', {width: null, height: null, title: null});
@@ -417,6 +443,13 @@ void typedFootnotes; void typedTaskList;
 const typedUnderline: MarkdownItPluginCb = underline;
 const typedSubscript: (md: MarkdownIt) => void = subscript;
 configuration.defineTransformOptions({plugins: {enable: ['underline', 'subscript', 'footnotes', 'task-list'], options: {underline: {}, subscript: {}, footnotes: {}, 'task-list': {}}}});
+configuration.defineTransformOptions({plugins: {options: {cut: {directiveSyntax: 'enabled'}, notes: {directiveSyntax: 'only'}, tabs: {directiveSyntax: 'disabled'}}}});
+// @ts-expect-error Directive modes are a closed per-feature enum.
+configuration.defineTransformOptions({plugins: {options: {cut: {directiveSyntax: 'invented'}}}});
+// @ts-expect-error Inline File syntax is outside the block-owner configuration.
+configuration.defineTransformOptions({plugins: {options: {file: {directiveSyntax: 'enabled'}}}});
+// @ts-expect-error Block syntax cannot leak into a shared flat core option.
+configuration.defineTransformOptions({core: {directiveSyntax: 'enabled'}});
 // @ts-expect-error Footnotes has a closed empty options schema.
 configuration.defineTransformOptions({plugins: {options: {footnotes: {inline: true}}}});
 // @ts-expect-error Task-list has a closed empty options schema.
@@ -440,6 +473,19 @@ const asyncImage: Promise<ImageDimensionsMigrationResult> = migrateImageDimensio
 // @ts-expect-error Parser diagnostic context is not a named builtin feature option.
 configuration.defineTransformOptions({plugins: {options: {imsize: {path: 'invented.md'}}}});
 void imageSource; void asyncImage;
+
+import {migrateBlockDirectives, type BlockDirectivesMigrationResult} from '@diplodoc/transform/migrations/block-directives';
+const blockMigration: BlockDirectivesMigrationResult = migrateBlockDirectives('', {path: 'guide.md'});
+const blockOutput: string = blockMigration.output;
+// @ts-expect-error The pure API does not run plugin callbacks or file traversal.
+migrateBlockDirectives('', {plugins: []});
+// @ts-expect-error The diagnostic label is a string.
+migrateBlockDirectives('', {path: 42});
+// @ts-expect-error Original source edits are readonly.
+blockMigration.edits.push({start: 0, end: 0, replacement: ''});
+// @ts-expect-error The source contract remains synchronous.
+const asynchronousBlockMigration: Promise<BlockDirectivesMigrationResult> = blockMigration;
+void blockOutput; void asynchronousBlockMigration;
 
 import {migrateTableAlignment, type TableAlignmentMigrationResult, type YfmTablePluginOptions} from '@diplodoc/transform/migrations/table-alignment';
 const tableOptions: YfmTablePluginOptions = {table_ignoreSplittersInInlineCode: false};
@@ -753,6 +799,7 @@ assert.match(html, /hljs-keyword/);
     verifyHighlighterGraph(consumerRoot, buildSync);
     verifyTableAlignmentGraph(consumerRoot, buildSync);
     verifyImageDimensionsGraph(consumerRoot, buildSync);
+    verifyBlockDirectivesGraph(consumerRoot, buildSync);
     const {JSDOM} = projectRequire('jsdom');
     for (const variant of ['', '/base', '/yfm-only', '/print']) {
         const result = buildSync({

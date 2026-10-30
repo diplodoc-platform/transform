@@ -6,6 +6,7 @@ export const stableEntries = {
     './document': 'document',
     './configuration': 'plugin-configuration',
     './migrations/image-dimensions': 'migrations/image-dimensions',
+    './migrations/block-directives': 'migrations/block-directives',
     './migrations/table-alignment': 'migrations/table-alignment',
     './highlighter': 'highlighter',
     './highlighter/legacy': 'highlighter/legacy',

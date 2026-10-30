@@ -5,12 +5,12 @@ import {resolvePluginConfiguration} from '../plugin-registry-core';
 
 import {createBrowserApi} from './api';
 import {createBrowserHost} from './host';
-import {standardPlugins} from './standard-plugins';
+import {standardNotes, standardPlugins} from './standard-plugins';
 
 const host = createBrowserHost(
     standardPlugins,
     (options) => resolvePluginConfiguration(options, standardPlugins),
-    {cut, tabs},
+    {cut, tabs, notes: standardNotes},
 );
 const {transform, createParser} = createBrowserApi(host, builtinPluginIds);
 
