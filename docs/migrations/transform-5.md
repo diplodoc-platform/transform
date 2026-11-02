@@ -1,5 +1,14 @@
 # Migrating to Transform 5
 
+**Language:** English | [Русский: самостоятельное руководство по миграции](transform-5-ru.md)
+
+**TL;DR:** Inventory the actual dependency graph and browser assets, prepare Node
+24 and markdown-it 15, explicitly configure attributes and highlighting, then
+validate document contexts, plugins and rendered output. Keep a genuine Transform
+4 for hosts that require it. As of 2 November 2026, stable Transform 5 publication
+is held; the merged major source and locally reviewed consumer patches are not published releases.
+Recheck the registry and compatible dependencies before migration.
+
 This guide describes the Transform 5 migration contracts. Validate your own
 documents and integrations against the exact installed package before adoption.
 
