@@ -21,7 +21,7 @@
     "eslint-plugin-storybook": "^0.11.6",
     "playwright-ctrf-json-reporter": "^0.0.19",
     "process": "^0.11.10",
-    "storybook": "^8.6.7",
+    "storybook": "^8.6.19",
     "storybook-html-rsbuild": "^1.0.1",
     "typescript": "6.0.3",
     "url": "^0.11.4"
