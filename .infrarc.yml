@@ -1,0 +1,5 @@
+exclude:
+  - path: .github/workflows/coverage.yml
+    reason: 'Locally maintained branch filters for Transform 5 acceptance.'
+  - path: .github/workflows/security.yml
+    reason: 'Locally maintained branch filters for Transform 5 acceptance.'
