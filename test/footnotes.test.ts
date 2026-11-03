@@ -39,6 +39,25 @@ function countTokenRefs(tokens: Token[]): number {
 }
 
 describe('owned footnote output', () => {
+    it.each(['[^title]', 'Title[^title]'])(
+        'parses an extracted title with restricted core rules without rendering unowned refs: %s',
+        (title) => {
+            const generateID = vi.fn(() => 'inspection');
+            const md = parser({
+                disableLiquid: true,
+                extractTitle: true,
+                generateID,
+                plugins: [
+                    footnotes,
+                    (native) => native.core.ruler.enableOnly(['normalize', 'block', 'inline']),
+                ],
+            });
+            const doc = md.parseDocument(`# ${title}\n\n[^title]: Title body.`);
+            expect(doc.env.title).toBe(title);
+            expect(generateID).not.toHaveBeenCalled();
+        },
+    );
+
     it('keeps a sole footnote reference in an extracted title and its body', () => {
         const md = parser({disableLiquid: true, extractTitle: true, generateID: () => 'title'});
         const doc = md.parseDocument('# [^a]\n\n[^a]: title note');

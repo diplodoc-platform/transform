@@ -512,7 +512,7 @@ export function prepareFootnoteTitle<Options>(
     overriddenByNeedTitle = false,
 ): string {
     const service = footnoteService(env);
-    if (!service) return md.renderer.render(titleTokens, md.options, env);
+    if (!service) return md.renderer.render(literalRefs(titleTokens), md.options, env);
     if (overriddenByNeedTitle) {
         // Preserve the established later needTitle precedence. The discarded
         // first H1 is not part of the final output's reference forest.
