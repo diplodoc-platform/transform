@@ -15,6 +15,7 @@ import {tmpdir} from 'node:os';
 import {dirname, join} from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 
+import {publicEntryInventory} from './public-api.mjs';
 import {verifyBrowserPackage} from './test-browser-package.mjs';
 import {verifyHighlighterGraph} from './test-highlighter-graph.mjs';
 import {verifyImageDimensionsGraph} from './test-image-dimensions-graph.mjs';
@@ -106,6 +107,7 @@ try {
             stdio: 'inherit',
         },
     );
+    copyFileSync(join(projectRoot, 'scripts/public-api.mjs'), join(consumerRoot, 'public-api.mjs'));
     copyFileSync(
         join(projectRoot, 'scripts/package-consumer.mjs'),
         join(consumerRoot, 'consumer.mjs'),
@@ -559,15 +561,15 @@ custom({label: 'typed', unknown: true});
         writeFileSync(path, `${readFileSync(path, 'utf8')}\n${importLine}\n${configurationTypes}`);
     }
 
-    const typeEntries = Object.entries(manifest.exports).filter(
+    const typeEntries = Object.entries(publicEntryInventory()).filter(
         ([, entry]) => typeof entry !== 'string',
     );
     for (const extension of ['cts', 'mts']) {
         const typeImports = typeEntries
-            .map(([subpath], index) => {
+            .map(([subpath, entry], index) => {
                 const name = `@diplodoc/transform${subpath === '.' ? '' : subpath.slice(1)}`;
                 return extension === 'cts'
-                    ? `${manifest.exports[subpath].require ? '' : '// @ts-expect-error Browser subpaths are ESM-only.\n'}import type API${index} = require('${name}');`
+                    ? `${entry.require ? '' : '// @ts-expect-error Browser subpaths are ESM-only.\n'}import type API${index} = require('${name}');`
                     : `import type * as API${index} from '${name}';`;
             })
             .join('\n');

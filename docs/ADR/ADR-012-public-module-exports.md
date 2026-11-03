@@ -15,9 +15,9 @@ CommonJS so generated infrastructure configuration files keep working.
 
 `scripts/public-api.mjs` is the entry-point manifest. The build generates:
 
-- `api/**/*.mjs`: native ESM facades with explicit named exports and defaults;
-- `api/**/*.cjs`: CommonJS namespace or legacy direct-value adapters;
-- `api/**/*.d.mts` and `api/**/*.d.cts`: native declarations derived from the
+- `public/**/*.mjs`: native ESM facades with explicit named exports and defaults;
+- `public/**/*.cjs`: CommonJS namespace or legacy direct-value adapters;
+- `public/**/*.d.mts` and `public/**/*.d.cts`: native declarations derived from the
   compiler-emitted implementation declarations, without copied API signatures.
 
 An ESM facade imports the same CommonJS implementation as its CJS adapter. There
@@ -67,7 +67,7 @@ After changing the public export surface during watch mode, rerun the full build
 | `/sanitize`                                                  | default sanitizer and named options/style helpers  | namespace with `.default`                   |
 | `/log`, `/deprecation`                                       | existing named exports and logger default          | historical namespace shape                  |
 
-The `/configuration` API is described in [the plugin configuration specification](../specs/transform-5/plugin-configuration.md). New stable entries receive facades without automatically becoming legacy `lib/*` aliases.
+The `/configuration` API is described in [the plugin configuration specification](../specs/transform-5/plugin-configuration.md). The compact `lib/*` patterns also resolve already-generated stable facades. This adds aliases for the finite public inventory, not for the implementation tree.
 
 The precise plugin list lives in `stableEntries` in the manifest. A namespace
 module such as `sanitize` or `visibility` is not converted into a directly
@@ -121,7 +121,21 @@ Each remains accessible as `lib/<file>` and `lib/<file>.js`; directory entries
 also retain `lib/<directory>`, `lib/<directory>/index`, and
 `lib/<directory>/index.js`. These aliases use the same generated adapters and do
 not promote every helper to stable public API. New implementation files do not
-automatically receive aliases.
+automatically receive facades. The `public/` directory is cleaned and regenerated
+from this finite inventory; its name is a project convention, not a Node.js standard.
+
+Package exports use typed patterns for `lib/*.js`, `lib/*`, `plugins/*` and
+`migrations/*`. Thin directory forwarders retain bare and `/index` spellings,
+callable CJS types, and identity. The four legacy typings overrides retain
+deprecations separately from stable `/types`. Existing JS/CSS/minified/map paths
+use asset patterns, including their extensionless spellings. Browser entries
+remain ESM-only.
+
+Unknown pattern names select a target before loading fails: Node reports
+`MODULE_NOT_FOUND` / `ERR_MODULE_NOT_FOUND` instead of
+`ERR_PACKAGE_PATH_NOT_EXPORTED`. This does not expose private compiled modules;
+package acceptance injects an actual private `lib/` file and verifies that it
+cannot be loaded through the public patterns.
 
 Existing distribution JS/CSS names, minified files, sourcemaps, `dist/scss/*`, and
 `src/*` remain accessible. Retaining source delivery does not promise that

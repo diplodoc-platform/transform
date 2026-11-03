@@ -1,51 +1,19 @@
-import {mkdirSync, readFileSync, writeFileSync} from 'node:fs';
+import {mkdirSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
 import {dirname, relative, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import ts from 'typescript';
 
-import {browserEntries, legacyModules, stableEntries, staticEntries} from './public-api.mjs';
+import {packageExports, publicModules} from './public-api.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const packagePath = resolve(root, 'package.json');
 const manifest = JSON.parse(readFileSync(packagePath, 'utf8'));
-// Newly introduced stable modules are not automatically compatibility aliases.
-const modules = new Map(legacyModules.map((entry) => [entry.source, entry]));
-for (const source of Object.values(stableEntries)) {
-    if (!modules.has(source)) {
-        modules.set(source, {source});
-    }
-}
-const moduleExport = (source) => ({
-    import: {types: `./api/${source}.d.mts`, default: `./api/${source}.mjs`},
-    require: {types: `./api/${source}.d.cts`, default: `./api/${source}.cjs`},
-});
-const exports = Object.fromEntries(
-    Object.entries(stableEntries).map(([name, source]) => [name, moduleExport(source)]),
-);
-for (const [name, source] of Object.entries(browserEntries)) {
-    exports[name] = {
-        import: {types: `./dist/browser/${source}.d.mts`, default: `./dist/browser/${source}.mjs`},
-    };
-}
-for (const {source} of legacyModules) {
-    const entry = moduleExport(source);
-    if (source === 'typings' || source === 'plugins/typings') {
-        entry.import.types = './api/legacy-typings.d.mts';
-        entry.require.types = './api/legacy-typings.d.cts';
-    }
-    exports[`./lib/${source}`] = entry;
-    exports[`./lib/${source}.js`] = entry;
-    if (source.endsWith('/index')) {
-        exports[`./lib/${source.slice(0, -6)}`] = entry;
-    }
-}
-exports['./lib'] = moduleExport('index');
-Object.assign(exports, staticEntries);
-manifest.main = './api/index.cjs';
-manifest.module = './api/index.mjs';
-manifest.types = './api/index.d.cts';
-manifest.exports = exports;
-manifest.files = ['api', 'dist', 'lib', 'src'];
+const modules = new Map(publicModules.map((entry) => [entry.source, entry]));
+manifest.main = './public/index.cjs';
+manifest.module = './public/index.mjs';
+manifest.types = './public/index.d.cts';
+manifest.exports = packageExports();
+manifest.files = ['public', 'dist', 'lib', 'src'];
 const serialized = `${JSON.stringify(manifest, null, 2)}\n`;
 if (process.argv.includes('--write-manifest')) {
     writeFileSync(packagePath, serialized);
@@ -56,6 +24,9 @@ if (readFileSync(packagePath, 'utf8') !== serialized) {
         'Public exports drifted. Run node scripts/build-public-api.mjs --write-manifest.',
     );
 }
+
+// Rebuilding from the finite inventory must also remove obsolete facades.
+rmSync(resolve(root, 'public'), {recursive: true, force: true});
 
 // Derive every type and value export from compiler-emitted declarations. No API
 // signatures are copied into the facades, so overloads and namespace types survive.
@@ -84,7 +55,7 @@ for (const {source, legacyDefault} of modules.values()) {
     if (legacyDefault && !hasDefault) {
         throw new Error(`Callable adapter requires a default export: ${source}`);
     }
-    const output = resolve(root, `api/${source}`);
+    const output = resolve(root, `public/${source}`);
     const implementation = relative(dirname(output), resolve(root, `lib/${source}.js`)).replaceAll(
         '\\',
         '/',
@@ -124,6 +95,35 @@ for (const {source, legacyDefault} of modules.values()) {
     );
 }
 
+// A bare directory alias forwards to its canonical index facade. Both formats
+// retain the canonical module's shape and state, including callable CJS values.
+for (const {source, legacyDefault} of modules.values()) {
+    if (!source.endsWith('/index')) continue;
+    const alias = resolve(root, `public/${source.slice(0, -6)}`);
+    const canonical = relative(dirname(alias), resolve(root, `public/${source}`)).replaceAll(
+        '\\',
+        '/',
+    );
+    const specifier = canonical.startsWith('.') ? canonical : `./${canonical}`;
+    const declaration = program.getSourceFile(resolve(root, `lib/${source}.d.ts`));
+    const hasDefault = checker
+        .getExportsOfModule(checker.getSymbolAtLocation(declaration))
+        .some((entry) => entry.name === 'default');
+    const esm =
+        `export * from '${specifier}.mjs';\n` +
+        (hasDefault ? `export {default} from '${specifier}.mjs';\n` : '');
+    writeFileSync(`${alias}.mjs`, esm);
+    writeFileSync(`${alias}.cjs`, `module.exports = require('${specifier}.cjs');\n`);
+    writeFileSync(`${alias}.d.mts`, esm);
+    writeFileSync(
+        `${alias}.d.cts`,
+        legacyDefault
+            ? `import implementation = require('${specifier}.cjs');\nexport = implementation;\n`
+            : `export * from '${specifier}.cjs';\n` +
+                  (hasDefault ? `export {default} from '${specifier}.cjs';\n` : ''),
+    );
+}
+
 // Legacy type-only paths have separate declarations so the stable /types facade
 // does not inherit the deprecation annotations.
 const legacyDeclaration = program.getSourceFile(resolve(root, 'lib/typings.d.ts'));
@@ -136,5 +136,5 @@ const legacyTypes = checker
             `/** @deprecated Import from @diplodoc/transform/types. Removal: 6.0.0. */\nexport type {${name}} from '../lib/typings.js';\n`,
     )
     .join('');
-writeFileSync(resolve(root, 'api/legacy-typings.d.mts'), legacyTypes);
-writeFileSync(resolve(root, 'api/legacy-typings.d.cts'), legacyTypes);
+writeFileSync(resolve(root, 'public/legacy-typings.d.mts'), legacyTypes);
+writeFileSync(resolve(root, 'public/legacy-typings.d.cts'), legacyTypes);

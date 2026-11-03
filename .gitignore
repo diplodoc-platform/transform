@@ -27,4 +27,6 @@ tsconfig.tsbuildinfo
 test-results/
 playwright-report/
 ctrf/
+# Keep earlier generated adapters ignored in existing build checkouts.
 /api/
+/public/

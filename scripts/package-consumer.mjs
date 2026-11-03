@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFileSync, writeFileSync} from 'node:fs';
-import {join} from 'node:path';
+import {dirname, join} from 'node:path';
 import MarkdownIt from 'markdown-it';
+
+import {publicEntryInventory, publicModules} from './public-api.mjs';
 
 // The fixture resolves the installed package after it is copied to its consumer.
 const packageName = '@diplodoc/transform';
@@ -15,7 +17,7 @@ const {getFileTokens} = await import(`${packageName}/utils/fs`);
 const configuration = await import(`${packageName}/configuration`);
 
 const require = createRequire(import.meta.url);
-const manifest = require(`${packageName}/package.json`);
+const installedRoot = dirname(require.resolve(`${packageName}/package.json`));
 const cjsConfiguration = require(`${packageName}/configuration`);
 assert.equal(typeof globalThis.document, 'undefined');
 assert.equal(typeof globalThis.window, 'undefined');
@@ -102,17 +104,20 @@ for (const api of [configuration, cjsConfiguration]) {
         /unselected plugin/,
     );
 }
-assert.throws(() => require.resolve(`${packageName}/lib/plugin-configuration`), {
-    code: 'ERR_PACKAGE_PATH_NOT_EXPORTED',
-});
+// Already-public generated facades also have finite lib/* aliases.
+assert.equal(require(`${packageName}/lib/plugin-configuration`), cjsConfiguration);
 assert.throws(() => require.resolve(`${packageName}/lib/plugin-registry`), {
-    code: 'ERR_PACKAGE_PATH_NOT_EXPORTED',
+    code: 'MODULE_NOT_FOUND',
+});
+await assert.rejects(import(`${packageName}/lib/plugin-registry`), {
+    code: 'ERR_MODULE_NOT_FOUND',
 });
 
-for (const [subpath, target] of Object.entries(manifest.exports)) {
+for (const [subpath, target] of Object.entries(publicEntryInventory())) {
     const specifier = `@diplodoc/transform${subpath === '.' ? '' : subpath.slice(1)}`;
     if (typeof target === 'string') {
         if (!subpath.includes('*')) {
+            assert.equal(require.resolve(specifier), join(installedRoot, target), specifier);
             assert.ok(readFileSync(require.resolve(specifier)).length > 0, specifier);
         }
         continue;
@@ -138,6 +143,15 @@ for (const [subpath, target] of Object.entries(manifest.exports)) {
         }
     }
 }
+for (const {source} of publicModules) {
+    if (!source.endsWith('/index')) {
+        continue;
+    }
+    const canonical = require(`${packageName}/lib/${source}`);
+    const bare = source.slice(0, -6);
+    assert.equal(require(`${packageName}/lib/${bare}`), canonical);
+    assert.equal(require(`${packageName}/lib/${bare}.js`), canonical);
+}
 assert.notEqual(
     require.resolve(`${packageName}/runtime`),
     require.resolve(`${packageName}/runtime/base`),
@@ -148,6 +162,12 @@ assert.notEqual(
 );
 assert.ok(readFileSync(require.resolve(`${packageName}/scss/yfm-base.scss`)).length);
 assert.ok(readFileSync(require.resolve(`${packageName}/src/scss/yfm.scss`)).length);
+// An actual compiled file is not exposed unless it belongs to the maintained
+// public inventory. Patterns fail at the absent facade, not at export selection.
+writeFileSync(join(installedRoot, 'lib/new-private-file.js'), 'module.exports = "private";\n');
 assert.throws(() => require.resolve(`${packageName}/lib/new-private-file`), {
-    code: 'ERR_PACKAGE_PATH_NOT_EXPORTED',
+    code: 'MODULE_NOT_FOUND',
+});
+await assert.rejects(import(`${packageName}/lib/new-private-file`), {
+    code: 'ERR_MODULE_NOT_FOUND',
 });
