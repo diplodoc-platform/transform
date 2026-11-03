@@ -1,18 +1,11 @@
 # Browser transformation entry points
 
-Status: shared-core phase1 is merged; browser-host implementation is authorized.
-The attrs contract follows the one shared resolver from merged DOCSTOOLS-6944B. The ESM-only decision remains fixed.
-
 Task: [DOCSTOOLS-6940](https://st.yandex-team.ru/DOCSTOOLS-6940).
-Implementation baseline: local dependent integration `6b05899e3b2bb472e89a86abdef93374e6a4dfb5`,
-combining the real nineteen-plugin inventory with merged major
-`ea8168f4c468a63b4dabee3d16df6d2c34fb839d` (DOCSTOOLS-6944B).
-The nineteen-plugin branch must reach actual major before this browser branch is
-published. The shared parser/context/diagnostic/sanitizer, table and image work
-remain present. Future footnote/task-list features are not advertised.
-Branch: `codex/docstools-6940-browser-entry-phase2`.
-The original 358-line proposal at `9fb11cb0bd8842cf5668863a2f5f59db9358ff43`
-and old branch remain preserved in the SDD evidence; no source reset/discard occurred.
+Design baseline: `6b05899e3b2bb472e89a86abdef93374e6a4dfb5`, including the shared
+attrs policy from major `ea8168f4c468a63b4dabee3d16df6d2c34fb839d`.
+
+The browser entries are ESM-only and share the general-attributes policy with the
+Node host.
 
 ## Requirements and scope
 
@@ -83,7 +76,7 @@ complete browser Transform graph, all browsers, or all sanitizer options.
 
 PostCSS itself publishes ordinary `browser` mappings disabling optional terminal,
 source-map, filesystem, path and URL server branches. Those upstream conditional
-implementations are permitted by the coordinator's interpretation of the task.
+implementations are part of the supported browser dependency graph.
 Record them in the artifact graph inventory and prove required rendering/security
 does not invoke them. Do not describe this as a graph with zero disabled entries.
 Special application `resolve.fallback`, resolver aliases hiding builtins, injected
@@ -227,14 +220,11 @@ follow the integrated reviewed table task, not another browser scanner variant.
 
 ### Executable preset, options and core-prelude contract
 
-The approval fixture `artifacts/browser-entry-sdd-v2/browser-contract.json` is
-executable data, with a stdlib-only verifier against this exact baseline. It
-historically froze all seventeen IDs, Node installation order, browser option keys, core prelude,
-export conditions and22source-recognition obligations. The verifier checks source
-identity/order/shape only; it does not pretend a browser implementation exists.
-An implementation phase must promote that data into ordinary repository tests and
-execute it against installed browser entry points. Production must not load task
-artifacts. Changes to this list require an explicit reviewed contract update.
+The finite preset, option keys, core prelude and unsupported-input boundaries are
+covered by `test/browser-api.test.ts`, `test/browser-standard.test.ts`,
+`test/browser-host.test.ts` and `test/browser-guard.test.ts`. Installed declaration
+and bundle checks live in `scripts/test-browser-package.mjs`. Keep the contract
+in repository tests; production must not load task artifacts.
 
 ```typescript
 const standardBuiltinIds = [
@@ -496,12 +486,11 @@ identical bundler/Node/lock settings. Record measurements, not a size threshold
 invented for #446. Library runtime/styles and editor assets are separate entries
 in the report; do not count editor savings this task has not demonstrated.
 
-## Example to implement and run
+## Browser example requirements
 
 Add a small independent example using an installed immutable tarball and a normal
 browser bundler configuration. It must work with no webpack fallback settings,
-Node polyfill package or resolver alias. This is proposed example code, not a
-claim that these entry points already exist:
+Node polyfill package or resolver alias:
 
 ```typescript
 import transform, {createParser} from '@diplodoc/transform/browser';
@@ -548,51 +537,22 @@ subpath is needed. Old10packages require their version-appropriate .js subpaths
 as already documented by6939. Never import `/highlighter/legacy`.
 No highlighter is required for the basic example; code stays correctly escaped.
 
-## Implementation phases and serialized ownership
+## Implementation boundaries
 
-1. **Shared core/diagnostics/registry/sanitizer, preserving Node.** Extract the
-   finite host factories and pure types; keep one lifecycle/capsule implementation,
-   one attrs-default resolver, existing Node collectors/reporter behavior and CJS
-   implementation graph. Keep Node fixtures/CLI/Viewer graphs green. No dependency
-   upgrade or public browser export in this prerequisite commit.
-2. **Minimal ESM entry.** Introduce the separate minimal graph, closed options,
-   real CSS adapter and mandatory sanitizer/guard. Prove its exact empty preset,
-   prelude, protected-source distinctions and lack of standard-only imports.
-3. **Standard ESM entry.** Reuse the actual nineteen-ID order/options and actual companion
-   browser branches; complete shared pure helper cuts while preserving semantics.
-   Reuse current table code/true-inline default/false compatibility. Do not create
-   another table scanner or optional-attrs implementation.
-4. **Installed package/types/browser example.** Strict DOM-only `.d.mts` projects,
-   manifest negative require cases, ordinary esbuild and Rspack consumers,
-   real Chromium/Firefox/WebKit including runtime/styles/highlighter/resources,
-   immutable tarball and reproducible size/module reports.
-5. **Regression/adoption review.** Current-head source/package CI plus actual CLI/
-   Viewer regression gates and independent review before integration/publication.
+The shared parser, document lifecycle, diagnostics, registry and sanitizer preserve
+Node behavior. Standard and minimal browser entries have separate dependency
+graphs and reuse the shared plugin implementations.
 
-6946 is merged into this implementation baseline. Pure imsize adaptation must
-extract its accepted implementation once, retaining actual-use warning scope,
-native reporter fallback, private recognition markers, migration purity, grammar
-quirks and the no-removal-before6 contract. Do not copy an older imsize body.
+The image-size implementation retains actual-use warning scope, native reporter
+fallback, private recognition markers, migration purity, grammar quirks and the
+no-removal-before-6 contract. The shared attrs resolver owns the false default;
+Node and browser hosts use the same include grammar and heading behavior.
 
-Merged6944B owns the shared false default and the include/heading fixes. Its
-clean handoff authorizes canonical declarations in shared-types.ts and one pure
-include grammar factory. Node imports retain their public aliases and behavior.
+DOM-only type and augmentation checks require one physical declaration carrier
+and installed trace/negative-global tests. The notes bridge preserves its Russian
+default, titles, maps and diagnostics through the standalone package.
 
-The local dependency6b05899 contains the reviewed6948 underline/subscript source,
-canonical nineteen-ID order, settings and styles. That owner handed off the
-canonical declaration/registry paths after committing them. Final browser PR
-publication still waits for that candidate's actual major merge and consumer
-acceptance. Future footnotes/tasklists are not part of this inventory.
-
-Browser modules, pure leaf factories/Node wrappers, real CSS binding, finite guard,
-ESM-only build/exports, example and tests belong to6940. Actual CLI/Viewer source,
-dependency and fixture writes remain serialized through the coordinator. Final
-DOM-only type/augmentation claims require the one physical carrier and installed
-trace/negative-global tests. Notes grammar/helper bodies remain frozen for the
-separate6942 relocation; the eventual bridge must remove the temporary body
-without changing its ru default, titles, maps or diagnostics.
-
-## Acceptance and remaining gates
+## Acceptance criteria
 
 1. Installed immutable tarball in a clean example project; record source revision,
    archive hash, dependency versions and exact consumer bundler configuration.
@@ -625,12 +585,5 @@ without changing its ru default, titles, maps or diagnostics.
    modes, with extensions/runtime/styles. Capture reachable graph and reproducible
    size reports. Root/independent review and current-head CI precede integration.
 
-The bounded sanitizer probe is the only executed browser runtime evidence at design
-time. The v2 source-only contract verifier is additionally executed, not a rendering
-proof. Existing6951/table installed evidence is baseline evidence, not browser acceptance.
-Full Transform graph, browser types, extension/runtime interactions, companion
-browser exports, size reports and immutable example acceptance remain open.
-Phase2 does not authorize PR/push/publication, Tracker changes or independent
-consumer writes. Dependency changes require coordination with their current owner.
 Node-engine removal remains outside this task even when the browser graph excludes
 those modules.

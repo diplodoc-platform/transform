@@ -1,12 +1,9 @@
 # Document context and parser reuse
 
-Status: Approved for implementation; validation and review pending.
-
 Task: [DOCSTOOLS-6951](https://st.yandex-team.ru/DOCSTOOLS-6951).
 Inventory base: `18856b846ce06b27ab3739b11f5195967048307d`.
 Implementation baseline: registry refresh `87d076745e905bdaaa1cc774668ef30520197d38`,
 plus reviewed retained-engine bridge `b54abbdaa713061f2dd8051bd6750f9668c01196`.
-Branch: `codex/docstools-6951-document-context`.
 
 ## Result and boundaries
 
@@ -424,19 +421,10 @@ Required finite tests:
    real CLI MD/HTML/roundtrip and Viewer models/workers; installed immutable
    Transform package with compatible real companions outside the workspace.
 
-Implementation will require focused unit/integration tests, full project checks,
-normal hooks, exact-package checks and root/independent review. No dependency or
-lockfile adoption is part of this design work; the parser owner controls that lane.
-No publishing, PR, Tracker changes or consumer edits are authorized by this spec.
-
-## Decisions requested from coordinator
-
-Approve the additive handle API, narrow legacy view, explicit unassociated-token
-compatibility warning, fixed parser-options boundary, nested purpose/merge rules,
-and recoverable cycle failure. These are concrete implementation choices within
-the task. No missing user product requirement currently requires a question.
-The global diagnostic collector and opaque custom/third-party mutable closures
-remain explicit limits, not silently claimed document isolation.
+Verification includes focused unit/integration tests, full project checks, normal
+hooks, exact-package checks and independent review. The global diagnostic
+collector and opaque custom/third-party mutable closures remain explicit limits
+to document isolation.
 
 ## Same-parser fragment contribution replay
 

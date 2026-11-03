@@ -1,8 +1,6 @@
 # Notes extraction contract
 
 Task: [DOCSTOOLS-6942](https://st.yandex-team.ru/DOCSTOOLS-6942).
-Source, installed-package and actual consumer gates pass as of 2026-10-29.
-Current-head hosted checks and post-CI root reviews remain required before merge.
 
 - The public standalone notes package owns the single grammar, title dictionaries
   and canonical Sass mixins. Transform retains typed compatibility callbacks and
@@ -24,7 +22,7 @@ Current-head hosted checks and post-CI root reviews remain required before merge
   hosted checks and two further root reviews precede a major-branch-only merge.
   This task does not close the full major plan or remove old exports.
 
-## Accepted consumer checkpoint
+## Consumer acceptance evidence (2026-10-29)
 
 The frozen Transform archive has SHA256
 `1d070d15c854557c6cd090236b09b9d56cf94f1a54dc94a2651f4e94a25e70cb`.
@@ -49,8 +47,6 @@ timing failure is retained in evidence; the final quiet run on the identical gra
 passes. Viewer was exercised on macOS with local HTTP/WebSocket fixtures, which
 does not establish external service connectivity or other operating systems.
 
-Consumer code and genuine candidate locks are preserved on local branches; these
-checks do not authorize their publication. The standalone notes prerelease is
-published; its source master and repository visibility remain unchanged. Private
-repository Dependency Review is explicitly deferred by the owner and must be rerun
-after the owner enables the public repository. It is not reported as a passed scan.
+These historical checks do not establish consumer adoption or publication.
+Dependency Review was deferred at this evidence snapshot and is not reported as
+a passed scan.

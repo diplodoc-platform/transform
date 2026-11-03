@@ -1,12 +1,7 @@
 # Optional general Markdown attributes
 
-Status: approved SDD; phase A heading recognition and local standalone lint selector
-implemented. Phase B is authorized on merged shared core `0e8ebb7a5a9970f7cf0c2c2aac43ba0a3850ed78`;
-the shared resolver and bundled lint now default FALSE. Consumer compatibility
-validation is required before integration.
 Task: [DOCSTOOLS-6944](https://st.yandex-team.ru/DOCSTOOLS-6944).
-Baseline: `551a675bc24b5eefacfb8bf92550b145f9ad94c1`.
-Branch: `codex/docstools-6944-optional-attrs`.
+Design baseline: `551a675bc24b5eefacfb8bf92550b145f9ad94c1`.
 
 ## Outcome and boundaries
 
@@ -30,8 +25,6 @@ published YFMLint 1.11.0 bundle also embeds that exact parser: its actual plugin
 constructor and complete embedded parser source match the candidate. CLI root
 markdownlint 0.32.1 resolves MarkdownIt 13.0.2 separately; that root resolution is
 not the SDK embedded runtime. No SDK parser upgrade occurs in phase A.
-No consumer install, companion release, PR or publication is authorized by this
-specification. Consumer modifications require separate reviewed branches.
 
 ## Sources and current behavior
 
@@ -74,12 +67,10 @@ current behavior, not implementation acceptance or an install of this branch.
 
 ## One option policy, separate host compatibility
 
-Coordinate with DOCSTOOLS-6940's shared pure parser prelude. That stream may
-extract the existing policy while preserving 551 behavior; this stream owns the
-subsequent reviewed default change. The coordinator serializes those changes.
-There must be one Transform default constant/resolver and no independent browser
-copy. DOCSTOOLS-6946 owns image warnings/migration; its narrow brace parser and
-existing imsize selector are unchanged by this task.
+Node and browser hosts use the shared pure parser prelude and one Transform
+default constant/resolver, with no independent browser copy. DOCSTOOLS-6946 owns
+image warnings/migration; its narrow brace parser and existing imsize selector
+are unchanged by this task.
 
 | Caller/configuration                                                | Final general attrs policy                                 |
 | ------------------------------------------------------------------- | ---------------------------------------------------------- |
@@ -174,9 +165,9 @@ are explicitly outside that narrow fallback. Missing fragments must not turn
 into successful whole-file includes. Viewer has its own id-only helper, so a
 Transform-only fix is not proof of Viewer compatibility.
 
-## Actual consumer adoption plan
+## Consumer compatibility requirements
 
-CLI source checkpoint `5d0cce8aa35c2c4dd2f8e7b53be6378e8ef94cd9`:
+CLI design baseline `5d0cce8aa35c2c4dd2f8e7b53be6378e8ef94cd9`:
 
 - `src/commands/build/run.ts:transformConfig` sets `enableMarkdownAttrs: true`
   explicitly for compatibility, shared by render and lint preparation.
@@ -193,7 +184,7 @@ CLI source checkpoint `5d0cce8aa35c2c4dd2f8e7b53be6378e8ef94cd9`:
   local-anchor diagnostics, terms and generated OpenAPI must preserve output
   under explicit true. Preserve core-false tests separately from CLI compatibility.
 
-Viewer source checkpoint `a401950a37ce12ca1b2f7f865637f2710a1a8016`:
+Viewer design baseline `a401950a37ce12ca1b2f7f865637f2710a1a8016`:
 its own `plugins/utils.ts:findBlockTokens` also relies on token IDs; its include
 fixture explicitly installs attrs for `{#id}`. Existing generated content and
 mixed IDs therefore justify a compatibility flag before its corpus migration.
@@ -203,9 +194,8 @@ Plan explicit true at the actual `transform-document.ts` owning boundary plus
 security options. Confirm option merge order so user-selected false is not
 unintentionally replaced where that configuration is already supported. Native
 workers and offline browser/style checks remain required on an exact tarball.
-This SDD does not authorize Viewer source edits or assume every app opts out.
 
-Translation source checkpoint `42325734052e9e0aa2053f27720b18c6aaebfd55`:
+Translation design baseline `42325734052e9e0aa2053f27720b18c6aaebfd55`:
 the main skeleton constructs native13 directly and installs its finite plugins;
 it does not inherit Transform's root prelude. The experimental parser installs
 its local attrs fork explicitly. Preserve both routes, authored source bytes,
@@ -249,18 +239,7 @@ no parser upgrade, dependency cleanup or blanket attrs installation is needed.
    attrs4.3.1 unchanged. Future warning/migration work does not block deliberate
    explicit compatibility; no removal deadline is invented here.
 
-## Decisions requested before implementation
-
-Approve the narrow heading-fragment recognition fix as part of this task, the
-standalone lint selector companion with retained default true, and explicit-on
-CLI/Viewer adoption sequencing. The coordinator must assign one owner/order for
-shared prelude edits with 6940 and preserve 6946's independent image handling.
-The coordinator has accepted the narrow heading-fragment and lint-companion
-direction; implementation remains pending final SDD review. No unresolved product
-question requires a human response now: the live issue,
-existing consumer corpus and compatibility choices determine a bounded proposal.
-
-## Phase B ordering and compatibility tests
+## Ordering and compatibility tests
 
 The shared `parser-policy.ts` resolver owns the default. Bundled lint reuses it
 and builds its attrs list independently of custom plugins; standalone lint retains

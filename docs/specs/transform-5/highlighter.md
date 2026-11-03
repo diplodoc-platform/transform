@@ -1,14 +1,11 @@
 # Explicit synchronous highlighter
 
-Status: Approved by the coordinator for implementation on the Transform 5 branch.
-
 Task: [DOCSTOOLS-6939](https://st.yandex-team.ru/DOCSTOOLS-6939).
 Base: `8a33e2bd9f708b5b12dab8e5ea011a2f9299440f` (reviewed native modules and typed plugin configuration).
-Branch: `codex/docstools-6939-highlighter`.
 
 ## Problem and scope
 
-`src/transform/md.ts` always invokes `makeHighlight(highlightLangs)`. The factory
+At the design baseline, `src/transform/md.ts` invoked `makeHighlight(highlightLangs)`. The factory
 in `highlight.ts` resolves `highlight.js` even when the caller did not request
 highlighting. It registers additional grammars on that imported instance, assumes
 `getLanguage` is callable, and returns a MarkdownIt callback. This makes the
@@ -258,8 +255,8 @@ migration guide and verify CLI and Viewer adapters before release.
 `highlightLangs` remains accepted and marked deprecated, with descriptor code
 `HIGHLIGHT_LANGS`, replacement `createHighlightJsHighlighter(instance, {languages})`
 and announced removal **no earlier than 6.0.0**, subject to the release-before-
-removal requirement in ADR-009. The Transform 5 warning release is a future release
-gate; this task does not authorize publication or modifying master.
+removal requirement in ADR-009. A published Transform 5 warning release is a
+prerequisite for removal.
 
 When an explicit highlighter supplies `registerLanguage`, nonempty legacy entries
 are registered during parser initialization with the original callbacks. Emit
@@ -350,9 +347,6 @@ Viewer currently sets `needToSanitizeHtml: false`; preserve that explicit consum
 policy and its separately owned security boundary. Do not advertise default
 Transform sanitization as covering this Viewer path.
 
-Consumers are separate preserved worktrees. Their owners implement and validate
-the migrations after root approval; this spec does not authorize edits to them.
-
 ## Acceptance and implementation plan
 
 1. Implement core types/normalization and dependency-free adapter; split the
@@ -423,19 +417,12 @@ Real loading and bundle evidence for #305/#756:
 
 ## Review and release gates
 
-Implementation starts only after root approves this design. Child PR targets the
-major integration branch, never master. Root review, green GitHub checks, further
-independent reviews, and real CLI/Viewer acceptance remain merge gates. No
-publication or removal is authorized here. No source issues close solely from
-this proposal: #305 needs loading/bundle proof, #756 needs the supported real
-module-shape reproduction, and #446/#519 remain references.
+Real CLI/Viewer acceptance, current-head GitHub checks and independent review
+remain integration gates. Issue #305 requires loading/bundle proof; #756 requires
+the supported real module-shape reproduction. Issues #446/#519 cover broader
+scope. Publication and removal follow the [release plan](plan.md).
 
-No unresolved product question prevents this proposal. The coordinator must
-approve the explicit default change, finite legacy route, and callback failure
-policy before implementation; this is the requested SDD gate rather than a new
-user approval requirement.
-
-## Peer floor audit: implementation gate
+## Peer floor compatibility
 
 The official npm `highlight.js@10.0.3` archive was inspected on 2026-10-27:
 `https://registry.npmjs.org/highlight.js/-/highlight.js-10.0.3.tgz`, SHA-1
@@ -453,7 +440,7 @@ Additional official archives establish the boundary:
 - 10.7.0, SHA-1 `2b4232f45f000a72ae6ef05fe83b831d75add6cb`: modern overload
   at `lib/core.js:1587`; the legacy-call deprecation starts at this version.
 
-Approved amendment: keep `^10.0.3 || ^11` and
+Keep `^10.0.3 || ^11` and
 select the legacy call for a validated `versionString` in 10.0.x through 10.6.x.
 Use the modern call for 10.7+, 11, and versionless structural modern instances.
 Do not guess from function arity or execute a trial call. Extend the structural
@@ -465,7 +452,7 @@ Keep module normalization, selected languages and fallback behavior unchanged.
 Add real runtime acceptance at 10.0.3, 10.6.0, 10.7.0 and 11; verify no library
 deprecation console warning from the chosen call. At 10.0.3 use an independently
 typed structural fixture and actual JS runtime, and clearly distinguish that
-from real bundled-declaration validation at 10.7/11. The peer range remains unchanged; this amendment is approved for implementation.
+from real bundled-declaration validation at 10.7/11. The peer range remains unchanged.
 
 ### Declaration discrepancy and verified implementation
 

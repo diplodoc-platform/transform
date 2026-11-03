@@ -1,6 +1,6 @@
 # Typed plugin configuration
 
-Status: approved by the coordinator for implementation. Task: DOCSTOOLS-6937.
+Task: [DOCSTOOLS-6937](https://st.yandex-team.ru/DOCSTOOLS-6937).
 
 Baseline: parser migration `d674566f755d7771d8c409b28be159dcd47e9eb8`.
 The accepted SVG migration is incorporated, retaining native markdown-it 15
@@ -253,5 +253,5 @@ plugin. Empty presets still allow explicitly enabled builtin IDs.
   this configuration. Passing transform-only mocks does not complete task 6937.
 
 Consumer adaptations remain on their separate branches. Publication and old-API
-removal are outside this proposal. Full CI, consumer acceptance and coordinator
-reviews remain necessary before a child PR can merge into the major branch.
+removal are outside this contract. Full CI, consumer acceptance and independent
+review remain necessary before integration into the major branch.
