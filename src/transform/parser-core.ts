@@ -325,7 +325,10 @@ function initParser(
             tokens = slicedTokens;
 
             // title tokens include other tokens that need to be transformed
-            if (titleTokens.length > 1) {
+            if (
+                titleTokens.length > 1 ||
+                titleTokens.some((token) => token.type === 'footnote_ref')
+            ) {
                 env.title = prepareFootnoteTitle(md, env, titleTokens, tokens, needTitle);
             } else {
                 env.title = title;
