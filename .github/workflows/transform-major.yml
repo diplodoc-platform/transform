@@ -66,3 +66,89 @@ jobs:
           name: transform-major-playwright-report
           path: e2e/playwright-report/
           retention-days: 14
+
+  # Keep these jobs aligned with the generated coverage.yml and security.yml.
+  # Their master/main branch filters do not include the major integration branch.
+  coverage:
+    name: Test coverage
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node.js and install dependencies
+        uses: diplodoc-platform/setup-node-action@v1
+        with:
+          node-version: ${{ vars.NODE_VERSION || '24' }}
+
+      - name: Run tests with coverage
+        id: coverage-run
+        run: |
+          if node -e "const s=require('./package.json').scripts; process.exit(s && s['test:coverage'] ? 0 : 1)"; then
+            npm run test:coverage
+            echo "ran=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "test:coverage script not found, skipping."
+            echo "ran=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload coverage artifact
+        if: success() && steps.coverage-run.outputs.ran == 'true'
+        uses: actions/upload-artifact@v6
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 7
+
+      - name: Explain secretless coverage
+        if: |
+          success() && steps.coverage-run.outputs.ran == 'true' &&
+          github.event_name == 'pull_request' &&
+          (github.event.pull_request.head.repo.full_name != github.repository ||
+           github.event.pull_request.user.login == 'dependabot[bot]')
+        run: echo 'Coverage tests and artifact completed. Sonar upload is not run for fork or Dependabot PRs; no scan token is provided to candidate code.' >> "$GITHUB_STEP_SUMMARY"
+
+      # Dependabot PRs have the same secret restrictions as fork PRs.
+      # Check the PR author so a human rerun cannot expose the scan token.
+      - name: SonarCloud Scan
+        if: |
+          success() &&
+          steps.coverage-run.outputs.ran == 'true' &&
+          github.actor != 'dependabot[bot]' &&
+          (github.event_name != 'pull_request' ||
+           (github.event.pull_request.head.repo.full_name == github.repository &&
+            github.event.pull_request.user.login != 'dependabot[bot]'))
+        uses: SonarSource/sonarqube-scan-action@v7.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  audit:
+    name: Security audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js and install dependencies
+        uses: diplodoc-platform/setup-node-action@v1
+        with:
+          node-version: ${{ vars.NODE_VERSION || '24' }}
+
+      - name: Run npm audit
+        id: audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: Upload audit results
+        if: steps.audit.outcome == 'failure'
+        uses: actions/upload-artifact@v6
+        with:
+          name: npm-audit-report
+          path: |
+            package-lock.json
+          retention-days: 7
