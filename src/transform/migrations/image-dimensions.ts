@@ -6,6 +6,13 @@ import MarkdownIt from 'markdown-it';
 import attrs from 'markdown-it-attrs';
 
 import {imageWithSize} from '../plugins/imsize/plugin';
+import {createTablePlugin} from '../plugins/table/core';
+
+const table = createTablePlugin(() => ({
+    warn() {},
+    reset() {},
+    compatibility: () => 'current',
+}));
 
 export interface ImageDimensionsMigrationOptions {
     readonly path?: string;
@@ -89,7 +96,7 @@ function lineStarts(source: string): number[] {
 }
 
 function createParser(generalAttrs: boolean, styling: boolean, observer?: ImageSizeObserver) {
-    const md = new MarkdownIt({html: true});
+    const md = new MarkdownIt({html: true}).use(table);
     // Use the recognizer directly: migration has no runtime diagnostics or root hooks.
     md.inline.ruler.before(
         'emphasis',

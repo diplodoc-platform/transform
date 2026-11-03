@@ -22,6 +22,30 @@ import {imageWithSize} from '../src/transform/plugins/imsize/plugin';
 const consumer = () => ({warn: vi.fn(), info: vi.fn(), error: vi.fn()});
 const code = 'IMAGE_SIZE_LEGACY_SYNTAX';
 
+describe('YFM table code migration', () => {
+    test('migrates a real image within a YFM table cell', () => {
+        const source = '#|\n||![real](real.png =40x50)||\n|#';
+        expect(migrateImageDimensions(source).output).toBe(
+            '#|\n||![real](real.png){width=40 height=50}||\n|#',
+        );
+    });
+
+    test('preserves a fenced image example in a nested YFM table', () => {
+        const table = '#|\n||#|\n||```md\n![literal](image.png =20x30)\n```\n||\n|#\n||\n|#';
+        const result = migrateImageDimensions(`${table}\n\n![real](real.png =40x50)`);
+        expect(result.output).toBe(`${table}\n\n![real](real.png){width=40 height=50}`);
+        expect(result.diagnostics).toEqual([]);
+    });
+
+    test('preserves a fenced image example and migrates a sibling image', () => {
+        const table = '#|\n||```md\n![literal](image.png =20x30)\n```\n||\n|#';
+        const source = `${table}\n\n![real](real.png =40x50)`;
+        const result = migrateImageDimensions(source);
+        expect(result.output).toBe(`${table}\n\n![real](real.png){width=40 height=50}`);
+        expect(result.diagnostics).toEqual([]);
+    });
+});
+
 beforeEach(() => log.clear());
 
 describe('image dimension compatibility warnings', () => {
