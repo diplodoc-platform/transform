@@ -137,7 +137,7 @@ deprecated in 5 and scheduled for removal in 6, subject to release and consumer
 migration gates. Standard builtin behavior remains available. Replace explicit
 callbacks with direct extension dependencies and public factories, preserving
 options, `generateID`, registration order and `collect`; callback identities
-change. Use `/types` for public types. See [cut, tabs and types migration](../migration/cut-tabs-types.md).
+change. Use `/types` for public types. See [cut, tabs and types migration](cut-tabs-types.md).
 
 Notes remain enabled and keep their existing Transform paths and styles. A host
 owning its callback list may use `@diplodoc/notes-extension/plugin`; supply its
