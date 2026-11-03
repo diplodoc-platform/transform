@@ -8,6 +8,7 @@ import type {
 } from '../../deprecation';
 import type {TableAttrs, YfmTablePluginOptions} from './types';
 
+import {directiveParser, registerBlockBoundary} from '@diplodoc/directive';
 import {AttrsParser} from '@diplodoc/utils';
 
 import {getTableRowPositions, isOpenTableOrder} from './positions';
@@ -250,172 +251,201 @@ type TableContext = Partial<
 export function createTablePlugin(createReporter: (options: TableContext) => DeprecationReporter) {
     const yfmTable = (md: MarkdownIt, opts: YfmTablePluginOptions & TableContext = {}) => {
         const reporter = opts.deprecations ?? createReporter(opts);
-        md.block.ruler.before(
-            'code',
-            pluginName,
-            (state: StateBlock, startLine: number, endLine: number, silent: boolean) => {
-                let token;
-                const startPosition = state.bMarks[startLine] + state.tShift[startLine];
-                const endPosition = state.eMarks[endLine];
+        md.use(directiveParser());
+        const tableRule = (
+            state: StateBlock,
+            startLine: number,
+            endLine: number,
+            silent: boolean,
+        ) => {
+            let token;
+            const startPosition = state.bMarks[startLine] + state.tShift[startLine];
+            const endPosition = state.eMarks[endLine];
 
-                // #| minimum 2 symbols
-                if (endPosition - startPosition < 2) {
-                    return false;
+            // #| minimum 2 symbols
+            if (endPosition - startPosition < 2) {
+                return false;
+            }
+
+            if (!isOpenTableOrder(state.src, startPosition)) {
+                return false;
+            }
+
+            if (silent) {
+                return true;
+            }
+
+            const {rows, endOfTable, pos, tableAttrs} = getTableRowPositions(
+                state,
+                startPosition,
+                endPosition,
+                startLine,
+                opts,
+            );
+
+            const attrs = extractAttributes(state, pos);
+
+            if (!endOfTable) {
+                token = state.push('__yfm_lint', '', 0);
+                token.hidden = true;
+                token.map = [startLine, endLine];
+                token.attrSet('YFM004', 'true');
+                return false;
+            }
+
+            const oldParentLineMax = state.lineMax;
+
+            state.lineMax = endOfTable;
+            state.line = startLine;
+
+            const tableStart = state.tokens.length;
+            token = state.push('yfm_table_open', 'table', 1);
+
+            token.map = [startLine, endOfTable];
+            const headerRows = applyTableAttributes(token, attrs, tableAttrs, opts.log);
+
+            token = state.push('yfm_tbody_open', 'tbody', 1);
+            token.map = [startLine + 1, endOfTable - 1];
+
+            const maxRowLength = Math.max(...rows.map((row) => row.cols.length));
+
+            // cellsMaps is a 2-D map of all td_open tokens in the table.
+            // cellsMap is used to access the table cells by [row][column] coordinates
+            const cellsMap: Token[][] = [];
+
+            // contentMap is a 2-D map of the text content within cells in the table.
+            // To apply spans, traverse the contentMap and modify the cells from cellsMap
+            const contentMap: string[][] = [];
+
+            for (let i = 0; i < rows.length; i++) {
+                const {
+                    start: rowLineStarts,
+                    end: rowLineEnds,
+                    cols,
+                    rawAttrs: rowRawAttrs,
+                } = rows[i];
+                cellsMap.push([]);
+                contentMap.push([]);
+                const rowLength = cols.length;
+
+                const isHeaderRow = headerRows !== null && i < headerRows;
+                const cellTag = isHeaderRow ? 'th' : 'td';
+
+                token = state.push('yfm_tr_open', 'tr', 1);
+                token.map = [rowLineStarts, rowLineEnds];
+                token.meta = token.meta || {};
+                token.meta.rawAttrs = rowRawAttrs;
+                if (isHeaderRow) {
+                    token.attrSet('data-header', 'true');
                 }
 
-                if (!isOpenTableOrder(state.src, startPosition)) {
-                    return false;
-                }
-
-                if (silent) {
-                    return true;
-                }
-
-                const {rows, endOfTable, pos, tableAttrs} = getTableRowPositions(
-                    state,
-                    startPosition,
-                    endPosition,
-                    startLine,
-                    opts,
-                );
-
-                const attrs = extractAttributes(state, pos);
-
-                if (!endOfTable) {
-                    token = state.push('__yfm_lint', '', 0);
-                    token.hidden = true;
-                    token.map = [startLine, endLine];
-                    token.attrSet('YFM004', 'true');
-                    return false;
-                }
-
-                const oldParentLineMax = state.lineMax;
-
-                state.lineMax = endOfTable;
-                state.line = startLine;
-
-                const tableStart = state.tokens.length;
-                token = state.push('yfm_table_open', 'table', 1);
-
-                token.map = [startLine, endOfTable];
-                const headerRows = applyTableAttributes(token, attrs, tableAttrs, opts.log);
-
-                token = state.push('yfm_tbody_open', 'tbody', 1);
-                token.map = [startLine + 1, endOfTable - 1];
-
-                const maxRowLength = Math.max(...rows.map((row) => row.cols.length));
-
-                // cellsMaps is a 2-D map of all td_open tokens in the table.
-                // cellsMap is used to access the table cells by [row][column] coordinates
-                const cellsMap: Token[][] = [];
-
-                // contentMap is a 2-D map of the text content within cells in the table.
-                // To apply spans, traverse the contentMap and modify the cells from cellsMap
-                const contentMap: string[][] = [];
-
-                for (let i = 0; i < rows.length; i++) {
-                    const {
-                        start: rowLineStarts,
-                        end: rowLineEnds,
-                        cols,
-                        rawAttrs: rowRawAttrs,
-                    } = rows[i];
-                    cellsMap.push([]);
-                    contentMap.push([]);
-                    const rowLength = cols.length;
-
-                    const isHeaderRow = headerRows !== null && i < headerRows;
-                    const cellTag = isHeaderRow ? 'th' : 'td';
-
-                    token = state.push('yfm_tr_open', 'tr', 1);
-                    token.map = [rowLineStarts, rowLineEnds];
+                for (let j = 0; j < cols.length; j++) {
+                    const {start: begin, end, rawAttrs: cellRawAttrs} = cols[j];
+                    token = state.push('yfm_td_open', cellTag, 1);
+                    cellsMap[i].push(token);
+                    token.map = [begin.line, end.line];
                     token.meta = token.meta || {};
-                    token.meta.rawAttrs = rowRawAttrs;
+                    token.meta.rawAttrs = cellRawAttrs;
                     if (isHeaderRow) {
-                        token.attrSet('data-header', 'true');
+                        token.attrSet('scope', 'col');
                     }
+                    applyCellAttrs(token, cellRawAttrs, opts?.log);
 
-                    for (let j = 0; j < cols.length; j++) {
-                        const {start: begin, end, rawAttrs: cellRawAttrs} = cols[j];
+                    const oldTshift = state.tShift[begin.line];
+                    const oldEMark = state.eMarks[end.line];
+                    const oldBMark = state.bMarks[begin.line];
+                    const oldLineMax = state.lineMax;
+
+                    state.tShift[begin.line] = 0;
+                    state.bMarks[begin.line] = begin.pos;
+                    state.eMarks[end.line] = end.pos;
+                    state.lineMax = end.line + 1;
+
+                    state.md.block.tokenize(state, begin.line, end.line + 1);
+                    const contentToken = state.tokens[state.tokens.length - 2];
+
+                    // In case of ">" within a cell without whitespace it gets consumed as a blockquote.
+                    // To handle that, check markup as well
+                    const content = contentToken.content.trim() || contentToken.markup.trim();
+                    contentMap[i].push(content);
+
+                    token = state.push('yfm_td_close', cellTag, -1);
+                    state.tokens[state.tokens.length - 1].map = [end.line, end.line + 1];
+
+                    state.lineMax = oldLineMax;
+                    state.tShift[begin.line] = oldTshift;
+                    state.bMarks[begin.line] = oldBMark;
+                    state.eMarks[end.line] = oldEMark;
+
+                    const rowTokens = cellsMap[cellsMap.length - 1];
+                    extractAndApplyClassFromToken(
+                        contentToken,
+                        rowTokens[rowTokens.length - 1],
+                        reporter,
+                        {
+                            path:
+                                [state.env.path, opts.path].find((path) => path?.trim()) ??
+                                '<input>',
+                            line: begin.line + 1,
+                            column: begin.pos - state.bMarks[begin.line] + 1,
+                        },
+                    );
+                }
+
+                if (rowLength < maxRowLength) {
+                    const emptyCellsCount = maxRowLength - rowLength;
+                    for (let k = 0; k < emptyCellsCount; k++) {
                         token = state.push('yfm_td_open', cellTag, 1);
-                        cellsMap[i].push(token);
-                        token.map = [begin.line, end.line];
-                        token.meta = token.meta || {};
-                        token.meta.rawAttrs = cellRawAttrs;
                         if (isHeaderRow) {
                             token.attrSet('scope', 'col');
                         }
-                        applyCellAttrs(token, cellRawAttrs, opts?.log);
-
-                        const oldTshift = state.tShift[begin.line];
-                        const oldEMark = state.eMarks[end.line];
-                        const oldBMark = state.bMarks[begin.line];
-                        const oldLineMax = state.lineMax;
-
-                        state.tShift[begin.line] = 0;
-                        state.bMarks[begin.line] = begin.pos;
-                        state.eMarks[end.line] = end.pos;
-                        state.lineMax = end.line + 1;
-
-                        state.md.block.tokenize(state, begin.line, end.line + 1);
-                        const contentToken = state.tokens[state.tokens.length - 2];
-
-                        // In case of ">" within a cell without whitespace it gets consumed as a blockquote.
-                        // To handle that, check markup as well
-                        const content = contentToken.content.trim() || contentToken.markup.trim();
-                        contentMap[i].push(content);
-
                         token = state.push('yfm_td_close', cellTag, -1);
-                        state.tokens[state.tokens.length - 1].map = [end.line, end.line + 1];
-
-                        state.lineMax = oldLineMax;
-                        state.tShift[begin.line] = oldTshift;
-                        state.bMarks[begin.line] = oldBMark;
-                        state.eMarks[end.line] = oldEMark;
-
-                        const rowTokens = cellsMap[cellsMap.length - 1];
-                        extractAndApplyClassFromToken(
-                            contentToken,
-                            rowTokens[rowTokens.length - 1],
-                            reporter,
-                            {
-                                path:
-                                    [state.env.path, opts.path].find((path) => path?.trim()) ??
-                                    '<input>',
-                                line: begin.line + 1,
-                                column: begin.pos - state.bMarks[begin.line] + 1,
-                            },
-                        );
                     }
-
-                    if (rowLength < maxRowLength) {
-                        const emptyCellsCount = maxRowLength - rowLength;
-                        for (let k = 0; k < emptyCellsCount; k++) {
-                            token = state.push('yfm_td_open', cellTag, 1);
-                            if (isHeaderRow) {
-                                token.attrSet('scope', 'col');
-                            }
-                            token = state.push('yfm_td_close', cellTag, -1);
-                        }
-                    }
-
-                    token = state.push('yfm_tr_close', 'tr', -1);
                 }
 
-                applySpans(contentMap, cellsMap);
-                clearTokens(tableStart, state.tokens);
+                token = state.push('yfm_tr_close', 'tr', -1);
+            }
 
-                token = state.push('yfm_tbody_close', 'tbody', -1);
+            applySpans(contentMap, cellsMap);
+            clearTokens(tableStart, state.tokens);
 
-                token = state.push('yfm_table_close', 'table', -1);
-                state.tokens[state.tokens.length - 1].map = [endOfTable, endOfTable + 1];
+            token = state.push('yfm_tbody_close', 'tbody', -1);
 
-                state.lineMax = oldParentLineMax;
-                state.line = endOfTable;
+            token = state.push('yfm_table_close', 'table', -1);
+            state.tokens[state.tokens.length - 1].map = [endOfTable, endOfTable + 1];
 
-                return true;
-            },
-        );
+            state.lineMax = oldParentLineMax;
+            state.line = endOfTable;
+
+            return true;
+        };
+        md.block.ruler.before('code', pluginName, tableRule);
+        registerBlockBoundary(md, pluginName, tableRule, (input, startLine, endLine) => {
+            const start = input.bMarks[startLine] + input.tShift[startLine];
+            if (!isOpenTableOrder(input.src, start)) return null;
+            // The shared position parser reads only these fields and parser
+            // helpers; it never tokenizes or calls the host block rule.
+            const state = {
+                ...input,
+                md: {
+                    utils: {isSpace: md.utils.isSpace},
+                    helpers: {
+                        parseLinkTitle: (...args: Parameters<typeof md.helpers.parseLinkTitle>) =>
+                            md.helpers.parseLinkTitle(...args),
+                    },
+                },
+            } as unknown as StateBlock;
+            const {endOfTable} = getTableRowPositions(
+                state,
+                start,
+                input.eMarks[endLine],
+                startLine,
+                opts,
+            );
+            // Rendering reserves an extra line after the closing marker; the
+            // boundary scanner must still inspect that line for a directive closer.
+            return endOfTable === null ? null : endOfTable - 1;
+        });
     };
 
     return yfmTable;
