@@ -16,6 +16,13 @@ import {createNotesPlugin, recognizeNoteBoundary} from '@diplodoc/notes-extensio
 import {recognizeTabsBoundary, transform as tabs} from '@diplodoc/tabs-extension/plugin';
 
 import {includedSourceRanges} from '../preprocessors/included/boundaries';
+import {createTablePlugin} from '../plugins/table/core';
+
+const table = createTablePlugin(() => ({
+    warn() {},
+    reset() {},
+    compatibility: () => 'current',
+}));
 
 export interface BlockDirectivesMigrationOptions {
     readonly path?: string;
@@ -137,7 +144,7 @@ function opening(edge: Open, escaped = false): string | undefined {
 }
 
 function analyze(input: string): {tokens: Token[]; scopes: Scope[]} {
-    const plain = new MarkdownIt({html: true});
+    const plain = new MarkdownIt({html: true}).use(table);
     plain.core.ruler.enableOnly(['normalize', 'block']);
     const names = new Set(['cut', 'note', 'tabs', 'no-translate', 'visibility']);
     for (const token of plain.parse(input, {})) {
@@ -151,7 +158,7 @@ function analyze(input: string): {tokens: Token[]; scopes: Scope[]} {
         end: endLine,
         protected: true,
     }));
-    const md = new MarkdownIt({html: true}).use(directiveParser());
+    const md = new MarkdownIt({html: true}).use(table).use(directiveParser());
     for (const name of names) {
         registerContainerDirective(
             md,
@@ -233,7 +240,7 @@ function signature(
         ids: string[] = [],
         logs: string[] = [],
         resources: string[] = [];
-    const md = new MarkdownIt({html: true});
+    const md = new MarkdownIt({html: true}).use(table);
     if (generalAttrs) md.use(attrs);
     md.use(
         cut({
