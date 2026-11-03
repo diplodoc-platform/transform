@@ -48,5 +48,5 @@ passes. Viewer was exercised on macOS with local HTTP/WebSocket fixtures, which
 does not establish external service connectivity or other operating systems.
 
 These historical checks do not establish consumer adoption or publication.
-Dependency Review was deferred at this evidence snapshot and is not reported as
-a passed scan.
+Dependency Review was deferred at this evidence snapshot. Run Dependency Review
+when it becomes available; the historical skip is not a passed scan.
