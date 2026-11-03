@@ -33,6 +33,31 @@ describe('block directives migration', () => {
         expect(reconstructed).toBe(result.output);
         expect(migrateBlockDirectives(result.output).edits).toEqual([]);
     });
+    it('migrates a real note within a YFM table cell', () => {
+        const source = `#|\n||${note()}\n||\n|#`;
+        const result = migrateBlockDirectives(source);
+        expect(result.output).toBe('#|\n||:::note {type=info}\n\nBody\n\n:::\n||\n|#');
+    });
+    it('preserves fenced examples in YFM table cells while migrating a sibling', () => {
+        const table = `#|
+||\`\`\`md
+
+${note('Literal')}
+\`\`\`
+||
+|#`;
+        const source = `${table}\n\n${note('Sibling')}`;
+        const result = migrateBlockDirectives(source);
+        expect(result.output).toBe(`${table}\n\n:::note {type=info}\n\nSibling\n\n:::`);
+        expect(result.diagnostics).toEqual([]);
+    });
+    it('preserves a fenced example in a nested YFM table', () => {
+        const table = `#|\n||#|\n||\`\`\`md\n\n${note('Literal')}\n\`\`\`\n||\n|#\n||\n|#`;
+        const source = `${table}\n\n${note('Sibling')}`;
+        expect(migrateBlockDirectives(source).output).toBe(
+            `${table}\n\n:::note {type=info}\n\nSibling\n\n:::`,
+        );
+    });
     it('preserves BOM, CRLF, emoji, NUL, and untouched prefixes with original UTF-16 offsets', () => {
         const source = '\uFEFF😀\0\r\n\r\n' + note().replace(/\n/g, '\r\n') + '\r\n';
         const result = migrateBlockDirectives(source, {path: 'guide.md'});
