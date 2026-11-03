@@ -3,6 +3,7 @@ import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import {formatHref, parseHref} from '@diplodoc/utils';
 
 import {matchesCustomHeadingId} from './heading-id';
+import {isFootnoteBody} from './footnote-data';
 
 export function isLocalUrl(url: string) {
     // A URL is local unless it has an external scheme: either `scheme://...`
@@ -25,7 +26,11 @@ export function findBlockTokens(tokens: Token[], id: string) {
                 end = i + 1;
                 break;
             } else if (startToken.type === 'heading_open') {
-                if (token.type === 'heading_open' && token.tag === startToken.tag) {
+                if (
+                    token.type === 'heading_open' &&
+                    token.tag === startToken.tag &&
+                    !isFootnoteBody(token)
+                ) {
                     end = i;
                     break;
                 } else if (i === tokens.length - 1) {
@@ -43,6 +48,7 @@ export function findBlockTokens(tokens: Token[], id: string) {
 
         if (
             (token.type === 'paragraph_open' || token.type === 'heading_open') &&
+            !isFootnoteBody(token) &&
             (explicitId === id || matchesHeadingId) &&
             typeof start === 'undefined'
         ) {

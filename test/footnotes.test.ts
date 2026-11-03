@@ -39,6 +39,74 @@ function countTokenRefs(tokens: Token[]): number {
 }
 
 describe('owned footnote output', () => {
+    it.each(['[^title]', 'Title[^title]'])(
+        'parses an extracted title with restricted core rules without rendering unowned refs: %s',
+        (title) => {
+            const generateID = vi.fn(() => 'inspection');
+            const md = parser({
+                disableLiquid: true,
+                extractTitle: true,
+                generateID,
+                plugins: [
+                    footnotes,
+                    (native) => native.core.ruler.enableOnly(['normalize', 'block', 'inline']),
+                ],
+            });
+            const doc = md.parseDocument(`# ${title}\n\n[^title]: Title body.`);
+            expect(doc.env.title).toBe(title);
+            expect(generateID).not.toHaveBeenCalled();
+        },
+    );
+
+    it('keeps a sole footnote reference in an extracted title and its body', () => {
+        const md = parser({disableLiquid: true, extractTitle: true, generateID: () => 'title'});
+        const doc = md.parseDocument('# [^a]\n\n[^a]: title note');
+        const html = md.compileDocument(doc);
+        const $ = verify(doc.env.title + html);
+        expect($('.footnote-ref').length).toBe(1);
+        expect($('.footnote-item').text()).toContain('title note');
+        expect($('.footnote-backref').length).toBe(1);
+        expect(md.compileDocument(doc)).toBe(html);
+    });
+
+    it('includes a selected heading with a same-level footnote heading and stops at the next peer', () => {
+        const root = realpathSync(mkdtempSync(join(tmpdir(), 'footnote-fragment-')));
+        try {
+            writeFileSync(
+                join(root, 'child.md'),
+                '## Selected {#selected}\n\nselected[^a]\n\n[^a]: note\n\n    ## Private {#hidden}',
+            );
+            const md = parser({
+                disableLiquid: true,
+                root,
+                path: join(root, 'root.md'),
+                generateID: () => 'fragment',
+                plugins: [...DefaultPlugins, includes],
+            });
+            const doc = md.parseDocument('{% include [part](child.md#selected) %}');
+            const $ = verify(md.compileDocument(doc));
+            expect($('h2').first().text()).toContain('Selected');
+            expect($('.footnote-item h2').text()).toContain('Private');
+            expect($('.footnote-item').text()).toContain('note');
+            expect(doc.env.headings.map((heading) => heading.title)).toEqual(['Selected']);
+
+            const hidden = md.parseDocument('{% include [part](child.md#hidden) %}');
+            expect(md.compileDocument(hidden)).not.toContain('Private');
+
+            writeFileSync(
+                join(root, 'peer.md'),
+                '## Selected {#selected}\n\nselected[^a]\n\n## Next\n\noutside\n\n[^a]: note\n\n    ## Private',
+            );
+            const peerDoc = md.parseDocument('{% include [part](peer.md#selected) %}');
+            const peer = verify(md.compileDocument(peerDoc));
+            expect(peer('h2').first().text()).toContain('Selected');
+            expect(peer('body').text()).not.toContain('outside');
+            expect(peer('.footnote-item h2').text()).toBe('Private');
+        } finally {
+            rmSync(root, {recursive: true, force: true});
+        }
+    });
+
     it('binds an extracted H1 early, keeps A/B/A stable, and excludes body headings', () => {
         const generateID = vi.fn(() => `prefix${generateID.mock.calls.length}`);
         const md = parser({disableLiquid: true, extractTitle: true, generateID});
