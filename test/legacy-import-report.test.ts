@@ -65,6 +65,23 @@ test('does not move a callback factory past earlier executable code', () => {
     }
 });
 
+test.each(["{directiveSyntax: 'enabled'}", "{directiveSyntax: 'only'}", 'options', '{...options}'])(
+    'preserves callback invocation options for manual migration: %s',
+    (options) => {
+        const directory = mkdtempSync(join(tmpdir(), 'legacy-imports-'));
+        const file = join(directory, 'sample.ts');
+        try {
+            const source = `import cut from '@diplodoc/transform/plugins/cut';\nmd.use(cut);\nmd.use(cut, ${options});\n`;
+            writeFileSync(file, source);
+            const report = execFileSync('node', [script, '--write', file], {encoding: 'utf8'});
+            expect(report).toContain('manual: use the configured direct extension factory');
+            expect(readFileSync(file, 'utf8')).toBe(source);
+        } finally {
+            rmSync(directory, {recursive: true, force: true});
+        }
+    },
+);
+
 test('refuses to write malformed files and reports the parse location', () => {
     const directory = mkdtempSync(join(tmpdir(), 'legacy-imports-'));
     const file = join(directory, 'sample.ts');

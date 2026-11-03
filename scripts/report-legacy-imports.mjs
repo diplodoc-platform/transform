@@ -132,6 +132,8 @@ for (const file of files) {
                         if (
                             ts.isCallExpression(parent) &&
                             parent.arguments[0] === identifier &&
+                            // Wrapper invocation options may configure factory-only behavior.
+                            parent.arguments.length === 1 &&
                             ts.isPropertyAccessExpression(parent.expression) &&
                             parent.expression.name.text === 'use'
                         )
