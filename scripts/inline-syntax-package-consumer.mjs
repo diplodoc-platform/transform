@@ -80,7 +80,8 @@ for (const api of [transform, cjsTransform]) {
     }
 }
 for (const name of ['underline', 'subscript']) {
-    assert.throws(() => require.resolve(`@diplodoc/transform/lib/plugins/${name}`), {
-        code: 'ERR_PACKAGE_PATH_NOT_EXPORTED',
-    });
+    assert.equal(
+        require(`@diplodoc/transform/lib/plugins/${name}`),
+        require(`@diplodoc/transform/plugins/${name}`),
+    );
 }

@@ -425,3 +425,85 @@ for (const name of ['yfm', 'base', '_yfm-only', 'print']) {
         }
     }
 }
+
+// Patterns resolve only this deliberately maintained facade inventory. Never scan
+// lib/: a newly compiled implementation must not become a package export.
+export const publicModules = [
+    ...new Map([
+        ...Object.values(stableEntries).map((source) => [source, {source}]),
+        ...legacyModules.map((entry) => [entry.source, entry]),
+    ]).values(),
+];
+
+const moduleExport = (source) => ({
+    import: {types: `./public/${source}.d.mts`, default: `./public/${source}.mjs`},
+    require: {types: `./public/${source}.d.cts`, default: `./public/${source}.cjs`},
+});
+const browserExport = (source) => ({
+    import: {types: `./dist/browser/${source}.d.mts`, default: `./dist/browser/${source}.mjs`},
+});
+const legacyTypeExport = (source) => ({
+    import: {types: './public/legacy-typings.d.mts', default: `./public/${source}.mjs`},
+    require: {types: './public/legacy-typings.d.cts', default: `./public/${source}.cjs`},
+});
+
+export function packageExports() {
+    const entries = Object.fromEntries(
+        Object.entries(stableEntries)
+            .filter(([name]) => !name.startsWith('./plugins/') && !name.startsWith('./migrations/'))
+            .map(([name, source]) => [name, moduleExport(source)]),
+    );
+    for (const [name, source] of Object.entries(browserEntries)) {
+        entries[name] = browserExport(source);
+    }
+    entries['./plugins/*'] = moduleExport('plugins/*');
+    entries['./migrations/*'] = moduleExport('migrations/*');
+    entries['./lib/*.js'] = moduleExport('*');
+    entries['./lib/*'] = moduleExport('*');
+    entries['./lib'] = moduleExport('index');
+    for (const source of ['typings', 'plugins/typings']) {
+        entries[`./lib/${source}`] = legacyTypeExport(source);
+        entries[`./lib/${source}.js`] = legacyTypeExport(source);
+    }
+    Object.assign(
+        entries,
+        Object.fromEntries(
+            Object.entries(staticEntries).filter(
+                ([name]) => !name.startsWith('./dist/js/') && !name.startsWith('./dist/css/'),
+            ),
+        ),
+    );
+    for (const extension of ['js', 'css']) {
+        entries[`./dist/${extension}/*.${extension}`] = `./dist/${extension}/*.${extension}`;
+        entries[`./dist/${extension}/*.${extension}.map`] =
+            `./dist/${extension}/*.${extension}.map`;
+        entries[`./dist/${extension}/*`] = `./dist/${extension}/*.${extension}`;
+    }
+    return entries;
+}
+
+// Concrete spellings for installed-package tests. This keeps every historical
+// import under test after package.json replaces explicit entries with patterns.
+export function publicEntryInventory() {
+    const entries = Object.fromEntries(
+        Object.entries(stableEntries).map(([name, source]) => [name, moduleExport(source)]),
+    );
+    for (const [name, source] of Object.entries(browserEntries)) {
+        entries[name] = browserExport(source);
+    }
+    for (const {source} of publicModules) {
+        for (const alias of [source, ...(source.endsWith('/index') ? [source.slice(0, -6)] : [])]) {
+            const entry = ['typings', 'plugins/typings'].includes(source)
+                ? legacyTypeExport(source)
+                : moduleExport(alias);
+            entries[`./lib/${alias}`] = entry;
+            entries[`./lib/${alias}.js`] = entry;
+            if (alias.startsWith('plugins/')) {
+                entries[`./${alias}`] = moduleExport(alias);
+            }
+        }
+    }
+    entries['./lib'] = moduleExport('index');
+    Object.assign(entries, staticEntries);
+    return Object.fromEntries(Object.entries(entries).filter(([name]) => !name.includes('*')));
+}
