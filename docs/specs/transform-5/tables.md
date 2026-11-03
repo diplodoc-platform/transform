@@ -1,6 +1,6 @@
 # Table splitters and alignment migration
 
-Status: approved by the coordinator for implementation. The scanner algorithm remains unchanged.
+The scanner algorithm remains unchanged.
 
 Task: [DOCSTOOLS-6945](https://st.yandex-team.ru/DOCSTOOLS-6945).
 Base: `87d076745e905bdaaa1cc774668ef30520197d38`.
@@ -99,7 +99,7 @@ Replace the existing unstructured warning with the shared reporter descriptor:
 - Replacement: the equivalent `::{align="..."}` cell attribute and the migration
   guide/API described below.
 - Earliest removal target: Transform 6, subject to ADR-009's published-warning
-  and compatibility gates. This proposal authorizes no removal or release.
+  and compatibility gates.
 
 Emit only when the existing extractor actually recognizes a legacy alignment
 class. Preserve its current treatment of unknown `cell-align-` suffixes; a warning
@@ -281,7 +281,6 @@ shared private position helper, scoped suffix diagnostics, the migration module,
 one public entry, tests, and migration documentation. Preserve existing extractor
 semantics, other table attributes/defaults, span behavior, sanitizer behavior,
 CSS, and legacy imports. Do not change dependency versions or lockfiles.
-Coordinate the public-entry generator change with the document-context owner.
 
 Required source and installed-package checks:
 
@@ -309,6 +308,4 @@ Markdown to HTML, lint, include fragments and merge-includes with inline-code
 pipes/alignment. Exercise explicit false as well as the new default. Verify the
 actual generated Markdown, not only Transform mocks. Record source/tarball and
 consumer revisions. Relevant Viewer table/include rendering must also be checked.
-Consumer owners use their separate worktrees; this proposal authorizes no edits
-there. Coordinator approval precedes implementation, and current-head CI and
-independent review precede merging the child into the major integration branch.
+Current-head CI and independent review precede integration into the major branch.

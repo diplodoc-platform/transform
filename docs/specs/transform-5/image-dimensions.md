@@ -1,11 +1,7 @@
 # Image dimension migration
 
-Status: root contract approved; implementation in progress. Publication, dependency
-changes and removal are not authorized by this document.
-
 Task: [DOCSTOOLS-6946](https://st.yandex-team.ru/DOCSTOOLS-6946).
-Baseline: `551a675bc24b5eefacfb8bf92550b145f9ad94c1` (accepted document context).
-Branch: `codex/docstools-6946-image-size`.
+Design baseline: `551a675bc24b5eefacfb8bf92550b145f9ad94c1` (document context).
 
 ## Scope and source requirements
 
@@ -22,10 +18,9 @@ The three primary comments were read from GitHub on 2026-10-28:
 - [Corpus objection](https://github.com/diplodoc-platform/transform/issues/519#issuecomment-5060570394): existing documents depend on that syntax.
 - [Explicit plugin route](https://github.com/diplodoc-platform/transform/issues/519#issuecomment-5817398439): imsize can be connected manually.
 
-The live child task and its current comment select preparation and compatibility,
-not removal in this major. This supersedes interpreting the first comment as
-permission to remove the default plugin now. Earliest removal is Transform 6,
-subject to a separately agreed release, published-warning and migration gates.
+Transform 5 retains the default plugin and prepares migration. Earliest removal
+is Transform 6, subject to a separately agreed release, published-warning and
+migration gates.
 No Transform 4 warning publication is asserted. Overall issue #519 is referenced,
 not closed by this task.
 
@@ -113,9 +108,8 @@ No Reporter is invoked by the pure migration function.
 
 Proposed entry: `@diplodoc/transform/migrations/image-dimensions`.
 Proposed function: `migrateImageDimensions(source, {path?} = {})`.
-Coordinate the single export-manifest addition with the browser owner/root; no
-parallel manifest/lock editing. No CLI command, filesystem traversal or general
-migration framework is part of this task.
+No CLI command, filesystem traversal or general migration framework is part of
+this API.
 
 Return `{output, edits, diagnostics}` with exported, readonly typed records:
 
@@ -199,24 +193,7 @@ from the production migrator merely to establish equivalence.
 | Package             | Full source gates and normal hooks; installed native CJS/ESM migration exports; strict types and exact packed payload; no dependency/lock/runtime-floor change                                                                                  |
 | Consumers           | Actual CLI HTML/MD/MD-to-HTML, mixed image attrs/Translation roundtrip and Viewer image rendering; legacy and migrated pairs with attrs explicitly false/true. New browser6940 composition later consumes the same imsize contract, not a fork  |
 
-## Implementation ownership and review choices
-
-After approval, own imsize source, a narrow private position helper if needed,
-migration module, focused tests, migration docs and coordinated public-entry
-addition. Preserve notes/directives/general attrs defaults and the 6940 shared
-host extraction. Do not touch consumer source without a separate assignment.
-
-Root contract review choices are explicit: accept the once-per-source-path runtime
-warning granularity; accept conservative diagnostics for existing brace groups,
-noncanonical percent forms and unprovable source ranges; accept unchanged default
-imsize composition and no removal before6. These choices need no new human input
-unless the root identifies a conflict with an existing user decision.
-
-Implementation source gates now cover 56 focused cases plus the existing suite.
-The isolated installed tarball passes native CJS/ESM exports, strict declarations,
-require-cache/graph purity and the inherited package probes. No consumer adoption,
-PR, dependency update or publication has occurred. Root/independent review and
-normal commit hooks remain pending at this working-diff checkpoint.
+## Source boundary limitation
 
 One proven source boundary is `![a](a\n =20x30\n)`: deleting the suffix and its
 single separating space leaves a blank line inside the destination. The four-mode

@@ -3,15 +3,6 @@
 Agreed implementation scope and acceptance gates. This document records the
 contracts and their validation boundaries.
 
-Preparation snapshot (2026-10-30): [PR #1142](https://github.com/diplodoc-platform/transform/pull/1142)
-is merged only into `codex/transform-5-major` at
-`e8c57378eb425aae1c6a9afc2f897d451b87fe8d`, with the reviewed source tree preserved.
-Sixteen of 17 implementation workstreams are closed; DOCSTOOLS-6949 remains in
-progress. Genuine-version local consumers, normal post-hook package identities,
-CLI canonical browser assets and Viewer's single runtime/styles are accepted.
-All consumer changes remain local. Stable `5.0.0` publication is not complete.
-These counts describe task accounting, not final package or publication acceptance.
-
 The public requirements are tracked in [the Transform 5 manifest](https://github.com/diplodoc-platform/transform/issues/519).
 The implementation baseline is `c4ba31468acf7229deef0fb64846eed00b0730a5`.
 
@@ -34,16 +25,16 @@ The implementation baseline is `c4ba31468acf7229deef0fb64846eed00b0730a5`.
 
 1. **Specify:** inventory the existing behaviour and consumers; record the
    proposed API, defaults, old-to-new mapping, dependencies and acceptance cases.
-2. **Review the contract:** the coordinator checks the proposal against the
+2. **Review the contract:** check the proposal against the
    manifest and child acceptance criteria before implementation starts.
 3. **Implement and verify:** implement only the agreed scope, retain meaningful
    regression fixtures and record exact commands, revisions and results.
-4. **Review and open a PR:** the coordinator reviews the diff and acceptance
+4. **Review and open a PR:** review the diff and acceptance
    evidence. The implementer then opens the child PR against the integration branch.
 5. **Accept:** require successful GitHub checks for the current head revision,
-   local checks in the affected consumers, and one or two additional coordinator
-   reviews after CI. Fixes invalidate the affected evidence and require a fresh
-   review. Merge only when all applicable gates pass.
+   local checks in the affected consumers, independent review and one or two
+   additional reviews after successful current-head CI. Fixes invalidate the
+   affected evidence and require a fresh review. Merge only when all applicable gates pass.
 6. **Release acceptance:** after all workstreams, test the final installable
    tarball across the complete matrix and reconcile changelog and migration guide.
 
@@ -76,12 +67,6 @@ replacement implementations can start earlier.
 | DOCSTOOLS-6948 / 15 | Independently controllable footnotes, underline, subscript and task lists                                        | 4 for final plugin controls                                                    |
 | DOCSTOOLS-6949 / 16 | Migration guide, changelog and installed-package/consumer acceptance                                             | All other sixteen workstreams, including 17                                    |
 | DOCSTOOLS-6951 / 17 | Typed per-document env lifecycle with isolated metadata and resources                                            | 1/4; coordinate exports with 3 and includes/attrs with 11                      |
-
-The first implementation wave is 1 and 2 in parallel, with consumer acceptance
-preparation from 16. Broad ESM conversion follows the parser update because both
-own import boundaries, package metadata and the lockfile. Maintain one owner for
-each manifest/lockfile at a time. At most five workstreams run concurrently;
-available agent capacity may impose a smaller limit.
 
 ## Contract decisions
 
@@ -197,7 +182,7 @@ migration map and the candidate tarball identity. Preserve unrelated dirty work.
 Do not call a consumer validated when only a mocked transform or old prebuilt
 runtime was exercised.
 
-### Accepted genuine-version snapshot
+### Historical acceptance evidence (2026-10-30)
 
 The reviewed core archive is `5.0.0-transform5.0`, SHA-256
 `02c95f52a5790b49ab5708430a3b99862858d67ccafe1ff2f9facadf14507bb8`,

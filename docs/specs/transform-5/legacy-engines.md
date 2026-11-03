@@ -1,7 +1,5 @@
 # Retained legacy Liquid and YFMLint engines
 
-Status: Approved contract; implementation under coordinator review.
-
 Task: [DOCSTOOLS-6938](https://st.yandex-team.ru/DOCSTOOLS-6938).
 Runtime design base: `18856b846ce06b27ab3739b11f5195967048307d`.
 Reviewed registry baseline: `87d076745e905bdaaa1cc774668ef30520197d38`.
@@ -16,8 +14,8 @@ in this task. Removal is no earlier than Transform 6, and requires a published
 warning release plus migrated and validated consumers under ADR-009. A branch
 warning is not evidence that warnings shipped in Transform 4.
 
-The bounded audit is coordinator-owned and recorded in Tracker comment
-`6ae0d795e516c53fcc29417c`; it is not repeated here. Confirmed dependencies:
+The bounded design audit is recorded in Tracker comment
+`6ae0d795e516c53fcc29417c`. Dependencies identified at that baseline:
 
 - CLI translation units call `Transform/lib/liquid` directly with strict
   conditions, substitutions disabled and cycles disabled.
@@ -30,14 +28,13 @@ The bounded audit is coordinator-owned and recorded in Tracker comment
 No direct bundled-YFMLint caller was found in those bounded sources. This is not
 an ecosystem-wide absence claim and does not authorize removing its API.
 
-## Proposed diagnostic decision
+## Diagnostic contract
 
 **Warn on actual engine invocation, including plain input.** The deprecated
 feature is the bundled engine API/composition, not a particular syntax token.
 Importing a module, registering a plugin or merely supplying a setting does not
 warn. No regex/classifier attempts to decide whether Liquid syntax is meaningful.
-This intentionally adds a warning to the default root call on plain text; root
-approval of that diagnostic-count change is required before implementation.
+This intentionally adds a warning to the default root call on plain text.
 
 | Stable code                 | Actual trigger                                                                                           | Replacement                                                                                                                         | Earliest removal                          |
 | --------------------------- | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
@@ -91,7 +88,7 @@ inspection. A repeat call with the same logger warns again; failure does not
 suppress the next call. Never clear global logs to reset a reporter or modify the
 generic logger adapter's warning deduplication.
 
-Coordinate with the proposed DOCSTOOLS-6951 document-context design: each root
+Under the DOCSTOOLS-6951 document-context contract, each root
 gets a fresh reporter, child frames share it, plugin closures receive the stable
 active-scope facade, and registration-only diagnostics have a separate scope.
 Root Liquid is a document operation, not a parser-installation warning. The root
@@ -100,11 +97,6 @@ uses the agreed internal `initMarkdownIt(options, firstDocumentReporter?)` bridg
 The root wrapper passes its pre-Liquid reporter. DOCSTOOLS-6951 consumes that
 reporter for the first attempted root only (including failure), then creates fresh
 scopes. It does not add Liquid processing to the low-level parser.
-
-Before 6951 lands, a narrowly injected shared reporter may bridge root Liquid and
-parser initialization; reusable low-level parsers retain the documented existing
-scope limitation until the document lifecycle change is accepted. Do not claim
-automatic reset from that intermediate implementation.
 
 Direct helper calls prefer an explicitly supplied reporter, then the active
 state document reporter; otherwise allocate a fresh invocation scope. Direct
@@ -151,7 +143,7 @@ The parent workstream decision is updated in `plan.md`: the future browser entry
 must compose a graph excluding retained server legacy code without claiming that
 Node implementations or compatibility exports were removed by workstream 5.
 
-## Required verification after design approval
+## Required verification
 
 1. Root flag matrix: defaults, each bypass independently and together, explicit
    false values, `conditionsInCode` false/true, plain text, actual Liquid syntax,
@@ -182,11 +174,3 @@ Node implementations or compatibility exports were removed by workstream 5.
    bypass paths must add none unless an actually enabled bundled helper runs.
    Record source/consumer SHAs, tarball hash and exact commands. These are
    acceptance requirements, not claims that this design has run those consumers.
-
-## Decisions requested
-
-Approve invocation-level warnings on plain input, the two stable codes, one
-occurrence per code/source/engine label, fresh standalone-call scopes with optional
-shared context, unchanged current/legacy behavior, and the shared pre-Liquid root
-scope contract with 6951. Implementation and consumer evidence remain pending.
-No PR, push, publication or Tracker write is authorized by this specification.
