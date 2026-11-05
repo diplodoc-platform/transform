@@ -457,9 +457,13 @@ function namespaceCandidate(service: FootnoteService): string {
 function applyPlan(forest: Forest, namespace: string, rootScope: Scope) {
     let nextScope = 1;
     const ordinals = new Map<Scope, number>();
+    const references = new Map<Note, Map<number, number>>();
     if (rootScope) ordinals.set(rootScope, 0);
-    for (const scope of forest.scopes.keys()) {
+    for (const [scope, notes] of forest.scopes) {
         if (!ordinals.has(scope)) ordinals.set(scope, nextScope++);
+        for (const note of notes.values()) {
+            references.set(note, new Map(note.refs.map((ref, index) => [subId(ref), index + 1])));
+        }
     }
     const authoredIds = new Set<string>();
     walk([...forest.title, ...forest.tokens], (token) => {
@@ -471,8 +475,11 @@ function applyPlan(forest: Forest, namespace: string, rootScope: Scope) {
         const scope = requireScope(token);
         const note = forest.scopes.get(scope)?.get(noteId(token));
         if (!note) throw new Error('Missing planned footnote');
+        const reference =
+            token.type === 'footnote_open' ? 1 : references.get(note)?.get(subId(token));
+        if (!reference) throw new Error('Missing rendered footnote reference');
         const body = `${namespace}-s${ordinals.get(scope)}-n${noteId(token) + 1}`;
-        const ref = `${body}-r${subId(token) + 1}`;
+        const ref = `${body}-r${reference}`;
         if (authoredIds.has(body) || authoredIds.has(ref)) {
             throw new Error('An authored id collides with a generated footnote id');
         }
@@ -482,7 +489,7 @@ function applyPlan(forest: Forest, namespace: string, rootScope: Scope) {
                 body,
                 ref,
                 caption: note.caption,
-                reference: subId(token) + 1,
+                reference,
             },
         });
     });

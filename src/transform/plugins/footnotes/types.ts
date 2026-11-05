@@ -26,7 +26,7 @@ interface InlineInput {
     push(type: string, tag: string, nesting: -1 | 0 | 1): Token;
     md: FootnoteGrammar;
 }
-interface CoreInput {
+export interface CoreInput {
     tokens: Token[];
     env: ParserEnv;
     inlineMode: boolean;
@@ -56,7 +56,12 @@ export interface FootnoteGrammar {
             disable(names: string[]): void;
         };
     };
-    core: {ruler: {after(anchor: string, name: string, rule: (state: CoreInput) => void): void}};
+    core: {
+        ruler: {
+            after(anchor: string, name: string, rule: (state: CoreInput) => void): void;
+            at(name: string, rule: (state: CoreInput) => void): void;
+        };
+    };
     // The adapter and upstream install rules; neither reads a host renderer callback.
     renderer: {rules: Record<string, unknown>};
 }

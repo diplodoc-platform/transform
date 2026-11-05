@@ -88,6 +88,15 @@ list checkboxes are disabled. Superscript retains its caret syntax. See
 [inline syntax](../inline-syntax.md) and [footnotes and task lists](../footnotes.md)
 for callback lists and document ownership.
 
+If you explicitly use the legacy `checkbox` callback, disable `task-list` in
+the named configuration, or omit its callback from your replacement plugin
+array. The standard preset does not enable legacy `checkbox`.
+
+Existing link labels starting with a caret can now be parsed as footnotes:
+`[^^name]` with `[^^name]: ...` has footnote label `^name`. Rename both the
+reference and the definition to a label without a leading caret, or disable
+`footnotes` to retain the old interpretation.
+
 ## Attributes, tables, images and SVG
 
 General Markdown attributes now default to off. Set `enableMarkdownAttrs: true`
