@@ -27,10 +27,11 @@ export interface DeprecationLocation {
     readonly column?: number;
 }
 
-/** A warning must identify either a source occurrence or a configuration option. */
+/** A warning must identify a source occurrence, configuration option, or API. */
 export type DeprecationUsage =
-    | {readonly location: DeprecationLocation; readonly option?: string}
-    | {readonly location?: DeprecationLocation; readonly option: string};
+    | {readonly location: DeprecationLocation; readonly option?: string; readonly api?: string}
+    | {readonly location?: DeprecationLocation; readonly option: string; readonly api?: string}
+    | {readonly location?: DeprecationLocation; readonly option?: string; readonly api: string};
 
 export interface DeprecationReporter {
     /** Report actual usage once per code and occurrence within this scope. */
@@ -49,20 +50,22 @@ function requireText(value: string | undefined, field: string): asserts value is
 
 function formatWarning(descriptor: DeprecationDescriptor, usage: DeprecationUsage): string {
     const {code, feature, replacement, removal} = descriptor;
-    const {location, option} = usage;
+    const {location, option, api} = usage;
 
     requireText(code, 'code');
     requireText(feature, 'feature');
     requireText(replacement, 'replacement');
     requireText(removal.version || removal.date, 'removal version or date');
-    requireText(location?.path || option, 'location or option');
+    requireText(location?.path || option || api, 'location, option or API');
 
     const source = location
         ? [location.path, location.line, location.column]
               .filter((part) => part !== undefined)
               .join(':')
         : '';
-    const occurrence = [source, option ? `option "${option}"` : ''].filter(Boolean).join(', ');
+    const occurrence = [source, option ? `option "${option}"` : '', api ? `API "${api}"` : '']
+        .filter(Boolean)
+        .join(', ');
     const target = [
         removal.version ? `version ${removal.version}` : '',
         removal.date ? `date ${removal.date}` : '',
@@ -96,6 +99,7 @@ export function createDeprecationReporter(
                 usage.location?.line,
                 usage.location?.column,
                 usage.option,
+                usage.api,
             ]);
 
             if (seen.has(key)) {

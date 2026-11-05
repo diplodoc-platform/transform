@@ -255,3 +255,19 @@ plugin. Empty presets still allow explicitly enabled builtin IDs.
 Consumer adaptations remain on their separate branches. Publication and old-API
 removal are outside this contract. Full CI, consumer acceptance and independent
 review remain necessary before integration into the major branch.
+
+## Legacy preset customization and warning replacements
+
+Explicit callback arrays, including `[...DefaultPlugins, custom]`, retain the
+legacy invocation contract and Cut/Tabs deprecations. Reusing a builtin function
+identity does not make that explicit installation automatic: automatic builtins
+default to enabled directive syntax, whereas explicit callbacks default to disabled.
+Migrate default-preset extensions through `defineLegacyPlugin` or `definePlugin`
+and `pluginConfiguration.plugins`. Set `cut`, `notes` and `tabs` directive modes
+explicitly when preserving an explicit legacy preset's disabled default. Custom
+plugins retain declared order after the preset unless explicit ordering is supplied.
+
+Cut/Tabs replacement warnings evaluate `directiveSyntax` using the same
+automatic/explicit selection as actual installation, then include that exact
+`disabled`, `enabled` or `only` mode in their standalone factory examples.
+Invalid modes remain errors. This changes warning guidance, not rendering defaults.

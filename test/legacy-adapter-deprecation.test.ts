@@ -5,7 +5,7 @@ import {transform as createTabs} from '@diplodoc/tabs-extension';
 
 import transform from '../src/transform';
 import {createDeprecationReporter} from '../src/transform/deprecation';
-import {defineLegacyPlugin} from '../src/transform/plugin-configuration';
+import {defineLegacyPlugin, defineTransformOptions} from '../src/transform/plugin-configuration';
 import cut from '../src/transform/plugins/cut';
 import tabs from '../src/transform/plugins/tabs';
 import preset from '../src/transform/plugins';
@@ -92,4 +92,82 @@ test('cut adapter preserves direct factory behavior for nested cuts', () => {
         return {html, env};
     };
     expect(run(cut)).toEqual(run(direct));
+});
+
+test.each([undefined, 'disabled', 'enabled', 'only'] as const)(
+    'factory guidance preserves effective %s mode for block directives and paragraphs',
+    (configuredMode) => {
+        const mode = configuredMode ?? 'disabled';
+        const source = [
+            'Before paragraph.',
+            ':::cut [Title]\n\nCut body.\n\n:::',
+            ':::tabs\n\n- First\n\n  Tab body.\n\n:::',
+            'After paragraph.',
+        ].join('\n\n');
+        const log = {info: vi.fn(), warn: vi.fn(), error: vi.fn()};
+        const directiveSyntax = configuredMode;
+        const actual = transform(source, {
+            disableLiquid: true,
+            plugins: [cut, tabs],
+            directiveSyntax,
+            generateID: () => 'fixed',
+            path: 'guide.md',
+            log,
+        });
+        const expected = transform(source, {
+            disableLiquid: true,
+            plugins: [
+                createCut({bundle: false, directiveSyntax}),
+                createTabs({
+                    bundle: false,
+                    directiveSyntax,
+                    features: {
+                        enabledVariants: {
+                            radio: true,
+                            regular: true,
+                            dropdown: true,
+                            accordion: true,
+                        },
+                    },
+                }),
+            ],
+            generateID: () => 'fixed',
+        });
+        expect(actual.result).toEqual(expected.result);
+        expect(log.warn.mock.calls.map(([message]) => message)).toEqual([
+            `[DEPRECATED LEGACY_CUT_CALLBACK] Transform cut callback at guide.md, option "plugins.cut". Use transform({bundle: false, directiveSyntax: '${mode}'}) from @diplodoc/cut-extension. Removal: version 6.0.0.`,
+            `[DEPRECATED LEGACY_TABS_CALLBACK] Transform tabs callback at guide.md, option "plugins.tabs". Use transform({bundle: false, directiveSyntax: '${mode}', features: {enabledVariants: {radio: true, regular: true, dropdown: true, accordion: true}}}) from @diplodoc/tabs-extension. Removal: version 6.0.0.`,
+        ]);
+    },
+);
+
+test('named preset customization preserves an explicit spread preset and its disabled modes', () => {
+    const custom = vi.fn((md: Parameters<typeof cut>[0]) => {
+        md.renderer.rules.hr = () => '<hr class="custom">\n';
+    });
+    const log = {info: vi.fn(), warn: vi.fn(), error: vi.fn()};
+    const source = 'Before\n\n:::cut [Title]\n\nBody\n\n:::\n\n---';
+    const core = {disableLiquid: true, generateID: () => 'fixed', log};
+    const old = transform(source, {...core, plugins: [...preset, custom]});
+    expect(log.warn.mock.calls.map(([message]) => message)).toHaveLength(2);
+    log.warn.mockClear();
+    const configuredCustom = defineLegacyPlugin({id: 'app/custom', plugin: custom})({});
+    const migrated = transform(
+        source,
+        defineTransformOptions({
+            core,
+            plugins: {
+                preset: 'default',
+                options: {
+                    cut: {directiveSyntax: 'disabled'},
+                    notes: {directiveSyntax: 'disabled'},
+                    tabs: {directiveSyntax: 'disabled'},
+                },
+                plugins: [configuredCustom],
+            },
+        }),
+    );
+    expect(migrated.result).toEqual(old.result);
+    expect(log.warn).not.toHaveBeenCalled();
+    expect(custom).toHaveBeenCalledTimes(2);
 });

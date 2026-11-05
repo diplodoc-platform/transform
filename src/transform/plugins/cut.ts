@@ -19,20 +19,19 @@ type CutCollector = {collect(input: string, options: {destRoot: string}): void};
 
 const cutCallback = (md: MarkdownIt, options?: AdapterOptions) => {
     const invocation = unwrapBuiltin(options, cutCallback);
+    const mode = directiveMode(invocation.options?.directiveSyntax, invocation.automatic);
     if (!invocation.automatic) {
         const context = invocation.options;
         context?.deprecations?.warn(
             {
                 code: 'LEGACY_CUT_CALLBACK',
                 feature: 'Transform cut callback',
-                replacement:
-                    "transform({bundle: false, directiveSyntax: 'disabled'}) from @diplodoc/cut-extension",
+                replacement: `transform({bundle: false, directiveSyntax: '${mode}'}) from @diplodoc/cut-extension`,
                 removal: {version: '6.0.0'},
             },
             {option: 'plugins.cut', ...(context.path ? {location: {path: context.path}} : {})},
         );
     }
-    const mode = directiveMode(invocation.options?.directiveSyntax, invocation.automatic);
     if (mode === 'disabled') {
         implementation(md, invocation.options);
     } else {

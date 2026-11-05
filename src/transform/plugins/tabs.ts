@@ -30,20 +30,19 @@ const tabs: (
     },
 ) => void = (md, options) => {
     const invocation = unwrapBuiltin(options, tabs);
+    const mode = directiveMode(invocation.options?.directiveSyntax, invocation.automatic);
     if (!invocation.automatic) {
         const context = invocation.options;
         context?.deprecations?.warn(
             {
                 code: 'LEGACY_TABS_CALLBACK',
                 feature: 'Transform tabs callback',
-                replacement:
-                    'transform({bundle: false, features: {enabledVariants: {radio: true, regular: true, dropdown: true, accordion: true}}}) from @diplodoc/tabs-extension',
+                replacement: `transform({bundle: false, directiveSyntax: '${mode}', features: {enabledVariants: {radio: true, regular: true, dropdown: true, accordion: true}}}) from @diplodoc/tabs-extension`,
                 removal: {version: '6.0.0'},
             },
             {option: 'plugins.tabs', ...(context.path ? {location: {path: context.path}} : {})},
         );
     }
-    const mode = directiveMode(invocation.options?.directiveSyntax, invocation.automatic);
     if (mode === 'disabled') {
         implementation(md, invocation.options);
     } else {

@@ -54,6 +54,19 @@ describe('deprecation scopes', () => {
         },
     );
 
+    test('distinguishes API invocations from real options in formatting and deduplication', () => {
+        const consumer = createConsumer();
+        const reporter = createDeprecationReporter({log: consumer});
+        reporter.warn(descriptor, {api: 'legacyFunction'});
+        reporter.warn(descriptor, {api: 'anotherFunction'});
+        reporter.warn(descriptor, {option: 'legacyFunction'});
+        expect(consumer.warn.mock.calls.map(([message]) => message)).toEqual([
+            '[DEPRECATED TEST_LEGACY_FEATURE] Example legacy syntax at API "legacyFunction". Use example current syntax. Removal: version 6.0.0, date 2027-01-01.',
+            '[DEPRECATED TEST_LEGACY_FEATURE] Example legacy syntax at API "anotherFunction". Use example current syntax. Removal: version 6.0.0, date 2027-01-01.',
+            '[DEPRECATED TEST_LEGACY_FEATURE] Example legacy syntax at option "legacyFunction". Use example current syntax. Removal: version 6.0.0, date 2027-01-01.',
+        ]);
+    });
+
     test('requires a removal target and an occurrence in the typed contract', () => {
         expectTypeOf<{}>().not.toMatchTypeOf<DeprecationDescriptor['removal']>();
         expectTypeOf<{}>().not.toMatchTypeOf<DeprecationUsage>();

@@ -48,9 +48,12 @@ second behavior implementation because the old behavior is retained.
 
 Every warning uses ADR-009's reporter and existing collector/injected `log.warn`.
 Use the actual source path if available; engine-level warnings do not invent line
-or column coordinates. A stable option/API label (`bundledLiquid` or
-`bundledYfmlint`) provides an honest occurrence when no path exists. With a path,
-use the same code/path/label across root, helper and recursive calls, so repeated
+or column coordinates. An API label (`liquidDocument/liquidSnippet` or `yfmlint`) identifies the
+retained public APIs without pretending that a synthetic label is a configurable
+option. Both Liquid APIs share one label to retain same-source deduplication.
+The Liquid replacement explicitly requires external preprocessing of root and
+included sources followed by `disableLiquid: true`; `isLiquided` bypasses only
+the root. With a path, use the same code/path/API label across root, helper and recursive calls, so repeated
 processing of one file within one scope emits once. Different included source
 paths emit separate occurrences. Frontmatter strings/internal snippet expansion
 must not create additional public-call warnings.
