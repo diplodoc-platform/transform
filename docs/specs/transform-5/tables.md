@@ -97,7 +97,9 @@ The same rule prevents a multiline span from swallowing a nested table opener.
 
 Single- and multiple-backtick multiline code, pipes, and apparent row delimiters
 remain supported within these structural boundaries. Backtick runs match their
-complete length, including after a newline. Block-code and math grammar, ordinary
+complete length, including after a newline. Outside code, escaping the first
+backtick consumes only that tick: the remaining run may open a span. Inside an
+already open span, a backslash does not shorten a closing run. Block-code and math grammar, ordinary
 Markdown pipe tables, and explicit-false splitter behavior remain unchanged.
 Runtime parsing and alignment migration use the same private scanner.
 

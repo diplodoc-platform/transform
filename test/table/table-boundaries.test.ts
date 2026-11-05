@@ -106,3 +106,23 @@ it.each([
         transform(source, {...options, generateID: () => 'table-code'}).result.html;
     expect(compile(`${first}\n${later}`)).toBe(compile(first) + compile(later));
 });
+
+it.each([2, 3, 4])(
+    'keeps the remaining opener after escaping the first of %i backticks',
+    (length) => {
+        const opening = '\\' + '`'.repeat(length);
+        const closing = '`'.repeat(length - 1);
+        const body = `escaped ${opening}before|after${closing} tail`;
+        const parser = new MarkdownIt().use(table, {table_ignoreSplittersInBlockCode: false});
+        const html = parser.render(wrap(`${body} | neighbor`));
+        expect(html.match(/<td>/g)).toHaveLength(2);
+        expect(html).toContain(new MarkdownIt().renderInline(body));
+        expect(html).toContain('<p>neighbor</p>');
+    },
+);
+
+it('still matches an escaped full run as a closer inside code', () => {
+    const body = '``before|after\\`` tail';
+    expect(render(wrap(`${body} | neighbor`))).toContain(new MarkdownIt().renderInline(body));
+    expect(render(wrap(`${body} | neighbor`)).match(/<td>/g)).toHaveLength(2);
+});

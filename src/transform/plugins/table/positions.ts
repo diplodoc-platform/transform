@@ -87,7 +87,7 @@ function backtickRuns(src: string, start: number, end: number): BacktickRun[] {
     return runs;
 }
 
-function pairBackticks(runs: BacktickRun[], pairs: Map<number, number>) {
+function pairBackticks(src: string, runs: BacktickRun[], pairs: Map<number, number>) {
     const next = new Map<number, number>();
     for (let index = runs.length - 1; index >= 0; index--) {
         const run = runs[index];
@@ -95,6 +95,14 @@ function pairBackticks(runs: BacktickRun[], pairs: Map<number, number>) {
         const end = next.get(length);
         if (end !== undefined) {
             pairs.set(run.start, end);
+        }
+        // Outside code, a backslash consumes only the first tick of a run.
+        // Inside code, the same escaped run remains a full-length closer.
+        if (length > 1 && isEscaped(src, run.start)) {
+            const remainderEnd = next.get(length - 1);
+            if (remainderEnd !== undefined) {
+                pairs.set(run.start + 1, remainderEnd);
+            }
         }
         next.set(length, run.end);
     }
@@ -241,7 +249,7 @@ function tableCodePairs(
     parseTableAttrs(state, iter);
 
     const boundary = () => {
-        pairBackticks(pending, pairs);
+        pairBackticks(state.src, pending, pairs);
         pending = [];
     };
 
@@ -250,7 +258,7 @@ function tableCodePairs(
             indexedLine = iter.line;
             lineRuns = backtickRuns(state.src, iter.pos, Math.min(iter.lineEnds, end));
             linePairs = new Map();
-            pairBackticks(lineRuns, linePairs);
+            pairBackticks(state.src, lineRuns, linePairs);
             runIndex = 0;
         }
         while (runIndex < lineRuns.length && lineRuns[runIndex].start <= iter.pos) {
