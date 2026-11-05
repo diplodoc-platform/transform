@@ -54,7 +54,8 @@ imsize sources are byte-identical to this baseline (empty source diff against
 | Full/collapsed/shortcut reference images                                           | References resolve normally; brace dimensions can follow use sites                                                                               | Already-modern references unchanged; legacy dimensions in reference definitions are not a supported legacy form and are not rewritten |
 | Adjacent modern braces                                                             | Nonempty modern width/height override the corresponding legacy value; missing modern dimension retains legacy value                              | Existing adjacent brace group is diagnostic-only in the first migrator, even if some cases could be merged                            |
 | Mixed brace attrs                                                                  | Foreign text/title/class/ID keeps the brace source available to attrs and Translation; imsize still reads owned dimensions                       | Preserve this behavior exactly; no attribute reserialization, no mixed-group migration                                                |
-| Code/frontmatter/raw HTML/escaped image marker                                     | Examples or non-image text, not actual legacy image use                                                                                          | No edits, runtime warnings or migration diagnostics inside protected regions                                                          |
+| Code/frontmatter/escaped image marker                                              | Examples or non-image text, not actual legacy image use                                                                                          | No edits, runtime warnings or migration diagnostics inside protected regions                                                          |
+| Raw HTML blocks                                                                    | Protected when HTML is enabled; ordinary container contents can render Markdown images when HTML is disabled                                     | No edits; the narrow `html-disabled-image` diagnostic below reports a proven rendering-policy gap                                     |
 
 Modern standalone examples: `![alt](image.png "title"){width=300 height=200}`,
 `{width=50%}`, `{height='200'}`. Reference use sites also support immediate braces.
@@ -123,7 +124,8 @@ Return `{output, edits, diagnostics}` with exported, readonly typed records:
   Uniquely mapped recognized candidates point to the original size suffix.
 - Reasons: `noncanonical-dimensions`, `existing-attributes`,
   `unsupported-legacy-form`, `ambiguous-source-range`, `nested-image`,
-  `equivalence-check-failed`. Refine only if implementation discovers a concrete
+  `equivalence-check-failed`, `equivalence-budget-exceeded`, `html-disabled-image`.
+  The latter two are explicit review corrections described below. Refine only if implementation discovers a concrete
   distinct case; do not silently widen the migration subset.
 
 Successful migration retains all source outside the legacy suffix and insertion
@@ -178,6 +180,72 @@ must report that bounded limitation rather than silently alter content.
 Tests also compare final sanitized HTML for successful legacy-to-modern pairs.
 Keep parser-specific canonical comparison pure; do not call the full Transformer
 from the production migrator merely to establish equivalence.
+
+### Independent paragraph proof and bounded fallback
+
+Cache the four unchanged source parses, reference facts and signatures once.
+A local proof is eligible only for a uniquely mapped, single-line, top-level
+paragraph containing one recognized legacy candidate. Its complete mapped block
+must remain a paragraph in all four source profiles. Nested images and the
+existing attribute/range refusals remain ineligible.
+
+Parse the complete unchanged paragraph in each profile with the same document
+reference facts, and verify its canonical tokens and HTML against the cached
+source-document block. A fresh per-parse reference overlay isolates writes without
+copying the whole document reference table. Cache these local baselines. Then
+parse only that paragraph with this one candidate's edits and compare canonical
+tokens, rendered HTML and local CSS allowances in all four profiles. Different
+candidates never share mutable token or CSS state. No removed or inserted range
+may contain a newline. The recognized dimension edit cannot create a new block
+opener, and unchanged paragraph separators prevent merging neighboring blocks.
+
+This remains an individual proof against the unchanged source. Aggregate
+compensation never authorizes a candidate. The mandatory uncached final
+whole-document proof in all four profiles guards composition and reference
+context; any mismatch discards every edit.
+
+Nonlocal cases retain individual whole-document proof, bounded to **32 actual
+candidate full-input parser invocations** per migration call. Each attempted
+profile consumes one unit. A partial proof never authorizes edits: unproved
+complex candidates remain unchanged with a located `equivalence-budget-exceeded`
+diagnostic at their original size suffix. Independently proven local paragraphs
+remain eligible after exhaustion. Constant source setup and the mandatory final
+four-profile proof are outside the candidate budget. This is a deliberate,
+transparent conservative eligibility limit, not weaker equivalence.
+
+The independent-paragraph path processes the sum of paragraph lengths instead
+of reparsing the entire document per image. Source normalization, mapped-block
+facts and original-line indexes are cached; edits use one ordered slice/join
+builder. Rejected-candidate indexing and diagnostic deduplication do not scan
+all earlier candidates for each image. No universal wall-clock bound or change
+to the native Markdown grammar is asserted.
+
+### Protected HTML and HTML-disabled diagnostics
+
+`html:true` discovery remains the only edit-authorizing policy. Raw HTML is never
+rewritten. The diagnostic-only `html-disabled-image` reason means an actual
+legacy image renders with HTML disabled while migration protects that source.
+It does not assert the caller's `allowHTML` value or emit a runtime warning.
+
+The initial diagnostic subset is a complete top-level container block whose
+first/last physical lines are matching standalone tags. Eligible container names
+are `div`, `section`, `article`, `aside`, `main`, `header`, `footer`, `nav`,
+`figure`, `figcaption`, `details`, `summary` and `blockquote`. Unknown tags,
+self-closing forms and ambiguous/incomplete boundaries retain their protection.
+
+One supplemental HTML-disabled parse must recognize the real legacy image at a
+unique original span. A second HTML-enabled parse of just the container body,
+using the same references, must recognize that same image. This preserves native
+comment/raw-text/HTML/fence/code/escape protection without scanning arbitrary
+`=...` strings. Script, pre, style, textarea, comments and fenced HTML examples
+do not become diagnostic candidates. Nested protected HTML and ambiguous
+containers can remain unreported; this is an intentionally narrow diagnostic,
+not a complete HTML linter. Body probes cover disjoint source blocks.
+
+Images outside HTML retain normal migration behavior. Both probes are read-only;
+the diagnostic uses the original size-suffix offset, including CRLF/BOM/astral
+coordinate handling. Inspect diagnostics and validate the actual consumer's
+rendering policy before any manual HTML-source migration.
 
 ## Acceptance matrix
 
