@@ -10,7 +10,7 @@ interface Scope {
     source: string;
     lines: string[];
     starts: number[];
-    protectedHtml: {start: number; end: number}[];
+    protectedHtml: ReturnType<typeof createHtmlProtection>;
     htmlClosers: ReturnType<typeof indexHtmlClosers>;
 }
 
@@ -32,6 +32,7 @@ interface Origin {
 export function indexHtmlClosers(source: string) {
     const tags = new Map<number, number>();
     const comments = new Map<number, number>();
+    if (!source.includes('<')) return {tags, comments};
     let unquoted = 0;
     let single = 0;
     let double = 0;
@@ -62,6 +63,47 @@ export function indexHtmlClosers(source: string) {
     return {tags, comments};
 }
 
+/**
+ * Track encountered ranges without assuming native inline traversal order.
+ * @param starts - Sorted possible starts from the source's less-than offsets.
+ * @returns Point activation and end-exclusive containment in O(log M) work.
+ */
+export function createHtmlProtection(starts: number[]) {
+    const maximum = new Array<number>(starts.length + 1).fill(0);
+    const countThrough = (offset: number) => {
+        let begin = 0;
+        let end = starts.length;
+        while (begin < end) {
+            const middle = Math.floor((begin + end) / 2);
+            if (starts[middle] <= offset) begin = middle + 1;
+            else end = middle;
+        }
+        return begin;
+    };
+    return {
+        add(start: number, end: number) {
+            let index = countThrough(start);
+            if (starts[index - 1] !== start) throw new RangeError('Unknown HTML range start');
+            while (index < maximum.length) {
+                maximum[index] = Math.max(maximum[index], end);
+                // eslint-disable-next-line no-bitwise -- Fenwick point-update step.
+                index += index & -index;
+            }
+        },
+        contains(offset: number) {
+            let index = countThrough(offset);
+            let end = 0;
+            // A range contains offset iff the maximum activated end with start <= offset exceeds it.
+            while (index > 0) {
+                end = Math.max(end, maximum[index]);
+                // eslint-disable-next-line no-bitwise -- Fenwick prefix-query step.
+                index -= index & -index;
+            }
+            return offset < end;
+        },
+    };
+}
+
 function createScope(source: string): Scope {
     const lines = source.split('\n');
     let offset = 0;
@@ -70,7 +112,14 @@ function createScope(source: string): Scope {
         offset += line.length + 1;
         return start;
     });
-    return {source, lines, starts, protectedHtml: [], htmlClosers: indexHtmlClosers(source)};
+    const htmlClosers = indexHtmlClosers(source);
+    return {
+        source,
+        lines,
+        starts,
+        protectedHtml: createHtmlProtection([...htmlClosers.comments.keys()].reverse()),
+        htmlClosers,
+    };
 }
 
 function contentLine(origin: Origin, offset: number): number {
@@ -122,10 +171,10 @@ function protectHtml(origin: Origin, offset: number): void {
     const start = originalOffset(origin, offset);
     const {source} = origin.scope;
     if (source.startsWith('<!--', start)) {
-        origin.scope.protectedHtml.push({
+        origin.scope.protectedHtml.add(
             start,
-            end: origin.scope.htmlClosers.comments.get(start) ?? source.length,
-        });
+            origin.scope.htmlClosers.comments.get(start) ?? source.length,
+        );
         return;
     }
     // A sticky expression avoids allocating/testing the remaining source at every '<'.
@@ -133,7 +182,7 @@ function protectHtml(origin: Origin, offset: number): void {
     tag.lastIndex = start;
     const end = origin.scope.htmlClosers.tags.get(start);
     if (end !== undefined && tag.test(source)) {
-        origin.scope.protectedHtml.push({start, end});
+        origin.scope.protectedHtml.add(start, end);
     }
 }
 
@@ -290,9 +339,7 @@ export function installBrowserGuard(md: MarkdownIt): void {
             return false;
         }
         const offset = originalOffset(origin, state.pos);
-        if (
-            !origin.scope.protectedHtml.some((range) => range.start <= offset && offset < range.end)
-        ) {
+        if (!origin.scope.protectedHtml.contains(offset)) {
             throw new BrowserUnsupportedFeatureError(
                 feature,
                 'Pre-expand includes on the host before browser transformation.',

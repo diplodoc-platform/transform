@@ -610,3 +610,12 @@ spans. Preserve original columns through this normalization. Existing mapped YFM
 cell origins keep their own source positions; do not substitute table-start maps.
 These corrections change diagnostic positions and scan work, not table grammar,
 native rendering, include recognition, or which HTML examples are protected.
+
+Encountered HTML ranges use compressed less-than offsets and a prefix-maximum
+index: a source offset is protected exactly when the largest activated end among
+starts at or before it exceeds that offset. Both activation and containment take
+O(log M) work and O(M) memory for M less-than candidates. This includes repeated
+quoted-include examples and does not assume monotonic native inline callbacks.
+Source without a less-than skips HTML suffix indexing. Native cell text is
+accumulated as characters and joined once per cell; escaped-pipe handling pops
+one backslash without copying the growing cell prefix.

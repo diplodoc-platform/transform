@@ -2,7 +2,11 @@ import NativeMarkdownIt from 'markdown-it';
 import {vi} from 'vitest';
 
 import table from '../src/transform/plugins/table';
-import {indexHtmlClosers, installBrowserGuard} from '../src/transform/browser/guard';
+import {
+    createHtmlProtection,
+    indexHtmlClosers,
+    installBrowserGuard,
+} from '../src/transform/browser/guard';
 import {BrowserUnsupportedFeatureError} from '../src/transform/browser/errors';
 
 import {unsupportedFixtures} from './data/browser-unsupported';
@@ -179,6 +183,7 @@ test.each([1000, 2000, 4000])(
         const counted = new Proxy(Object(source), {
             get(target, key) {
                 if (typeof key === 'string' && /^\d+$/.test(key)) reads++;
+                if (key === 'includes') return source.includes.bind(source);
                 return Reflect.get(target, key);
             },
         }) as unknown as string;
@@ -223,3 +228,38 @@ test.each([1000, 2000, 4000])(
         }
     },
 );
+
+test('HTML containment handles out-of-order activation, overlap and exclusive ends', () => {
+    const protection = createHtmlProtection([2, 5, 10, 14]);
+    protection.add(10, 15);
+    expect(protection.contains(9)).toBe(false);
+    expect(protection.contains(10)).toBe(true);
+    expect(protection.contains(15)).toBe(false);
+    protection.add(2, 7);
+    protection.add(5, 12);
+    protection.add(14, 20);
+    for (let offset = 0; offset <= 21; offset++) {
+        expect(protection.contains(offset)).toBe(offset >= 2 && offset < 20);
+    }
+    protection.add(5, 8);
+    expect(protection.contains(11)).toBe(true);
+    expect(createHtmlProtection([]).contains(0)).toBe(false);
+});
+
+test.each([64, 128, 256])('repeated HTML ranges use bounded prefix operations: %s', (count) => {
+    const protection = createHtmlProtection(Array.from({length: count}, (_, index) => index * 10));
+    const operations = vi.spyOn(Math, 'max');
+    try {
+        for (let index = count - 1; index >= 0; index--) {
+            protection.add(index * 10, index * 10 + 5);
+            expect(protection.contains(index * 10 + 3)).toBe(true);
+        }
+        expect(operations.mock.calls.length).toBeLessThanOrEqual(
+            count * (Math.ceil(Math.log2(count)) + 2) * 2,
+        );
+    } finally {
+        operations.mockRestore();
+    }
+    const source = '<a data="\n{% included (child.md) %}\n">x</a>\n\n'.repeat(count);
+    expect(setup(false).md.render(source)).toBe(new NativeMarkdownIt().render(source));
+});
