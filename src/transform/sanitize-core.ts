@@ -582,7 +582,7 @@ const DANGEROUS_TAGS_RE =
 const CLOSE_STYLE_RE = /<\s*\/\s*style/i;
 const STYLE_END_TAG_RE = /<\/style[\t\n\f\r />]/i;
 const DANGEROUS_URL_RE =
-    /url\s*\(\s*['"]?\s*(?:javascript:|vbscript:|data\s*:\s*(?:text\/html|application\/xhtml\+xml|image\/svg\+xml))/i;
+    /url\s*\(\s*(?:['"]\s*)?(?:javascript:|vbscript:|data\s*:\s*(?:text\/html|application\/xhtml\+xml|image\/svg\+xml))/i;
 const IE_EXPR_RE = /expression\s*\(/i;
 const IE_BEHAVIOR_RE = /behavior\s*:/i;
 const MOZ_BINDING_RE = /-moz-binding\s*:/i;
