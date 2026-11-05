@@ -14,11 +14,9 @@ const curlyBraceClose = 125;
 const dollarChar = 36; // $
 
 const checkCharsOrder = (order: number[], src: string, pos: number) => {
-    const currentOrder = [...order];
-    const currentSrc = src.slice(pos);
-    for (let i = 0; i < currentOrder.length; i++) {
-        const rowSymbol = currentSrc.charCodeAt(i);
-        const orderSymbol = currentOrder[i];
+    for (let i = 0; i < order.length; i++) {
+        const rowSymbol = src.charCodeAt(pos + i);
+        const orderSymbol = order[i];
         if (rowSymbol !== orderSymbol) {
             return false;
         }
@@ -72,50 +70,35 @@ type SkipInlineResult = {
     steps: number;
 };
 
-const skipInlineCode: SkipInlineFn = (src, pos, max) => {
-    // this function is an adaptation of original markdown-it backticks plugin
-    // https://github.com/markdown-it/markdown-it/blob/master/lib/rules_inline/backticks.mjs
+type BacktickRun = {start: number; end: number};
 
-    if (src.charCodeAt(pos) !== apostropheChar) {
-        return false;
-    }
-    if (pos > 0 && isEscaped(src, pos)) {
-        return false;
-    }
-
-    const start = pos;
-
-    // scan marker length
-    while (pos < max && src.charCodeAt(pos) === apostropheChar) {
-        pos++;
-    }
-
-    const marker = src.slice(start, pos);
-    const openerLength = marker.length;
-
-    let matchEnd = pos;
-    let matchStart: number;
-
-    while ((matchStart = src.indexOf('`', matchEnd)) !== -1) {
-        matchEnd = matchStart + 1;
-
-        // scan marker length
-        while (matchEnd < max && src.charCodeAt(matchEnd) === apostropheChar) {
-            matchEnd++;
+function backtickRuns(src: string, start: number, end: number): BacktickRun[] {
+    const runs: BacktickRun[] = [];
+    for (let pos = start; pos < end; pos++) {
+        if (src.charCodeAt(pos) !== apostropheChar) {
+            continue;
         }
-
-        const closerLength = matchEnd - matchStart;
-
-        if (closerLength === openerLength) {
-            return {
-                end: matchEnd,
-                steps: matchEnd - start,
-            };
+        const first = pos;
+        while (pos + 1 < end && src.charCodeAt(pos + 1) === apostropheChar) {
+            pos++;
         }
+        runs.push({start: first, end: pos + 1});
     }
+    return runs;
+}
 
-    return false;
-};
+function pairBackticks(runs: BacktickRun[], pairs: Map<number, number>) {
+    const next = new Map<number, number>();
+    for (let index = runs.length - 1; index >= 0; index--) {
+        const run = runs[index];
+        const length = run.end - run.start;
+        const end = next.get(length);
+        if (end !== undefined) {
+            pairs.set(run.start, end);
+        }
+        next.set(length, run.end);
+    }
+}
 
 const skipInlineMath: SkipInlineFn = (src, pos, max) => {
     // this function is an adaptation of latex-extension plugin
@@ -224,6 +207,117 @@ class StateIterator {
     }
 }
 
+/**
+ * Index full backtick runs without letting multiline lookahead cross a structural
+ * table marker. Same-line code and the existing block shields protect markers.
+ * Each source character is visited a bounded number of times.
+ */
+// eslint-disable-next-line complexity
+function tableCodePairs(
+    state: StateBlock,
+    start: number,
+    end: number,
+    line: number,
+    opts: YfmTablePluginOptions,
+): Map<number, number> {
+    const pairs = new Map<number, number>();
+    let pending: BacktickRun[] = [];
+    let level = 0;
+    let code = false;
+    let math = false;
+    let liquid = false;
+    let indexedLine = -1;
+    let linePairs = new Map<number, number>();
+    let lineRuns: BacktickRun[] = [];
+    let runIndex = 0;
+    const iter = new StateIterator(state, start + openTableOrder.length, line);
+
+    const boundary = () => {
+        pairBackticks(pending, pairs);
+        pending = [];
+    };
+
+    while (iter.pos <= end && iter.symbol !== undefined) {
+        if (indexedLine !== iter.line) {
+            indexedLine = iter.line;
+            lineRuns = backtickRuns(state.src, iter.pos, Math.min(iter.lineEnds, end));
+            linePairs = new Map();
+            pairBackticks(lineRuns, linePairs);
+            runIndex = 0;
+        }
+        while (runIndex < lineRuns.length && lineRuns[runIndex].start <= iter.pos) {
+            pending.push(lineRuns[runIndex++]);
+        }
+
+        if (
+            opts.table_ignoreSplittersInBlockCode !== false &&
+            !math &&
+            isCodeBlockOrder(state.src, iter.pos)
+        ) {
+            code = !code;
+            iter.next(codeBlockOrder.length);
+        }
+        if (
+            opts.table_ignoreSplittersInBlockMath &&
+            !code &&
+            isMathBlockOrder(state.src, iter.pos)
+        ) {
+            math = !math;
+            iter.next(mathBlockOrder.length);
+        }
+        if (code || math) {
+            iter.next();
+            continue;
+        }
+        if (!liquid && isLiquidVariableStart(state.src, iter.pos)) {
+            liquid = true;
+            iter.next(liquidVariableStartOrder.length);
+        }
+        if (liquid && isLiquidVariableEnd(state.src, iter.pos)) {
+            liquid = false;
+            iter.next(liquidVariableEndOrder.length);
+        }
+        if (liquid) {
+            iter.next();
+            continue;
+        }
+
+        const inlineEnd = linePairs.get(iter.pos);
+        if (inlineEnd !== undefined && notEscaped(state.src, iter.pos)) {
+            while (runIndex < lineRuns.length && lineRuns[runIndex].start < inlineEnd) {
+                pending.push(lineRuns[runIndex++]);
+            }
+            iter.next(inlineEnd - iter.pos);
+            continue;
+        }
+        if (opts.table_ignoreSplittersInInlineMath) {
+            const inlineMath = skipInlineMath(state.src, iter.pos, iter.lineEnds);
+            if (inlineMath) {
+                iter.next(inlineMath.steps);
+                continue;
+            }
+        }
+        if (isOpenTableOrder(state.src, iter.pos)) {
+            boundary();
+            level++;
+            iter.next(openTableOrder.length);
+            continue;
+        }
+        if (isCloseTableOrder(state.src, iter.pos)) {
+            boundary();
+            if (level === 0) {
+                return pairs;
+            }
+            level--;
+            iter.next(closeTableOrder.length);
+            continue;
+        }
+        iter.next();
+    }
+    boundary();
+    return pairs;
+}
+
 export type CellData = {start: Stats; end: Stats; markerEnd: Stats; rawAttrs: TableAttrs};
 type RowData = {start: number; end: number; cols: CellData[]; rawAttrs: TableAttrs};
 
@@ -318,6 +412,7 @@ export function getTableRowPositions(
     const tableAttrs = parseTableAttrs(state, iter);
 
     const rows: RowData[] = [];
+    let codePairs: Map<number, number> | undefined;
 
     let isInsideCode = false;
     let isInsideMath = false;
@@ -387,10 +482,11 @@ export function getTableRowPositions(
             continue;
         }
 
-        if (opts.table_ignoreSplittersInInlineCode !== false) {
-            const result = skipInlineCode(state.src, iter.pos, iter.lineEnds);
-            if (result !== false) {
-                iter.next(result.steps);
+        if (opts.table_ignoreSplittersInInlineCode !== false && iter.symbol === '`') {
+            codePairs ??= tableCodePairs(state, startPosition, endPosition, startLine, opts);
+            const end = codePairs.get(iter.pos);
+            if (end !== undefined && notEscaped(state.src, iter.pos)) {
+                iter.next(end - iter.pos);
                 continue;
             }
         }
