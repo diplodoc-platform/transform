@@ -22,6 +22,7 @@ import {
 } from '../../footnote-data';
 
 import {backLabel} from './labels';
+import {footnoteTail} from './tail';
 
 const upstream: (md: FootnoteGrammar) => void = require('markdown-it-footnote');
 
@@ -40,6 +41,7 @@ export default function footnotes<Options>(
     const generateID = options.generateID ?? createIDGeneratorByStrategy('random');
     // The pinned installer is a plain function with no receiver dependence.
     upstream(md);
+    md.core.ruler.at('footnote_tail', footnoteTail);
     md.inline.ruler.disable(['footnote_inline']);
     md.core.ruler.after('footnote_tail', 'yfm_footnote_ownership', (state) => {
         // Upstream inserts a backlink before the final paragraph_close. Remove

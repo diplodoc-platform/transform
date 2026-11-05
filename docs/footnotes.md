@@ -13,6 +13,13 @@ A reference[^details], repeated here[^details].
 
 Definitions are local to their parsed source. An include cannot resolve a parent's label, or supply the definition of a parent reference. Same-label definitions in separate children are independent. Missing references stay literal and unused definitions emit no section, following the pinned official `markdown-it-footnote@4.0.0` grammar. Inline caret notes (`^[...]`) are disabled to preserve the existing superscript syntax. These ordinary grammar cases do not produce new diagnostics.
 
+Labels that previously started with a caret can become footnotes: `[^^name]`
+with `[^^name]: ...` uses the footnote label `^name`. Rename both the reference
+and its definition if they were intended as an ordinary link. For example,
+replace `[^^name]` / `[^^name]: https://example.com` with `[name]` /
+`[name]: https://example.com`. Disabling `footnotes` also preserves the old
+link interpretation for an existing corpus.
+
 Footnote bodies retain ordinary Markdown formatting and sanitizer policy. Headings inside them do not enter page navigation. Backlinks have localized visible text in the configured language, defaulting to Russian. No script, resource metadata, CSP permission, enabled checkbox behavior, or broader HTML allowlist is added.
 
 ## Selection and public callbacks
@@ -44,6 +51,14 @@ Both settings objects are empty and closed: unknown keys and settings for an
 unselected feature are rejected. `preset: 'none'` retains core Markdown and
 sanitization. Task-list checkboxes are disabled; inline caret notes remain
 superscript syntax rather than footnotes.
+
+The separate legacy `checkbox` callback is still available but is not in the
+standard preset. It overlaps with `task-list`; choose one implementation.
+When retaining `checkbox` in a named configuration, disable `task-list` and
+register the callback through the usual custom-plugin API. In a replacement
+callback array, omit `taskList`. When both callbacks are installed, `task-list` consumes matching list items
+first; standalone legacy checkbox paragraphs remain separate. Do not rely on
+both callbacks processing the same list item.
 
 The stable ESM callback exports can be added to an integration's existing
 legacy callback array, which replaces the standard list. Preserve the callbacks
@@ -97,6 +112,13 @@ array.
 ## Document ownership
 
 Use the normal synchronous document API for independently compiled roots. A namespace is allocated lazily when actual note anchors are emitted. An extracted H1 containing a reference is already rendered during parsing and therefore needs the same namespace early. `needTitle` retains its established precedence, including a second H1; a discarded extracted title does not contribute phantom references. Stable repeated compilation preserves IDs and does not repeat title renderer effects.
+
+Reference numbers count the references actually retained in the output. A
+discarded title reference cannot leave a gap in backlink labels or reference
+IDs. The pinned grammar's tail assembly is adapted locally to append body
+tokens once instead of repeatedly copying the growing document. Its ordinary
+tokens, environment and HTML remain covered by comparison with the pinned
+upstream implementation.
 
 The exact caller `generateID` function is retained. Its prefix is encoded before internal scope/note/reference suffixes are appended. Constant prefixes are safe within one output; callers composing independently generated documents are responsible for distinct prefixes. A recognizable collision with an authored token ID fails clearly. Failed rendering does not commit a candidate namespace or mutate source tokens. Calls already consumed by an opaque generator cannot be undone.
 
