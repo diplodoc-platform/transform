@@ -121,3 +121,60 @@ acceptance must run sequentially on an otherwise idle, consistent machine; inspe
 the raw distribution and rerun noisy cases. A single green run is not proof of
 production throughput or all input classes. Full CLI `mergeIncludes` corpus and
 consumer integration validation remain separate release checks.
+
+## Diagnostic, scanner and migration workloads
+
+The manual suite also exercises a batch of ordinary root documents, opaque tables
+inside directive containers, scope lookup after existing colon Notes, unproved
+marker filtering, genuine refused migration proofs, and the image proof budget.
+Two browser guard cases use supported `allowHTML:false` options for repeated
+incomplete tags and quoted multiline include-like text. The original 17 cases and
+thresholds remain unchanged. Cold deeply malformed HTML can exhaust recursive DOM
+serialization in historical and current packages; that failure remains visible,
+including when a smaller prior call happens to change JIT behavior. The suite does
+not reduce the workload, increase the stack or treat warming as a repair.
+
+A diagnostic sample is one whole N-root batch with unique synthetic source paths.
+The compatibility collector is cleared outside the batch. The first Output remains
+retained until the end, so its warning snapshot and explicit global history remain
+observable. Default per-document behavior must not be replaced with an explicit
+aggregate collector merely to make the workload pass. Project-owned aggregation
+has intentionally retained history and belongs in a separate correctness check.
+
+Scanner comparison needs deliberate dependency recipes and loaded-module evidence.
+Controlled aligned old/new graphs isolate scanner work; physical deduplication is
+not a functional requirement. Genuine 13/15 peer copies are supported when all
+loaded current Directive copies contain the approved bytes and compatible host
+protocol. An older module-local registry graph remains a negative control.
+
+### Exact role oracles
+
+`--role-oracles FILE.json` supplies reviewed exact outputs for named case/size
+pairs. It does not record or approve outputs automatically. Each entry requires
+both baseline and candidate files plus their SHA-256; paths resolve relative to
+the manifest. Copy the saved worker JSON bytes without changing HTML, IDs,
+whitespace, paths, diagnostics or ordering. Every measured output must still pass
+its structural/safety assertions, be deterministic and match its own exact file.
+An optional input SHA-256 binds the oracle to the generated Markdown bytes.
+
+```json
+{
+  "schemaVersion": 1,
+  "cases": {
+    "document-log-history": {
+      "250": {
+        "baseline": {"file": "old-250.json", "sha256": "64 hexadecimal characters"},
+        "candidate": {"file": "new-250.json", "sha256": "64 hexadecimal characters"}
+      }
+    }
+  }
+}
+```
+
+The report records the manifest and output hashes. A cross-artifact difference can
+be accepted by this route only when both exact role files matched every sample;
+this never waives a failed assertion, nondeterminism or scaling check. Historical
+log-history/image-budget shapes are admitted only with an explicit role oracle;
+without it their fixtures require the current document/budget contract. Preserve
+known baseline failures separately. Ordinal repairs and other intentional changes
+need their own reviewed role files; there is no global normalization or waiver.

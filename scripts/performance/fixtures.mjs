@@ -188,4 +188,156 @@ export const cases = {
             );
         },
     },
+    'document-log-history': {
+        sizes: [250, 500],
+        batchRoots: true,
+        source: (n) =>
+            JSON.stringify(
+                Array.from({length: n}, (_, i) => ({
+                    path: `/performance/document-${i}.md`,
+                    source: 'Text',
+                })),
+                null,
+                2,
+            ),
+        verify: (output, n, _source, {hasRoleOracle = false} = {}) => {
+            assert.equal(output.html, '<p>Text</p>\n');
+            assert.equal(output.atReturnWarnCounts.length, n);
+            const documentScoped =
+                output.atReturnWarnCounts.every((value) => value === 1) &&
+                output.retainedFirstWarn.length === 1 &&
+                output.globalWarn.length === 0;
+            if (!hasRoleOracle || documentScoped)
+                assert.ok(documentScoped, 'Expected fresh document diagnostics');
+            else {
+                assert.deepEqual(
+                    output.atReturnWarnCounts,
+                    Array.from({length: n}, (_, i) => i + 1),
+                );
+                assert.equal(output.retainedFirstWarn.length, n);
+                assert.deepEqual(output.globalWarn, output.retainedFirstWarn);
+            }
+            for (const warning of output.retainedFirstWarn)
+                assert.ok(warning.includes('TRANSFORM_BUNDLED_LIQUID'));
+        },
+    },
+    'scanner-opaque-tables': {
+        sizes: [40, 80],
+        document: true,
+        source: (n) =>
+            repeat(n, (i) => `:::note {type=info}\n\n#|\n|| Cell ${i} | Other ||\n|#\n\n:::`),
+        verify: (output, n) => {
+            htmlCount(/<table\b/g, n)(output);
+            htmlCount(/<td\b/g, n * 2)(output);
+            htmlCount(/class="[^"]*\byfm-note(?:\s|")/g, n)(output);
+            assert.ok(!output.html.includes(':::note'));
+            assert.ok(Array.isArray(output.tokens));
+        },
+    },
+    'block-scope-prefix': {
+        sizes: [128, 256],
+        migration: 'block-directives',
+        source: (n) =>
+            repeat(n, () => ':::note {type=info}\n\nExisting\n\n:::') + '\n\n' + note('final'),
+        verify: (output, _n, source) => {
+            assert.equal(output.edits.length, 2);
+            assert.deepEqual(output.diagnostics, []);
+            assert.equal(
+                output.output,
+                source
+                    .replace('{% note info %}', ':::note {type=info}')
+                    .replace('{% endnote %}', ':::'),
+            );
+        },
+    },
+    'block-unproved-markers': {
+        sizes: [128, 256],
+        migration: 'block-directives',
+        source: (n) => repeat(n, note) + '\n\n' + repeat(n, () => ':::custom'),
+        verify: (output, n, source) => {
+            assert.equal(output.edits.length, n * 2);
+            assert.equal(
+                output.output,
+                source
+                    .replaceAll('{% note info %}', ':::note {type=info}')
+                    .replaceAll('{% endnote %}', ':::'),
+            );
+            assert.deepEqual(
+                output.diagnostics.map((item) => item.reason),
+                Array(n).fill('unproved-colon-scope'),
+            );
+            assert.deepEqual(
+                output.diagnostics.map((item) => item.offset),
+                [...source.matchAll(/^:::custom$/gm)].map((match) => match.index),
+            );
+        },
+    },
+    'block-real-fallback': {
+        sizes: [32, 64],
+        migration: 'block-directives',
+        source: (n) =>
+            repeat(n, () => '- prefix\n\n  {% cut "Title" %}\n  \n  Body\n  \n  {% endcut %}'),
+        verify: (output, n, source) => {
+            assert.equal(output.output, source);
+            assert.deepEqual(output.edits, []);
+            assert.equal(output.diagnostics.length, n);
+            for (const item of output.diagnostics) {
+                assert.ok(
+                    ['equivalence-check-failed', 'equivalence-budget-exceeded'].includes(
+                        item.reason,
+                    ),
+                );
+                assert.ok(source.slice(item.offset).startsWith('{% cut'));
+                assert.ok(item.line > 0 && item.column > 0);
+            }
+        },
+    },
+    'image-complex-budget': {
+        sizes: [32, 64],
+        migration: 'image-dimensions',
+        migrationOptions: {path: 'budget.md'},
+        source: (n) => repeat(n, (i) => `- Item ${i} ![a](a =20x30)`) + '\n\nRoot ![b](b =40x50)',
+        verify: (output, n, source, {hasRoleOracle = false} = {}) => {
+            const historical =
+                hasRoleOracle &&
+                output.diagnostics.length === 0 &&
+                output.edits.length === (n + 1) * 2;
+            const accepted = historical ? n : Math.min(n, 8);
+            assert.equal(output.edits.length, (accepted + 1) * 2);
+            assert.equal(output.diagnostics.length, n - accepted);
+            let index = 0;
+            const expected = source
+                .replace(/!\[a]\(a =20x30\)/g, (raw) =>
+                    index++ < accepted ? '![a](a){width=20 height=30}' : raw,
+                )
+                .replace('![b](b =40x50)', '![b](b){width=40 height=50}');
+            assert.equal(output.output, expected);
+            assert.deepEqual(
+                output.diagnostics.map((item) => item.offset),
+                [...source.matchAll(/[=]20x30/g)].slice(accepted).map((match) => match.index),
+            );
+            for (const item of output.diagnostics) {
+                assert.equal(item.reason, 'equivalence-budget-exceeded');
+                assert.equal(item.path, 'budget.md');
+                assert.ok(item.line > 0 && item.column > 0);
+            }
+        },
+    },
+    'browser-malformed-tag-suffix': {
+        sizes: [2000, 4000],
+        browser: true,
+        browserOptions: {allowHTML: false},
+        source: (n) => 'text <a '.repeat(n),
+        verify: (output, n) => {
+            assert.equal(count(output.html, /text/g), n);
+            assert.ok(!output.html.includes('<a '));
+        },
+    },
+    'browser-quoted-include-ranges': {
+        sizes: [128, 256],
+        browser: true,
+        browserOptions: {allowHTML: false},
+        source: (n) => '<a data="\n{% included (child.md) %}\n">x</a>\n\n'.repeat(n),
+        verify: (output, n) => assert.equal(count(output.html, /included/g), n),
+    },
 };
