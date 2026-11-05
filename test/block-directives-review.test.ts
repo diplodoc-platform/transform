@@ -75,6 +75,41 @@ describe('block directive review regressions', () => {
             }),
         );
     });
+    it.each([
+        ['cut', '{% cut "{{title}}" %}', '{% endcut %}'],
+        ['note', '{% note info "{{title}}" %}', '{% endnote %}'],
+        ['tabs', '{% list tabs group="{{title}}" %}', '{% endlist %}'],
+    ])('preserves dynamic %s parameters and their descendants', (_name, open, close) => {
+        const unsafe = `${open}\n\n${_name === 'tabs' ? '- First\n\n  Body' : note()}\n\n${close}`;
+        const source = unsafe + '\n\n' + cut();
+        const result = migrateBlockDirectives(source, {path: 'parameters.md'});
+        expect(result.output.startsWith(unsafe)).toBe(true);
+        expect(result.edits).toHaveLength(2);
+        expect(result.diagnostics).toContainEqual(
+            expect.objectContaining({
+                reason: 'liquid-dependent-content',
+                offset: 0,
+                path: 'parameters.md',
+            }),
+        );
+        for (const title of [']', '"}', ':::']) {
+            const options = {vars: {title}, generateID: () => 'parameter-proof'};
+            const before = transform(source, options).result;
+            const after = transform(result.output, options).result;
+            expect(after.meta).toEqual(before.meta);
+            // Only the independent literal Cut is rewritten; compare the dynamic prefix itself.
+            expect(transform(unsafe, options).result.html).toEqual(
+                transform(result.output.slice(0, unsafe.length), options).result.html,
+            );
+        }
+    });
+    it.each(['{{ title }}', '{% if x %}Title{% endif %}', '{% raw %}{{title}}{% endraw %}'])(
+        'keeps dynamic Cut title %s literal',
+        (title) => {
+            const source = `{% cut "${title}" %}\n\nBody\n\n{% endcut %}`;
+            expect(migrateBlockDirectives(source).output).toBe(source);
+        },
+    );
     it.each([false, true])('preserves dynamic rendering when x=%s', (x) => {
         const source = cut('{% if x %}Body{% endif %}');
         const result = migrateBlockDirectives(source);

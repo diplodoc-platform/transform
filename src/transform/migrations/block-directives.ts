@@ -237,6 +237,11 @@ function validateOwnerMaps(tokens: readonly Token[], scopes: readonly Scope[]): 
     if (cuts.length || notes.length) throw new Error('Unclosed semantic wrapper');
 }
 
+function dynamicParameters(edge: MappedEdge): boolean {
+    // The leading legacy marker is syntax; nested Liquid in its authored parameters is not.
+    return /\{[{%]/.test(edge.raw.slice(2));
+}
+
 function liquidRanges(input: string, lines: readonly number[], edges: readonly MappedEdge[]) {
     const dynamic: {start: number; end: number}[] = [];
     const controls: {name: string; start: number}[] = [];
@@ -245,7 +250,7 @@ function liquidRanges(input: string, lines: readonly number[], edges: readonly M
         const start = lines[edge.map[0]];
         const end = lines[edge.map[1]] ?? input.length;
         const at = input.slice(start, end).indexOf(edge.raw);
-        if (at >= 0) markerOffsets.add(start + at);
+        if (at >= 0 && !dynamicParameters(edge)) markerOffsets.add(start + at);
     }
     const liquid = /\{\{[\s\S]*?\}\}|\{%[\s\S]*?%\}/g;
     for (const match of input.matchAll(liquid)) {
@@ -640,14 +645,15 @@ export function migrateBlockDirectives(
             return {pairs, badRanges};
         };
         const {pairs, badRanges} = pairEdges();
-        const dynamicCuts = pairs.filter(
+        const dynamicGroups = pairs.filter(
             (pair) =>
-                pair.open.name === 'cut' &&
-                dynamic.some(
-                    (range) =>
-                        range.start < (lines[pair.close.map[1]] ?? input.length) &&
-                        range.end > lines[pair.open.map[0]],
-                ),
+                dynamicParameters(pair.open) ||
+                (pair.open.name === 'cut' &&
+                    dynamic.some(
+                        (range) =>
+                            range.start < (lines[pair.close.map[1]] ?? input.length) &&
+                            range.end > lines[pair.open.map[0]],
+                    )),
         );
         const collectGroups = (): Group[] => {
             const groups: Group[] = [];
@@ -666,7 +672,7 @@ export function migrateBlockDirectives(
                     continue;
                 }
                 if (
-                    dynamicCuts.some(
+                    dynamicGroups.some(
                         (parent) => start >= parent.open.map[0] && end <= parent.close.map[1],
                     )
                 ) {

@@ -68,7 +68,10 @@ migrate without losing the authored prefix.
 A Cut intersecting Liquid output/control syntax, or enclosed by a dynamic
 control region, is left unchanged with `liquid-dependent-content` at its
 original marker offset. Nested legacy groups in that Cut remain unchanged too.
-Recognized legacy directive markers themselves are not dynamic. This guard is
+The leading recognized legacy marker itself is not dynamic. Liquid nested in
+any owner's title, attributes, group or other authored parameters still refuses
+that owner and its descendants: interpolated closing brackets or quotes may
+change the colon grammar even when the raw template parses equivalently. This guard is
 conservative even in authored code examples: the raw source is supplied before
 preprocessing, and no universal nonempty-body invariant is established there.
 Independent literal siblings remain eligible.
