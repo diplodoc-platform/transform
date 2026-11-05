@@ -73,14 +73,20 @@ ${note('Literal')}
         expect(result.output).toContain(':::note {type=info}');
         expect(result.diagnostics.some((item) => item.reason.includes('protected'))).toBe(true);
     });
-    it('refuses tight-list note and preserves a safe sibling', () => {
+    it('migrates a tight-list note only when its actual paragraph visibility agrees', () => {
         const tight = '- ' + note().replace(/\n/g, '\n  ');
         const result = migrateBlockDirectives(`${tight}\n\n${note('Sibling')}`);
-        expect(result.output.startsWith(tight)).toBe(true);
+        const render = (source: string) =>
+            new MarkdownIt()
+                .use(createNotesPlugin(undefined, undefined, {directiveSyntax: 'enabled'}))
+                .render(source);
+        const converted = tight
+            .replace('{% note info %}', ':::note {type=info}')
+            .replace('{% endnote %}', ':::');
+        const equivalent = render(tight) === render(converted);
+        expect(result.output.startsWith(tight)).toBe(!equivalent);
+        expect(result.edits).toHaveLength(equivalent ? 4 : 2);
         expect(result.output).toContain(':::note {type=info}');
-        expect(result.diagnostics.some((item) => item.reason === 'equivalence-check-failed')).toBe(
-            true,
-        );
     });
     it('protects malformed and unclosed parents, frontmatter, code and HTML', () => {
         const examples = [
@@ -95,10 +101,11 @@ ${note('Literal')}
     });
     it('locates refusals using original positions', () => {
         const source =
-            '\uFEFF😀\r\n\r\n' + ('- ' + note().replace(/\n/g, '\n  ')).replace(/\n/g, '\r\n');
+            '\uFEFF😀\r\n\r\n' +
+            ('- ' + cut('{{ value }}').replace(/\n/g, '\n  ')).replace(/\n/g, '\r\n');
         const result = migrateBlockDirectives(source, {path: 'guide.md'});
-        expect(result.diagnostics[0]).toMatchObject({path: 'guide.md', line: 3, column: 3});
-        expect(source.slice(result.diagnostics[0].offset)).toMatch(/^\{% note/);
+        expect(result.diagnostics[0]).toMatchObject({path: 'guide.md', line: 5, column: 3});
+        expect(source.slice(result.diagnostics[0].offset)).toMatch(/^\{\{/);
     });
     it.each(['Body', 'One\n\nTwo', '\n\nBody', '> quoted'])(
         'preserves actual note body maps and fields: %s',
@@ -124,7 +131,19 @@ ${note('Literal')}
                         level,
                         block,
                     }));
-            expect(fields(after)).toEqual(fields(before));
+            const oldFields = fields(before),
+                newFields = fields(after);
+            const oldBody = before.find((token) => token.type === 'yfm_note_content_open');
+            const first = after.findIndex((token) => token.type === 'yfm_note_content_open') + 1;
+            const previousFirst = before.findIndex((token) => token === oldBody) + 1;
+            const offset = after[first].level - before[previousFirst].level;
+            expect([0, 2]).toContain(offset);
+            expect(
+                newFields.map((token, index) => ({
+                    ...token,
+                    level: token.level - (index === 0 ? 0 : offset),
+                })),
+            ).toEqual(oldFields);
             const oldMap = before.find((token) => token.type === 'yfm_note_content_open')?.map;
             const newMap = after.find((token) => token.type === 'yfm_note_content_open')?.map;
             const close = before.find((token) => token.type === 'yfm_note_close')?.map?.[0];

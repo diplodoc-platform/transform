@@ -28,7 +28,8 @@ export function verifyBlockDirectivesGraph(consumerRoot, buildSync) {
     assert(
         Object.keys(result.metafile.inputs).every(
             (path) =>
-                !/(?:utilsFS|index-node|highlight\.js|[/\\]highlighter|[/\\]liquid[/\\]|plugins[/\\]includes|preprocessors[/\\]included[/\\]index|[/\\](?:log|deprecation)\.js$|[/\\]lib[/\\]index\.js$)/.test(
+                // The shared include grammar is pure; the include loader and all its other modules remain forbidden.
+                !/(?:utilsFS|index-node|highlight\.js|[/\\]highlighter|[/\\]liquid[/\\]|plugins[/\\]includes(?![/\\]syntax\.js$)|preprocessors[/\\]included[/\\]index|[/\\](?:log|deprecation)\.js$|[/\\]lib[/\\]index\.js$)/.test(
                     path,
                 ),
         ),

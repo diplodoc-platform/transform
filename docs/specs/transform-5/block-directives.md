@@ -37,9 +37,85 @@ may harmonize block-format newlines for the exact public Cut structural token
 kinds, with restoration; it must preserve ordinary body/inline whitespace.
 Tabs requires exact token maps, generated IDs and allocation sequence.
 
-Cut title attribution in loose lists currently remains a refusal. Tight-list
-Notes can change real paragraph visibility/HTML; empty legacy Cut can fail to
-produce a Cut. Both remain unchanged. Do not normalize those differences away.
+Cut title inline maps are synthetic: legacy uses `[0,1]`, colon uses `[O,O+1]`.
+Validate these exact maps against their owning Cut before projecting them away;
+ordinary body maps and title children remain exact. Other title differences in
+loose lists remain a refusal. Tight-list Notes whose installed implementation
+changes real paragraph visibility/HTML remain unchanged, as do empty legacy
+Cuts that fail to produce a Cut. Do not normalize those differences away.
+
+Notes keep synthetic wrapper/title levels independent of the parser's body
+level. A lazy controlled Note probe, once for each attributes profile, recognizes
+only the published zero-offset representation or the corrected two-wrapper
+body offset. Validate paired Note maps and subtract that exact offset only
+inside colon Note content, accumulating it for each ancestor. Preserve every
+ordinary token level, hidden flag and other field in the comparison. Unknown
+probe representations do not enable normalization. Tight-list Notes become
+eligible only when the installed extension actually preserves paragraph HTML.
+
+Resource comparison uses the existing `normalizeDocumentResources` function at
+the same finalization boundary as public Transform parsing. It preserves order
+and only normalizes its documented resource fields. Arbitrary environment and
+metadata fields still compare exactly; bare-parser duplicate resource entries
+are not a new public document semantic difference.
+
+## Conservative migration and work budget
+
+Shield only positively closed frontmatter (`---` or `...` closer). An unmatched
+opening delimiter remains ordinary Markdown, so subsequent real directives can
+migrate without losing the authored prefix.
+
+The API accepts raw Markdown without a template execution context. Any unresolved
+Liquid output opener (`{{`, even unterminated) or unknown template-like `{%`
+opener leaves the **entire document unchanged**, with a located
+`unresolved-liquid-template` diagnostic at the first such opener. Interpolation
+inside a title may emit a closing bracket; interpolation before a container may
+emit an opening code fence. Therefore even apparently separate literal siblings
+cannot be proved independent. This guard applies inside code/HTML examples too:
+the bundled Liquid engine substitutes variables in code, and callers can enable
+conditions in code. It does not guess values or simulate branches.
+
+The finite non-template YFM delimiter inventory comes from existing syntax:
+
+- `cut` / `endcut`, `note` / `endnote`: their extension legacy recognizers.
+- `list tabs` / `endlist`: the Tabs extension legacy recognizer (including its
+  static variants and parameters; other `list` families are unknown).
+- `file`: File extension's legacy `PREFIX`.
+- `anchor`: `src/transform/plugins/block-anchor/block-anchor.ts`.
+- `changelog` / `endchangelog`: `src/transform/plugins/changelog/collect.ts`.
+- `include`: the exact `[label](path)` grammar from
+  `src/transform/plugins/includes/syntax.ts`; a Liquid-style template include is
+  unknown, even though it shares the tag name.
+- `included` / `endincluded`: `src/transform/preprocessors/included/boundaries.ts`.
+
+The lexical guard classifies these known families only; their existing parsers
+still own parameter validity. It scans every opener independently, including
+inside recognized parameters. Static unsupported parameters and protected YFM
+examples retain partial-migration behavior; unknown tags are never assumed
+harmless. Liquid whitespace-control prefixes are not legacy YFM delimiters.
+
+Closed frontmatter remains shielded under the existing metadata contract.
+`liquidDocument` extracts metadata, processes its values separately, and
+serializes YAML before joining the independently processed Markdown body;
+metadata interpolation cannot inject a Markdown fence through that path.
+Unclosed frontmatter is ordinary Markdown and receives the template guard.
+
+Compute source signatures once for both general-attributes profiles. Test whole
+documents in hierarchical batches; nested groups are atomic. Cache complete
+candidate verdicts, including failed proofs, and avoid retrying an identical
+escaped-title candidate. Each actual full-input parser invocation in candidate
+analysis or either signature profile consumes one of **32 work units** per
+migration call. Partial proofs never authorize edits. After exhaustion, leave
+unproved groups unchanged and return `equivalence-budget-exceeded` at each
+opener. The constant setup (two observation parses, two source signatures, and
+at most two small Note probes) and mandatory uncached final whole-document proof
+are outside this candidate budget. Final proof failure restores the entire
+original source. No public parser/rendering path gains this migration work.
+
+Source edits are assembled from slices in one join rather than repeatedly
+copying the whole document. The finite budget bounds full-source reparsing and
+cached candidate strings; it deliberately permits conservative partial migration
+on adversarial documents rather than replacing equivalence with a local guess.
 
 ## Acceptance gates
 
