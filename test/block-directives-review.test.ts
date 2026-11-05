@@ -59,18 +59,16 @@ describe('block directive review regressions', () => {
         '{% for x in xs %}Body{% endfor %}',
         '{{ value }}',
         '{% if x %}\n\n' + note() + '\n\n{% endif %}',
-    ])('refuses dynamic Cut body %s and retains independent siblings', (body) => {
+    ])('refuses unresolved dynamic Cut body %s for the whole document', (body) => {
         const unsafe = cut(body);
         const result = migrateBlockDirectives(`${unsafe}\n\n${cut()}\n\n${note()}`, {
             path: 'dynamic.md',
         });
         expect(result.output.startsWith(unsafe)).toBe(true);
-        expect(result.edits).toHaveLength(4);
+        expect(result.edits).toHaveLength(0);
         expect(result.diagnostics).toContainEqual(
             expect.objectContaining({
-                reason: 'liquid-dependent-content',
-                offset: 0,
-                line: 1,
+                reason: 'unresolved-liquid-template',
                 path: 'dynamic.md',
             }),
         );
@@ -79,16 +77,15 @@ describe('block directive review regressions', () => {
         ['cut', '{% cut "{{title}}" %}', '{% endcut %}'],
         ['note', '{% note info "{{title}}" %}', '{% endnote %}'],
         ['tabs', '{% list tabs group="{{title}}" %}', '{% endlist %}'],
-    ])('preserves dynamic %s parameters and their descendants', (_name, open, close) => {
+    ])('preserves documents with dynamic %s parameters', (_name, open, close) => {
         const unsafe = `${open}\n\n${_name === 'tabs' ? '- First\n\n  Body' : note()}\n\n${close}`;
         const source = unsafe + '\n\n' + cut();
         const result = migrateBlockDirectives(source, {path: 'parameters.md'});
-        expect(result.output.startsWith(unsafe)).toBe(true);
-        expect(result.edits).toHaveLength(2);
+        expect(result.output).toBe(source);
+        expect(result.edits).toHaveLength(0);
         expect(result.diagnostics).toContainEqual(
             expect.objectContaining({
-                reason: 'liquid-dependent-content',
-                offset: 0,
+                reason: 'unresolved-liquid-template',
                 path: 'parameters.md',
             }),
         );
@@ -97,7 +94,7 @@ describe('block directive review regressions', () => {
             const before = transform(source, options).result;
             const after = transform(result.output, options).result;
             expect(after.meta).toEqual(before.meta);
-            // Only the independent literal Cut is rewritten; compare the dynamic prefix itself.
+            // Unknown preprocessing leaves every authored byte unchanged.
             expect(transform(unsafe, options).result.html).toEqual(
                 transform(result.output.slice(0, unsafe.length), options).result.html,
             );
@@ -110,6 +107,45 @@ describe('block directive review regressions', () => {
             expect(migrateBlockDirectives(source).output).toBe(source);
         },
     );
+    it.each([cut(), note()])('refuses unknown document context around %s', (body) => {
+        const source = `${note('Before')}\n\n{{ prefix }}\n\n${body}\n\n{{ suffix }}\n\n${note('After')}`;
+        const result = migrateBlockDirectives(source, {path: 'context.md'});
+        expect(result.output).toBe(source);
+        expect(result.edits).toEqual([]);
+        expect(result.diagnostics).toContainEqual(
+            expect.objectContaining({
+                reason: 'unresolved-liquid-template',
+                offset: source.indexOf('{{ prefix }}'),
+                path: 'context.md',
+            }),
+        );
+        const vars = {prefix: '~~~md', suffix: '~~~'};
+        expect(transform(result.output, {vars}).result.html).toEqual(
+            transform(source, {vars}).result.html,
+        );
+    });
+    it.each([
+        '{{ unfinished',
+        '{% custom_template %}',
+        '{% include "template" %}',
+        '{% if x',
+        '{%- cut "Title" -%}',
+        '{% list other %}',
+        '```md\n{{ value }}\n```',
+    ])('refuses unknown or unresolved template syntax %j', (template) => {
+        const source = note('Before') + '\n\n' + template + '\n\n' + note('After');
+        const result = migrateBlockDirectives(source);
+        expect(result.output).toBe(source);
+        expect(result.diagnostics[0].reason).toBe('unresolved-liquid-template');
+    });
+    it('keeps closed metadata interpolation outside the Markdown template boundary', () => {
+        const source = '---\ntitle: "{{ prefix }}"\n---\n\n' + note();
+        const result = migrateBlockDirectives(source);
+        expect(result.edits).toHaveLength(2);
+        expect(result.diagnostics).toEqual([]);
+        const vars = {prefix: '~~~md'};
+        expect(transform(result.output, {vars}).result).toEqual(transform(source, {vars}).result);
+    });
     it.each([false, true])('preserves dynamic rendering when x=%s', (x) => {
         const source = cut('{% if x %}Body{% endif %}');
         const result = migrateBlockDirectives(source);
@@ -120,11 +156,11 @@ describe('block directive review regressions', () => {
             transform(source, {vars}).result.html,
         );
     });
-    it('refuses nested dynamic ancestry without consuming a later sibling', () => {
+    it('refuses unresolved dynamic ancestry for the whole document', () => {
         const unsafe = `{% if x %}\n\n${cut()}\n\n{% endif %}`;
         const result = migrateBlockDirectives(`${unsafe}\n\n${cut()}`);
-        expect(result.output.startsWith(unsafe)).toBe(true);
-        expect(result.edits).toHaveLength(2);
+        expect(result.output).toBe(`${unsafe}\n\n${cut()}`);
+        expect(result.edits).toHaveLength(0);
     });
     it.each([note(), cut(), '{% list tabs %}\n\n- First\n\n  Body\n\n{% endlist %}'])(
         'migrates Markdown after an unclosed frontmatter opener',

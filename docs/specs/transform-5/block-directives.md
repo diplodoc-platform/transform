@@ -65,16 +65,40 @@ Shield only positively closed frontmatter (`---` or `...` closer). An unmatched
 opening delimiter remains ordinary Markdown, so subsequent real directives can
 migrate without losing the authored prefix.
 
-A Cut intersecting Liquid output/control syntax, or enclosed by a dynamic
-control region, is left unchanged with `liquid-dependent-content` at its
-original marker offset. Nested legacy groups in that Cut remain unchanged too.
-The leading recognized legacy marker itself is not dynamic. Liquid nested in
-any owner's title, attributes, group or other authored parameters still refuses
-that owner and its descendants: interpolated closing brackets or quotes may
-change the colon grammar even when the raw template parses equivalently. This guard is
-conservative even in authored code examples: the raw source is supplied before
-preprocessing, and no universal nonempty-body invariant is established there.
-Independent literal siblings remain eligible.
+The API accepts raw Markdown without a template execution context. Any unresolved
+Liquid output opener (`{{`, even unterminated) or unknown template-like `{%`
+opener leaves the **entire document unchanged**, with a located
+`unresolved-liquid-template` diagnostic at the first such opener. Interpolation
+inside a title may emit a closing bracket; interpolation before a container may
+emit an opening code fence. Therefore even apparently separate literal siblings
+cannot be proved independent. This guard applies inside code/HTML examples too:
+the bundled Liquid engine substitutes variables in code, and callers can enable
+conditions in code. It does not guess values or simulate branches.
+
+The finite non-template YFM delimiter inventory comes from existing syntax:
+
+- `cut` / `endcut`, `note` / `endnote`: their extension legacy recognizers.
+- `list tabs` / `endlist`: the Tabs extension legacy recognizer (including its
+  static variants and parameters; other `list` families are unknown).
+- `file`: File extension's legacy `PREFIX`.
+- `anchor`: `src/transform/plugins/block-anchor/block-anchor.ts`.
+- `changelog` / `endchangelog`: `src/transform/plugins/changelog/collect.ts`.
+- `include`: the exact `[label](path)` grammar from
+  `src/transform/plugins/includes/syntax.ts`; a Liquid-style template include is
+  unknown, even though it shares the tag name.
+- `included` / `endincluded`: `src/transform/preprocessors/included/boundaries.ts`.
+
+The lexical guard classifies these known families only; their existing parsers
+still own parameter validity. It scans every opener independently, including
+inside recognized parameters. Static unsupported parameters and protected YFM
+examples retain partial-migration behavior; unknown tags are never assumed
+harmless. Liquid whitespace-control prefixes are not legacy YFM delimiters.
+
+Closed frontmatter remains shielded under the existing metadata contract.
+`liquidDocument` extracts metadata, processes its values separately, and
+serializes YAML before joining the independently processed Markdown body;
+metadata interpolation cannot inject a Markdown fence through that path.
+Unclosed frontmatter is ordinary Markdown and receives the template guard.
 
 Compute source signatures once for both general-attributes profiles. Test whole
 documents in hierarchical batches; nested groups are atomic. Cache complete

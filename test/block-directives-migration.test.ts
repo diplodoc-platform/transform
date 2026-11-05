@@ -104,8 +104,8 @@ ${note('Literal')}
             '\uFEFF😀\r\n\r\n' +
             ('- ' + cut('{{ value }}').replace(/\n/g, '\n  ')).replace(/\n/g, '\r\n');
         const result = migrateBlockDirectives(source, {path: 'guide.md'});
-        expect(result.diagnostics[0]).toMatchObject({path: 'guide.md', line: 3, column: 3});
-        expect(source.slice(result.diagnostics[0].offset)).toMatch(/^\{% cut/);
+        expect(result.diagnostics[0]).toMatchObject({path: 'guide.md', line: 5, column: 3});
+        expect(source.slice(result.diagnostics[0].offset)).toMatch(/^\{\{/);
     });
     it.each(['Body', 'One\n\nTwo', '\n\nBody', '> quoted'])(
         'preserves actual note body maps and fields: %s',

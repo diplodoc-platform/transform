@@ -18,6 +18,7 @@ import {recognizeTabsBoundary, transform as tabs} from '@diplodoc/tabs-extension
 import {normalizeDocumentResources} from '../document-context-core';
 import {includedSourceRanges} from '../preprocessors/included/boundaries';
 import {createTablePlugin} from '../plugins/table/core';
+import {createIncludeRegExp} from '../plugins/includes/syntax';
 
 const table = createTablePlugin(() => ({
     warn() {},
@@ -237,42 +238,40 @@ function validateOwnerMaps(tokens: readonly Token[], scopes: readonly Scope[]): 
     if (cuts.length || notes.length) throw new Error('Unclosed semantic wrapper');
 }
 
-function dynamicParameters(edge: MappedEdge): boolean {
-    // The leading legacy marker is syntax; nested Liquid in its authored parameters is not.
-    return /\{[{%]/.test(edge.raw.slice(2));
-}
-
-function liquidRanges(input: string, lines: readonly number[], edges: readonly MappedEdge[]) {
-    const dynamic: {start: number; end: number}[] = [];
-    const controls: {name: string; start: number}[] = [];
-    const markerOffsets = new Set<number>();
-    for (const edge of edges) {
-        const start = lines[edge.map[0]];
-        const end = lines[edge.map[1]] ?? input.length;
-        const at = input.slice(start, end).indexOf(edge.raw);
-        if (at >= 0 && !dynamicParameters(edge)) markerOffsets.add(start + at);
+function unresolvedTemplate(input: string): number | undefined {
+    // This finite inventory classifies existing YFM syntax, not arbitrary Liquid tags.
+    const known = new Set([
+        'cut',
+        'endcut',
+        'note',
+        'endnote',
+        'endlist',
+        'include',
+        'included',
+        'endincluded',
+        'file',
+        'anchor',
+        'changelog',
+        'endchangelog',
+    ]);
+    const include = createIncludeRegExp();
+    const name = /\s*([A-Za-z][\w-]*)(?=[\s%])/y;
+    const tabs = /\s+tabs(?=[\s%])/y;
+    let closing = -1;
+    for (const match of input.matchAll(/\{\{|\{%/g)) {
+        const offset = match.index;
+        if (match[0] === '{{') return offset;
+        name.lastIndex = offset + 2;
+        const tag = name.exec(input)?.[1];
+        tabs.lastIndex = name.lastIndex;
+        const recognized = tag && (known.has(tag) || (tag === 'list' && tabs.test(input)));
+        if (!recognized) return offset;
+        if (closing < offset) closing = input.indexOf('%}', offset + 2);
+        if (closing < 0) return offset;
+        // Liquid also owns an include tag; only the existing YFM include grammar is exempt.
+        if (tag === 'include' && !include.test(input.slice(offset, closing + 2))) return offset;
     }
-    const liquid = /\{\{[\s\S]*?\}\}|\{%[\s\S]*?%\}/g;
-    for (const match of input.matchAll(liquid)) {
-        const start = match.index;
-        if (markerOffsets.has(start)) continue;
-        dynamic.push({start, end: start + match[0].length});
-        const tag = /^\{%-?\s*(\w+)/.exec(match[0])?.[1];
-        if (
-            tag &&
-            ['if', 'unless', 'for', 'tablerow', 'case', 'capture', 'raw', 'comment'].includes(tag)
-        )
-            controls.push({name: tag, start});
-        else if (tag?.startsWith('end')) {
-            const index = controls.map((item) => item.name).lastIndexOf(tag.slice(3));
-            if (index >= 0) {
-                dynamic.push({start: controls[index].start, end: start + match[0].length});
-                controls.splice(index);
-            }
-        }
-    }
-    for (const control of controls) dynamic.push({start: control.start, end: input.length});
-    return dynamic;
+    return undefined;
 }
 
 function projectToken(
@@ -485,6 +484,11 @@ export function migrateBlockDirectives(
         });
     };
     const atLine = (line: number) => normalized.offsets[lines[line]] ?? source.length;
+    const template = unresolvedTemplate(input);
+    if (template !== undefined) {
+        diagnostic('unresolved-liquid-template', normalized.offsets[template]);
+        return {output: source, edits: [], diagnostics};
+    }
     try {
         const {tokens, scopes} = analyze(input);
         // Each full-input parser call consumes one unit. Setup and final proof are constant.
@@ -601,7 +605,6 @@ export function migrateBlockDirectives(
             return edges;
         };
         const edges = collectEdges();
-        const dynamic = liquidRanges(input, lines, edges);
         const pairEdges = () => {
             const stack: {open: MappedEdge; bad: boolean}[] = [],
                 pairs: Pair[] = [];
@@ -645,16 +648,6 @@ export function migrateBlockDirectives(
             return {pairs, badRanges};
         };
         const {pairs, badRanges} = pairEdges();
-        const dynamicGroups = pairs.filter(
-            (pair) =>
-                dynamicParameters(pair.open) ||
-                (pair.open.name === 'cut' &&
-                    dynamic.some(
-                        (range) =>
-                            range.start < (lines[pair.close.map[1]] ?? input.length) &&
-                            range.end > lines[pair.open.map[0]],
-                    )),
-        );
         const collectGroups = (): Group[] => {
             const groups: Group[] = [];
             for (const pair of pairs) {
@@ -669,21 +662,6 @@ export function migrateBlockDirectives(
                     badRanges.some((range) => start >= range.start && end <= range.end)
                 ) {
                     diagnostic('unsupported-or-protected-container', atLine(start));
-                    continue;
-                }
-                if (
-                    dynamicGroups.some(
-                        (parent) => start >= parent.open.map[0] && end <= parent.close.map[1],
-                    )
-                ) {
-                    const base = lines[start];
-                    const found = input
-                        .slice(base, lines[start + 1] ?? input.length)
-                        .indexOf(pair.open.raw);
-                    diagnostic(
-                        'liquid-dependent-content',
-                        found < 0 ? atLine(start) : normalized.offsets[base + found],
-                    );
                     continue;
                 }
                 const marker = opening(pair.open);
