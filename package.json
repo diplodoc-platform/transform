@@ -57,7 +57,8 @@
     "prepack": "npm run patch:svgo",
     "test:package": "npm run build && node scripts/test-package.mjs",
     "exports:update": "node scripts/build-public-api.mjs --write-manifest",
-    "build:browser": "node scripts/build-browser.mjs"
+    "build:browser": "node scripts/build-browser.mjs",
+    "test:performance": "node scripts/performance/run.mjs"
   },
   "dependencies": {
     "@diplodoc/cut-extension": "1.1.9-transform5.2",
