@@ -1,6 +1,8 @@
+import type {LogConsumer} from '../log-core';
+
 import {bold} from 'chalk';
 
-import {log} from '../log';
+import {log as defaultLog} from '../log';
 
 import evalExp from './evaluation';
 import {tagLine} from './lexical';
@@ -68,6 +70,7 @@ function getElseProp<B extends keyof Elses>({elses}: {elses: Elses[]}, propName:
 }
 
 type Opts = {
+    log: LogConsumer;
     ifTag: Tag;
     vars: Record<string, unknown>;
     content: string;
@@ -77,14 +80,23 @@ type Opts = {
     linesTotal: number;
 };
 
-function inlineConditions({ifTag, vars, content, match, lastIndex, sourceMap, linesTotal}: Opts) {
+function inlineConditions({
+    ifTag,
+    vars,
+    content,
+    match,
+    lastIndex,
+    sourceMap,
+    linesTotal,
+    log,
+}: Opts) {
     let res = '';
     const firstLineNumber = getLineNumber(content, ifTag.startPos);
     const lastLineNumber = getLineNumber(content, lastIndex);
     let resFirstLineNumber = 0;
     let resLastLineNumber = 0;
 
-    if (evalExp(ifTag.condition, vars)) {
+    if (evalExp(ifTag.condition, vars, false, log)) {
         const ifRawLastIndex = ifTag.startPos + ifTag.ifRaw.length;
         const contentLastIndex = getElseProp(ifTag, 'startPos') || match.index;
 
@@ -93,7 +105,7 @@ function inlineConditions({ifTag, vars, content, match, lastIndex, sourceMap, li
         resLastLineNumber = getLineNumber(content, contentLastIndex + 1);
     } else {
         ifTag.elses.some(({condition, startPos, raw}, index) => {
-            const isTruthy = !condition || evalExp(condition, vars);
+            const isTruthy = !condition || evalExp(condition, vars, false, log);
 
             if (isTruthy) {
                 const elseRawLastIndex = startPos + raw.length;
@@ -170,8 +182,10 @@ export default function legacyConditions(
     path?: string,
     settings?: {
         sourceMap: Record<number, number>;
+        log?: LogConsumer;
     },
 ) {
+    const log = settings?.log ?? defaultLog;
     const sourceMap = settings?.sourceMap || {};
 
     const R_LIQUID = /({%-?([\s\S]*?)-?%})/g;
@@ -228,6 +242,7 @@ export default function legacyConditions(
 
                 const {idx, result} = inlineConditions({
                     ifTag,
+                    log,
                     vars,
                     content: input,
                     match,

@@ -62,8 +62,9 @@ The new deprecation entry is distinguishable from all existing engine/lint
 messages by code. Tests assert unchanged existing diagnostic content/counts after
 filtering only those exact new codes; snapshots and consumer assertions must not
 silently discard arbitrary warnings. The existing bundled lint path cache, engine
-settings service and module-global log collector are retained; fixing their
-separate lifecycle is not part of this task. An API invocation can warn even if
+settings service remain retained. Diagnostic retention now follows the separate
+[document lifetime contract](diagnostic-lifetime.md): root/helper messages share
+the document sink, and project history requires an explicit collector. An API invocation can warn even if
 its existing lint cache skips work, but lint errors themselves remain unchanged.
 
 ## Flags and negative cases

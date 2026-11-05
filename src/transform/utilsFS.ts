@@ -10,6 +10,7 @@ import QuickLRU from 'quick-lru';
 
 import {parseChildDocumentResult} from './document-context';
 import liquidSnippet from './liquid';
+import {getInvocationLogger} from './diagnostic-context';
 import {defaultTransformLink} from './utils';
 import {preprocess} from './preprocessors';
 
@@ -61,6 +62,7 @@ export function getFileFragment(
     options: GetFileTokensOpts,
     content?: string,
 ) {
+    options = {...options, log: getInvocationLogger(options)};
     const {
         getVarsPerFile,
         vars,
@@ -90,6 +92,7 @@ export function getFileFragment(
     if (!disableLiquid) {
         const liquidResult = liquidSnippet(content, builtVars, path, {
             log: options.log,
+            diagnostics: options.diagnostics,
             compatibility: options.compatibility,
             deprecations: options.deprecations,
             withSourceMap: true,

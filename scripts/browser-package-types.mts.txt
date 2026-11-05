@@ -1,5 +1,8 @@
 import transform, {
     createParser,
+    createDiagnosticCollector,
+    type DiagnosticCollector,
+    type DiagnosticLogs,
     materializeFootnoteTokens,
     definePlugin,
     type BrowserTransformOptions,
@@ -19,18 +22,23 @@ const plugin = definePlugin({
         });
     },
 })({word: 'hello'});
+const aggregateDiagnostics: DiagnosticCollector = createDiagnosticCollector();
 const options: BrowserTransformOptions = {
+    diagnostics: aggregateDiagnostics,
     generateID: (prefix) => `${prefix}-1`,
     pluginConfiguration: {plugins: [plugin]},
 };
 const html: string = transform('text', options).result.html;
 const parser = createParser(options);
 const document = parser.parseDocument('text');
+const documentLogs: DiagnosticLogs = document.logs;
+const parserLogs: DiagnosticLogs = parser.logs;
+void [documentLogs, parserLogs];
 const env: ParserEnv = document.env;
 const documentEnv: DocumentEnv = document.env;
 parser.compileDocument(document);
 materializeFootnoteTokens(document.tokens, document.tokens.slice(0, 3));
-transform("ref[^a]", {pluginConfiguration: {enable: ["footnotes", "task-list"]}});
+transform('ref[^a]', {pluginConfiguration: {enable: ['footnotes', 'task-list']}});
 minimal(html, {pluginConfiguration: {preset: 'none'}});
 // @ts-expect-error Node filesystem options are not browser capabilities.
 transform('text', {root: '/docs'});

@@ -163,7 +163,7 @@ Liquid, highlighter or sanitization. Existing flags still control those features
 In particular, attributes retain their current default until DOCSTOOLS-6944.
 
 `TransformCoreOptions` explicitly retains existing parser/output/environment
-settings: log, compatibility, tokens, vars, path, extractTitle, needTitle,
+settings: log, diagnostics, compatibility, tokens, vars, path, extractTitle, needTitle,
 allowHTML, linkify, linkifyTlds, breaks, conditionsInCode, disableLiquid,
 leftDelimiter, rightDelimiter, isLiquided, needToSanitizeHtml, sanitizeOptions,
 sanitize, needFlatListHeadings, preprocessors, highlightLangs, disableRules,

@@ -9,7 +9,7 @@ import nodeParser from '../src/transform/md';
 import nodeLog from '../src/transform/log';
 import sanitize, {defaultOptions} from '../src/transform/sanitize';
 import {createParser} from '../src/transform/parser-core';
-import {createDiagnosticHost} from '../src/transform/log-core';
+import {createDiagnosticHost, createDocumentLogger} from '../src/transform/log-core';
 import {createDeprecationReporter} from '../src/transform/deprecation-core';
 import {createSanitizer} from '../src/transform/sanitize-core';
 import {resolvePluginConfiguration} from '../src/transform/plugin-registry-core';
@@ -34,6 +34,11 @@ function createHost(defaultPlugins: MarkdownItPluginCb[] = []) {
         resolvePlugins: (options) => resolvePluginConfiguration(options, defaultPlugins),
         preprocess: (input) => input,
         getLogger: diagnostics.getLogger,
+        createLogger: (options) =>
+            createDocumentLogger(
+                {info: () => 'INFO', warn: () => 'WARN', error: () => 'ERR'},
+                options,
+            ),
         createReporter: (options) => createDeprecationReporter(options, diagnostics.warnInScope),
         ...sanitizers,
     };

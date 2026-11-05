@@ -8,6 +8,7 @@ export {
 } from './document';
 export {createHighlightJsHighlighter} from '../highlighter';
 export {definePlugin, defineLegacyPlugin} from '../plugin-core';
+export {createDiagnosticCollector} from './diagnostics';
 export {BrowserUnsupportedFeatureError} from './errors';
 export type {BrowserUnsupportedFeature, BrowserSourceLocation} from './errors';
 export type {
@@ -46,5 +47,5 @@ export type {
     HighlightJsOptions,
 } from '../highlighter';
 export type {IDGenerator} from '@diplodoc/utils';
-export type {LogConsumer, Logger} from '../log-core';
+export type {DiagnosticCollector, DiagnosticLogs, LogConsumer, Logger} from '../log-core';
 export type {CompatibilityPolicy, DeprecationReporter} from '../deprecation-core';

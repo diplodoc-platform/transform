@@ -7,7 +7,7 @@ import type {
     Token,
 } from 'markdown-it' with {'resolution-mode': 'import'};
 import type {IDGenerator} from '@diplodoc/utils';
-import type {LogConsumer, Logger} from './log-core';
+import type {DiagnosticCollector, DiagnosticLogs, LogConsumer, Logger} from './log-core';
 import type {CompatibilityPolicy, DeprecationReporter} from './deprecation-core';
 import type {SvgInlineOptions} from './plugins/images/options';
 import type {ChangelogItem} from './plugins/changelog/types';
@@ -162,6 +162,7 @@ export type ImageOptions = {
     /** Diagnostic identity of the SVG asset. */
     path?: string;
     log?: LogConsumer;
+    diagnostics?: DiagnosticCollector;
     /** Override SVGO's XML entity limit for this SVG. Omit to use its default. */
     svgMaxEntityCount?: number;
     width: string | undefined | null;
@@ -186,6 +187,7 @@ export interface DocumentEnv extends ParserEnv {
 }
 
 export interface ParsedDocument {
+    readonly logs: DiagnosticLogs;
     readonly tokens: Token[];
     readonly env: DocumentEnv;
 }
@@ -199,6 +201,7 @@ export interface ParsedDocumentFragment {
 }
 
 export interface DocumentParser {
+    readonly logs: DiagnosticLogs;
     parseDocument(input: string, initialize?: (env: DocumentEnv) => void): ParsedDocument;
     compileDocument(document: ParsedDocument): string;
     parse(input: string): Token[];

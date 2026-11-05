@@ -12,6 +12,7 @@ import attrs from 'markdown-it-attrs';
 import {preprocess} from '../preprocessors';
 import {resolveMarkdownAttrs} from '../parser-policy';
 import {warnBundledEngine} from '../legacy-engines';
+import {getInvocationLogger} from '../diagnostic-context';
 
 import baseDefaultLintConfig from './yfmlint';
 import {
@@ -37,9 +38,13 @@ const lintCache = new Set();
  * @returns Nothing; diagnostics use the existing logger.
  */
 function yfmlint(opts: Options) {
-    warnBundledEngine('YFMLint', opts.pluginOptions.path, opts.pluginOptions);
+    const pluginOptions: PluginOptions = {
+        ...opts.pluginOptions,
+        log: getInvocationLogger(opts.pluginOptions),
+    };
+    warnBundledEngine('YFMLint', pluginOptions.path, pluginOptions);
     let {input} = opts;
-    const {plugins: customPlugins, pluginOptions, customLintRules, sourceMap} = opts;
+    const {plugins: customPlugins, customLintRules, sourceMap} = opts;
     const {log} = pluginOptions;
     let {path = 'input'} = pluginOptions;
 
@@ -47,6 +52,7 @@ function yfmlint(opts: Options) {
     path = path.replace(/\\/g, '/');
 
     pluginOptions.isLintRun = true;
+    opts.pluginOptions.isLintRun = true;
 
     const {
         LogLevels: {ERROR, WARN, DISABLED},

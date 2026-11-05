@@ -1,5 +1,10 @@
 # Browser transformation entry points
 
+Diagnostic ownership follows the later [document lifetime contract](diagnostic-lifetime.md):
+fresh document snapshots by default, explicit `diagnostics` aggregation and a
+browser-exported `createDiagnosticCollector`. Earlier notes about retaining host
+collectors do not imply automatic global accumulation.
+
 Task: [DOCSTOOLS-6940](https://st.yandex-team.ru/DOCSTOOLS-6940).
 Design baseline: `6b05899e3b2bb472e89a86abdef93374e6a4dfb5`, including the shared
 attrs policy from major `ea8168f4c468a63b4dabee3d16df6d2c34fb839d`.

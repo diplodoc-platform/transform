@@ -191,7 +191,10 @@ describe('direct images plugin registration', () => {
 
     test('uses a supplied reporter across renders and respects an explicit scope reset', () => {
         const consumer = createConsumer();
-        const deprecations = createDeprecationReporter({log: getLogger(consumer)});
+        const deprecations = createDeprecationReporter({
+            log: getLogger(consumer),
+            diagnostics: log,
+        });
         const md = new MarkdownIt().use(images, {
             ...sourceOptions,
             inlineSvg: false,

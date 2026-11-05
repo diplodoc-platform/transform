@@ -54,6 +54,38 @@ broad ambient symbol typing, which can affect callers using arbitrary Window
 symbols. It is not published. Validate an approved dependency fix before adoption;
 `skipLibCheck` does not establish compatibility of those declarations.
 
+## Diagnostic ownership
+
+`Output.logs` now contains only that root document's diagnostics and is a detached
+snapshot. Later roots, parser reuse, and collector clearing do not change earlier
+outputs. Included sources and fragments share the enclosing document's sink.
+A reusable parser exposes `parser.logs`; owned handles expose `document.logs`,
+including diagnostics produced when that older handle is compiled later.
+
+For build-wide history, opt in explicitly:
+
+```ts
+import transform from '@diplodoc/transform';
+import {createDiagnosticCollector} from '@diplodoc/transform/log';
+
+const diagnostics = createDiagnosticCollector();
+const page = transform(source, {path, diagnostics, log: applicationLogger});
+const documentLogs = page.logs;
+const buildLogs = diagnostics.get();
+// Handle the build snapshot, then release its retained diagnostics explicitly.
+diagnostics.clear();
+```
+
+The shared collector is an aggregate mirror; `page.logs` remains document-only.
+`get()` returns copies, `add()` retains supplied duplicates/order, and generic
+logging deduplicates identical formatted messages. The existing exported global
+`log` retains its mutable methods but receives only explicit writes/forwarding or
+`diagnostics: log`. Reading `log.get()` no longer retrieves all ordinary calls.
+Parser setup runs once, so its diagnostics belong to the first root only. For
+standalone Liquid/lint helpers that return no logs, pass `diagnostics` and/or an
+external `log` to retain/forward messages. See the
+[lifetime contract](../specs/transform-5/diagnostic-lifetime.md).
+
 ## Select plugins explicitly
 
 The existing flat options and legacy `plugins` callback array remain supported.

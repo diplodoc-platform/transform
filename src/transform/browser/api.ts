@@ -6,7 +6,7 @@ import type {BrowserOutput, BrowserTransformOptions} from './types';
 import {createParser as createSharedParser} from '../parser-core';
 
 import {resolveBrowserOptions} from './options';
-import {log} from './diagnostics';
+import {createDocumentLogger} from './diagnostics';
 
 /**
  * Bind both browser entrypoints to the same parser/lifecycle implementation.
@@ -37,13 +37,15 @@ export function createBrowserApi<Options extends BrowserTransformOptions = Brows
      * @returns Rendered document data and the browser host's collected diagnostics.
      */
     function transform(source: string, options?: Options): BrowserOutput {
-        const parser = createParser(options);
+        const resolved = resolveBrowserOptions(options === undefined ? {} : options, available);
+        const logger = createDocumentLogger(resolved);
         try {
+            const parser = createSharedParser(resolved, host, undefined, logger);
             const document = parser.parseDocument(source);
             const html = parser.compileDocument(document);
-            return {result: {...document.env, html}, logs: log.get()};
+            return {result: {...document.env, html}, logs: logger.get()};
         } catch (error) {
-            log.error('Error occurred');
+            logger.error('Error occurred');
             throw error;
         }
     }

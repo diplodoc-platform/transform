@@ -3,10 +3,8 @@ import type {ParserHost} from '../parser-core';
 import {createSanitizer} from '../sanitize-core';
 
 import {browserCss} from './css';
-import {createBrowserReporter, getLogger, log} from './diagnostics';
+import {createBrowserReporter, createDocumentLogger, getLogger, log} from './diagnostics';
 import {installBrowserGuard} from './guard';
-
-const sanitizers = createSanitizer(browserCss, log);
 
 /**
  * Bind existing parser services to real browser implementations.
@@ -27,7 +25,11 @@ export function createBrowserHost(
         installGuard: installBrowserGuard,
         preprocess: (source) => source,
         getLogger,
+        createLogger: createDocumentLogger,
         createReporter: createBrowserReporter,
-        ...sanitizers,
+        sanitize: (html, options, additional, logger) =>
+            createSanitizer(browserCss, logger ?? log).sanitize(html, options, additional),
+        sanitizeStyles: (html, options, logger) =>
+            createSanitizer(browserCss, logger ?? log).sanitizeStyles(html, options),
     };
 }

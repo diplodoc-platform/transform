@@ -26,7 +26,7 @@ beforeEach(() => log.clear());
 describe('deprecation scopes', () => {
     test('reports the stable code, feature, occurrence, replacement and removal target', () => {
         const consumer = createConsumer();
-        const reporter = createDeprecationReporter({log: consumer});
+        const reporter = createDeprecationReporter({log: consumer, diagnostics: log});
 
         reporter.warn(descriptor, usage);
 
@@ -99,8 +99,8 @@ describe('deprecation scopes', () => {
     test('independent scopes and reset re-emit through a normalized logger', () => {
         const consumer = createConsumer();
         const logger = getLogger(consumer);
-        const first = createDeprecationReporter({log: logger});
-        const second = createDeprecationReporter({log: logger});
+        const first = createDeprecationReporter({log: logger, diagnostics: log});
+        const second = createDeprecationReporter({log: logger, diagnostics: log});
         log.info('keep existing diagnostic');
 
         first.warn(descriptor, usage);

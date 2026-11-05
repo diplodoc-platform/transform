@@ -1,8 +1,9 @@
 import type {SourceMapApi} from './sourceMap';
+import type {LogConsumer} from '../log-core';
 
 import {bold} from 'chalk';
 
-import {log} from '../log';
+import {log as defaultLog} from '../log';
 
 import {NoValue, evalExp} from './evaluation';
 import {tagLine} from './lexical';
@@ -211,11 +212,12 @@ function inlineConditions(
     ifTag: IfTag,
     vars: Record<string, unknown>,
     strict: boolean,
+    log: LogConsumer,
 ) {
     let ifCon = null;
 
     for (const condition of ifTag) {
-        const value = evalExp(condition.expr, vars, strict);
+        const value = evalExp(condition.expr, vars, strict, log);
 
         if (condition.expr && value === NoValue) {
             return {
@@ -252,8 +254,10 @@ export default function conditions(
         sourceMap: Record<number, number>;
         strict?: boolean;
         useLegacyConditions?: boolean;
+        log?: LogConsumer;
     },
 ) {
+    const log = settings?.log ?? defaultLog;
     if (settings?.useLegacyConditions) {
         return legacyConditions(input, vars, path, settings);
     }
@@ -309,7 +313,13 @@ export default function conditions(
 
                 ifTag.closeCondition(match[1], match.index);
 
-                const {result, lastIndex, ifCon} = inlineConditions(input, ifTag, vars, strict);
+                const {result, lastIndex, ifCon} = inlineConditions(
+                    input,
+                    ifTag,
+                    vars,
+                    strict,
+                    log,
+                );
 
                 resourcemap(input, ifTag, ifCon, createSourceMapApi(sourceMap));
 

@@ -30,6 +30,7 @@ const coreKeys = new Set(
         highlighter: true,
         generateID: true,
         log: true,
+        diagnostics: true,
         compatibility: true,
         pluginConfiguration: true,
         sanitizeOptions: true,

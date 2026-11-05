@@ -43,7 +43,7 @@ assert.equal(getLogger(external), require(`${packageName}/log`).getLogger(extern
 log.clear();
 require(`${packageName}/log`).log.warn('mixed module warning');
 assert.equal(log.get().warn.length, 1);
-createDeprecationReporter().warn(
+createDeprecationReporter({diagnostics: log}).warn(
     {code: 'fixture', feature: 'old', replacement: 'new', removal: {version: '6'}},
     {option: 'old'},
 );
@@ -88,7 +88,8 @@ for (const api of [configuration, cjsConfiguration]) {
     });
     assert.match(transform('text', options).result.html, /configured:text/);
     assert.equal(seenContext.path, undefined);
-    assert.equal(seenContext.log, log);
+    assert.notEqual(seenContext.log, log);
+    assert.equal(typeof seenContext.log.get, 'function');
     assert.equal(typeof seenContext.deprecations.warn, 'function');
     assert.equal(typeof seenContext.generateID, 'function');
     assert.throws(

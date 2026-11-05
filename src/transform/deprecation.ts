@@ -1,7 +1,8 @@
-import type {LogConsumer} from './log';
+import type {DiagnosticOptions} from './log-core';
 import type {CompatibilityPolicy, DeprecationReporter} from './deprecation-core';
 
 import {createDeprecationReporter as createReporter} from './deprecation-core';
+import {getInvocationLogger} from './diagnostic-context';
 import {warnInScope} from './log';
 
 export type {
@@ -21,7 +22,7 @@ export type {
  * @returns A synchronous reporter with scope-owned deduplication.
  */
 export function createDeprecationReporter(
-    options: {log?: LogConsumer; compatibility?: CompatibilityPolicy} = {},
+    options: DiagnosticOptions & {compatibility?: CompatibilityPolicy} = {},
 ): DeprecationReporter {
-    return createReporter(options, warnInScope);
+    return createReporter({...options, log: getInvocationLogger(options)}, warnInScope);
 }

@@ -1,8 +1,10 @@
+import type {DiagnosticOptions} from '../../log-core';
+
 import MarkdownIt from 'markdown-it';
 import {sep} from 'path';
 import {parseHref} from '@diplodoc/utils';
 
-import {getLogger} from '../../log';
+import {getInvocationLogger} from '../../diagnostic-context';
 import {DEFAULT_LANG} from '../../constants';
 import {PAGE_LINK_REGEXP, getHrefTokenAttr, isLocalUrl} from '../../utils';
 import {getSinglePageAnchorId, resolveRelativePath} from '../../utilsFS';
@@ -14,7 +16,7 @@ const replaceLinkHref = (input: string, href: string, newHref: string) => {
     return input.replace(`](${href})`, `](${newHref})`);
 };
 
-type Options = {
+type Options = DiagnosticOptions & {
     root: string;
     path: string;
     singlePage: boolean;
@@ -39,7 +41,7 @@ const collect = (input: string, options: Options) => {
         ...options,
         transformLink,
         needSkipLinkFn,
-        log: getLogger(),
+        log: getInvocationLogger(options),
         lang: DEFAULT_LANG,
         rootPublicPath: '',
         isLintRun: false,
