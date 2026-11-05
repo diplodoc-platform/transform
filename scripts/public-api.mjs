@@ -436,15 +436,19 @@ export const publicModules = [
 ];
 
 const moduleExport = (source) => ({
-    import: {types: `./public/${source}.d.mts`, default: `./public/${source}.mjs`},
-    require: {types: `./public/${source}.d.cts`, default: `./public/${source}.cjs`},
+    import: {types: `./api/${source}.d.mts`, default: `./api/${source}.mjs`},
+    require: {types: `./api/${source}.d.cts`, default: `./api/${source}.cjs`},
+});
+const legacyModuleExport = (source) => ({
+    ...moduleExport(source),
+    import: {types: `./api/${source}.legacy.d.mts`, default: `./api/${source}.legacy.mjs`},
 });
 const browserExport = (source) => ({
     import: {types: `./dist/browser/${source}.d.mts`, default: `./dist/browser/${source}.mjs`},
 });
 const legacyTypeExport = (source) => ({
-    import: {types: './public/legacy-typings.d.mts', default: `./public/${source}.mjs`},
-    require: {types: './public/legacy-typings.d.cts', default: `./public/${source}.cjs`},
+    import: {types: './api/legacy-typings.d.mts', default: `./api/${source}.legacy.mjs`},
+    require: {types: './api/legacy-typings.d.cts', default: `./api/${source}.cjs`},
 });
 
 export function packageExports() {
@@ -458,9 +462,9 @@ export function packageExports() {
     }
     entries['./plugins/*'] = moduleExport('plugins/*');
     entries['./migrations/*'] = moduleExport('migrations/*');
-    entries['./lib/*.js'] = moduleExport('*');
-    entries['./lib/*'] = moduleExport('*');
-    entries['./lib'] = moduleExport('index');
+    entries['./lib/*.js'] = legacyModuleExport('*');
+    entries['./lib/*'] = legacyModuleExport('*');
+    entries['./lib'] = legacyModuleExport('index');
     for (const source of ['typings', 'plugins/typings']) {
         entries[`./lib/${source}`] = legacyTypeExport(source);
         entries[`./lib/${source}.js`] = legacyTypeExport(source);
@@ -495,7 +499,7 @@ export function publicEntryInventory() {
         for (const alias of [source, ...(source.endsWith('/index') ? [source.slice(0, -6)] : [])]) {
             const entry = ['typings', 'plugins/typings'].includes(source)
                 ? legacyTypeExport(source)
-                : moduleExport(alias);
+                : legacyModuleExport(alias);
             entries[`./lib/${alias}`] = entry;
             entries[`./lib/${alias}.js`] = entry;
             if (alias.startsWith('plugins/')) {
@@ -503,7 +507,7 @@ export function publicEntryInventory() {
             }
         }
     }
-    entries['./lib'] = moduleExport('index');
+    entries['./lib'] = legacyModuleExport('index');
     Object.assign(entries, staticEntries);
     return Object.fromEntries(Object.entries(entries).filter(([name]) => !name.includes('*')));
 }

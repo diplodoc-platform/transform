@@ -15,9 +15,9 @@ CommonJS so generated infrastructure configuration files keep working.
 
 `scripts/public-api.mjs` is the entry-point manifest. The build generates:
 
-- `public/**/*.mjs`: native ESM facades with explicit named exports and defaults;
-- `public/**/*.cjs`: CommonJS namespace or legacy direct-value adapters;
-- `public/**/*.d.mts` and `public/**/*.d.cts`: native declarations derived from the
+- `api/**/*.mjs`: native ESM facades with explicit named exports and defaults;
+- `api/**/*.cjs`: CommonJS namespace or legacy direct-value adapters;
+- `api/**/*.d.mts` and `api/**/*.d.cts`: native declarations derived from the
   compiler-emitted implementation declarations, without copied API signatures.
 
 An ESM facade imports the same CommonJS implementation as its CJS adapter. There
@@ -119,9 +119,13 @@ can resolve, for example, `@use "pkg:@diplodoc/transform/scss/yfm-base.scss"`.
 The finite `legacyModules` inventory records the pre-existing server files.
 Each remains accessible as `lib/<file>` and `lib/<file>.js`; directory entries
 also retain `lib/<directory>`, `lib/<directory>/index`, and
-`lib/<directory>/index.js`. These aliases use the same generated adapters and do
-not promote every helper to stable public API. New implementation files do not
-automatically receive facades. The `public/` directory is cleaned and regenerated
+`lib/<directory>/index.js`. Native ESM imports of these legacy paths retain the
+historical CommonJS value as their default, including namespace objects such as
+`utils` and `sanitize` (whose callable sanitizer is `sanitize.default`). Stable
+entry points retain their documented ESM defaults. Both forms share the same
+implementation and state. These aliases do not promote every helper to stable
+public API. New implementation files do not
+automatically receive facades. The `api/` directory is cleaned and regenerated
 from this finite inventory; its name is a project convention, not a Node.js standard.
 
 Package exports use typed patterns for `lib/*.js`, `lib/*`, `plugins/*` and

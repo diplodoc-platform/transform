@@ -26,9 +26,9 @@
   },
   "license": "MIT",
   "author": "YFM Team <yfm-team@yandex.ru>",
-  "main": "./public/index.cjs",
+  "main": "./api/index.cjs",
   "files": [
-    "public",
+    "api",
     "dist",
     "lib",
     "src"
@@ -126,157 +126,157 @@
       "optional": true
     }
   },
-  "module": "./public/index.mjs",
-  "types": "./public/index.d.cts",
+  "module": "./api/index.mjs",
+  "types": "./api/index.d.cts",
   "exports": {
     ".": {
       "import": {
-        "types": "./public/index.d.mts",
-        "default": "./public/index.mjs"
+        "types": "./api/index.d.mts",
+        "default": "./api/index.mjs"
       },
       "require": {
-        "types": "./public/index.d.cts",
-        "default": "./public/index.cjs"
+        "types": "./api/index.d.cts",
+        "default": "./api/index.cjs"
       }
     },
     "./parser": {
       "import": {
-        "types": "./public/md.d.mts",
-        "default": "./public/md.mjs"
+        "types": "./api/md.d.mts",
+        "default": "./api/md.mjs"
       },
       "require": {
-        "types": "./public/md.d.cts",
-        "default": "./public/md.cjs"
+        "types": "./api/md.d.cts",
+        "default": "./api/md.cjs"
       }
     },
     "./document": {
       "import": {
-        "types": "./public/document.d.mts",
-        "default": "./public/document.mjs"
+        "types": "./api/document.d.mts",
+        "default": "./api/document.mjs"
       },
       "require": {
-        "types": "./public/document.d.cts",
-        "default": "./public/document.cjs"
+        "types": "./api/document.d.cts",
+        "default": "./api/document.cjs"
       }
     },
     "./configuration": {
       "import": {
-        "types": "./public/plugin-configuration.d.mts",
-        "default": "./public/plugin-configuration.mjs"
+        "types": "./api/plugin-configuration.d.mts",
+        "default": "./api/plugin-configuration.mjs"
       },
       "require": {
-        "types": "./public/plugin-configuration.d.cts",
-        "default": "./public/plugin-configuration.cjs"
+        "types": "./api/plugin-configuration.d.cts",
+        "default": "./api/plugin-configuration.cjs"
       }
     },
     "./highlighter": {
       "import": {
-        "types": "./public/highlighter.d.mts",
-        "default": "./public/highlighter.mjs"
+        "types": "./api/highlighter.d.mts",
+        "default": "./api/highlighter.mjs"
       },
       "require": {
-        "types": "./public/highlighter.d.cts",
-        "default": "./public/highlighter.cjs"
+        "types": "./api/highlighter.d.cts",
+        "default": "./api/highlighter.cjs"
       }
     },
     "./highlighter/legacy": {
       "import": {
-        "types": "./public/highlighter/legacy.d.mts",
-        "default": "./public/highlighter/legacy.mjs"
+        "types": "./api/highlighter/legacy.d.mts",
+        "default": "./api/highlighter/legacy.mjs"
       },
       "require": {
-        "types": "./public/highlighter/legacy.d.cts",
-        "default": "./public/highlighter/legacy.cjs"
+        "types": "./api/highlighter/legacy.d.cts",
+        "default": "./api/highlighter/legacy.cjs"
       }
     },
     "./types": {
       "import": {
-        "types": "./public/typings.d.mts",
-        "default": "./public/typings.mjs"
+        "types": "./api/typings.d.mts",
+        "default": "./api/typings.mjs"
       },
       "require": {
-        "types": "./public/typings.d.cts",
-        "default": "./public/typings.cjs"
+        "types": "./api/typings.d.cts",
+        "default": "./api/typings.cjs"
       }
     },
     "./plugins": {
       "import": {
-        "types": "./public/plugins.d.mts",
-        "default": "./public/plugins.mjs"
+        "types": "./api/plugins.d.mts",
+        "default": "./api/plugins.mjs"
       },
       "require": {
-        "types": "./public/plugins.d.cts",
-        "default": "./public/plugins.cjs"
+        "types": "./api/plugins.d.cts",
+        "default": "./api/plugins.cjs"
       }
     },
     "./preprocessors": {
       "import": {
-        "types": "./public/preprocessors/index.d.mts",
-        "default": "./public/preprocessors/index.mjs"
+        "types": "./api/preprocessors/index.d.mts",
+        "default": "./api/preprocessors/index.mjs"
       },
       "require": {
-        "types": "./public/preprocessors/index.d.cts",
-        "default": "./public/preprocessors/index.cjs"
+        "types": "./api/preprocessors/index.d.cts",
+        "default": "./api/preprocessors/index.cjs"
       }
     },
     "./frontmatter": {
       "import": {
-        "types": "./public/frontmatter.d.mts",
-        "default": "./public/frontmatter.mjs"
+        "types": "./api/frontmatter.d.mts",
+        "default": "./api/frontmatter.mjs"
       },
       "require": {
-        "types": "./public/frontmatter.d.cts",
-        "default": "./public/frontmatter.cjs"
+        "types": "./api/frontmatter.d.cts",
+        "default": "./api/frontmatter.cjs"
       }
     },
     "./utils": {
       "import": {
-        "types": "./public/utils.d.mts",
-        "default": "./public/utils.mjs"
+        "types": "./api/utils.d.mts",
+        "default": "./api/utils.mjs"
       },
       "require": {
-        "types": "./public/utils.d.cts",
-        "default": "./public/utils.cjs"
+        "types": "./api/utils.d.cts",
+        "default": "./api/utils.cjs"
       }
     },
     "./utils/fs": {
       "import": {
-        "types": "./public/utilsFS.d.mts",
-        "default": "./public/utilsFS.mjs"
+        "types": "./api/utilsFS.d.mts",
+        "default": "./api/utilsFS.mjs"
       },
       "require": {
-        "types": "./public/utilsFS.d.cts",
-        "default": "./public/utilsFS.cjs"
+        "types": "./api/utilsFS.d.cts",
+        "default": "./api/utilsFS.cjs"
       }
     },
     "./sanitize": {
       "import": {
-        "types": "./public/sanitize.d.mts",
-        "default": "./public/sanitize.mjs"
+        "types": "./api/sanitize.d.mts",
+        "default": "./api/sanitize.mjs"
       },
       "require": {
-        "types": "./public/sanitize.d.cts",
-        "default": "./public/sanitize.cjs"
+        "types": "./api/sanitize.d.cts",
+        "default": "./api/sanitize.cjs"
       }
     },
     "./log": {
       "import": {
-        "types": "./public/log.d.mts",
-        "default": "./public/log.mjs"
+        "types": "./api/log.d.mts",
+        "default": "./api/log.mjs"
       },
       "require": {
-        "types": "./public/log.d.cts",
-        "default": "./public/log.cjs"
+        "types": "./api/log.d.cts",
+        "default": "./api/log.cjs"
       }
     },
     "./deprecation": {
       "import": {
-        "types": "./public/deprecation.d.mts",
-        "default": "./public/deprecation.mjs"
+        "types": "./api/deprecation.d.mts",
+        "default": "./api/deprecation.mjs"
       },
       "require": {
-        "types": "./public/deprecation.d.cts",
-        "default": "./public/deprecation.cjs"
+        "types": "./api/deprecation.d.cts",
+        "default": "./api/deprecation.cjs"
       }
     },
     "./browser": {
@@ -293,92 +293,92 @@
     },
     "./plugins/*": {
       "import": {
-        "types": "./public/plugins/*.d.mts",
-        "default": "./public/plugins/*.mjs"
+        "types": "./api/plugins/*.d.mts",
+        "default": "./api/plugins/*.mjs"
       },
       "require": {
-        "types": "./public/plugins/*.d.cts",
-        "default": "./public/plugins/*.cjs"
+        "types": "./api/plugins/*.d.cts",
+        "default": "./api/plugins/*.cjs"
       }
     },
     "./migrations/*": {
       "import": {
-        "types": "./public/migrations/*.d.mts",
-        "default": "./public/migrations/*.mjs"
+        "types": "./api/migrations/*.d.mts",
+        "default": "./api/migrations/*.mjs"
       },
       "require": {
-        "types": "./public/migrations/*.d.cts",
-        "default": "./public/migrations/*.cjs"
+        "types": "./api/migrations/*.d.cts",
+        "default": "./api/migrations/*.cjs"
       }
     },
     "./lib/*.js": {
       "import": {
-        "types": "./public/*.d.mts",
-        "default": "./public/*.mjs"
+        "types": "./api/*.legacy.d.mts",
+        "default": "./api/*.legacy.mjs"
       },
       "require": {
-        "types": "./public/*.d.cts",
-        "default": "./public/*.cjs"
+        "types": "./api/*.d.cts",
+        "default": "./api/*.cjs"
       }
     },
     "./lib/*": {
       "import": {
-        "types": "./public/*.d.mts",
-        "default": "./public/*.mjs"
+        "types": "./api/*.legacy.d.mts",
+        "default": "./api/*.legacy.mjs"
       },
       "require": {
-        "types": "./public/*.d.cts",
-        "default": "./public/*.cjs"
+        "types": "./api/*.d.cts",
+        "default": "./api/*.cjs"
       }
     },
     "./lib": {
       "import": {
-        "types": "./public/index.d.mts",
-        "default": "./public/index.mjs"
+        "types": "./api/index.legacy.d.mts",
+        "default": "./api/index.legacy.mjs"
       },
       "require": {
-        "types": "./public/index.d.cts",
-        "default": "./public/index.cjs"
+        "types": "./api/index.d.cts",
+        "default": "./api/index.cjs"
       }
     },
     "./lib/typings": {
       "import": {
-        "types": "./public/legacy-typings.d.mts",
-        "default": "./public/typings.mjs"
+        "types": "./api/legacy-typings.d.mts",
+        "default": "./api/typings.legacy.mjs"
       },
       "require": {
-        "types": "./public/legacy-typings.d.cts",
-        "default": "./public/typings.cjs"
+        "types": "./api/legacy-typings.d.cts",
+        "default": "./api/typings.cjs"
       }
     },
     "./lib/typings.js": {
       "import": {
-        "types": "./public/legacy-typings.d.mts",
-        "default": "./public/typings.mjs"
+        "types": "./api/legacy-typings.d.mts",
+        "default": "./api/typings.legacy.mjs"
       },
       "require": {
-        "types": "./public/legacy-typings.d.cts",
-        "default": "./public/typings.cjs"
+        "types": "./api/legacy-typings.d.cts",
+        "default": "./api/typings.cjs"
       }
     },
     "./lib/plugins/typings": {
       "import": {
-        "types": "./public/legacy-typings.d.mts",
-        "default": "./public/plugins/typings.mjs"
+        "types": "./api/legacy-typings.d.mts",
+        "default": "./api/plugins/typings.legacy.mjs"
       },
       "require": {
-        "types": "./public/legacy-typings.d.cts",
-        "default": "./public/plugins/typings.cjs"
+        "types": "./api/legacy-typings.d.cts",
+        "default": "./api/plugins/typings.cjs"
       }
     },
     "./lib/plugins/typings.js": {
       "import": {
-        "types": "./public/legacy-typings.d.mts",
-        "default": "./public/plugins/typings.mjs"
+        "types": "./api/legacy-typings.d.mts",
+        "default": "./api/plugins/typings.legacy.mjs"
       },
       "require": {
-        "types": "./public/legacy-typings.d.cts",
-        "default": "./public/plugins/typings.cjs"
+        "types": "./api/legacy-typings.d.cts",
+        "default": "./api/plugins/typings.cjs"
       }
     },
     "./runtime": "./dist/js/yfm.js",

@@ -135,7 +135,9 @@ for (const [subpath, target] of Object.entries(publicEntryInventory())) {
     const esm = await import(specifier);
     assert.equal(require.resolve(specifier).endsWith('.cjs'), true, specifier);
     assert.equal(import.meta.resolve(specifier).endsWith('.mjs'), true, specifier);
-    if (esm.default === cjs || typeof cjs === 'function' || Array.isArray(cjs)) {
+    if (subpath === './lib' || subpath.startsWith('./lib/')) {
+        assert.equal(esm.default, cjs, `${specifier}: historical native ESM default`);
+    } else if (esm.default === cjs || typeof cjs === 'function' || Array.isArray(cjs)) {
         assert.equal(esm.default, cjs, specifier);
     } else {
         for (const name of Object.keys(esm)) {

@@ -84,7 +84,7 @@ This package has a **dual architecture**:
 - **Purpose**: Transform YFM to HTML on the server
 - **Runtime**: Node.js
 - **Output**: `lib/` directory (CommonJS)
-- **Entry**: `public/index.cjs` (CommonJS) or `public/index.mjs` (native ESM)
+- **Entry**: `api/index.cjs` (CommonJS) or `api/index.mjs` (native ESM)
 - **Dependencies**: Uses extension packages as plugins
   - `@diplodoc/cut-extension` — cut plugin
   - `@diplodoc/tabs-extension` — tabs plugin
@@ -491,7 +491,7 @@ The package uses **release-please** for automated versioning and publishing:
 ## Public module build
 
 Server sources use standard ESM syntax; `lib/` is the sole CommonJS implementation
-graph. Generated `public/` adapters provide native ESM and CJS package entry points
+graph. Generated `api/` adapters provide native ESM and CJS package entry points
 without duplicating logger/cache state. `scripts/public-api.mjs` separates stable
 entries from finite legacy aliases. Update it deliberately, run
 `npm run exports:update`, and run `npm run test:package` when modifying exports,
