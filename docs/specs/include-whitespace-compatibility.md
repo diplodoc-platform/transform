@@ -11,7 +11,8 @@ Restore the previous candidate text only at the existing paragraph-open, inline,
 paragraph-close recognition boundary. Match `inline.content.trim()` against the
 unchanged grammar. Do not assign the normalized string to the token, change source
 maps, trim the full document, alter collection offsets, or introduce a new API.
-Matching remains linear in the candidate paragraph size.
+The added trimming takes linear time in the candidate paragraph size; the include
+grammar is unchanged.
 
 Surrounding whitespace accepted by native 13 remains accepted, including NBSP,
 FEFF, em space, narrow NBSP, ideographic space and whitespace-only lines. The native
