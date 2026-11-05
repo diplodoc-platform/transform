@@ -55,6 +55,7 @@ export const trimHeadingWhitespace = (token: Token) => {
 export const removeCustomIds = (token: Token) => {
     token.content = removeCustomId(token.content);
     token.children?.forEach((child) => {
-        child.content = removeCustomId(child.content);
+        child.content = removeCustomId(child.content, false);
     });
+    trimHeadingWhitespace(token);
 };

@@ -17,17 +17,22 @@ export const getCustomIds = (content: string) => {
     return ids.length ? ids : null;
 };
 
-export const removeCustomId = (content: string) => {
+/**
+ * Remove legacy IDs while optionally retaining an inline child's boundary spaces.
+ * @param content - Heading text or a single inline child's content.
+ * @param trim - Keep the historical trimmed result unless display-token callers opt out.
+ * @returns Content without legacy IDs; the placeholder exception remains unchanged.
+ */
+export const removeCustomId = (content: string, trim = true) => {
     if (CUSTOM_ID_REGEXP.test(content)) {
-        return content
-            .replace(CUSTOM_ID_REGEXP, (match) => {
-                if (match === CUSTOM_ID_EXCEPTION) {
-                    return match;
-                }
+        const stripped = content.replace(CUSTOM_ID_REGEXP, (match) => {
+            if (match === CUSTOM_ID_EXCEPTION) {
+                return match;
+            }
 
-                return '';
-            })
-            .trim();
+            return '';
+        });
+        return trim ? stripped.trim() : stripped;
     }
 
     return content;
