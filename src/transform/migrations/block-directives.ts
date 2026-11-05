@@ -15,6 +15,7 @@ import {TokenType, transform as cut, recognizeCutBoundary} from '@diplodoc/cut-e
 import {createNotesPlugin, recognizeNoteBoundary} from '@diplodoc/notes-extension/plugin';
 import {recognizeTabsBoundary, transform as tabs} from '@diplodoc/tabs-extension/plugin';
 
+import {normalizeDocumentResources} from '../document-context-core';
 import {includedSourceRanges} from '../preprocessors/included/boundaries';
 import {createTablePlugin} from '../plugins/table/core';
 
@@ -88,7 +89,8 @@ function shield(source: string): string {
     const closing = /^(?:---|\.\.\.)[ \t]*$/gm;
     closing.lastIndex = opening[0].length;
     const end = closing.exec(source);
-    const length = end ? end.index + end[0].length : source.length;
+    if (!end) return source;
+    const length = end.index + end[0].length;
     return source.slice(0, length).replace(/[^\n]/g, ' ') + source.slice(length);
 }
 function lineStarts(source: string): number[] {
@@ -97,12 +99,14 @@ function lineStarts(source: string): number[] {
     return result;
 }
 function apply(source: string, edits: readonly BlockDirectivesEdit[]): string {
-    return [...edits]
-        .sort((a, b) => b.start - a.start)
-        .reduce(
-            (text, edit) => text.slice(0, edit.start) + edit.replacement + text.slice(edit.end),
-            source,
-        );
+    const parts: string[] = [];
+    let end = 0;
+    for (const edit of [...edits].sort((a, b) => a.start - b.start)) {
+        parts.push(source.slice(end, edit.start), edit.replacement);
+        end = edit.end;
+    }
+    parts.push(source.slice(end));
+    return parts.join('');
 }
 function escapeLabel(value: string): string {
     let result = '',
@@ -143,10 +147,11 @@ function opening(edge: Open, escaped = false): string | undefined {
     return `:::tabs {variant=${variant}${edge.group.present ? ` group=${JSON.stringify(edge.group.value)}` : ''}}`;
 }
 
-function analyze(input: string): {tokens: Token[]; scopes: Scope[]} {
+function analyze(input: string, work = () => {}): {tokens: Token[]; scopes: Scope[]} {
     const plain = new MarkdownIt({html: true}).use(table);
     plain.core.ruler.enableOnly(['normalize', 'block']);
     const names = new Set(['cut', 'note', 'tabs', 'no-translate', 'visibility']);
+    work();
     for (const token of plain.parse(input, {})) {
         if (token.type !== 'inline') continue;
         const match = /^:{3,}\s*([A-Za-z][A-Za-z0-9_-]*)/.exec(token.content);
@@ -177,6 +182,7 @@ function analyze(input: string): {tokens: Token[]; scopes: Scope[]} {
         );
     }
     md.core.ruler.enableOnly(['normalize', 'block']);
+    work();
     return {tokens: md.parse(input, {}), scopes};
 }
 
@@ -231,9 +237,75 @@ function validateOwnerMaps(tokens: readonly Token[], scopes: readonly Scope[]): 
     if (cuts.length || notes.length) throw new Error('Unclosed semantic wrapper');
 }
 
+function liquidRanges(input: string, lines: readonly number[], edges: readonly MappedEdge[]) {
+    const dynamic: {start: number; end: number}[] = [];
+    const controls: {name: string; start: number}[] = [];
+    const markerOffsets = new Set<number>();
+    for (const edge of edges) {
+        const start = lines[edge.map[0]];
+        const end = lines[edge.map[1]] ?? input.length;
+        const at = input.slice(start, end).indexOf(edge.raw);
+        if (at >= 0) markerOffsets.add(start + at);
+    }
+    const liquid = /\{\{[\s\S]*?\}\}|\{%[\s\S]*?%\}/g;
+    for (const match of input.matchAll(liquid)) {
+        const start = match.index;
+        if (markerOffsets.has(start)) continue;
+        dynamic.push({start, end: start + match[0].length});
+        const tag = /^\{%-?\s*(\w+)/.exec(match[0])?.[1];
+        if (
+            tag &&
+            ['if', 'unless', 'for', 'tablerow', 'case', 'capture', 'raw', 'comment'].includes(tag)
+        )
+            controls.push({name: tag, start});
+        else if (tag?.startsWith('end')) {
+            const index = controls.map((item) => item.name).lastIndexOf(tag.slice(3));
+            if (index >= 0) {
+                dynamic.push({start: controls[index].start, end: start + match[0].length});
+                controls.splice(index);
+            }
+        }
+    }
+    for (const control of controls) dynamic.push({start: control.start, end: input.length});
+    return dynamic;
+}
+
+function projectToken(
+    token: Token,
+    context: {
+        cutTitle: boolean;
+        noteTitle: boolean;
+        owner: boolean;
+        map: Token['map'];
+        level: number | undefined;
+    },
+) {
+    const {cutTitle, noteTitle, owner, map, level} = context;
+    return {
+        type: token.type,
+        tag: token.tag,
+        nesting: token.nesting,
+        attrs: token.attrs,
+        // Owner title raw encoding may differ while parsed children and HTML remain exact.
+        content: token.type === 'inline' && (cutTitle || noteTitle) ? undefined : token.content,
+        hidden: token.hidden,
+        info: token.info,
+        meta: token.meta,
+        level,
+        block: owner || (cutTitle && token.type === 'inline') ? undefined : token.block,
+        // Only owner wrapper boundaries and markup differ by the documented syntax contract.
+        map: owner || token.type === 'yfm_note_content_open' ? undefined : map,
+        markup: owner ? undefined : token.markup,
+        children: token.children,
+    };
+}
+
 function signature(
     source: string,
     generalAttrs: boolean,
+    scopes: readonly Scope[],
+    noteBodyOffset: number,
+    work = () => {},
     observe?: (name: string, line: number) => void,
 ): string {
     const diagnostics: unknown[] = [],
@@ -290,8 +362,9 @@ function signature(
         },
     );
     const env = {};
+    work();
     const tokens = md.parse(shield(normalize(source).input), env);
-    validateOwnerMaps(tokens, analyze(shield(normalize(source).input)).scopes);
+    validateOwnerMaps(tokens, scopes);
     const structural = new Set<string>([
         TokenType.CutOpen,
         TokenType.CutClose,
@@ -300,36 +373,50 @@ function signature(
         TokenType.ContentOpen,
         TokenType.ContentClose,
     ]);
-    const cutStack: boolean[] = [];
+    const cutStack: Token[] = [];
+    const noteStack: {colon: boolean; content: boolean}[] = [];
     let cutTitle = false;
     let noteTitle = false;
     const projected = tokens.map((token) => {
-        if (token.type === TokenType.CutOpen) cutStack.push(token.markup.startsWith(':::'));
+        if (token.type === TokenType.CutOpen) cutStack.push(token);
+        if (token.type === 'yfm_note_open')
+            noteStack.push({
+                colon: scopes.some(
+                    (scope) => scope.name === 'note' && scope.start === token.map?.[0],
+                ),
+                content: false,
+            });
+        if (token.type === 'yfm_note_content_close')
+            noteStack[noteStack.length - 1].content = false;
         if (token.type === TokenType.TitleOpen) cutTitle = true;
         if (token.type === 'yfm_note_title_open') noteTitle = true;
         const owner = structural.has(token.type);
         const noteOwner = token.type.startsWith('yfm_note_');
-        const cutDepth = cutStack.filter(Boolean).length;
-        const projection = {
-            type: token.type,
-            tag: token.tag,
-            nesting: token.nesting,
-            attrs: token.attrs,
-            // Owner title raw encoding may differ while parsed children and HTML remain exact.
-            content: token.type === 'inline' && (cutTitle || noteTitle) ? undefined : token.content,
-            hidden: token.hidden,
-            info: token.info,
-            meta: token.meta,
-            level: owner ? undefined : token.level - (noteOwner || noteTitle ? 0 : cutDepth * 2),
-            block: owner || (cutTitle && token.type === 'inline') ? undefined : token.block,
-            // Only owner wrapper boundaries and markup differ by the documented syntax contract.
-            map: owner || token.type === 'yfm_note_content_open' ? undefined : token.map,
-            markup: owner ? undefined : token.markup,
-            children: token.children,
-        };
+        const cutDepth = cutStack.filter((open) => open.markup.startsWith(':::')).length;
+        const noteDepth = noteStack.filter((frame) => frame.colon && frame.content).length;
+        let map = token.map;
+        if (cutTitle && token.type === 'inline') {
+            const open = cutStack[cutStack.length - 1];
+            const start = open.markup.startsWith(':::') ? open.map?.[0] : 0;
+            if (start === undefined || !equalMap(map, start, start + 1))
+                throw new Error('Unexpected Cut title map');
+            map = null;
+        }
+        const projection = projectToken(token, {
+            cutTitle,
+            noteTitle,
+            owner,
+            map,
+            level: owner
+                ? undefined
+                : token.level -
+                  (noteOwner || noteTitle ? 0 : cutDepth * 2 + noteDepth * noteBodyOffset),
+        });
         if (token.type === TokenType.TitleClose) cutTitle = false;
         if (token.type === 'yfm_note_title_close') noteTitle = false;
         if (token.type === TokenType.CutClose) cutStack.pop();
+        if (token.type === 'yfm_note_content_open') noteStack[noteStack.length - 1].content = true;
+        if (token.type === 'yfm_note_close') noteStack.pop();
         return projection;
     });
     const savedBlocks = tokens
@@ -342,6 +429,7 @@ function signature(
     } finally {
         for (const {token, block} of savedBlocks) token.block = block;
     }
+    normalizeDocumentResources(env);
     return JSON.stringify({
         html,
         tokens: projected,
@@ -369,33 +457,112 @@ export function migrateBlockDirectives(
         input = shield(normalized.input),
         lines = lineStarts(input);
     const diagnostics: BlockDirectivesDiagnostic[] = [];
+    const originalLines = [0];
+    for (let i = 0; i < source.length; i++) {
+        if (source[i] === '\r' && source[i + 1] === '\n') i++;
+        if (source[i] === '\r' || source[i] === '\n') originalLines.push(i + 1);
+    }
     const diagnostic = (reason: string, offset: number) => {
-        const parts = source.slice(0, offset).split(/\r\n|\r|\n/);
+        let low = 0,
+            high = originalLines.length;
+        while (low + 1 < high) {
+            const middle = Math.floor((low + high) / 2);
+            if (originalLines[middle] <= offset) low = middle;
+            else high = middle;
+        }
         diagnostics.push({
             code: 'BLOCK_DIRECTIVE_NOT_MIGRATED',
             reason,
             offset,
-            line: parts.length,
-            column: parts[parts.length - 1].length + 1,
+            line: low + 1,
+            column: offset - originalLines[low] + 1,
             ...(options.path === undefined ? {} : {path: options.path}),
         });
     };
     const atLine = (line: number) => normalized.offsets[lines[line]] ?? source.length;
     try {
         const {tokens, scopes} = analyze(input);
+        // Each full-input parser call consumes one unit. Setup and final proof are constant.
+        let remainingWork = 32;
+        const exhausted = new Error('Equivalence work budget exhausted');
+        const work = () => {
+            if (remainingWork === 0) throw exhausted;
+            remainingWork--;
+        };
+        const offsets = [false, true].map((generalAttrs) => {
+            if (
+                !tokens.some(
+                    (token) => token.type === 'inline' && /\{%\s*note\b/.test(token.content),
+                )
+            )
+                return 0;
+            const probe = new MarkdownIt();
+            if (generalAttrs) probe.use(attrs);
+            probe.use(createNotesPlugin(undefined, undefined, {directiveSyntax: 'enabled'}));
+            let parsed: Token[];
+            try {
+                parsed = probe.parse(':::note {type=info}\n\nProbe\n\n:::', {});
+                validateOwnerMaps(parsed, [{name: 'note', start: 0, end: 5, protected: false}]);
+            } catch {
+                return 0;
+            }
+            const expected = [
+                'yfm_note_open',
+                'yfm_note_title_open',
+                'inline',
+                'yfm_note_title_close',
+                'yfm_note_content_open',
+                'paragraph_open',
+                'inline',
+                'paragraph_close',
+                'yfm_note_content_close',
+                'yfm_note_close',
+            ];
+            const levels = parsed.map((token) => token.level);
+            const nesting = [1, 1, 0, -1, 1, 1, 0, -1, -1, -1];
+            if (
+                parsed.length !== expected.length ||
+                parsed.some(
+                    (token, index) =>
+                        token.type !== expected[index] || token.nesting !== nesting[index],
+                )
+            )
+                return 0;
+            for (const offset of [0, 2]) {
+                const wanted = [0, 0, 0, 0, 0, offset, offset + 1, offset, 0, 0];
+                if (levels.every((level, index) => level === wanted[index])) return offset;
+            }
+            return 0;
+        });
         const baseline = [
-            signature(source, false, (name, line) => {
+            signature(source, false, scopes, offsets[0], undefined, (name, line) => {
                 const scope = scopes.find((item) => item.name === name && item.start === line - 1);
                 if (scope) scope.protected = true;
             }),
-            signature(source, true),
+            signature(source, true, scopes, offsets[1]),
         ];
-        const equivalent = (candidate: string) => {
+        const cache = new Map<string, boolean>([[source, true]]);
+        const equivalent = (candidate: string, final = false): boolean | undefined => {
+            if (!final && cache.has(candidate)) return cache.get(candidate);
             try {
-                return baseline.every(
-                    (value, index) => value === signature(candidate, Boolean(index)),
+                const count = final ? undefined : work;
+                const candidateScopes = analyze(shield(normalize(candidate).input), count).scopes;
+                const result = baseline.every(
+                    (value, index) =>
+                        value ===
+                        signature(
+                            candidate,
+                            Boolean(index),
+                            candidateScopes,
+                            offsets[index],
+                            count,
+                        ),
                 );
-            } catch {
+                if (!final) cache.set(candidate, result);
+                return result;
+            } catch (error) {
+                if (error === exhausted) return undefined;
+                if (!final) cache.set(candidate, false);
                 return false;
             }
         };
@@ -429,6 +596,7 @@ export function migrateBlockDirectives(
             return edges;
         };
         const edges = collectEdges();
+        const dynamic = liquidRanges(input, lines, edges);
         const pairEdges = () => {
             const stack: {open: MappedEdge; bad: boolean}[] = [],
                 pairs: Pair[] = [];
@@ -472,6 +640,15 @@ export function migrateBlockDirectives(
             return {pairs, badRanges};
         };
         const {pairs, badRanges} = pairEdges();
+        const dynamicCuts = pairs.filter(
+            (pair) =>
+                pair.open.name === 'cut' &&
+                dynamic.some(
+                    (range) =>
+                        range.start < (lines[pair.close.map[1]] ?? input.length) &&
+                        range.end > lines[pair.open.map[0]],
+                ),
+        );
         const collectGroups = (): Group[] => {
             const groups: Group[] = [];
             for (const pair of pairs) {
@@ -486,6 +663,21 @@ export function migrateBlockDirectives(
                     badRanges.some((range) => start >= range.start && end <= range.end)
                 ) {
                     diagnostic('unsupported-or-protected-container', atLine(start));
+                    continue;
+                }
+                if (
+                    dynamicCuts.some(
+                        (parent) => start >= parent.open.map[0] && end <= parent.close.map[1],
+                    )
+                ) {
+                    const base = lines[start];
+                    const found = input
+                        .slice(base, lines[start + 1] ?? input.length)
+                        .indexOf(pair.open.raw);
+                    diagnostic(
+                        'liquid-dependent-content',
+                        found < 0 ? atLine(start) : normalized.offsets[base + found],
+                    );
                     continue;
                 }
                 const marker = opening(pair.open);
@@ -545,45 +737,67 @@ export function migrateBlockDirectives(
             diagnostic('unproved-colon-scope', offset);
         }
         const selectEdits = (): BlockDirectivesEdit[] => {
-            let edits = groups.flatMap((group) => group.edits);
-            if (!equivalent(apply(source, edits))) {
-                const accepted: BlockDirectivesEdit[] = [],
-                    refused: {start: number; end: number}[] = [];
-                groups.sort(
-                    (a, b) => a.open.map[0] - b.open.map[0] || b.close.map[1] - a.close.map[1],
-                );
-                for (const group of groups) {
-                    const start = group.open.map[0],
-                        end = group.close.map[1];
-                    if (refused.some((range) => start >= range.start && end <= range.end)) {
-                        diagnostic('unsupported-parent', group.edits[0].start);
-                        continue;
-                    }
-                    let safe = false;
-                    for (const escaped of [false, true]) {
-                        const replacement = opening(group.open, escaped);
-                        if (!replacement) continue;
-                        const candidate = [{...group.edits[0], replacement}, group.edits[1]];
-                        if (equivalent(apply(source, [...accepted, ...candidate]))) {
-                            accepted.push(...candidate);
-                            safe = true;
-                            break;
-                        }
-                    }
-                    if (!safe) {
-                        refused.push({start, end});
-                        diagnostic('equivalence-check-failed', group.edits[0].start);
-                    }
-                }
-                edits = accepted;
+            groups.sort((a, b) => a.open.map[0] - b.open.map[0] || b.close.map[1] - a.close.map[1]);
+            // Nested groups stay atomic: a refused parent never leaves rewritten descendants.
+            const units: Group[][] = [];
+            for (const group of groups) {
+                const previous = units[units.length - 1];
+                if (previous && group.close.map[1] <= previous[0].close.map[1])
+                    previous.push(group);
+                else units.push([group]);
             }
-            return edits;
+            const accepted: BlockDirectivesEdit[] = [];
+            const visit = (batch: Group[][]): void => {
+                if (!batch.length) return;
+                const selected = batch.flat();
+                if (remainingWork === 0) {
+                    for (const group of selected)
+                        diagnostic('equivalence-budget-exceeded', group.edits[0].start);
+                    return;
+                }
+                const proposed = selected.flatMap((group) => group.edits);
+                const proof = equivalent(apply(source, [...accepted, ...proposed]));
+                if (proof) {
+                    accepted.push(...proposed);
+                    return;
+                }
+                if (proof === undefined) {
+                    for (const group of selected)
+                        diagnostic('equivalence-budget-exceeded', group.edits[0].start);
+                    return;
+                }
+                if (batch.length > 1) {
+                    const middle = Math.floor(batch.length / 2);
+                    visit(batch.slice(0, middle));
+                    visit(batch.slice(middle));
+                    return;
+                }
+                const escaped = selected.flatMap((group) => [
+                    {
+                        ...group.edits[0],
+                        replacement: opening(group.open, true) ?? group.edits[0].replacement,
+                    },
+                    group.edits[1],
+                ]);
+                const fallback = equivalent(apply(source, [...accepted, ...escaped]));
+                if (fallback) accepted.push(...escaped);
+                else
+                    for (const group of selected)
+                        diagnostic(
+                            fallback === undefined
+                                ? 'equivalence-budget-exceeded'
+                                : 'equivalence-check-failed',
+                            group.edits[0].start,
+                        );
+            };
+            visit(units);
+            return accepted;
         };
         const edits = selectEdits();
         edits.sort((a, b) => a.start - b.start);
         if (
             edits.some((edit, index) => index > 0 && edits[index - 1].end > edit.start) ||
-            !equivalent(apply(source, edits))
+            !equivalent(apply(source, edits), true)
         )
             throw new Error('Final equivalence check failed');
         return {
