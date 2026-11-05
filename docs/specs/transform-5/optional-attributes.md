@@ -16,6 +16,13 @@ available through their existing plugins. This does not mean every brace block
 is literal: cut/directive-owned attributes, modern imsize dimensions/gallery
 metadata, table alignment syntax and term syntax retain their own owners.
 
+Removing a legacy heading ID must preserve spaces between inline children:
+`## Install **CLI** tool {#install}` displays `Install CLI tool` with attributes
+omitted, disabled or enabled. Strip IDs from child contents without trimming each
+child, then trim only the heading's first and last text-token boundaries. The
+standalone `removeCustomId` helper retains its historical trimmed default result;
+anchor IDs, fragment selection, labels and heading metadata keep their policies.
+
 No parser upgrade, attrs dependency update, sanitizer change, new general brace
 parser, generic migration framework, snapshot blanket update or engine removal
 belongs here. CLI-owned parseTokens and Translation retain their MarkdownIt 13 contexts.
