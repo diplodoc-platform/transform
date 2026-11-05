@@ -10,7 +10,8 @@ interface Scope {
     source: string;
     lines: string[];
     starts: number[];
-    protectedHtml: {start: number; end: number}[];
+    protectedHtml: ReturnType<typeof createHtmlProtection>;
+    htmlClosers: ReturnType<typeof indexHtmlClosers>;
 }
 
 interface Origin {
@@ -20,6 +21,87 @@ interface Origin {
     starts: number[];
     lines: string[];
     firstContent: number[];
+    offsets?: number[];
+}
+
+/**
+ * Index independent unquoted/single/double-quoted suffix scans in bounded work.
+ * @param source - Original normalized source; native inline rules select encounters.
+ * @returns Closing offsets for tag-like and comment candidates at each less-than.
+ */
+export function indexHtmlClosers(source: string) {
+    const tags = new Map<number, number>();
+    const comments = new Map<number, number>();
+    if (!source.includes('<')) return {tags, comments};
+    let unquoted = 0;
+    let single = 0;
+    let double = 0;
+    let comment = source.length;
+    let laterComment = source.length;
+    for (let index = source.length - 1; index >= 0; index--) {
+        const char = source[index];
+        const nextUnquoted = unquoted;
+        if (char === "'") {
+            unquoted = single;
+            single = nextUnquoted;
+        } else if (char === '"') {
+            unquoted = double;
+            double = nextUnquoted;
+        } else if (char === '>') {
+            unquoted = index + 1;
+        }
+        if (char === '-' && source[index + 1] === '-' && source[index + 2] === '>') {
+            laterComment = comment;
+            comment = index + 3;
+        }
+        if (char === '<') {
+            if (unquoted) tags.set(index, unquoted);
+            // The old comment search starts after all four opener characters.
+            comments.set(index, comment - 3 < index + 4 ? laterComment : comment);
+        }
+    }
+    return {tags, comments};
+}
+
+/**
+ * Track encountered ranges without assuming native inline traversal order.
+ * @param starts - Sorted possible starts from the source's less-than offsets.
+ * @returns Point activation and end-exclusive containment in O(log M) work.
+ */
+export function createHtmlProtection(starts: number[]) {
+    const maximum = new Array<number>(starts.length + 1).fill(0);
+    const countThrough = (offset: number) => {
+        let begin = 0;
+        let end = starts.length;
+        while (begin < end) {
+            const middle = Math.floor((begin + end) / 2);
+            if (starts[middle] <= offset) begin = middle + 1;
+            else end = middle;
+        }
+        return begin;
+    };
+    return {
+        add(start: number, end: number) {
+            let index = countThrough(start);
+            if (starts[index - 1] !== start) throw new RangeError('Unknown HTML range start');
+            while (index < maximum.length) {
+                maximum[index] = Math.max(maximum[index], end);
+                // eslint-disable-next-line no-bitwise -- Fenwick point-update step.
+                index += index & -index;
+            }
+        },
+        contains(offset: number) {
+            let index = countThrough(offset);
+            let end = 0;
+            // A range contains offset iff the maximum activated end with start <= offset exceeds it.
+            while (index > 0) {
+                end = Math.max(end, maximum[index]);
+                // eslint-disable-next-line no-bitwise -- Fenwick prefix-query step.
+                index -= index & -index;
+            }
+            return offset < end;
+        },
+    };
 }
 
 function createScope(source: string): Scope {
@@ -30,7 +112,14 @@ function createScope(source: string): Scope {
         offset += line.length + 1;
         return start;
     });
-    return {source, lines, starts, protectedHtml: []};
+    const htmlClosers = indexHtmlClosers(source);
+    return {
+        source,
+        lines,
+        starts,
+        protectedHtml: createHtmlProtection([...htmlClosers.comments.keys()].reverse()),
+        htmlClosers,
+    };
 }
 
 function contentLine(origin: Origin, offset: number): number {
@@ -48,6 +137,17 @@ function contentLine(origin: Origin, offset: number): number {
 }
 
 function sourcePosition(origin: Origin, offset: number) {
+    const original = origin.offsets?.[offset];
+    if (original !== undefined) {
+        let line = 0;
+        let end = origin.scope.starts.length;
+        while (line + 1 < end) {
+            const middle = Math.floor((line + end) / 2);
+            if (origin.scope.starts[middle] <= original) line = middle;
+            else end = middle;
+        }
+        return {line, column: original - origin.scope.starts[line]};
+    }
     const line = contentLine(origin, offset);
     const position = origin.positions[line];
     return {line: position.line, column: position.column + offset - origin.starts[line]};
@@ -71,37 +171,90 @@ function protectHtml(origin: Origin, offset: number): void {
     const start = originalOffset(origin, offset);
     const {source} = origin.scope;
     if (source.startsWith('<!--', start)) {
-        const close = source.indexOf('-->', start + 4);
-        origin.scope.protectedHtml.push({start, end: close < 0 ? source.length : close + 3});
+        origin.scope.protectedHtml.add(
+            start,
+            origin.scope.htmlClosers.comments.get(start) ?? source.length,
+        );
         return;
     }
-    // This only tracks a quoted tag's range; native Markdown parsing is left intact.
-    if (!/^<\/?[A-Za-z][A-Za-z0-9-]*(?=[\s/>])/.test(source.slice(start))) {
-        return;
+    // A sticky expression avoids allocating/testing the remaining source at every '<'.
+    const tag = /<\/?[A-Za-z][A-Za-z0-9-]*(?=[\s/>])/y;
+    tag.lastIndex = start;
+    const end = origin.scope.htmlClosers.tags.get(start);
+    if (end !== undefined && tag.test(source)) {
+        origin.scope.protectedHtml.add(start, end);
     }
-    let quote = '';
-    for (let end = start + 1; end < source.length; end++) {
-        const char = source[end];
-        if (quote) {
-            if (char === quote) {
-                quote = '';
-            }
-        } else if (char === '"' || char === "'") {
-            quote = char;
-        } else if (char === '>') {
-            origin.scope.protectedHtml.push({start, end: end + 1});
-            return;
+}
+
+interface NativeCell {
+    content: string;
+    offsets: number[];
+}
+
+function nativeCells(scope: Scope, line: number, parents: Token[]): NativeCell[] {
+    const raw = scope.lines[line] ?? '';
+    let begin = 0;
+    for (const parent of parents) {
+        if (parent.type === 'blockquote_open') {
+            const prefix = /^\s*>[ \t]?/.exec(raw.slice(begin));
+            if (prefix) begin += prefix[0].length;
+        } else if (parent.type === 'list_item_open' && parent.map?.[0] === line) {
+            const prefix = /^\s*(?:[-+*]|[0-9]+[.)])[ \t]+/.exec(raw.slice(begin));
+            if (prefix) begin += prefix[0].length;
         }
     }
+    while (begin < raw.length && /\s/.test(raw[begin])) begin++;
+    let end = raw.length;
+    while (end > begin && /\s/.test(raw[end - 1])) end--;
+    const cells: NativeCell[] = [];
+    let characters: string[] = [];
+    let offsets: number[] = [];
+    const push = () => {
+        const content = characters.join('');
+        const trimmed = content.trim();
+        const leading = content.length - content.trimStart().length;
+        cells.push({content: trimmed, offsets: offsets.slice(leading, leading + trimmed.length)});
+        characters = [];
+        offsets = [];
+    };
+    // Match markdown-it's escapedSplit, including its immediate-backslash rule.
+    for (let index = begin; index < end; index++) {
+        const char = raw[index];
+        if (char === '|') {
+            if (index > begin && raw[index - 1] === '\\') {
+                characters.pop();
+                offsets.pop();
+            } else {
+                push();
+                continue;
+            }
+        }
+        characters.push(char);
+        offsets.push(scope.starts[line] + index);
+    }
+    push();
+    if (raw[begin] === '|') cells.shift();
+    if (raw[end - 1] === '|' && raw[end - 2] !== '\\') cells.pop();
+    return cells;
 }
 
 function mapOrigins(tokens: Token[], scope: Scope, origins: WeakMap<Token[], Origin>): void {
     const columns = new Map<number, number>();
+    const parents: Token[] = [];
+    let row: {line: number; cells: NativeCell[]; index: number} | undefined;
     for (const token of tokens) {
+        if (token.nesting === -1) parents.pop();
+        if (token.type === 'tr_open' && token.map) {
+            row = {line: token.map[0], cells: nativeCells(scope, token.map[0], parents), index: 0};
+        } else if (token.type === 'tr_close') {
+            row = undefined;
+        }
+        if (token.nesting === 1) parents.push(token);
         if (token.type !== 'inline' || !token.children) {
             continue;
         }
-        const first = token.map?.[0] ?? 0;
+        const cell = !token.map && row ? row.cells[row.index++] : undefined;
+        const first = token.map?.[0] ?? row?.line ?? 0;
         const lines = token.content.split('\n');
         let offset = 0;
         const starts = lines.map((line) => {
@@ -111,6 +264,9 @@ function mapOrigins(tokens: Token[], scope: Scope, origins: WeakMap<Token[], Ori
         });
         const positions = lines.map((content, index) => {
             const line = first + index;
+            if (cell?.content === token.content) {
+                return {line, column: (cell.offsets[0] ?? scope.starts[line]) - scope.starts[line]};
+            }
             const raw = scope.lines[line] ?? '';
             const found = raw.indexOf(content, columns.get(line) ?? 0);
             const column = Math.max(found, 0);
@@ -124,6 +280,7 @@ function mapOrigins(tokens: Token[], scope: Scope, origins: WeakMap<Token[], Ori
             starts,
             lines,
             firstContent: lines.map((line) => line.search(/\S/)),
+            ...(cell?.content === token.content ? {offsets: cell.offsets} : {}),
         });
     }
 }
@@ -182,9 +339,7 @@ export function installBrowserGuard(md: MarkdownIt): void {
             return false;
         }
         const offset = originalOffset(origin, state.pos);
-        if (
-            !origin.scope.protectedHtml.some((range) => range.start <= offset && offset < range.end)
-        ) {
+        if (!origin.scope.protectedHtml.contains(offset)) {
             throw new BrowserUnsupportedFeatureError(
                 feature,
                 'Pre-expand includes on the host before browser transformation.',
