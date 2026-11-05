@@ -103,6 +103,18 @@ already open span, a backslash does not shorten a closing run. Block-code and ma
 Markdown pipe tables, and explicit-false splitter behavior remain unchanged.
 Runtime parsing and alignment migration use the same private scanner.
 
+A native blank logical line also bounds backtick pairing outside the existing
+block-code, enabled block-math and Liquid shields. Use the current block state's
+`bMarks + tShift >= eMarks` predicate, including shifted quote/list coordinates.
+ASCII space/tab-only lines terminate a paragraph; Unicode-only lines do not.
+Normalized CRLF follows the same rule. This repairs the case where an unmatched
+backtick in one paragraph paired with a later paragraph and hid table row markers,
+although native cell rendering treated the first backtick as literal. A single
+newline and valid cross-row code spans remain supported. This rule covers blank
+paragraph boundaries only; it does not claim to model every Markdown block
+interruption. Pair each run in its existing bounded region once, without adding
+per-backtick source scans or parser invocations.
+
 The table's ending line is exclusive and immediately follows the physical line
 containing its closer. Do not reserve or consume an extra line after `|#`.
 Following paragraphs, headings, lists, tables, and directive closers remain

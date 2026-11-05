@@ -48,7 +48,13 @@ function scannedCharacters(source: string): number {
 }
 
 describe('bounded table scanner work', () => {
-    it.each(tableScannerRows)('keeps character visits linear for $name', ({row}) => {
+    it.each([
+        ...tableScannerRows,
+        {
+            name: 'paragraph-separated backticks',
+            row: '|| a `unclosed\n\n| b ||\n|| c `later | d ||\n',
+        },
+    ])('keeps character visits linear for $name', ({row}) => {
         const counts = [32, 64, 128].map((size) => {
             const source = `#|\n${row.repeat(size)}|#`;
             const count = scannedCharacters(source);
