@@ -29,6 +29,16 @@ may now provide only the field they need. Missing `maxFileSize` uses the existin
 2 MiB default, including when an object only supplies `enabled`. An explicit
 `maxFileSize: 0` remains zero. Other custom plugin options pass through unchanged.
 
+This also fixes an old normalization bug: in Transform 4, supplying an incomplete
+object such as `svgInline: {enabled: true}` could lose the default size limit.
+Transform 5 consistently applies the 2 MiB limit when `maxFileSize` is omitted.
+Do not rely on an incomplete object to inline larger files; set an explicit
+limit suitable for the consuming application.
+
+As before, the implementation compares the SVG string's UTF-16 length with
+`maxFileSize`, not its encoded byte length. The conventional 2 MiB label matches
+ASCII SVG; non-ASCII characters do not change this existing counting rule.
+
 ## Migration
 
 Before:
@@ -50,6 +60,11 @@ transform(markdown, {
   svgInline: {enabled: true, maxFileSize: 1024 * 1024},
 });
 ```
+
+For example, an application that intentionally permits SVG files up to 4 MiB
+can specify `svgInline: {enabled: true, maxFileSize: 4 * 1024 * 1024}`. This
+changes the file-size limit only; it does not disable XML entity safeguards or
+sanitization.
 
 Remove the old field even when a modern field is also present. For example,
 `{inlineSvg: true, svgInline: {enabled: false}}` disables automatic inlining and
