@@ -587,3 +587,26 @@ default, titles, maps and diagnostics through the standalone package.
 
 Node-engine removal remains outside this task even when the browser graph excludes
 those modules.
+
+## Review correction: bounded HTML shielding and native table origins
+
+HTML shielding retains its existing native-inline encounter boundary: code,
+escaped openers and HTML skipped by the native parser do not install protection.
+For each encountered tag-like `<`, the protected end is the first `>` reached
+with neither a single nor double quote open, including multiline content. Each
+candidate starts unquoted independently, even if an earlier malformed candidate
+has no closer. Unterminated tags do not install a range; encountered comments
+protect through `-->` or end of source. Compute closing positions with one
+backward pass over the original scope using the three quote states and cached
+comment ends. Do not repeatedly scan the remaining source or change this policy
+by interpreting only a single forward HTML stream.
+
+Native GFM table inline tokens lack maps. Their diagnostic origins must come
+from the mapped native row and ordered raw cells, accounting for blockquote/list
+prefixes, trim, repeated cell text, CRLF normalization and escaped pipes. Follow
+markdown-it's actual splitter: a pipe immediately preceded by a backslash remains
+in the cell and loses that one backslash; unescaped pipes split even inside code
+spans. Preserve original columns through this normalization. Existing mapped YFM
+cell origins keep their own source positions; do not substitute table-start maps.
+These corrections change diagnostic positions and scan work, not table grammar,
+native rendering, include recognition, or which HTML examples are protected.

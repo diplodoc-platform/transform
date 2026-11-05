@@ -23,7 +23,9 @@ ordinary esbuild configuration; Rspack needs no Node aliases or fallback modules
 
 `@diplodoc/transform/browser` includes the actual standard installation order:
 meta, deflist, cut, notes, anchors, tabs, code, sup, video, monospace, table, file,
-imsize, term, block-anchor, inline-code, visibility, underline and subscript.
+imsize, term, block-anchor, inline-code, visibility, underline, subscript, footnotes
+and task-list. See the shared [plugin configuration contract](../specs/transform-5/plugin-configuration.md)
+for named composition and settings.
 It preserves their current supported rendering algorithms, defaults and options.
 General Markdown attributes default to false through the same shared policy as
 Node; use `enableMarkdownAttrs:true` explicitly for compatibility. Heading IDs and
