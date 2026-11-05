@@ -38,6 +38,19 @@ metadata and output; do not assume every plugin's full parser types are compatib
 across versions. Native 13 compatibility of a given adapter does not make an
 unpatched 13 installation secure.
 
+## Parser output changes
+
+The markdown-it 13 → 15 upgrade preserves authored Unicode spaces, including
+U+00A0 (NBSP), at paragraph edges that 13 trimmed. With line breaks enabled,
+preserving a space before a newline can also add a `<br />`. This can change
+spacing; review HTML snapshots and rendered layout. Remove unintended spaces in
+the Markdown source rather than stripping arbitrary whitespace from output.
+
+The `markdown-it-deflist` upgrade from 2.1 to 4 can add `<p>` wrappers inside
+`<dd>`, for example when a definition contains prose followed by a list or when
+a blank line separates the term from its definition. Review custom CSS selectors
+such as `dd > p`, paragraph margins, and HTML snapshots.
+
 ## Coexisting with Transform 4
 
 Keep a real Transform 4 package for hosts whose peer contract still requires it.
@@ -176,6 +189,10 @@ Highlighting is no longer loaded implicitly. Without a caller-supplied
 Highlight.js version explicitly, then construct the synchronous adapter with
 `createHighlightJsHighlighter` from `/highlighter`. See the [highlighter guide](transform-5-highlighter.md)
 for ESM loading and supported versions.
+
+Different installed Highlight.js versions can produce different classes and
+nested `<span>` elements even when the code text is unchanged. Pin the intended
+version and review highlighting styles and HTML snapshots.
 
 A reusable parser owns a separate environment for each document. Retain the handle
 from `parseDocument` and pass it to `compileDocument`; use `state.env.meta` and
