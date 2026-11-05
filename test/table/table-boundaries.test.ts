@@ -1,6 +1,7 @@
 import MarkdownIt from 'markdown-it';
 import {describe, expect, it} from 'vitest';
 
+import transform from '../../src/transform';
 import table from '../../src/transform/plugins/table';
 import {migrateTableAlignment} from '../../src/transform/migrations/table-alignment';
 
@@ -92,4 +93,16 @@ it.each(['> ', '  '])('preserves multiline code in container prefix %j', (prefix
     expect(render(document)).toContain('<code>before after|inside</code>');
     expect(render(document)).toContain('<p>neighbor</p>');
     expect(render(document).match(/<td>/g)).toHaveLength(2);
+});
+
+it.each([
+    {plugins: [table]},
+    {pluginConfiguration: {preset: 'none' as const, enable: ['table' as const]}},
+    {table_ignoreSplittersInInlineCode: true},
+    {table_ignoreSplittersInInlineCode: false},
+])('applies bounded recovery through runtime configuration %j', (options) => {
+    const later = 'Use `code` here.';
+    const compile = (source: string) =>
+        transform(source, {...options, generateID: () => 'table-code'}).result.html;
+    expect(compile(`${first}\n${later}`)).toBe(compile(first) + compile(later));
 });
