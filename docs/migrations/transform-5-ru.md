@@ -165,6 +165,12 @@ const options = defineTransformOptions({
 const output = transform(source, options);
 ```
 
+Для расширения прежнего `plugins: [...DefaultPlugins, custom]` используйте
+[пример именованной композиции](cut-tabs-types.md). Явный массив callback
+по-прежнему предупреждает об устаревших Cut/Tabs. При переходе сохраните его
+режимы `directiveSyntax: 'disabled'`; именованный preset по умолчанию включает
+новый синтаксис.
+
 Стандартный preset устанавливает `meta`, `deflist`, `cut`, `notes`, `anchors`,
 `tabs`, `code`, `sup`, `video`, `monospace`, `table`, `file`, `imsize`, `term`,
 `block-anchor`, `inline-code`, `visibility`, `underline`, `subscript`,

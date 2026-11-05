@@ -48,6 +48,18 @@ describe('retained bundled engines', () => {
         },
     );
 
+    test('warns with real API labels and actionable Liquid bypass guidance', () => {
+        const logger = consumer();
+        transform('plain', {path: 'guide.md', plugins: [], log: logger});
+        expect(messages(logger)).toEqual([
+            '[DEPRECATED TRANSFORM_BUNDLED_LIQUID] Transform bundled Liquid engine at guide.md, API "liquidDocument/liquidSnippet". Use @diplodoc/liquid in the caller pipeline, then pass disableLiquid: true to Transform after preprocessing root and included content (isLiquided bypasses only the root). Removal: version 6.0.0.',
+        ]);
+        yfmlint({input: 'plain', pluginOptions: {path: 'guide.md', log: getLogger(logger)}});
+        expect(messages(logger, 'YFMLINT')).toEqual([
+            '[DEPRECATED TRANSFORM_BUNDLED_YFMLINT] Transform bundled YFMLint engine at guide.md, API "yfmlint". Use @diplodoc/yfmlint in the caller lint pipeline. Removal: version 6.0.0.',
+        ]);
+    });
+
     test('plain input and tokens still invoke Liquid; scopes repeat after success and failure', () => {
         const logger = consumer();
         const options = {log: logger, path: 'guide.md', plugins: []};

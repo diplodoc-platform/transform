@@ -75,6 +75,10 @@ const output = transform(source, options);
 sanitizer. Do not supply the legacy callback array and named configuration in the
 same call. See the [plugin configuration contract](../specs/transform-5/plugin-configuration.md).
 
+To extend an existing spread preset, use the [named composition recipe](cut-tabs-types.md).
+Explicit callback arrays still warn; retain their disabled directive modes when
+migrating to the named preset.
+
 The standard preset has 21 IDs in this order: `meta`, `deflist`, `cut`, `notes`,
 `anchors`, `tabs`, `code`, `sup`, `video`, `monospace`, `table`, `file`, `imsize`,
 `term`, `block-anchor`, `inline-code`, `visibility`, `underline`, `subscript`,

@@ -34,7 +34,8 @@ corresponding source module while developing Transform). A descriptor contains:
   version and an ISO calendar date when announcing a real migration.
 
 Each `warn(descriptor, usage)` call supplies `location: {path, line?, column?}`
-and/or `option`. Coordinates are one-based. Detect actual legacy usage first;
+and/or `option` or `api`. Use `option` only for real configuration options;
+`api` labels an invoked API. Coordinates are one-based. Detect actual legacy usage first;
 configuration presence or registration of a plugin alone is insufficient.
 JavaScript callers receive a `TypeError` for empty required migration information.
 The reporter field is optional in the shared plugin-options type to preserve
@@ -61,7 +62,7 @@ Transform creates one reporter per parser initialization and passes it as
 `options.deprecations` to plugins and preprocessors. Ordinary `transform()` calls
 therefore receive fresh scopes, even when the embedding application reuses its
 logger or a previous document failed. Within a scope, the tuple of code, path,
-line, column and option suppresses repeated warnings. Different occurrences remain
+line, column, option and API suppresses repeated warnings. Different occurrences remain
 visible. Message edits do not create a second warning for the same occurrence.
 
 `reset()` only clears that reporter's occurrence set. It does not clear logs or
@@ -74,6 +75,19 @@ deduplication behavior.
 The existing collector deduplicates identical formatted messages in `logs.warn`.
 An injected logger still receives an occurrence again in a fresh scope or after
 reset. The helper does not isolate the collector or clear prior document logs.
+`Output.logs` and `log.get()` expose the same module-global mutable record,
+including diagnostics from earlier documents. `log.add()` appends supplied arrays
+without removing duplicates; `log.clear()` replaces the info/warn/error arrays,
+so previous output records see those replacements too. Reporter scopes govern
+emission deduplication, not collector retention. Build owners may call `clear()`
+at their own explicit boundary after consuming the diagnostics they need; an
+individual transform must not erase another caller's errors or warning history.
+
+Unique-path warnings therefore remain retained until the caller clears them, and
+collector membership still uses linear lookup. This existing lifetime and lookup
+cost remains an unresolved performance limitation (DOCSTOOLS-6938), not a bounded
+per-document collector. An injected logger does not disable global retention.
+
 There is no asynchronous API change or guarantee that a shared parser supports
 concurrent use.
 

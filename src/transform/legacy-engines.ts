@@ -29,7 +29,7 @@ export function warnBundledEngine(
             code: liquid ? 'TRANSFORM_BUNDLED_LIQUID' : 'TRANSFORM_BUNDLED_YFMLINT',
             feature: `Transform bundled ${engine} engine`,
             replacement: liquid
-                ? '@diplodoc/liquid in the caller pipeline; bypass bundled processing after preprocessing'
+                ? '@diplodoc/liquid in the caller pipeline, then pass disableLiquid: true to Transform after preprocessing root and included content (isLiquided bypasses only the root)'
                 : '@diplodoc/yfmlint in the caller lint pipeline',
             removal: {
                 version: '6.0.0',
@@ -37,7 +37,7 @@ export function warnBundledEngine(
         },
         {
             ...(path ? {location: {path}} : {}),
-            option: liquid ? 'bundledLiquid' : 'bundledYfmlint',
+            api: liquid ? 'liquidDocument/liquidSnippet' : 'yfmlint',
         },
     );
 }

@@ -18,6 +18,35 @@ const tabs = createTabs({
 
 Declare the extensions as direct dependencies and retain the original `output`, `generateID` and `collect` usage. The new callbacks have different identities from the Transform preset. Check any identity-based filtering before changing imports. Normal builtin installation is silent; explicitly invoking a legacy callback with a Transform deprecation reporter emits a scoped warning. Native callers without a reporter do not receive runtime warnings. Type-only imports are erased and cannot warn at runtime.
 
+Extending the preset through `plugins: [...DefaultPlugins, custom]` is an explicit
+legacy callback installation and emits Cut/Tabs warnings. Use named composition
+to retain the standard preset and append an existing custom callback:
+
+```ts
+import {defineLegacyPlugin, defineTransformOptions} from '@diplodoc/transform/configuration';
+
+const customPlugin = defineLegacyPlugin({id: 'app/custom', plugin: custom})({});
+const options = defineTransformOptions({
+  core: {disableLiquid: true},
+  plugins: {
+    preset: 'default',
+    options: {
+      cut: {directiveSyntax: 'disabled'},
+      notes: {directiveSyntax: 'disabled'},
+      tabs: {directiveSyntax: 'disabled'},
+    },
+    plugins: [customPlugin],
+  },
+});
+```
+
+The explicit modes preserve the disabled directive defaults of the old callback
+array. Retain any modes already configured by your application; omit these pins
+only when intentionally adopting the named preset's enabled defaults. Migrate
+custom callback options through the adapter configuration and retain ordering
+constraints when the callback requires them. This example assumes Liquid has
+already been processed outside Transform.
+
 ## Source checkout migration report
 
 The report is a repository development tool. It is not included in the published
