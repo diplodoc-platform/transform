@@ -16,6 +16,7 @@ import {parseArgs} from 'node:util';
 import {fileURLToPath} from 'node:url';
 
 import {cases} from './fixtures.mjs';
+import {loadRoleOracles} from './oracles.mjs';
 
 const print = (message) => process.stdout.write(message + '\n');
 const combinedStatus = (checks) => {
@@ -46,6 +47,7 @@ const {values: args} = parseArgs({
         'max-noise': {type: 'string', default: '0.2'},
         'min-ms': {type: 'string', default: '5'},
         'allow-output-change': {type: 'string'},
+        'role-oracles': {type: 'string'},
         list: {type: 'boolean'},
         help: {type: 'boolean'},
     },
@@ -88,6 +90,7 @@ for (const name of [...selected, ...allowedChanges]) {
         throw new Error(`Unknown case ${name}`);
     }
 }
+const roleOracles = loadRoleOracles(args['role-oracles'], cases);
 const requestedSizes = args.sizes?.split(',').map(Number);
 if (
     requestedSizes &&
@@ -233,7 +236,7 @@ if (hardware.loadAverage[0] > Math.max(2, hardware.cpu.length / 2)) {
         'WARNING: machine load is high; repeat final acceptance sequentially on an idle machine.',
     );
 }
-const suiteManifest = ['run.mjs', 'worker.mjs', 'fixtures.mjs'].map((name) => ({
+const suiteManifest = ['run.mjs', 'worker.mjs', 'fixtures.mjs', 'oracles.mjs'].map((name) => ({
     name,
     sha256: sha(readFileSync(new URL(name, import.meta.url))),
 }));
@@ -245,6 +248,7 @@ const report = {
     artifacts,
     config,
     allowedOutputChanges: allowedChanges,
+    roleOracles,
     samples: [],
     checks: [],
     status: 'RUNNING',
@@ -303,6 +307,9 @@ for (const name of selected) {
         writeFileSync(join(directory, path), content);
     }
     for (const size of sizes) {
+        const expectedInput = roleOracles?.cases[name]?.[size]?.inputSha256;
+        if (expectedInput && expectedInput !== sha(fixture.source(size)))
+            throw new Error(`Oracle input mismatch ${name}/${size}`);
         writeFileSync(join(directory, `input-${size}.md`), fixture.source(size));
     }
     for (let round = 0; round < config.rounds; round++) {
@@ -315,6 +322,7 @@ for (const name of selected) {
                 const job = {
                     case: name,
                     size,
+                    oracle: roleOracles?.cases[name]?.[size]?.[role],
                     package: artifacts[role].root,
                     files: directory,
                     input: join(directory, `input-${size}.md`),
@@ -423,18 +431,31 @@ for (const name of selected) {
             let status = 'FAIL';
             if (matches) {
                 status = 'PASS';
+            } else if (
+                deterministic &&
+                roleOracles?.cases[name]?.[size] &&
+                samples
+                    .filter((sample) => sample.size === size)
+                    .every((sample) => sample.roleOracleMatched)
+            ) {
+                status = 'ACCEPTED_CHANGE';
             } else if (deterministic && allowedChanges.includes(name)) {
                 status = 'ACCEPTED_CHANGE';
             }
+            let detail =
+                'Outputs differ; inspect saved outputs. Allowlist waives only cross-artifact comparison, never nondeterminism or assertions.';
+            if (matches)
+                detail = 'All repeated baseline and candidate outputs match byte for byte.';
+            else if (roleOracles?.cases[name]?.[size])
+                detail =
+                    'Both complete reviewed role outputs matched every sample; assertions and scaling checks remain required.';
             report.checks.push({
                 case: name,
                 size,
                 label: 'exact-output',
                 status,
                 deterministic,
-                detail: matches
-                    ? 'All repeated baseline and candidate outputs match byte for byte.'
-                    : 'Outputs differ; inspect saved outputs. Allowlist waives only cross-artifact comparison, never nondeterminism or assertions.',
+                detail,
             });
         });
         writeJson(join(directory, 'summary.json'), {sizes, stats});
