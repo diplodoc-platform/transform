@@ -340,4 +340,14 @@ export const cases = {
         source: (n) => '<a data="\n{% included (child.md) %}\n">x</a>\n\n'.repeat(n),
         verify: (output, n) => assert.equal(count(output.html, /included/g), n),
     },
+    'table-paragraph-boundaries': {
+        sizes: [200, 400],
+        source: (n) => '#|\n' + '|| a `unclosed\n\n| b ||\n|| c `later | d ||\n\n'.repeat(n) + '|#',
+        verify: (output, n) => {
+            htmlCount(/<table\b/g, 1)(output);
+            htmlCount(/<tr\b/g, n * 2)(output);
+            htmlCount(/<td\b/g, n * 4)(output);
+            htmlCount(/<code\b/g, 0)(output);
+        },
+    },
 };

@@ -255,6 +255,15 @@ function tableCodePairs(
 
     while (iter.pos <= end && iter.symbol !== undefined) {
         if (indexedLine !== iter.line) {
+            if (
+                !code &&
+                !math &&
+                !liquid &&
+                state.bMarks[iter.line] + state.tShift[iter.line] >= state.eMarks[iter.line]
+            ) {
+                // Native blank lines terminate paragraphs, unlike a single newline.
+                boundary();
+            }
             indexedLine = iter.line;
             lineRuns = backtickRuns(state.src, iter.pos, Math.min(iter.lineEnds, end));
             linePairs = new Map();

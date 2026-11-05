@@ -178,3 +178,15 @@ log-history/image-budget shapes are admitted only with an explicit role oracle;
 without it their fixtures require the current document/budget contract. Preserve
 known baseline failures separately. Ordinal repairs and other intentional changes
 need their own reviewed role files; there is no global normalization or waiver.
+
+### Blank paragraph boundaries in tables
+
+The additive `table-paragraph-boundaries` case repeats two authored rows separated
+by an unmatched backtick and a blank paragraph boundary. Every output must contain
+one table, 2N rows, 4N cells and no inline code. Historical packages that pair the
+backticks across the blank line fail these assertions; preserve that result as a
+negative control. Do not relax the row assertions or supply a role oracle for it.
+Measure the final main and future dependency-train artifacts against each other
+only after both pass this correctness contract. Their N-to-2N scaling and timing
+comparison cover this new workload; the original cases retain the earlier
+baseline-to-candidate regression comparison.
