@@ -238,7 +238,6 @@ describe('pure image dimensions migration', () => {
         '```md\n![a](a =2x3)\n```',
         '    ![a](a =2x3)',
         '<!-- ![a](a =2x3) -->',
-        '<div>\n![a](a =2x3)\n</div>',
         '---\ntitle: "![a](a =2x3)"\n---',
         '\\![a](a =2x3)',
         '![a](https://a.test/?size=2x3)',
@@ -252,6 +251,22 @@ describe('pure image dimensions migration', () => {
             output: source,
             edits: [],
             diagnostics: [],
+        });
+    });
+
+    test('keeps raw HTML unchanged while diagnosing an actual HTML-disabled legacy image', () => {
+        const source = '<div>\n![a](a =2x3)\n</div>';
+        expect(migrateImageDimensions(source)).toEqual({
+            output: source,
+            edits: [],
+            diagnostics: [
+                expect.objectContaining({
+                    reason: 'html-disabled-image',
+                    offset: 13,
+                    line: 2,
+                    column: 8,
+                }),
+            ],
         });
     });
 

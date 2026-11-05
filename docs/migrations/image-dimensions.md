@@ -71,8 +71,25 @@ reference definitions are unsupported and not migrated. Code, HTML blocks/commen
 and frontmatter are protected. Multiline container prefixes can prevent a unique
 source mapping; those candidates are reported rather than guessed.
 
+Ordinary complete HTML containers can contain real legacy images when the consumer
+uses `allowHTML:false`. Migration keeps the HTML unchanged and can report
+`html-disabled-image` at a precisely recognized size suffix. This diagnostic is
+limited to matching standalone ordinary container tags with an image recognized
+by both an HTML-disabled document parse and an HTML-enabled body probe. Comments,
+script/pre/style/textarea, fences, escapes, unknown tags and ambiguous nested HTML
+remain protected; not every such image is reported. The diagnostic does not assert
+your consumer's policy or authorize an automatic HTML edit.
+
 Each candidate and the combined result must preserve tokens, rendered HTML and
 CSS allowances with general attrs both disabled/enabled and inline styling both
 disabled/enabled. This checks the built-in image grammar; custom parser syntax and
 preprocessor-generated images are outside the migration's capability. Run it on
 the source corpus and validate the resulting documents in their actual consumer.
+
+Independent mapped single-line paragraphs use complete local proofs with cached
+document references. Complex candidates retain individual whole-document proofs,
+with a limit of 32 candidate parser calls across the four profiles. If that budget
+is exhausted, unproved complex images remain unchanged with
+`equivalence-budget-exceeded`; independently proven paragraphs can still migrate.
+A partial proof never authorizes edits, and a final whole-document mismatch rolls
+back all edits. Review refusals before applying output to a large document.
