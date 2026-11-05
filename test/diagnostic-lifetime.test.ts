@@ -274,3 +274,22 @@ test('scoped warning forwarding preserves an embedding logger method receiver', 
     expect(external.messages).toHaveLength(1);
     expect(external.messages[0]).toContain('TRANSFORM_BUNDLED_LIQUID');
 });
+
+test('snapshot collectors preserve disabled entries while legacy global compatibility stays unchanged', () => {
+    const diagnostics = createDiagnosticCollector();
+    diagnostics.add({...levels, disabled: ['disabled entry', 'disabled entry']});
+    expect(diagnostics.get().disabled).toEqual(['disabled entry', 'disabled entry']);
+    expect(diagnostics.isEmpty()).toBe(false);
+    const snapshot = diagnostics.get();
+    diagnostics.clear();
+    expect(diagnostics.get().disabled).toEqual([]);
+    expect(diagnostics.isEmpty()).toBe(true);
+    expect(snapshot.disabled).toHaveLength(2);
+    const legacy = log.get();
+    legacy.disabled.push('explicit compatibility entry');
+    log.add({...levels, disabled: ['ignored as before']});
+    log.clear();
+    expect(log.isEmpty()).toBe(true);
+    expect(legacy.disabled).toEqual(['explicit compatibility entry']);
+    legacy.disabled.length = 0;
+});

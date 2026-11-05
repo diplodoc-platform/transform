@@ -44,6 +44,9 @@ export function createDiagnosticHost(labels: DiagnosticLabels, snapshots = false
         [LogLevels.DISABLED]: [],
     };
 
+    const retainedLevels = [LogLevels.INFO, LogLevels.WARN, LogLevels.ERROR];
+    if (snapshots) retainedLevels.push(LogLevels.DISABLED);
+
     const membership: Record<LogLevels, Set<string>> = {
         [LogLevels.INFO]: new Set(),
         [LogLevels.WARN]: new Set(),
@@ -81,7 +84,7 @@ export function createDiagnosticHost(labels: DiagnosticLabels, snapshots = false
                   ) as DiagnosticLogs)
                 : problems,
         add: (logs: Record<LogLevels, string[]>) => {
-            for (const level of [LogLevels.INFO, LogLevels.WARN, LogLevels.ERROR]) {
+            for (const level of retainedLevels) {
                 if (snapshots) {
                     for (const message of logs[level]) {
                         problems[level].push(message);
@@ -93,18 +96,10 @@ export function createDiagnosticHost(labels: DiagnosticLabels, snapshots = false
             }
         },
         clear: () => {
-            problems[LogLevels.INFO] = [];
-            problems[LogLevels.WARN] = [];
-            problems[LogLevels.ERROR] = [];
+            for (const level of retainedLevels) problems[level] = [];
             for (const index of Object.values(membership)) index.clear();
         },
-        isEmpty: () => {
-            return !(
-                problems[LogLevels.INFO].length ||
-                problems[LogLevels.WARN].length ||
-                problems[LogLevels.ERROR].length
-            );
-        },
+        isEmpty: () => retainedLevels.every((level) => problems[level].length === 0),
     };
 
     type Logger = typeof log;
