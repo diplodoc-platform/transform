@@ -228,6 +228,15 @@ Content
 The migrator changes only supported source occurrences, preserves original UTF-16
 edit positions and refuses ambiguous or nonequivalent cases. Code examples,
 protected content and unsupported attributes need the documented refusal policy.
+Outside positively closed frontmatter, unresolved Liquid output or unknown
+template tags leave the whole document unchanged with `unresolved-liquid-template`,
+even when they occur inside a protected example; safe siblings cannot be assumed
+independent. An unclosed frontmatter opener does not shield subsequent content.
+The candidate proof budget is 32 actual full-input parser calls, after which
+unproved groups get `equivalence-budget-exceeded`. Setup and the mandatory
+uncached final whole-document proof in both attributes profiles are outside that
+budget; final failure restores the original source with no edits. Supported
+syntax can therefore still require manual migration.
 The [block directives guide](../block-directives.md) describes the
 complete grammar, examples and migration limits. These contracts cover the three
 supported owners.

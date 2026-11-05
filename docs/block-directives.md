@@ -185,17 +185,44 @@ rendering and semantic fields with general Markdown attributes both enabled
 and disabled, and preserves deterministic ID/resource behavior. Running it
 again leaves the output unchanged.
 
-Code, HTML, frontmatter, escaped examples, generated `{% included ... %}`
+Code, HTML, positively closed frontmatter, escaped examples, generated `{% included ... %}`
 regions and protected directive scopes remain untouched. Migrate original
 authored files before include expansion. The function does not traverse
 includes, regenerate caches or execute consumer plugins.
 
+The raw-source API has no Liquid values or execution context. Outside positively
+closed frontmatter, any unresolved `{{` opener (including an unterminated one)
+or unknown template-like `{%` opener leaves the **whole document unchanged**,
+with no edits and an `unresolved-liquid-template` diagnostic at the first such
+opener. This also applies inside code, HTML and directive parameters: a template
+can emit a closing bracket or a code fence and change apparently separate
+siblings. Recognized non-template YFM marker families still use their owning
+grammars; an unknown/custom template tag is not assumed harmless. Closed
+frontmatter is excluded from this guard. An unclosed frontmatter opener is
+ordinary Markdown and does not shield the rest of the document.
+
 Unsupported, crossed or unclosed parents and their descendants remain
 unchanged with located diagnostics; independently safe siblings may migrate.
+The whole-document Liquid refusal above is an exception to this sibling rule.
 The same conservative rule covers unproved Cut attribute suffixes, empty
 legacy Cuts and tight-list Notes whose real paragraph rendering differs.
 Even semantically valid shorthand or differently formatted attributes can
 require manual review when exact consumption cannot be proved.
+
+Candidate equivalence work has a budget of **32 actual full-input parser calls**
+per migration call. Candidate scope analysis and each general-attributes
+signature profile consume calls; this is not a limit of 32 candidate groups.
+Unproved groups remain unchanged with `equivalence-budget-exceeded` at their
+opening markers. Already proved independent groups can still migrate. The
+constant number of setup parses and the mandatory uncached final whole-document
+proof are outside this candidate budget. A partial proof never authorizes edits.
+Before returning accepted edits, the final proof checks both attributes profiles;
+failure restores the entire original source and returns no edits, with
+`parser-or-equivalence-failed` at offset zero. These reasons use the same
+`BLOCK_DIRECTIVE_NOT_MIGRATED` diagnostic shape and original UTF-16 coordinates
+described above. Review every diagnostic; supported syntax is not a promise that
+every occurrence will migrate. The [owning contract](specs/transform-5/block-directives.md)
+details the finite template exceptions and proof boundaries.
 
 The spellings do not have byte-identical token metadata. Notes content-wrapper
 maps describe different synthetic boundaries; Cut structural maps, block
