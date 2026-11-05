@@ -5,6 +5,8 @@ import {describe, expect, it, vi} from 'vitest';
 
 import {getTableRowPositions} from '../../src/transform/plugins/table/positions';
 
+import {tableScannerRows} from './fixtures/performance';
+
 function stateFor(src: string): StateBlock {
     const bMarks: number[] = [];
     const eMarks: number[] = [];
@@ -46,12 +48,7 @@ function scannedCharacters(source: string): number {
 }
 
 describe('bounded table scanner work', () => {
-    it.each([
-        '|| ordinary | text ||\n',
-        '|| `code|span` | text ||\n',
-        '|| ``code ` short\nspan|inside`` | text ||\n',
-        '|| escaped \\` marker | text ||\n',
-    ])('keeps character visits linear for %j', (row) => {
+    it.each(tableScannerRows)('keeps character visits linear for $name', ({row}) => {
         const counts = [32, 64, 128].map((size) => {
             const source = `#|\n${row.repeat(size)}|#`;
             const count = scannedCharacters(source);

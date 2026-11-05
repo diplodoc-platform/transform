@@ -411,7 +411,7 @@ export function createTablePlugin(createReporter: (options: TableContext) => Dep
             token = state.push('yfm_tbody_close', 'tbody', -1);
 
             token = state.push('yfm_table_close', 'table', -1);
-            state.tokens[state.tokens.length - 1].map = [endOfTable, endOfTable + 1];
+            state.tokens[state.tokens.length - 1].map = [endOfTable - 1, endOfTable];
 
             state.lineMax = oldParentLineMax;
             state.line = endOfTable;
@@ -441,9 +441,9 @@ export function createTablePlugin(createReporter: (options: TableContext) => Dep
                 startLine,
                 opts,
             );
-            // Rendering reserves an extra line after the closing marker; the
-            // boundary scanner must still inspect that line for a directive closer.
-            return endOfTable === null ? null : endOfTable - 1;
+            // The returned line is exclusive: inspect the very next line for
+            // a directive closer without requiring a separating blank line.
+            return endOfTable;
         });
     };
 

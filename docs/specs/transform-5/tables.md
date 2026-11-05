@@ -101,6 +101,13 @@ complete length, including after a newline. Block-code and math grammar, ordinar
 Markdown pipe tables, and explicit-false splitter behavior remain unchanged.
 Runtime parsing and alignment migration use the same private scanner.
 
+The table's ending line is exclusive and immediately follows the physical line
+containing its closer. Do not reserve or consume an extra line after `|#`.
+Following paragraphs, headings, lists, tables, and directive closers remain
+visible with or without a blank separator. Apply the same convention to token
+maps, nested table cells, and directive boundary discovery. This repairs the
+prior off-by-one behavior that silently discarded a nonblank following line.
+
 Build bounded indexes with linear source traversal and constant-time lookups;
 do not rescan the remaining document for each unmatched backtick. Tests cover
 independent following content, same-line delimiter literals, multiline/cross-row

@@ -5,7 +5,11 @@ export interface AlignmentSuffix {
     index: number;
 }
 
-/** Find the exact suffix accepted by the legacy class extractor in linear time. */
+/**
+ * Find the exact suffix accepted by the legacy class extractor in linear time.
+ * @param source - Original cell content.
+ * @returns The matched suffix, including its leading whitespace, if present.
+ */
 export function trailingClassBlock(source: string): string | undefined {
     if (!source.endsWith('}')) {
         return undefined;
@@ -22,7 +26,11 @@ export function trailingClassBlock(source: string): string | undefined {
     return source.slice(start);
 }
 
-/** Return the original offset before trailing horizontal whitespace. */
+/**
+ * Return the original offset before trailing horizontal whitespace.
+ * @param source - Original cell content.
+ * @returns Exclusive end offset before trailing spaces and tabs.
+ */
 export function horizontalEnd(source: string): number {
     let end = source.length;
     while (end > 0 && (source[end - 1] === ' ' || source[end - 1] === '\t')) {
@@ -31,7 +39,11 @@ export function horizontalEnd(source: string): number {
     return end;
 }
 
-/** Find a final, unnested alignment group without overlapping regex searches. */
+/**
+ * Find a final, unnested alignment group without overlapping regex searches.
+ * @param source - Original cell content.
+ * @returns The suffix, group contents and original offset, if present.
+ */
 export function alignmentSuffix(source: string): AlignmentSuffix | undefined {
     let end = source.length;
     while (end > 0 && /[ \t\n]/.test(source[end - 1])) {

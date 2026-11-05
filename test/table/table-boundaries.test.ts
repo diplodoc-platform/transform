@@ -73,3 +73,23 @@ describe('bounded code grammar goldens', () => {
         expect(parser.render(source)).toMatchSnapshot();
     });
 });
+
+it.each([
+    '#|\n|:{data-label="|#"}\n|| `a|b` ||\n|#',
+    '#|\n||:{data-label="|#"} `a|b` ||\n|#',
+    '#|\n||::{data-label="|#"} `a|b` ||\n|#',
+    '#|\n|| first |::{data-label="#|"} `a|b` ||\n|#',
+])('preserves delimiter-looking text in actual table attributes: %s', (source) => {
+    expect(render(source)).toContain('<code>a|b</code>');
+});
+
+it.each(['> ', '  '])('preserves multiline code in container prefix %j', (prefix) => {
+    const source = wrap('code `before\nafter|inside`|neighbor')
+        .split('\n')
+        .map((line) => prefix + line)
+        .join('\n');
+    const document = prefix === '  ' ? `- Item\n\n${source}` : source;
+    expect(render(document)).toContain('<code>before after|inside</code>');
+    expect(render(document)).toContain('<p>neighbor</p>');
+    expect(render(document).match(/<td>/g)).toHaveLength(2);
+});

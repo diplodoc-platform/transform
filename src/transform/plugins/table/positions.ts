@@ -194,6 +194,12 @@ class StateIterator {
         return this.state.src[this._pos];
     }
 
+    advanceTo(position: number) {
+        while (this._pos < position) {
+            this.next();
+        }
+    }
+
     next(steps = 1) {
         for (let i = 0; i < steps; i++) {
             this._pos++;
@@ -223,6 +229,7 @@ function tableCodePairs(
     const pairs = new Map<number, number>();
     let pending: BacktickRun[] = [];
     let level = 0;
+    let insideRow = false;
     let code = false;
     let math = false;
     let liquid = false;
@@ -231,6 +238,7 @@ function tableCodePairs(
     let lineRuns: BacktickRun[] = [];
     let runIndex = 0;
     const iter = new StateIterator(state, start + openTableOrder.length, line);
+    parseTableAttrs(state, iter);
 
     const boundary = () => {
         pairBackticks(pending, pairs);
@@ -310,6 +318,33 @@ function tableCodePairs(
             }
             level--;
             iter.next(closeTableOrder.length);
+            continue;
+        }
+        if (level === 0 && isRowOrder(state.src, iter.pos)) {
+            iter.next(rowStartOrder.length);
+            if (!insideRow) {
+                const hasRowAttrs = state.src.startsWith(':{', iter.pos);
+                if (hasRowAttrs) {
+                    parseInlineAttrs(state, iter, 1);
+                    while (
+                        iter.pos <= iter.lineEnds &&
+                        state.md.utils.isSpace(state.src.charCodeAt(iter.pos))
+                    ) {
+                        iter.next();
+                    }
+                }
+                if (state.src.startsWith('::', iter.pos)) {
+                    parseInlineAttrs(state, iter, 2);
+                }
+            }
+            insideRow = !insideRow;
+            continue;
+        }
+        if (level === 0 && isCellOrder(state.src, iter.pos)) {
+            iter.next(cellStartOrder.length);
+            if (state.src.startsWith('::', iter.pos)) {
+                parseInlineAttrs(state, iter, 2);
+            }
             continue;
         }
         iter.next();
@@ -486,7 +521,7 @@ export function getTableRowPositions(
             codePairs ??= tableCodePairs(state, startPosition, endPosition, startLine, opts);
             const end = codePairs.get(iter.pos);
             if (end !== undefined && notEscaped(state.src, iter.pos)) {
-                iter.next(end - iter.pos);
+                iter.advanceTo(end);
                 continue;
             }
         }
@@ -510,7 +545,7 @@ export function getTableRowPositions(
             if (tableLevel === 0) {
                 addRow();
                 iter.next(closeTableOrder.length);
-                endOfTable = iter.line + 2;
+                endOfTable = iter.line + 1;
                 break;
             } else {
                 tableLevel--;

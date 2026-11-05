@@ -13,7 +13,8 @@ exports[`bounded code grammar goldens > gives a structural closer priority over 
   </tbody>
 </table>
 <p>
-  |#
+  after\` ||
+|#
 </p>
 `;
 
@@ -239,7 +240,12 @@ exports[`bounded code grammar goldens > retains the existing escaped table marke
   </tbody>
 </table>
 <p>
-  |#
+  after
+  <code>
+    code
+  </code>
+  ||
+|#
 </p>
 `;
 
