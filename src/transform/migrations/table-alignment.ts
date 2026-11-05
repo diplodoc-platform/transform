@@ -3,12 +3,14 @@ import type {MarkdownIt, StateBlock} from '../typings';
 import type {DeprecationReporter} from '../deprecation';
 import type {Logger} from '../log';
 import type {CellData, RowPositions} from '../plugins/table/positions';
+import type {AlignmentSuffix} from '../plugins/table/suffix';
 import type {YfmTablePluginOptions} from '../plugins/table/types';
 
 import DefaultMarkdownIt from 'markdown-it';
 
 import {LogLevels} from '../log';
 import tablePlugin from '../plugins/table';
+import {alignmentSuffix, horizontalEnd} from '../plugins/table/suffix';
 import {getTableRowPositions, isOpenTableOrder} from '../plugins/table/positions';
 
 export type {YfmTablePluginOptions} from '../plugins/table/types';
@@ -59,7 +61,7 @@ interface CapturedTable extends RowPositions {
 
 interface Candidate {
     cell: CellData;
-    suffix: RegExpExecArray;
+    suffix: AlignmentSuffix;
     raw: string;
 }
 
@@ -187,7 +189,7 @@ function candidates(capture: CapturedTable, source: string, protectedSource: str
     const cells = [...capture.rows.flatMap(({cols}) => cols), ...capture.unclosedCells];
     return cells.flatMap((cell) => {
         const raw = source.slice(cell.start.pos, cell.end.pos);
-        const suffix = /[ \t]*\{([^{}\n]*cell-align-[^{}\n]*)\}[ \t\n]*$/.exec(raw);
+        const suffix = alignmentSuffix(raw);
         if (!suffix) {
             return [];
         }
@@ -378,7 +380,7 @@ export function migrateTableAlignment(
                 continue;
             }
             const suffixStart = cell.start.pos + suffix.index;
-            const suffixEnd = cell.end.pos - (/[ \t]*$/.exec(raw)?.[0].length ?? 0);
+            const suffixEnd = cell.start.pos + horizontalEnd(raw);
             proposed.push(
                 {
                     start: offsets[cell.markerEnd.pos],

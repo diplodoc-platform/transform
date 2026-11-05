@@ -1,6 +1,6 @@
 # Table splitters and alignment migration
 
-The scanner algorithm remains unchanged.
+The inline-code scanner uses the bounded recovery policy below.
 
 Task: [DOCSTOOLS-6945](https://st.yandex-team.ru/DOCSTOOLS-6945).
 Base: `87d076745e905bdaaa1cc774668ef30520197d38`.
@@ -14,9 +14,8 @@ available through both legacy options and `plugins.options.table`.
 
 Currently, `table_ignoreSplittersInInlineCode` defaults to false. The new default
 is true, with an explicit false retaining legacy splitter interpretation. The
-other three splitter defaults do not change. The existing scanner behavior is
-preserved; its line-limit parameter alone is not evidence that multiline code
-spans should become invalid.
+other three splitter defaults do not change. Multiline inline code remains supported; its lookahead cannot escape a structural
+table boundary.
 
 Legacy final cell-content attributes such as `Text {.cell-align-center}` are
 still supported and add the class to the cell. The plugin already emits an
@@ -75,20 +74,47 @@ mode. The first cell contains `<code>unclosed | b || || c </code>` followed by
 |#
 ```
 
-This is ambiguous author intent, not sufficient evidence of an incorrectly
-crossed row boundary. Conversely, the baseline does have scanner quirks: a
-multiline double-backtick span containing an intervening single-backtick run can
-split an internal pipe even when native inline parsing recognizes the span. A
-closer outside an apparent table can prevent that table from being recognized.
-This task neither repairs nor declares those quirks a new grammar contract.
-Any correction needs a separate bounded design and consumer/output acceptance.
+The apparent row boundary in this example remains code content. A physical line
+or row boundary does not terminate inline code.
 
-Implementation therefore changes only the omitted flag's effective default;
-explicit true and false behavior remain the baseline behavior. Fixtures prove
-valid single/multiple-backtick multiline cases, escaped openers/pipes, and the
-documented ambiguous cases by comparing omitted mode to baseline explicit true.
-Do not change block-code or math scanners. Ordinary Markdown pipe tables are
-outside this change.
+### Bounded recovery (DOCSTOOLS-6945 follow-up)
+
+Determine structural table boundaries before resolving multiline backtick spans.
+Existing block-code, enabled block-math, Liquid, and matched same-line inline-code
+regions shield their delimiter-looking contents. Preserve the existing nested
+`#|` / `|#` recognition, including its treatment of backslashes before table
+markers. Each structural table opener or closer bounds inline-code lookahead;
+a backtick opener cannot consume a closer in a later paragraph or independent
+table. Unmatched backticks remain ordinary cell text and pipes remain splitters.
+
+This deliberately resolves an ambiguous case: a `|#` inside a multiline code
+span is a structural closer unless a same-line code span or existing block
+shield protects it. For example, `before` on one line and `|# after` on the next
+cannot be enclosed in one multiline inline-code span to hide the closer. Write
+`|#` in its own matched same-line code span, or use a fenced code block inside the
+cell. A backslash before `|#` is not a table-marker escape in the existing grammar.
+The same rule prevents a multiline span from swallowing a nested table opener.
+
+Single- and multiple-backtick multiline code, pipes, and apparent row delimiters
+remain supported within these structural boundaries. Backtick runs match their
+complete length, including after a newline. Outside code, escaping the first
+backtick consumes only that tick: the remaining run may open a span. Inside an
+already open span, a backslash does not shorten a closing run. Block-code and math grammar, ordinary
+Markdown pipe tables, and explicit-false splitter behavior remain unchanged.
+Runtime parsing and alignment migration use the same private scanner.
+
+The table's ending line is exclusive and immediately follows the physical line
+containing its closer. Do not reserve or consume an extra line after `|#`.
+Following paragraphs, headings, lists, tables, and directive closers remain
+visible with or without a blank separator. Apply the same convention to token
+maps, nested table cells, and directive boundary discovery. This repairs the
+prior off-by-one behavior that silently discarded a nonblank following line.
+
+Build bounded indexes with linear source traversal and constant-time lookups;
+do not rescan the remaining document for each unmatched backtick. Tests cover
+independent following content, same-line delimiter literals, multiline/cross-row
+code, nested tables, block/math/Liquid shields, legacy false, and migration.
+Deterministic scanned-character checks complement manual timing fixtures.
 
 ## Scoped legacy-alignment warning
 
@@ -286,7 +312,7 @@ Required source and installed-package checks:
 
 - Existing table suite and unchanged legacy alignment/span/header/background
   assertions; new default/false, multiline and ambiguous-boundary preservation
-  fixtures. No inline scanner algorithm change is included.
+  fixtures, including the explicit structural recovery boundary above.
 - Scoped warning identity, independent cells/documents, pathless/direct plugin
   calls, injected logger/collected logs, and no warning for modern syntax.
 - Every valid alignment, inline code with multiple backtick runs and pipes,

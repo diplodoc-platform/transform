@@ -35,9 +35,13 @@ describe('Transform 5 inline-code table default', () => {
         ['code \\`before|after` tail', 2, 'code `before'],
         ['code `before\\|after` tail', 1, '<code>before\\|after</code>'],
         ['code `unmatched | tail', 2, 'code `unmatched'],
-        ['code ``before ` short\nafter|inside`` tail', 2, 'code ``before ` short'],
+        [
+            'code ``before ` short\nafter|inside`` tail',
+            1,
+            '<code>before ` short after|inside</code>',
+        ],
         ['a `unclosed | b ||\n|| c `later | d', 2, '<code>unclosed | b || || c </code>'],
-    ])('preserves baseline explicit-true semantics for %s', (body, count, fragment) => {
+    ])('preserves multiline and escaped inline-code semantics for %s', (body, count, fragment) => {
         const source = wrap(String(body));
         const output = render(source);
         expect(output).toBe(render(source, {table_ignoreSplittersInInlineCode: true}));

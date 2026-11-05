@@ -1,0 +1,293 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`bounded code grammar goldens > gives a structural closer priority over ambiguous multiline code 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          before \`code
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  after\` ||
+|#
+</p>
+`;
+
+exports[`bounded code grammar goldens > keeps nested tables and multiline code on either side 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          <code>
+            before inside|code
+          </code>
+        </p>
+        <table>
+          <tbody>
+            <tr>
+              <td>
+                <p>
+                  <code>
+                    #| |#
+                  </code>
+                </p>
+              </td>
+              <td>
+                <p>
+                  nested
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          <code>
+            after inside|code
+          </code>
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`bounded code grammar goldens > renders the intentional inline grammar: a \`unclosed | b ||
+|| c \`later | d 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          a
+          <code>
+            unclosed | b || || c
+          </code>
+          later
+        </p>
+      </td>
+      <td>
+        <p>
+          d
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`bounded code grammar goldens > renders the intentional inline grammar: code \`#| and |#\` tail 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          code
+          <code>
+            #| and |#
+          </code>
+          tail
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`bounded code grammar goldens > renders the intentional inline grammar: code \`\`before \` short
+after|inside\`\` tail 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          code
+          <code>
+            before \` short after|inside
+          </code>
+          tail
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`bounded code grammar goldens > renders the intentional inline grammar: code \`\`before \`|#\` after\`\` tail 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          code
+          <code>
+            before \`|#\` after
+          </code>
+          tail
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`bounded code grammar goldens > renders the intentional inline grammar: code \`before
+after|inside\` tail 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          code
+          <code>
+            before after|inside
+          </code>
+          tail
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`bounded code grammar goldens > renders the intentional inline grammar: escaped \\\`before|after\` tail 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          escaped \`before
+        </p>
+      </td>
+      <td>
+        <p>
+          after\` tail
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`bounded code grammar goldens > renders the intentional inline grammar: escaped \\| content 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          escaped | content
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`bounded code grammar goldens > retains the existing Liquid shield or marker interpretation 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          {{ value |# #| }}
+          <code>
+            x|y
+          </code>
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`bounded code grammar goldens > retains the existing block math shield or marker interpretation 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          $$
+|#
+#|
+$$
+        </p>
+        <p>
+          <code>
+            x|y
+          </code>
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`bounded code grammar goldens > retains the existing escaped table marker shield or marker interpretation 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          before \\
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  after
+  <code>
+    code
+  </code>
+  ||
+|#
+</p>
+`;
+
+exports[`bounded code grammar goldens > retains the existing fenced code shield or marker interpretation 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          before
+        </p>
+        <pre>
+          <code>
+            |#
+#|
+          </code>
+        </pre>
+        <p>
+          after
+          <code>
+            x|y
+          </code>
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
+
+exports[`bounded code grammar goldens > retains the existing inline math shield or marker interpretation 1`] = `
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          $a|#b$
+          <code>
+            x|y
+          </code>
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+`;
