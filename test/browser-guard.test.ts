@@ -198,3 +198,28 @@ test.each([
     const {md} = setup(false);
     expect(md.render(source)).toBe(new NativeMarkdownIt().render(source));
 });
+
+test.each([1000, 2000, 4000])(
+    'long native cells preserve escaped pipes and the next cell origin: %s',
+    (count) => {
+        const prefix = 'a\\|'.repeat(count);
+        const source = `| h | h |\n|---|---|\n| ${prefix} | {% included (child.md) %} |`;
+        const {md} = setup(false);
+        const baseline = new NativeMarkdownIt();
+        const ordinary = source.replace('{% included (child.md) %}', 'ordinary');
+        expect(md.render(ordinary)).toBe(baseline.render(ordinary));
+        try {
+            md.render(source);
+            throw new Error('Expected browser capability error');
+        } catch (error) {
+            expect(error).toBeInstanceOf(BrowserUnsupportedFeatureError);
+            if (error instanceof BrowserUnsupportedFeatureError) {
+                expect(error.location).toEqual({
+                    path: '<input>',
+                    line: 3,
+                    column: prefix.length + 6,
+                });
+            }
+        }
+    },
+);

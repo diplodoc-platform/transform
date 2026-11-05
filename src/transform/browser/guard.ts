@@ -158,13 +158,14 @@ function nativeCells(scope: Scope, line: number, parents: Token[]): NativeCell[]
     let end = raw.length;
     while (end > begin && /\s/.test(raw[end - 1])) end--;
     const cells: NativeCell[] = [];
-    let content = '';
+    let characters: string[] = [];
     let offsets: number[] = [];
     const push = () => {
+        const content = characters.join('');
         const trimmed = content.trim();
         const leading = content.length - content.trimStart().length;
         cells.push({content: trimmed, offsets: offsets.slice(leading, leading + trimmed.length)});
-        content = '';
+        characters = [];
         offsets = [];
     };
     // Match markdown-it's escapedSplit, including its immediate-backslash rule.
@@ -172,14 +173,14 @@ function nativeCells(scope: Scope, line: number, parents: Token[]): NativeCell[]
         const char = raw[index];
         if (char === '|') {
             if (index > begin && raw[index - 1] === '\\') {
-                content = content.slice(0, -1);
+                characters.pop();
                 offsets.pop();
             } else {
                 push();
                 continue;
             }
         }
-        content += char;
+        characters.push(char);
         offsets.push(scope.starts[line] + index);
     }
     push();
