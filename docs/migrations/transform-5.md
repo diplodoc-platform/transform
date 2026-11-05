@@ -109,6 +109,21 @@ Replace `inlineSvg` with `svgInline.enabled`. If both are supplied,
 compatibility alias in 5 and emits an actual-use diagnostic; its scheduled removal
 is Transform 6. Preserve the SVG sanitizer and existing entity-limit policy.
 
+An incomplete `svgInline` object now consistently inherits the 2 MiB file-size
+limit. Transform 4 could lose that limit with `{enabled: true}`; this was a
+normalization bug. If your application intentionally inlines larger SVG files,
+choose an explicit limit, for example:
+
+```ts
+transform(source, {svgInline: {enabled: true, maxFileSize: 4 * 1024 * 1024}});
+```
+
+Without an explicit override, a file larger than 2 MiB stays an image reference.
+The existing image attribute `{inline=true}` still forces inlining; XML entity
+safeguards and sanitization remain active. See the [SVG option ADR](../ADR/ADR-011-svg-inline-option.md).
+The existing check counts UTF-16 units in the SVG text; the MiB values correspond
+to ASCII content, not a new encoded-byte measurement.
+
 ## Highlighting and document ownership
 
 Highlighting is no longer loaded implicitly. Without a caller-supplied
