@@ -12,6 +12,7 @@ import {directiveParser, registerBlockBoundary} from '@diplodoc/directive';
 import {AttrsParser} from '@diplodoc/utils';
 
 import {getTableRowPositions, isOpenTableOrder} from './positions';
+import {trailingClassBlock} from './suffix';
 
 const pluginName = 'yfm_table';
 
@@ -47,14 +48,12 @@ function extractAndApplyClassFromToken(
     reporter: DeprecationReporter,
     location: DeprecationLocation,
 ): void {
-    // Regex to find class attribute in any position within brackets
-    const blockRegex = /\s*\{[^}]*}$/;
-    const allAttrs = contentToken.content.match(blockRegex);
+    const allAttrs = trailingClassBlock(contentToken.content);
     if (!allAttrs) {
         return;
     }
 
-    const attrs = new AttrsParser().parse(allAttrs[0].trim());
+    const attrs = new AttrsParser().parse(allAttrs.trim());
     const attrsClass = attrs?.class?.join(' ');
 
     if (attrsClass) {
@@ -63,11 +62,11 @@ function extractAndApplyClassFromToken(
         }
         tdOpenToken.attrJoin('class', attrsClass);
         // remove the class from the token so that it's not propagated to tr or table level
-        let replacedContent = allAttrs[0].replace(`.${attrsClass}`, '');
+        let replacedContent = allAttrs.replace(`.${attrsClass}`, '');
         if (replacedContent.trim() === '{}') {
             replacedContent = '';
         }
-        contentToken.content = contentToken.content.replace(allAttrs[0], replacedContent);
+        contentToken.content = contentToken.content.replace(allAttrs, replacedContent);
     }
 }
 
