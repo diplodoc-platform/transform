@@ -44,7 +44,8 @@ function unfoldIncludes(state: StateCore, path: string, options: Options) {
         if (
             openToken.type === 'paragraph_open' &&
             contentToken.type === 'inline' &&
-            (match = contentToken.content.match(INCLUDE_REGEXP)) &&
+            // Preserve native 13's paragraph-edge whitespace handling for legacy includes.
+            (match = contentToken.content.trim().match(INCLUDE_REGEXP)) &&
             closeToken.type === 'paragraph_close'
         ) {
             try {
