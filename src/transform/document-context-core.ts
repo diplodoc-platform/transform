@@ -160,11 +160,19 @@ function unique<T>(values: T[]): T[] {
     return [...new Set(values)];
 }
 
+function compareExactStrings(left: string, right: string): number {
+    if (left === right) {
+        return 0;
+    }
+    return left < right ? -1 : 1;
+}
+
 function cspKey(value: Record<string, string[]>): string {
+    // Canonical keys use locale-independent UTF-16 order, without reordering the output CSP.
     return JSON.stringify(
         Object.keys(value)
-            .sort()
-            .map((key) => [key, unique(value[key]).sort()]),
+            .sort(compareExactStrings)
+            .map((key) => [key, unique(value[key]).sort(compareExactStrings)]),
     );
 }
 

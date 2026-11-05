@@ -284,6 +284,11 @@ identity, and the next render uses a fresh env.
 
 ## Nested contexts and resources
 
+CSP records are deduplicated by exact directive/source strings, independently of
+their ordering. Canonical comparison uses locale-independent UTF-16 ordering;
+the first record's directive order and first occurrence of each source remain in
+the output. Canonicalization must not mutate the supplied records.
+
 A root parse operation cannot be reentered through the public parser's top-level
 parse/compile methods while it is active: throw an actionable synchronous error.
 This prevents ambiguous activation from custom callbacks. Nested native parsing
