@@ -1,9 +1,11 @@
 import type {MarkdownItPluginOpts} from '../typings';
 import type {ChangelogItem} from './types';
+import type {LogConsumer} from '../../log-core';
 
 import {bold} from 'chalk';
 
 import initMarkdownIt from '../../md';
+import {getInvocationLogger} from '../../diagnostic-context';
 import imsize from '../imsize';
 
 import changelogPlugin from './index';
@@ -11,12 +13,18 @@ import changelogPlugin from './index';
 const BLOCK_START = '{% changelog %}';
 const BLOCK_END = '{% endchangelog %}';
 
-function parseChangelogs(str: string, path?: string) {
-    const {parse, compile, env} = initMarkdownIt({
-        plugins: [changelogPlugin, imsize],
-        extractChangelogs: true,
-        path,
-    });
+function parseChangelogs(str: string, path: string | undefined, logger: LogConsumer) {
+    const sink = getInvocationLogger({log: logger});
+    const {parse, compile, env} = initMarkdownIt(
+        {
+            plugins: [changelogPlugin, imsize],
+            extractChangelogs: true,
+            path,
+            log: sink,
+        },
+        undefined,
+        sink,
+    );
 
     compile(parse(str));
 
@@ -59,7 +67,7 @@ const collect = (input: string, {path: filepath, log, changelogs, extractChangel
     }
 
     if (rawChangelogs.length && changelogs && extractChangelogs) {
-        const parsedChangelogs = parseChangelogs(rawChangelogs.join('\n\n'), filepath);
+        const parsedChangelogs = parseChangelogs(rawChangelogs.join('\n\n'), filepath, log);
         if (parsedChangelogs.length !== rawChangelogs.length) {
             log.error(
                 `Parsed changelogs less than expected${filepath ? ` in ${bold(filepath)}` : ''}`,

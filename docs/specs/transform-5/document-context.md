@@ -1,5 +1,10 @@
 # Document context and parser reuse
 
+Diagnostic ownership has subsequently changed under
+[DOCSTOOLS-6938's approved lifetime contract](diagnostic-lifetime.md). That contract
+supersedes this document's original exclusions/retention notes about global logs;
+`Output.logs` is now document-local and detached, with explicit build aggregation.
+
 Task: [DOCSTOOLS-6951](https://st.yandex-team.ru/DOCSTOOLS-6951).
 Inventory base: `18856b846ce06b27ab3739b11f5195967048307d`.
 Implementation baseline: registry refresh `87d076745e905bdaaa1cc774668ef30520197d38`,
@@ -16,8 +21,9 @@ makes that association explicit without changing the synchronous API.
 Keep the current parser installation model: parser rules, plugin options and
 extension instances are created once. This work does not make arbitrary plugin
 closures stateless, clone application options/generators, create a parser cache,
-or promise parallel/reentrant top-level use. Existing filesystem/title caches and
-module-global logs are outside this lifecycle change.
+or promise parallel/reentrant top-level use. Existing filesystem/title caches
+remain outside this lifecycle change; diagnostic ownership follows the separate
+DOCSTOOLS-6938 contract linked above.
 
 [#605](https://github.com/diplodoc-platform/transform/issues/605) describes a memory
 report after repeated initialization and an application reuse workaround. Fresh
@@ -36,7 +42,7 @@ those consumers have already migrated.
 | Owner/source                                              | Current behavior                                                                                           | Proposed responsibility                                                                                                 |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | `md.ts`                                                   | One env closed over by parse/compile; meta/assets forward to md; title/headings survive until reassignment | Allocate document env, associate tokens, activate exact context, finalize resources                                     |
-| `index.ts`                                                | New parser per ordinary transform; emits env and global logs                                               | Use explicit document handle internally; retain synchronous output and global logging contract                          |
+| `index.ts`                                                | New parser per ordinary transform; emits env and global logs                                               | Use explicit document handle internally; retain synchronous output; apply the later diagnostic lifetime contract        |
 | `plugins/meta.ts`                                         | Initializes `md.meta` at installation and replaces it with parsed YAML                                     | Initialize/write `state.env.meta`, including raw MarkdownIt usage                                                       |
 | `plugins/images/index.ts`                                 | Initializes `md.assets` at installation and pushes image paths                                             | Initialize/write `state.env.assets`; keep image/SVG security and path behavior                                          |
 | `utilsFS.ts:getFileTokens`                                | Shallow-copies env, saves/restores `md.meta` only on success                                               | Explicit child context, try/finally activation, purpose-specific success merge                                          |
@@ -50,7 +56,7 @@ those consumers have already migrated.
 | `plugins/visibility.ts`, `ol-attr-conversion.ts`          | Write env metadata and CSS allowances                                                                      | Preserve writers; fresh document storage and selected child merges                                                      |
 | Cut/tabs/file extension core rules                        | Write `env.meta.script/style`; add hidden `env.bundled` Sets                                               | Preserve plain env and these writers; fresh root/child env, merge resources                                             |
 | `plugins/code.ts`, terms, tabs                            | Capture the supplied ID generator                                                                          | Preserve application generator identity; no automatic reset of its opaque closure                                       |
-| `log.ts`, Liquid, sanitizer, frontmatter                  | Shared collected logs and direct global log calls                                                          | Retain current behavior; no claim of document-isolated diagnostics arrays                                               |
+| `log.ts`, Liquid, sanitizer, frontmatter                  | Shared collected logs and direct global log calls                                                          | Apply the later diagnostic lifetime contract; preserve explicit compatibility collectors                                |
 | Translation `skeleton/hooks/meta.ts`                      | Reads `this.md.meta` in a BeforeRender hook                                                                | Read its actual hook argument `env.meta`                                                                                |
 | Translation `skeleton/index.ts`                           | Uses external markdown-it-meta, MarkdownIt 13, and `md.render()`                                           | Replace the old meta writer with env-aware plugin and pass explicit fresh env; validate parser compatibility separately |
 | Translation `renderer/index.ts`                           | Already passes the same env into render hooks and inline rendering                                         | Use existing hook parameter; no new renderer lifecycle framework                                                        |
@@ -183,11 +189,11 @@ root reporter and use their source path for occurrences. A failed document's sco
 is never reused for B. Completing parse/compile clears activation in `finally`;
 there is no global current-document singleton.
 
-The supplied logger remains the same caller-owned logger. Existing collected
-`Output.logs` is module-global and remains so; do not clear it when starting B or
-claim errors are erased. Metadata isolation and deprecation occurrence reset do
-not imply isolated historical diagnostic arrays. Changes to global log ownership
-would require a separate design.
+The supplied `log` option remains a caller-owned forwarding destination. Under
+the later [diagnostic lifetime contract](diagnostic-lifetime.md), `Output.logs` is
+a detached document snapshot and explicit `diagnostics` collectors provide build
+history. Starting B does not erase or mutate A's diagnostics. The stable plugin
+logger facade routes to the selected document without process-global activation.
 
 If `options.generateID` is supplied, preserve that exact function and its state;
 do not clone, reset, reinstantiate or reinterpret it as a factory. Its output may
@@ -427,9 +433,9 @@ Required finite tests:
    Transform package with compatible real companions outside the workspace.
 
 Verification includes focused unit/integration tests, full project checks, normal
-hooks, exact-package checks and independent review. The global diagnostic
-collector and opaque custom/third-party mutable closures remain explicit limits
-to document isolation.
+hooks, exact-package checks and independent review. Explicit compatibility/global
+collectors and opaque custom/third-party mutable closures remain caller-owned;
+ordinary document diagnostics are isolated under the later lifetime contract.
 
 ## Same-parser fragment contribution replay
 

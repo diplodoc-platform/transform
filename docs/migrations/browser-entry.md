@@ -48,7 +48,7 @@ Both entries export default/named `transform`, `createParser`, `createDocumentEn
 The closed browser core settings are `allowHTML`, `linkify`, `linkifyTlds`,
 `breaks`, `disableRules`, `lang`, `extractTitle`, `needTitle`,
 `needFlatListHeadings`, `renderInline`, `enableMarkdownAttrs`, `leftDelimiter`,
-`rightDelimiter`, `highlighter`, `generateID`, `log`, `compatibility`,
+`rightDelimiter`, `highlighter`, `generateID`, `log`, `diagnostics`, `compatibility`,
 `pluginConfiguration`, and `sanitizeOptions`.
 
 Named composition retains `preset:'default'|'none'`, `enable`, `disable`,
@@ -84,8 +84,11 @@ const html = parser.compileDocument(article);
 
 Builtin installation order and dependency/ordering constraints remain shared.
 `preset:'none'` removes feature callbacks while keeping core repairs, the content
-guard and final sanitizer. Browser diagnostics are collected and forwarded to
-`log` using plain labels; Node collectors and terminal formatting remain separate.
+guard and final sanitizer. Browser diagnostics belong to each document and are
+returned as detached snapshots, with plain labels. Use the browser entry's
+`createDiagnosticCollector()` and `diagnostics` option for explicit build history;
+`log` still forwards to an embedding logger. Node terminal formatting remains
+separate. See the [shared lifetime contract](../specs/transform-5/diagnostic-lifetime.md).
 A supplied ID generator retains its state across parser reuse.
 
 ## Host preparation and document ownership

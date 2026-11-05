@@ -1,9 +1,9 @@
 import type {DeprecationReporter} from './deprecation';
 import type {MarkdownIt, MarkdownItPluginOpts, OptionsType} from './typings';
 import type {DocumentEnv, DocumentParser, ParsedDocument} from './document';
-import type {LogConsumer, Logger} from './log-core';
+import type {DiagnosticOptions, LogConsumer, Logger} from './log-core';
 import type {PluginInstallation} from './plugin-configuration';
-import type {SanitizeFunction, SanitizeOptions} from './sanitize-core';
+import type {SanitizeOptions} from './sanitize-core';
 import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 
 import DefaultMarkdownIt from 'markdown-it';
@@ -12,6 +12,7 @@ import {createIDGeneratorByStrategy} from '@diplodoc/utils';
 
 import {bindFootnoteRoot, compileFootnoteOutput, prepareFootnoteTitle} from './footnote-data';
 import {createDocumentEnv} from './document-data';
+import {createLoggerFacade} from './log-core';
 import {builtinOptions} from './builtin-invocation';
 import {
     createLegacyEnvView,
@@ -48,9 +49,15 @@ export interface ParserHost {
         md: MarkdownIt,
     ): string;
     getLogger(consumer?: LogConsumer): Logger;
+    createLogger(options: DiagnosticOptions): Logger;
     createReporter(options: OptionsType): DeprecationReporter;
-    sanitize: SanitizeFunction;
-    sanitizeStyles(html: string, options: SanitizeOptions): string;
+    sanitize(
+        html: string,
+        options?: SanitizeOptions,
+        additionalOptions?: SanitizeOptions,
+        logger?: Logger,
+    ): string;
+    sanitizeStyles(html: string, options: SanitizeOptions, logger?: Logger): string;
 }
 
 // The attrs 4.3 declarations omit the options supported by the pinned runtime.
@@ -64,16 +71,27 @@ const applyAttrs = attrs as (
  * @param options - Existing Transform parser options.
  * @param host - Builtins, preprocessing, diagnostics and sanitization for this host.
  * @param firstDocumentReporter - Optional scope shared with root preprocessing.
+ * @param firstDocumentLogger - Optional sink shared with root preprocessing.
  * @returns Parser with owned document handles and the legacy result view.
  */
 export function createParser(
     options: OptionsType,
     host: ParserHost,
     firstDocumentReporter?: DeprecationReporter,
+    firstDocumentLogger?: Logger,
 ): DocumentParser {
     const {allowHTML = false, linkify = false, breaks = true, disableRules = []} = options;
 
-    const setupReporter = host.createReporter(options);
+    let setupLogger: Logger | undefined = firstDocumentLogger ?? host.createLogger(options);
+    let activeLogger: Logger | undefined;
+    let completedLogger: Logger | undefined;
+    const currentLogger = () => {
+        const sink = activeLogger ?? completedLogger ?? setupLogger;
+        if (!sink) throw new Error('Expected a parser-owned diagnostic sink');
+        return sink;
+    };
+    const logger = createLoggerFacade(currentLogger);
+    const setupReporter = host.createReporter({...options, log: logger});
     let activeReporter: DeprecationReporter | undefined;
     let completedReporter: DeprecationReporter | undefined;
     const reporter: DeprecationReporter = {
@@ -83,7 +101,7 @@ export function createParser(
         compatibility: (code) =>
             (activeReporter ?? completedReporter ?? setupReporter).compatibility(code),
     };
-    const pluginOptions = getPluginOptions(options, reporter, host);
+    const pluginOptions = getPluginOptions({...options, log: logger}, reporter, host);
     const highlight = configureHighlighter(options, pluginOptions.deprecations);
     const md = new DefaultMarkdownIt({html: allowHTML, linkify, highlight, breaks}) as MarkdownIt;
 
@@ -100,12 +118,21 @@ export function createParser(
     let pending = true;
     let active: DocumentEnv | undefined;
     let last: DocumentEnv | undefined;
-    const owned = new WeakMap<ParsedDocument, {reporter: DeprecationReporter; valid: boolean}>();
+    const owned = new WeakMap<
+        ParsedDocument,
+        {reporter: DeprecationReporter; logger: Logger; valid: boolean}
+    >();
     const associated = new WeakMap<Token[], ParsedDocument>();
     const reporters = new WeakMap<DocumentEnv, DeprecationReporter>();
+    const loggers = new WeakMap<DocumentEnv, Logger>();
     const env = createLegacyEnvView(() => active ?? last ?? context.pending);
 
-    function run<T>(documentEnv: DocumentEnv, scope: DeprecationReporter, action: () => T): T {
+    function run<T>(
+        documentEnv: DocumentEnv,
+        scope: DeprecationReporter,
+        sink: Logger,
+        action: () => T,
+    ): T {
         if (active) {
             throw new Error(
                 'Top-level document parsing or compilation cannot be reentered; use parseDocumentFragment for nested content',
@@ -113,6 +140,8 @@ export function createParser(
         }
         active = documentEnv;
         activeReporter = scope;
+        const previousLogger = activeLogger;
+        activeLogger = sink;
         const previousLast = context.last;
         try {
             const value = withDocumentEnv(md, documentEnv, action);
@@ -127,8 +156,11 @@ export function createParser(
             }
             throw error;
         } finally {
+            completedLogger = sink;
+            completedReporter = scope;
             active = undefined;
             activeReporter = undefined;
+            activeLogger = previousLogger;
         }
     }
 
@@ -139,15 +171,28 @@ export function createParser(
             );
         }
         const documentEnv = pending ? context.pending : createDocumentEnv();
+        const sink = pending ? currentLogger() : host.createLogger(options);
         const scope =
-            pending && firstDocumentReporter ? firstDocumentReporter : host.createReporter(options);
+            pending && firstDocumentReporter
+                ? firstDocumentReporter
+                : host.createReporter({...options, log: sink});
         pending = false;
+        setupLogger = undefined;
+        firstDocumentReporter = undefined;
+        firstDocumentLogger = undefined;
         reporters.set(documentEnv, scope);
-        return run(documentEnv, scope, () => {
+        loggers.set(documentEnv, sink);
+        return run(documentEnv, scope, sink, () => {
             initialize?.(documentEnv);
             const tokens = initParser(md, options, documentEnv, pluginOptions, host)(input);
-            const document = Object.freeze({tokens, env: documentEnv});
-            owned.set(document, {reporter: scope, valid: true});
+            const document = Object.freeze({
+                tokens,
+                env: documentEnv,
+                get logs() {
+                    return sink.get();
+                },
+            });
+            owned.set(document, {reporter: scope, logger: sink, valid: true});
             associated.set(tokens, document);
             return document;
         });
@@ -161,7 +206,7 @@ export function createParser(
         if (!document) {
             const documentEnv = last ?? context.pending;
             const scope = reporters.get(documentEnv) ?? setupReporter;
-            return run(documentEnv, scope, () => {
+            return run(documentEnv, scope, loggers.get(documentEnv) ?? currentLogger(), () => {
                 scope.warn(
                     {
                         code: 'UNASSOCIATED_DOCUMENT_TOKENS',
@@ -177,6 +222,7 @@ export function createParser(
                     documentEnv,
                     host,
                     pluginOptions.generateID,
+                    pluginOptions.log,
                 )(tokens);
             });
         }
@@ -185,8 +231,15 @@ export function createParser(
             throw new TypeError('Expected a valid document handle created by this parser');
         }
         try {
-            return run(document.env, state.reporter, () =>
-                initCompiler(md, options, document.env, host, pluginOptions.generateID)(tokens),
+            return run(document.env, state.reporter, state.logger, () =>
+                initCompiler(
+                    md,
+                    options,
+                    document.env,
+                    host,
+                    pluginOptions.generateID,
+                    pluginOptions.log,
+                )(tokens),
             );
         } catch (error) {
             state.valid = false;
@@ -200,6 +253,9 @@ export function createParser(
         parse: (input) => parseDocument(input).tokens,
         compile,
         env,
+        get logs() {
+            return currentLogger().get();
+        },
     };
 }
 
@@ -351,6 +407,7 @@ function initCompiler(
     env: DocumentEnv,
     host: ParserHost,
     generateID: () => string,
+    logger: Logger,
 ) {
     const {needToSanitizeHtml = true, renderInline = false, sanitizeOptions, sanitize} = options;
 
@@ -386,14 +443,19 @@ function initCompiler(
                         },
                     };
 
-                    html = host.sanitizeStyles(html, mergedOptions);
+                    html = host.sanitizeStyles(html, mergedOptions, logger);
                 }
 
                 const sanitizedHtml = sanitize
                     ? sanitize(html, sanitizeOptions)
-                    : host.sanitize(html, sanitizeOptions, {
-                          cssWhiteList: env.additionalOptionsCssWhiteList,
-                      });
+                    : host.sanitize(
+                          html,
+                          sanitizeOptions,
+                          {
+                              cssWhiteList: env.additionalOptionsCssWhiteList,
+                          },
+                          logger,
+                      );
 
                 return sanitizedHtml;
             },

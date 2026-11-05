@@ -54,7 +54,7 @@ deprecations or release promises.
 
 ## Scope and lifecycle
 
-`createDeprecationReporter({log?, compatibility?})` returns a synchronous,
+`createDeprecationReporter({log?, diagnostics?, compatibility?})` returns a synchronous,
 caller-owned reporter with `warn`, `reset` and `compatibility`. There is no global
 registry or process-wide set of emitted deprecations.
 
@@ -72,30 +72,26 @@ still receives warnings after reset: scoped forwarding bypasses the generic
 logger adapter's warning cache. Ordinary logger warnings retain their existing
 deduplication behavior.
 
-The existing collector deduplicates identical formatted messages in `logs.warn`.
-An injected logger still receives an occurrence again in a fresh scope or after
-reset. The helper does not isolate the collector or clear prior document logs.
-`Output.logs` and `log.get()` expose the same module-global mutable record,
-including diagnostics from earlier documents. `log.add()` appends supplied arrays
-without removing duplicates; `log.clear()` replaces the info/warn/error arrays,
-so previous output records see those replacements too. Reporter scopes govern
-emission deduplication, not collector retention. Build owners may call `clear()`
-at their own explicit boundary after consuming the diagnostics they need; an
-individual transform must not erase another caller's errors or warning history.
+Each document now owns its collected diagnostics. `Output.logs` is a detached
+snapshot; a reusable parser exposes snapshots through `parser.logs` and each
+owned handle's `document.logs`. Root preprocessing, runtime diagnostics and nested
+sources share that document's sink. Initialization messages belong to the first
+root, reflecting actual installation counts. A fresh root does not clear or
+mutate earlier outputs.
 
-Unique-path warnings therefore remain retained until the caller clears them, and
-collector membership still uses linear lookup. This existing lifetime and lookup
-cost remains an unresolved performance limitation (DOCSTOOLS-6938), not a bounded
-per-document collector. An injected logger does not disable global retention.
+For project history, pass an explicit `diagnostics: createDiagnosticCollector()`
+aggregate mirror. Its `get()` returns detached arrays; `add()` preserves supplied
+duplicates/order and `clear()` defines the caller's retention boundary. The
+existing exported global `log` retains mutable compatibility methods and receives
+only explicit writes/forwarding or `diagnostics: log`. Ordinary calls do not add
+hidden global history. Scoped deprecation re-emission through reused external
+loggers remains independent from collected-message membership.
 
-There is no asynchronous API change or guarantee that a shared parser supports
-concurrent use.
-
-The low-level reusable parser currently retains its initialization scope across
-multiple parses. Automatic per-document reset and carrying this scope in a unified
-document `env` belong to DOCSTOOLS-6951. Consumers needing explicit build/document
-boundaries outside ordinary `transform()` should own a reporter and call `reset()`
-at that boundary. Do not create a process singleton to hide repeated diagnostics.
+See the [diagnostic lifetime contract](../specs/transform-5/diagnostic-lifetime.md)
+for parser reuse, helpers, errors, runtime routing and browser parity. Reporter
+`reset()` still controls only deprecation occurrences; it does not erase a
+collector. There is no asynchronous API change or guarantee of concurrent parser
+use.
 
 ## Compatibility policy
 

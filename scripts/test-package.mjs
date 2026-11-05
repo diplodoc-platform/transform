@@ -117,6 +117,14 @@ try {
         stdio: 'inherit',
     });
     copyFileSync(
+        join(projectRoot, 'scripts/diagnostics-package-consumer.mjs'),
+        join(consumerRoot, 'diagnostics-consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'diagnostics-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
+    copyFileSync(
         join(projectRoot, 'scripts/footnotes-package-consumer.mjs'),
         join(consumerRoot, 'footnotes-consumer.mjs'),
     );
@@ -418,6 +426,16 @@ parseDocumentFragmentResult(fragmentMd, 'child', plainEnv, {purpose: 'include'},
 // @ts-expect-error The handle's token-array property cannot be reassigned.
 fragment.tokens = [];
 void forgedFragment;
+
+import {createDiagnosticCollector, type DiagnosticCollector, type DiagnosticLogs} from '@diplodoc/transform/log';
+const projectDiagnostics: DiagnosticCollector = createDiagnosticCollector();
+const scopedDiagnosticsParser = DOCUMENT_FACTORY({diagnostics: projectDiagnostics});
+const scopedDiagnosticsDocument = scopedDiagnosticsParser.parseDocument('text');
+const handleDiagnostics: DiagnosticLogs = scopedDiagnosticsDocument.logs;
+const parserDiagnostics: DiagnosticLogs = scopedDiagnosticsParser.logs;
+// @ts-expect-error A shared collector must implement the complete explicit collector contract.
+DOCUMENT_FACTORY({diagnostics: {warn(message: string) { void message; }}});
+void [handleDiagnostics, parserDiagnostics];
 
 documents.compile(firstDocument.tokens.slice(), firstDocument);
 documents.compileDocument(secondDocument);

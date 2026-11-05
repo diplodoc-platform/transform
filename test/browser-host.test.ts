@@ -71,7 +71,7 @@ test('browser reporters collect plain messages and forward each explicit documen
         removal: {version: '6.0.0'},
     };
     for (let i = 0; i < 2; i++) {
-        const reporter = createBrowserReporter({log: consumer});
+        const reporter = createBrowserReporter({log: consumer, diagnostics: log});
         reporter.warn(descriptor, {option: 'legacy'});
         reporter.warn(descriptor, {option: 'legacy'});
     }

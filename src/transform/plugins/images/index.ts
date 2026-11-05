@@ -15,7 +15,7 @@ import {isFileExists, resolveRelativePath} from '../../utilsFS';
 import {filterTokens, getSrcTokenAttr, isExternalHref} from '../../utils';
 import {generateID as globalGenerateID} from '../utils';
 import {optimize} from '../../svgo';
-import {getLogger} from '../../log';
+import {getInvocationLogger} from '../../diagnostic-context';
 import {createDeprecationReporter} from '../../deprecation';
 
 import {normalizeSvgInline} from './options';
@@ -407,7 +407,7 @@ function replaceSvgContent(
         if (!isSvgEntityLimitError(error)) {
             throw error;
         }
-        getLogger(options.log).warn(
+        getInvocationLogger(options).warn(
             `SVG entity limit reached: ${options.path ?? '<input>'}. Keeping the image reference. ${SVG_ENTITY_LIMIT_HINT}`,
         );
         return '';

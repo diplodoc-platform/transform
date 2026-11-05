@@ -1,8 +1,10 @@
+import type {LogConsumer} from './log-core';
+
 import {YAMLException, dump, load} from 'js-yaml';
 import {dedent} from 'ts-dedent';
 import cloneDeepWith from 'lodash/cloneDeepWith';
 
-import {log} from './log';
+import {log as defaultLog} from './log';
 
 export type FrontMatter = {
     [key: string]: unknown;
@@ -45,7 +47,11 @@ const matchMetadata = (fileContent: string) => {
     return [fileContent.slice(SEP.length, closeStart).trim(), fileContent.slice(closeEnd + 1)];
 };
 
-const duplicateKeysCompatibleLoad = (yaml: string, filePath: string | undefined) => {
+const duplicateKeysCompatibleLoad = (
+    yaml: string,
+    filePath: string | undefined,
+    log: LogConsumer,
+) => {
     try {
         return load(yaml);
     } catch (e) {
@@ -70,6 +76,7 @@ const duplicateKeysCompatibleLoad = (yaml: string, filePath: string | undefined)
 export const extractFrontMatter = (
     fileContent: string,
     filePath?: string,
+    logger: LogConsumer = defaultLog,
 ): [FrontMatter, string] => {
     const matches = matchMetadata(fileContent);
 
@@ -78,7 +85,11 @@ export const extractFrontMatter = (
 
         return [
             cloneDeepWith(
-                duplicateKeysCompatibleLoad(escapeLiquid(metadata), filePath) as FrontMatter,
+                duplicateKeysCompatibleLoad(
+                    escapeLiquid(metadata),
+                    filePath,
+                    logger,
+                ) as FrontMatter,
                 (v) => (typeof v === 'string' ? unescapeLiquid(v) : undefined),
             ),
             strippedContent,

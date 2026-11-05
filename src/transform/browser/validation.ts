@@ -48,6 +48,13 @@ export function validCoreValue(key: string, value: unknown): boolean {
                 record(value) &&
                 ['info', 'warn', 'error'].every((method) => typeof value[method] === 'function')
             );
+        case 'diagnostics':
+            return (
+                record(value) &&
+                ['info', 'warn', 'error', 'get', 'add', 'clear', 'isEmpty'].every(
+                    (method) => typeof value[method] === 'function',
+                )
+            );
         case 'compatibility':
             return (
                 record(value) &&

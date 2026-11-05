@@ -1,6 +1,9 @@
+import type {LogConsumer} from '../log-core';
+import type {DeprecationReporter} from '../deprecation-core';
+
 import {bold} from 'chalk';
 
-import {log} from '../log';
+import {log as defaultLog} from '../log';
 
 import {evalExp} from './evaluation';
 import {tagLine, variable} from './lexical';
@@ -59,6 +62,8 @@ function changeSourceMap({
 }
 
 type Args2 = {
+    log: LogConsumer;
+    deprecations?: DeprecationReporter;
     forTag: Tag;
     vars: Record<string, unknown>;
     content: string;
@@ -70,6 +75,8 @@ type Args2 = {
 };
 
 function inlineConditions({
+    log,
+    deprecations,
     forTag,
     vars,
     content,
@@ -90,7 +97,7 @@ function inlineConditions({
     const resFirstLineNumber = getLineNumber(content, forRawLastIndex + 1);
     const resLastLineNumber = getLineNumber(content, contentLastIndex + 1);
 
-    let collection = evalExp(forTag.collectionName, vars);
+    let collection = evalExp(forTag.collectionName, vars, false, log);
     if (!collection || !Array.isArray(collection)) {
         collection = [];
         log.error(`${bold(forTag.collectionName)} is undefined or not iterable`);
@@ -112,7 +119,7 @@ function inlineConditions({
                 length,
             },
         };
-        res += applyLiquid(forTemplate, newVars, path).trimEnd();
+        res += applyLiquid(forTemplate, newVars, path, {log, deprecations}).trimEnd();
     });
 
     const contentLinesTotal = res.split('\n').length - 1;
@@ -168,9 +175,13 @@ export default function cycles(
     originInput: string,
     vars: Record<string, unknown>,
     path?: string,
-    settings: {sourceMap?: Record<number, number>} = {},
+    settings: {
+        sourceMap?: Record<number, number>;
+        log?: LogConsumer;
+        deprecations?: DeprecationReporter;
+    } = {},
 ) {
-    const {sourceMap} = settings;
+    const {sourceMap, log = defaultLog, deprecations} = settings;
 
     const R_LIQUID = /({%-?([\s\S]*?)-?%})/g;
     const FOR_SYNTAX = new RegExp(`(\\w+)\\s+in\\s+(${variable.source})`);
@@ -232,6 +243,8 @@ export default function cycles(
 
                 const {idx, result} = inlineConditions({
                     forTag,
+                    log,
+                    deprecations,
                     vars,
                     content: input,
                     match,

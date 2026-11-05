@@ -111,20 +111,20 @@ describe('SVG entity expansion', () => {
         expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('--svg-max-entity-count'));
     });
 
-    test('warns once across repeated renders and direct helper calls with one logger', () => {
+    test('warns once per document and direct helper invocation with one external logger', () => {
         const logger = {info: vi.fn(), warn: vi.fn(), error: vi.fn()};
         render(undefined, svgWithEntities(800), logger);
         render(undefined, svgWithEntities(800), logger);
         const path = '/diagram.svg';
         replaceSvgContent(svgWithEntities(800), {...imageOptions, log: logger, path}, constantID);
-        expect(logger.warn).toHaveBeenCalledOnce();
-        expect(log.get().warn).toHaveLength(1);
+        expect(logger.warn).toHaveBeenCalledTimes(3);
+        expect(log.get().warn).toHaveLength(0);
         replaceSvgContent(
             svgWithEntities(800),
             {...imageOptions, log: logger, path: 'other.svg'},
             constantID,
         );
-        expect(logger.warn).toHaveBeenCalledTimes(2);
+        expect(logger.warn).toHaveBeenCalledTimes(4);
         const nextBuildLogger = {info: vi.fn(), warn: vi.fn(), error: vi.fn()};
         replaceSvgContent(
             svgWithEntities(800),

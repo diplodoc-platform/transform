@@ -1,11 +1,10 @@
 import type {CompatibilityPolicy, DeprecationReporter} from './deprecation';
-import type {LogConsumer} from './log';
+import type {DiagnosticOptions} from './log-core';
 
 import {createDeprecationReporter} from './deprecation';
 
 /** Optional diagnostics for retained bundled engine calls. */
-export interface LegacyEngineDiagnostics {
-    log?: LogConsumer;
+export interface LegacyEngineDiagnostics extends DiagnosticOptions {
     compatibility?: CompatibilityPolicy;
     deprecations?: DeprecationReporter;
 }

@@ -33,7 +33,8 @@ test.each([standard, minimal])(
         expect(result.result.html).not.toContain('class="custom"');
         expect(result.result.html).toContain('{.custom}');
         expect(result.result.html).not.toMatch(/onerror|javascript:/);
-        expect(result.logs).toBe(log.get());
+        expect(result.logs).not.toBe(log.get());
+        expect(log.isEmpty()).toBe(true);
         expect(
             transform(source, {allowHTML: true, enableMarkdownAttrs: true}).result.html,
         ).toContain('class="custom"');

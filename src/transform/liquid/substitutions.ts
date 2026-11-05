@@ -1,7 +1,9 @@
+import type {LogConsumer} from '../log-core';
+
 import {bold} from 'chalk';
 
 import getObject from '../getObject';
-import {log} from '../log';
+import {log as defaultLog} from '../log';
 
 import ArgvService from './services/argv';
 import {evalExp} from './evaluation';
@@ -12,7 +14,12 @@ import {
     vars as varsRe,
 } from './lexical';
 
-const substitutions = (str: string, builtVars: Record<string, unknown>, path?: string) => {
+const substitutions = (
+    str: string,
+    builtVars: Record<string, unknown>,
+    path?: string,
+    log: LogConsumer = defaultLog,
+) => {
     const {keepNotVar} = ArgvService.getConfig();
 
     if (isSingleVariable(str)) {
@@ -23,10 +30,10 @@ const substitutions = (str: string, builtVars: Record<string, unknown>, path?: s
         }
 
         const trimVarPath = match[1].trim();
-        const value = substituteVariable(trimVarPath, builtVars);
+        const value = substituteVariable(trimVarPath, builtVars, log);
 
         if (value === undefined) {
-            logNotFoundVariable(trimVarPath, path);
+            logNotFoundVariable(trimVarPath, path, log);
 
             return str;
         }
@@ -45,10 +52,10 @@ const substitutions = (str: string, builtVars: Record<string, unknown>, path?: s
             return groupVar;
         }
 
-        const value = substituteVariable(trimVarPath, builtVars);
+        const value = substituteVariable(trimVarPath, builtVars, log);
 
         if (value === undefined) {
-            logNotFoundVariable(trimVarPath, path);
+            logNotFoundVariable(trimVarPath, path, log);
 
             return match;
         }
@@ -57,16 +64,16 @@ const substitutions = (str: string, builtVars: Record<string, unknown>, path?: s
     });
 };
 
-function logNotFoundVariable(varPath: string, path?: string) {
+function logNotFoundVariable(varPath: string, path: string | undefined, log: LogConsumer) {
     log.warn(`Variable ${bold(varPath)} not found${path ? ` in ${bold(path)}` : ''}`);
 }
 
-function substituteVariable(varPath: string, builtVars: Record<string, unknown>) {
+function substituteVariable(varPath: string, builtVars: Record<string, unknown>, log: LogConsumer) {
     let value;
     if (isVariable(varPath)) {
         value = getObject(varPath, builtVars);
     } else {
-        value = evalExp(varPath, builtVars);
+        value = evalExp(varPath, builtVars, false, log);
     }
 
     return value;

@@ -145,6 +145,38 @@ Transform использует markdown-it 15. Если приложение п�
 регистрации, метаданные и выход. Адаптер, совместимый с отдельной версией 13,
 не гарантирует совместимость всех плагинов и безопасность старой установки.
 
+## Диагностика документа и сборки
+
+`Output.logs` теперь содержит только диагностику текущего документа и возвращает
+отдельный снимок массивов. Следующие вызовы, повторное использование parser и
+очистка collector не меняют предыдущие результаты. Include и дочерние фрагменты
+пишут в collector своего документа. `parser.logs` показывает последний документ,
+а `document.logs` — диагностику конкретного handle, включая его позднюю компиляцию.
+
+Для истории всей сборки передайте явный collector:
+
+```ts
+import transform from '@diplodoc/transform';
+import {createDiagnosticCollector} from '@diplodoc/transform/log';
+
+const diagnostics = createDiagnosticCollector();
+const page = transform(source, {path, diagnostics, log: applicationLogger});
+const documentLogs = page.logs;
+const buildLogs = diagnostics.get();
+// Process the build snapshot before releasing its retained diagnostics.
+diagnostics.clear();
+```
+
+Общий collector дополнительно накапливает сообщения; `page.logs` остаётся
+снимком одного документа. `get()` возвращает копии, `add()` сохраняет порядок и
+переданные дубликаты. Прежний экспорт `log` сохраняет изменяемые `get/add/clear`,
+но получает только явные записи, forwarding либо `diagnostics: log`.
+`log.get()` больше не собирает обычные вызовы автоматически. Setup плагинов
+выполняется один раз и относится к первому документу parser. Для самостоятельных
+Liquid/lint helpers без logs в результате передавайте `diagnostics` и/или
+внешний `log`. Полный контракт:
+[время жизни диагностики](../specs/transform-5/diagnostic-lifetime.md).
+
 ## Настройки и набор плагинов
 
 Плоские настройки и прежний массив callback `plugins` сохраняются. Собственный
