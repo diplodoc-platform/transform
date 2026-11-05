@@ -1,5 +1,5 @@
 import {mkdirSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
-import {dirname, relative, resolve} from 'node:path';
+import {basename, dirname, relative, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import ts from 'typescript';
 
@@ -9,11 +9,11 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const packagePath = resolve(root, 'package.json');
 const manifest = JSON.parse(readFileSync(packagePath, 'utf8'));
 const modules = new Map(publicModules.map((entry) => [entry.source, entry]));
-manifest.main = './public/index.cjs';
-manifest.module = './public/index.mjs';
-manifest.types = './public/index.d.cts';
+manifest.main = './api/index.cjs';
+manifest.module = './api/index.mjs';
+manifest.types = './api/index.d.cts';
 manifest.exports = packageExports();
-manifest.files = ['public', 'dist', 'lib', 'src'];
+manifest.files = ['api', 'dist', 'lib', 'src'];
 const serialized = `${JSON.stringify(manifest, null, 2)}\n`;
 if (process.argv.includes('--write-manifest')) {
     writeFileSync(packagePath, serialized);
@@ -26,7 +26,19 @@ if (readFileSync(packagePath, 'utf8') !== serialized) {
 }
 
 // Rebuilding from the finite inventory must also remove obsolete facades.
-rmSync(resolve(root, 'public'), {recursive: true, force: true});
+rmSync(resolve(root, 'api'), {recursive: true, force: true});
+
+// Native ESM imports of historical CommonJS paths received the whole CJS value
+// as their default. Stable entry points retain their explicit ESM default API.
+function writeLegacyFacade(output) {
+    const name = basename(output);
+    const named = `export * from './${name}.mjs';\nexport default implementation;\n`;
+    writeFileSync(`${output}.legacy.mjs`, `import implementation from './${name}.cjs';\n${named}`);
+    writeFileSync(
+        `${output}.legacy.d.mts`,
+        `import implementation = require('./${name}.cjs');\n${named}`,
+    );
+}
 
 // Derive every type and value export from compiler-emitted declarations. No API
 // signatures are copied into the facades, so overloads and namespace types survive.
@@ -55,7 +67,7 @@ for (const {source, legacyDefault} of modules.values()) {
     if (legacyDefault && !hasDefault) {
         throw new Error(`Callable adapter requires a default export: ${source}`);
     }
-    const output = resolve(root, `public/${source}`);
+    const output = resolve(root, `api/${source}`);
     const implementation = relative(dirname(output), resolve(root, `lib/${source}.js`)).replaceAll(
         '\\',
         '/',
@@ -93,14 +105,15 @@ for (const {source, legacyDefault} of modules.values()) {
                 ? `import implementation from ${JSON.stringify(specifier)};\nexport = implementation;\n`
                 : cjsTypes),
     );
+    writeLegacyFacade(output);
 }
 
 // A bare directory alias forwards to its canonical index facade. Both formats
 // retain the canonical module's shape and state, including callable CJS values.
 for (const {source, legacyDefault} of modules.values()) {
     if (!source.endsWith('/index')) continue;
-    const alias = resolve(root, `public/${source.slice(0, -6)}`);
-    const canonical = relative(dirname(alias), resolve(root, `public/${source}`)).replaceAll(
+    const alias = resolve(root, `api/${source.slice(0, -6)}`);
+    const canonical = relative(dirname(alias), resolve(root, `api/${source}`)).replaceAll(
         '\\',
         '/',
     );
@@ -122,6 +135,7 @@ for (const {source, legacyDefault} of modules.values()) {
             : `export * from '${specifier}.cjs';\n` +
                   (hasDefault ? `export {default} from '${specifier}.cjs';\n` : ''),
     );
+    writeLegacyFacade(alias);
 }
 
 // Legacy type-only paths have separate declarations so the stable /types facade
@@ -136,5 +150,5 @@ const legacyTypes = checker
             `/** @deprecated Import from @diplodoc/transform/types. Removal: 6.0.0. */\nexport type {${name}} from '../lib/typings.js';\n`,
     )
     .join('');
-writeFileSync(resolve(root, 'public/legacy-typings.d.mts'), legacyTypes);
-writeFileSync(resolve(root, 'public/legacy-typings.d.cts'), legacyTypes);
+writeFileSync(resolve(root, 'api/legacy-typings.d.mts'), legacyTypes);
+writeFileSync(resolve(root, 'api/legacy-typings.d.cts'), legacyTypes);
