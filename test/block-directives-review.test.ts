@@ -10,6 +10,109 @@ const cut = (body = 'Body') => `{% cut "Title" %}\n\n${body}\n\n{% endcut %}`;
 const note = (body = 'Body') => `{% note info %}\n\n${body}\n\n{% endnote %}`;
 
 describe('block directive review regressions', () => {
+    it('bounds scope predicate work for adjacent colon Notes', () => {
+        const measure = (size: number) => {
+            let visits = 0;
+            const some = Array.prototype.some;
+            const find = Array.prototype.find;
+            const count = (value: unknown) => {
+                if (
+                    value &&
+                    typeof value === 'object' &&
+                    'protected' in value &&
+                    'start' in value &&
+                    'end' in value &&
+                    'name' in value
+                )
+                    visits++;
+            };
+            const someSpy = vi.spyOn(Array.prototype, 'some').mockImplementation(function (
+                this: unknown[],
+                callback,
+                receiver,
+            ) {
+                return some.call(this, (value, index, array) => {
+                    count(value);
+                    return callback.call(receiver, value, index, array);
+                });
+            });
+            const findSpy = vi.spyOn(Array.prototype, 'find').mockImplementation(function (
+                this: unknown[],
+                callback,
+                receiver,
+            ) {
+                return find.call(this, (value, index, array) => {
+                    count(value);
+                    return callback.call(receiver, value, index, array);
+                });
+            });
+            try {
+                const prefix = Array.from(
+                    {length: size},
+                    () => ':::note {type=info}\n\nExisting\n\n:::',
+                ).join('\n\n');
+                const result = migrateBlockDirectives(prefix + '\n\n' + note());
+                expect(result.diagnostics).toEqual([]);
+                expect(result.edits).toHaveLength(2);
+                return visits;
+            } finally {
+                someSpy.mockRestore();
+                findSpy.mockRestore();
+            }
+        };
+        const small = measure(32),
+            large = measure(64);
+        expect(large).toBeLessThanOrEqual(Math.max(128, small * 2.5));
+    });
+    it('migrates a sibling touching the end of a native Note scope', () => {
+        const protectedText = ':::note {type=info}\n\nProtected\n\n:::\n';
+        const result = migrateBlockDirectives(protectedText + note());
+        expect(result.output.startsWith(protectedText)).toBe(true);
+        expect(result.edits).toHaveLength(2);
+        expect(result.diagnostics).toEqual([]);
+    });
+    it('migrates a legacy owner enclosing a complete protected native scope', () => {
+        const body = ':::visibility\n\nProtected\n\n:::';
+        const result = migrateBlockDirectives(note(body));
+        expect(result.output).toBe(`:::note {type=info}\n\n${body}\n\n:::`);
+        expect(result.edits).toHaveLength(2);
+        expect(result.diagnostics).toEqual([]);
+    });
+    it('refuses a legacy owner crossing a protected native scope boundary', () => {
+        const source = ':::visibility\n\n{% note info %}\n\nBody\n\n:::\n\n{% endnote %}';
+        const result = migrateBlockDirectives(source);
+        expect(result.output).toBe(source);
+        expect(result.edits).toEqual([]);
+        expect(result.diagnostics).toContainEqual(
+            expect.objectContaining({reason: 'unsupported-or-protected-container'}),
+        );
+    });
+    it.each([false, true])(
+        'retains only groups preceding every unproved marker (leading=%s)',
+        (leading) => {
+            const before = note('Before');
+            const middle = note('Middle');
+            const after = note('After');
+            const source =
+                (leading ? ':::leading\n\n' : '') +
+                `${before}\n\n:::unknown\n\n${middle}\n\n:::other\n\n${after}\n\n:::last`;
+            const result = migrateBlockDirectives(source);
+            expect(result.edits).toHaveLength(leading ? 0 : 2);
+            expect(result.output).toBe(
+                leading
+                    ? source
+                    : source
+                          .replace('{% note info %}', ':::note {type=info}')
+                          .replace('{% endnote %}', ':::'),
+            );
+            expect(result.diagnostics.map((item) => item.reason)).toEqual(
+                Array(leading ? 4 : 3).fill('unproved-colon-scope'),
+            );
+            expect(result.diagnostics.map((item) => item.offset)).toEqual(
+                [...source.matchAll(/^:::.*$/gm)].map((match) => match.index),
+            );
+        },
+    );
     it.each(['# Heading\n\n', 'Intro\n\n', '\uFEFF😀\r\n\r\n'])(
         'migrates Cut after %j',
         (prefix) => {

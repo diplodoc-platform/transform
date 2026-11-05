@@ -60,6 +60,70 @@ interface Scope {
     end: number;
     protected: boolean;
 }
+// Exact lookups keep the first scope, matching the diagnostic observer's former find().
+function scopeKeys(scopes: readonly Scope[]) {
+    const first = new Map<string, Map<number, Scope>>();
+    const starts = new Set<number>();
+    const notes = new Set<number>();
+    for (const scope of scopes) {
+        let named = first.get(scope.name);
+        if (!named) first.set(scope.name, (named = new Map()));
+        if (!named.has(scope.start)) named.set(scope.start, scope);
+        starts.add(scope.start);
+        if (scope.name === 'note') notes.add(scope.start);
+    }
+    return {first, starts, notes};
+}
+
+// Static range extrema over sorted endpoints: O(S log S) construction, O(log S) queries.
+// Separate endpoint orderings preserve strict crossing and inclusive containment boundaries.
+function scopeRanges(ranges: readonly {start: number; end: number}[]) {
+    const index = (key: 'start' | 'end', value: 'start' | 'end', min: boolean) => {
+        const sorted = [...ranges].sort((a, b) => a[key] - b[key]);
+        const size = sorted.length;
+        const empty = min ? Infinity : -Infinity;
+        const combine = min ? Math.min : Math.max;
+        const tree = Array<number>(size * 2).fill(empty);
+        for (let i = 0; i < size; i++) tree[size + i] = sorted[i][value];
+        for (let i = size - 1; i > 0; i--) tree[i] = combine(tree[i * 2], tree[i * 2 + 1]);
+        const bound = (point: number, inclusive: boolean) => {
+            let low = 0,
+                high = size;
+            while (low < high) {
+                const middle = Math.floor((low + high) / 2);
+                if (sorted[middle][key] < point || (inclusive && sorted[middle][key] === point))
+                    low = middle + 1;
+                else high = middle;
+            }
+            return low;
+        };
+        return (from: number, through: number, includeFrom: boolean, includeThrough: boolean) => {
+            let left = bound(from, !includeFrom) + size;
+            let right = bound(through, includeThrough) + size;
+            let result = empty;
+            while (left < right) {
+                if (left % 2) result = combine(result, tree[left++]);
+                if (right % 2) result = combine(result, tree[--right]);
+                left = Math.floor(left / 2);
+                right = Math.floor(right / 2);
+            }
+            return result;
+        };
+    };
+    const maxEnd = index('start', 'end', false);
+    const minStart = index('end', 'start', true);
+    return {
+        contains: (start: number, end: number) => maxEnd(-Infinity, start, true, true) >= end,
+        overlaps: (start: number, end: number) => maxEnd(-Infinity, end, true, false) > start,
+        crosses: (a: number, b: number) => {
+            const start = Math.min(a, b),
+                end = Math.max(a, b);
+            return (
+                maxEnd(start, end, true, false) > end || minStart(start, end, false, true) < start
+            );
+        },
+    };
+}
 interface Pair {
     open: MappedEdge;
     close: MappedEdge;
@@ -208,13 +272,13 @@ function validateCutMap(frame: OwnerFrame | undefined, token: Token): void {
 function validateNoteMap(
     frame: OwnerFrame | undefined,
     token: Token,
-    scopes: readonly Scope[],
+    notes: ReadonlySet<number>,
 ): void {
     if (!frame?.open.map || !frame.content?.map || !token.map)
         throw new Error('Unmapped Note wrapper');
     const start = frame.open.map[0],
         end = token.map[0];
-    const colon = scopes.some((scope) => scope.name === 'note' && scope.start === start);
+    const colon = notes.has(start);
     if (
         !equalMap(frame.open.map, start, end + 1) ||
         !equalMap(frame.content.map, colon ? start + 1 : start + 2, colon ? end : end - 1)
@@ -222,7 +286,7 @@ function validateNoteMap(
         throw new Error('Unexpected Note wrapper map');
 }
 
-function validateOwnerMaps(tokens: readonly Token[], scopes: readonly Scope[]): void {
+function validateOwnerMaps(tokens: readonly Token[], noteStarts: ReadonlySet<number>): void {
     const cuts: OwnerFrame[] = [],
         notes: OwnerFrame[] = [];
     for (const token of tokens) {
@@ -233,7 +297,7 @@ function validateOwnerMaps(tokens: readonly Token[], scopes: readonly Scope[]): 
         if (token.type === 'yfm_note_open') notes.push({open: token});
         if (token.type === 'yfm_note_content_open' && notes.length)
             notes[notes.length - 1].content = token;
-        if (token.type === 'yfm_note_close') validateNoteMap(notes.pop(), token, scopes);
+        if (token.type === 'yfm_note_close') validateNoteMap(notes.pop(), token, noteStarts);
     }
     if (cuts.length || notes.length) throw new Error('Unclosed semantic wrapper');
 }
@@ -307,7 +371,7 @@ function projectToken(
 function signature(
     source: string,
     generalAttrs: boolean,
-    scopes: readonly Scope[],
+    noteStarts: ReadonlySet<number>,
     noteBodyOffset: number,
     work = () => {},
     observe?: (name: string, line: number) => void,
@@ -368,7 +432,7 @@ function signature(
     const env = {};
     work();
     const tokens = md.parse(shield(normalize(source).input), env);
-    validateOwnerMaps(tokens, scopes);
+    validateOwnerMaps(tokens, noteStarts);
     const structural = new Set<string>([
         TokenType.CutOpen,
         TokenType.CutClose,
@@ -385,9 +449,7 @@ function signature(
         if (token.type === TokenType.CutOpen) cutStack.push(token);
         if (token.type === 'yfm_note_open')
             noteStack.push({
-                colon: scopes.some(
-                    (scope) => scope.name === 'note' && scope.start === token.map?.[0],
-                ),
+                colon: Boolean(token.map && noteStarts.has(token.map[0])),
                 content: false,
             });
         if (token.type === 'yfm_note_content_close')
@@ -491,6 +553,7 @@ export function migrateBlockDirectives(
     }
     try {
         const {tokens, scopes} = analyze(input);
+        const keys = scopeKeys(scopes);
         // Each full-input parser call consumes one unit. Setup and final proof are constant.
         let remainingWork = 32;
         const exhausted = new Error('Equivalence work budget exhausted');
@@ -511,7 +574,7 @@ export function migrateBlockDirectives(
             let parsed: Token[];
             try {
                 parsed = probe.parse(':::note {type=info}\n\nProbe\n\n:::', {});
-                validateOwnerMaps(parsed, [{name: 'note', start: 0, end: 5, protected: false}]);
+                validateOwnerMaps(parsed, new Set([0]));
             } catch {
                 return 0;
             }
@@ -544,28 +607,30 @@ export function migrateBlockDirectives(
             return 0;
         });
         const baseline = [
-            signature(source, false, scopes, offsets[0], undefined, (name, line) => {
-                const scope = scopes.find((item) => item.name === name && item.start === line - 1);
+            signature(source, false, keys.notes, offsets[0], undefined, (name, line) => {
+                const scope = keys.first.get(name)?.get(line - 1);
                 if (scope) scope.protected = true;
             }),
-            signature(source, true, scopes, offsets[1]),
+            signature(source, true, keys.notes, offsets[1]),
         ];
+        const ranges = scopeRanges(scopes);
+        const protectedScopes = scopes.filter((scope) => scope.protected);
+        const protectedLines = scopeRanges(protectedScopes);
+        const protectedOffsets = scopeRanges(
+            protectedScopes.map((scope) => ({start: atLine(scope.start), end: atLine(scope.end)})),
+        );
         const cache = new Map<string, boolean>([[source, true]]);
         const equivalent = (candidate: string, final = false): boolean | undefined => {
             if (!final && cache.has(candidate)) return cache.get(candidate);
             try {
                 const count = final ? undefined : work;
-                const candidateScopes = analyze(shield(normalize(candidate).input), count).scopes;
+                const candidateNotes = scopeKeys(
+                    analyze(shield(normalize(candidate).input), count).scopes,
+                ).notes;
                 const result = baseline.every(
                     (value, index) =>
                         value ===
-                        signature(
-                            candidate,
-                            Boolean(index),
-                            candidateScopes,
-                            offsets[index],
-                            count,
-                        ),
+                        signature(candidate, Boolean(index), candidateNotes, offsets[index], count),
                 );
                 if (!final) cache.set(candidate, result);
                 return result;
@@ -634,20 +699,14 @@ export function migrateBlockDirectives(
             for (const pair of pairs) {
                 const start = pair.open.map[0],
                     end = pair.close.map[1];
-                if (
-                    scopes.some(
-                        (scope) =>
-                            (scope.start < start && start < scope.end) !==
-                            (scope.start < end - 1 && end - 1 < scope.end),
-                    )
-                )
-                    pair.bad = true;
+                if (ranges.crosses(start, end - 1)) pair.bad = true;
                 if (pair.open.kind !== 'open' || !opening(pair.open)) pair.bad = true;
                 if (pair.bad) badRanges.push({start, end});
             }
             return {pairs, badRanges};
         };
         const {pairs, badRanges} = pairEdges();
+        const badScopes = scopeRanges(badRanges);
         const collectGroups = (): Group[] => {
             const groups: Group[] = [];
             for (const pair of pairs) {
@@ -656,10 +715,8 @@ export function migrateBlockDirectives(
                 if (
                     pair.bad ||
                     pair.open.kind !== 'open' ||
-                    scopes.some(
-                        (scope) => scope.protected && start >= scope.start && end <= scope.end,
-                    ) ||
-                    badRanges.some((range) => start >= range.start && end <= range.end)
+                    protectedLines.contains(start, end) ||
+                    badScopes.contains(start, end)
                 ) {
                     diagnostic('unsupported-or-protected-container', atLine(start));
                     continue;
@@ -688,14 +745,7 @@ export function migrateBlockDirectives(
                 }
                 if (
                     located.length !== 2 ||
-                    located.some((edit) =>
-                        scopes.some(
-                            (scope) =>
-                                scope.protected &&
-                                edit.start < atLine(scope.end) &&
-                                edit.end > atLine(scope.start),
-                        ),
-                    )
+                    located.some((edit) => protectedOffsets.overlaps(edit.start, edit.end))
                 ) {
                     diagnostic('ambiguous-or-protected-range', atLine(start));
                     continue;
@@ -704,22 +754,23 @@ export function migrateBlockDirectives(
             }
             return groups;
         };
-        const groups = collectGroups();
+        let groups = collectGroups();
         for (const range of badRanges)
             diagnostic('unclosed-or-crossed-container', atLine(range.start));
+        let unprovedStart = Infinity;
         for (const token of tokens) {
             if (
                 token.type !== 'inline' ||
                 !token.map ||
                 !/^:{3,}\s*[A-Za-z]/.test(token.content) ||
-                scopes.some((scope) => scope.start === token.map?.[0])
+                keys.starts.has(token.map[0])
             )
                 continue;
             const offset = atLine(token.map[0]);
-            for (let i = groups.length - 1; i >= 0; i--)
-                if (groups[i].edits[0].start >= offset) groups.splice(i, 1);
+            unprovedStart = Math.min(unprovedStart, offset);
             diagnostic('unproved-colon-scope', offset);
         }
+        groups = groups.filter((group) => group.edits[0].start < unprovedStart);
         const selectEdits = (): BlockDirectivesEdit[] => {
             groups.sort((a, b) => a.open.map[0] - b.open.map[0] || b.close.map[1] - a.close.map[1]);
             // Nested groups stay atomic: a refused parent never leaves rewritten descendants.
