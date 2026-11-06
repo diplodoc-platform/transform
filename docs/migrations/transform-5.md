@@ -77,6 +77,25 @@ The `markdown-it-deflist` upgrade from 2.1 to 4 can add `<p>` wrappers inside
 a blank line separates the term from its definition. Review custom CSS selectors
 such as `dd > p`, paragraph margins, and HTML snapshots.
 
+For a definition list, align the term and its `:` or `~` marker with the surrounding
+text. Transform 5 allows up to three extra spaces before the marker. After a blank
+line, four or more start an indented code block. To keep the definition and its
+inline formatting in both versions, put the marker directly below the term. Leave
+intentional code blocks indented.
+
+```markdown
+**Open the curtains**
+: Set a _schedule_.
+
+**Adjust the opening**
+: Choose a percentage.
+```
+
+A line containing only `:` or `~` after a term now creates an empty definition. Even
+a line containing only a non-breaking space can serve as an empty term. To show the
+punctuation as text, write `\:` or `\~`.
+[Definition-list parser 4.0 changes](https://github.com/markdown-it/markdown-it-deflist/blob/4.0.0/CHANGELOG.md)
+
 ## Coexisting with Transform 4
 
 Keep a real Transform 4 package for hosts whose peer contract still requires it.
