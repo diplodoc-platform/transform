@@ -30,11 +30,39 @@ options can overlap: when block-code protection is explicitly disabled, the new
 inline-code default may still recognize matching backticks across lines. Set both
 options false when you need the previous unprotected-code behavior.
 
-The existing inline scanner is retained, including multiline code spans. A
-physical newline alone does not end a recognized code span. Delimiter-looking
-text inside it can be literal code, so an unmatched backtick can also consume
-apparent later row delimiters. Complex mixed backtick runs retain their existing
-interpretation. This migration changes the omitted default, not that grammar.
+A matching pair of backticks can span several lines. Inside that span, pipes and
+row delimiters are literal code. A backtick with no matching closer stays
+literal. Complex mixed backtick runs retain their existing interpretation.
+
+### If the next row disappears
+
+Check the preceding cell for a stray backtick. In this example, the apostrophe
+in `CDN's` was typed as a backtick. It pairs with the opening backtick of the
+command on the next row, so the separator between the two becomes code.
+
+```markdown
+#|
+|| Option | On the CDN`s end. ||
+|| Example | Run `--subnets=id1'. ||
+|| Pattern | Use `x|y`. ||
+|#
+```
+
+Use an apostrophe in prose and matching backticks around the command. If the
+prose should display a literal backtick, escape it as `` \` ``.
+
+```markdown
+#|
+|| Option | On the CDN's end. ||
+|| Example | Run `--subnets=id1`. ||
+|| Pattern | Use `x|y`. ||
+|#
+```
+
+With the Transform 5 defaults, the corrected table has three rows and two cells
+per row. Use
+`table_ignoreSplittersInInlineCode: false` only when you need the old default for
+the whole table parser. It also splits the pipe in the valid `x|y` example.
 
 ## Cell alignment
 
