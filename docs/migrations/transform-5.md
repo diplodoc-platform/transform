@@ -74,10 +74,9 @@ the Markdown source rather than stripping arbitrary whitespace from output.
 
 The `markdown-it-deflist` upgrade from 2.1 to 4 can add `<p>` wrappers inside
 `<dd>`, for example when a definition contains prose followed by a list or when
-a blank line separates the term from its definition. The parser now decides this
-for each term separately, so a short definition after a multi-paragraph one can
-lose its `<p>` wrapper. Review custom CSS selectors such as `dd > p`, paragraph
-margins, and HTML snapshots.
+a blank line separates the term from its definition. A short definition following
+a multi-paragraph definition can instead lose its `<p>` wrapper. Review custom
+CSS selectors such as `dd > p`, paragraph margins, and HTML snapshots.
 
 For a definition list, align the term and its `:` or `~` marker with the surrounding
 text. Transform 5 allows up to three extra spaces before the marker. After a blank
