@@ -280,13 +280,18 @@ export function createDocumentLogger(
 /**
  * A parser-owned facade; selection never escapes this parser's closure.
  * @param current - Select the active/latest sink owned by that parser.
+ * @param emitDeprecations - Whether to forward deprecations to the selected sink.
  * @returns A stable logger for callbacks installed once.
  */
-export function createLoggerFacade(current: () => Logger): Logger {
+export function createLoggerFacade(current: () => Logger, emitDeprecations = true): Logger {
     const logger: Logger = {
         info: (message) => current().info(message),
         warn: (message) => current().warn(message),
-        deprecation: (message) => forwardDeprecation(current(), message),
+        deprecation(message) {
+            if (emitDeprecations) {
+                forwardDeprecation(current(), message);
+            }
+        },
         error: (message) => current().error(message),
         get: () => current().get(),
         add: (messages) => current().add(messages),

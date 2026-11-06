@@ -95,5 +95,6 @@ Flat Node and browser options, the typed core builder and standalone diagnostic
 entry points accept `deprecationWarnings: false`. Skip deprecation formatting,
 deduplication and retention in this mode. Keep parser compatibility choices,
 ordinary warnings, actual errors and HTML unchanged. Explicit custom reporters
-do not override the global opt-out. The adapted CLI can therefore display
+and first-document loggers supplied to the low-level parser retain their identity
+and policy but do not override the global opt-out. The adapted CLI can therefore display
 deprecations without including them in its strict warning count.

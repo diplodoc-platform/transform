@@ -7,6 +7,7 @@ import {createDeprecationReporter} from '../src/transform/deprecation';
 import {extractFrontMatter} from '../src/transform/frontmatter';
 import liquidDocument from '../src/transform/liquid';
 import {createDiagnosticCollector, getLogger} from '../src/transform/log';
+import initMarkdownIt from '../src/transform/md';
 import {definePlugin, defineTransformOptions} from '../src/transform/plugin-configuration';
 import imsize from '../src/transform/plugins/imsize';
 import table from '../src/transform/plugins/table';
@@ -119,3 +120,55 @@ test('only successful duplicate-key recovery is a deprecation', () => {
     expect(() => extractFrontMatter('---\nvalue: [\n---\nbody', 'broken.md', log, false)).toThrow();
     expect(log.deprecation).toHaveBeenCalledOnce();
 });
+
+test.each([false, true])(
+    'low-level parser honors deprecationWarnings=%s with caller-owned sinks',
+    (enabled) => {
+        const log = sink();
+        const logger = getLogger(log);
+        const first = {
+            warn: vi.fn(),
+            reset: vi.fn(),
+            compatibility: vi.fn(() => 'legacy' as const),
+        };
+        const modes: string[] = [];
+        const extension = definePlugin({
+            id: 'first-document-sink',
+            setup(md, _config: undefined, context) {
+                md.core.ruler.push('probe-sinks', () => {
+                    modes.push(context.deprecations.compatibility(descriptor.code));
+                    context.deprecations.reset();
+                    context.deprecations.warn(descriptor, usage);
+                    context.log.deprecation?.('raw deprecation');
+                    context.log.warn('real warning');
+                    context.log.error('real error');
+                });
+            },
+        })(undefined);
+        const parser = initMarkdownIt(
+            {deprecationWarnings: enabled, log, pluginConfiguration: {plugins: [extension]}},
+            first,
+            logger,
+        );
+        const firstDocument = parser.parseDocument('body');
+        expect(firstDocument.logs).toBe(logger.get());
+        expect(parser.compileDocument(firstDocument)).toBe('<p>body</p>\n');
+        // A copied token array uses the active document's reporter.
+        expect(parser.compile([...firstDocument.tokens])).toBe('<p>body</p>\n');
+        const second = parser.parseDocument('body');
+        expect(second.logs).not.toBe(firstDocument.logs);
+        expect(parser.compileDocument(second)).toBe('<p>body</p>\n');
+        expect(modes).toEqual(['legacy', 'current']);
+        expect(first.reset).toHaveBeenCalledOnce();
+        expect(first.warn.mock.calls.map(([item]) => item.code)).toEqual(
+            enabled ? [descriptor.code, 'UNASSOCIATED_DOCUMENT_TOKENS'] : [],
+        );
+        expect(log.deprecation.mock.calls.map(([text]) => text)).toEqual(
+            enabled
+                ? ['raw deprecation', expect.stringContaining(descriptor.code), 'raw deprecation']
+                : [],
+        );
+        expect(log.warn.mock.calls).toEqual([['real warning'], ['real warning']]);
+        expect(log.error.mock.calls).toEqual([['real error'], ['real error']]);
+    },
+);
