@@ -74,8 +74,28 @@ the Markdown source rather than stripping arbitrary whitespace from output.
 
 The `markdown-it-deflist` upgrade from 2.1 to 4 can add `<p>` wrappers inside
 `<dd>`, for example when a definition contains prose followed by a list or when
-a blank line separates the term from its definition. Review custom CSS selectors
-such as `dd > p`, paragraph margins, and HTML snapshots.
+a blank line separates the term from its definition. A short definition following
+a multi-paragraph definition can instead lose its `<p>` wrapper. Review custom
+CSS selectors such as `dd > p`, paragraph margins, and HTML snapshots.
+
+For a definition list, align the term and its `:` or `~` marker with the surrounding
+text. Transform 5 allows up to three extra spaces before the marker. After a blank
+line, four or more start an indented code block. To keep the definition and its
+inline formatting in both versions, put the marker directly below the term. Leave
+intentional code blocks indented.
+
+```markdown
+**Open the curtains**
+: Set a _schedule_.
+
+**Adjust the opening**
+: Choose a percentage.
+```
+
+A line containing only `:` or `~` after a term now creates an empty definition. Even
+a line containing only a non-breaking space can serve as an empty term. To show the
+punctuation as text, write `\:` or `\~`.
+[Definition-list parser 4.0 changes](https://github.com/markdown-it/markdown-it-deflist/blob/4.0.0/CHANGELOG.md)
 
 ## Coexisting with Transform 4
 
@@ -181,6 +201,10 @@ using block-code compatibility, review both splitter settings. Legacy cell align
 remains supported with an actual-use warning. Prefer `::{align="center"}` after
 the cell marker; [table migration](transform-5-tables.md) documents supported
 values and `migrateTableAlignment`.
+
+`TABLE_CELL_ALIGN_CLASS` points to the start of the cell in the Markdown passed
+to the parser. Liquid processing and expanded includes can shift the line number.
+In that case, search the source file and its includes for `.cell-align-*`.
 
 Legacy image dimensions such as `![Alt](image.png =300x200)` still render and
 warn on actual use. Prefer `![Alt](image.png){width=300 height=200}`. The pure
