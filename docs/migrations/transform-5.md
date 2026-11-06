@@ -38,6 +38,26 @@ metadata and output; do not assume every plugin's full parser types are compatib
 across versions. Native 13 compatibility of a given adapter does not make an
 unpatched 13 installation secure.
 
+### Custom emoji plugins
+
+If a preset fails with `md.utils.assign is not a function` while registering
+`markdown-it-emoji`, check which copy the preset imports. Versions 2.0.2 and
+3.0.0 fail on markdown-it 15 before parsing any text. In the package that
+registers the plugin, install `markdown-it-emoji@3.1.0` as a direct dependency.
+Use its named export for the preset you already use: `full` replaces the 2.x
+default import, and `bare` keeps a custom dictionary. For example:
+
+```js
+import {bare} from 'markdown-it-emoji';
+
+md.use(bare, {defs: {wave: '👋'}});
+```
+
+Keep the existing dictionary, options and plugin order. If another host still
+uses markdown-it 13, keep its dependency graph separate and render the same emoji
+sample on both hosts. Run the plugin owner's type check too: aligning the runtime
+can expose different markdown-it declarations in the two hosts.
+
 ## TypeScript module resolution
 
 Use an exports-aware resolver: legacy `moduleResolution: "node"` / `"node10"`
