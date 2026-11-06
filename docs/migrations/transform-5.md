@@ -38,6 +38,32 @@ metadata and output; do not assume every plugin's full parser types are compatib
 across versions. Native 13 compatibility of a given adapter does not make an
 unpatched 13 installation secure.
 
+## TypeScript module resolution
+
+Use an exports-aware resolver: legacy `moduleResolution: "node"` / `"node10"`
+is unsupported and can miss public subpaths (TS2307) or select non-callable legacy declarations
+(TS2349). This is a TypeScript setting, not Node.js 10 support; the runtime
+requirement remains Node.js 24+.
+
+For Node.js code, set both `"module": "NodeNext"` and
+`"moduleResolution": "NodeNext"`; `"Node16"` / `"Node16"` is also supported.
+Keep the existing module format: `.cts` is CommonJS, `.mts` is ESM, and `.ts`
+follows the nearest `package.json#type` (`"module"` means ESM, otherwise CommonJS).
+Do not change package `type` merely to fix lookup. For example, in ESM:
+
+```ts
+import sup from '@diplodoc/transform/plugins/sup';
+import type {ParserEnv} from '@diplodoc/transform/types';
+```
+
+For `.cts` compiled by `tsc`, use `import sup = require('@diplodoc/transform/plugins/sup')`;
+the type-only import is unchanged. When running `.cts` directly in Node.js, use
+ordinary `require()` instead: Node's type stripping does not support import assignments.
+Only for an application built by a bundler,
+use `"moduleResolution": "Bundler"` with `"module": "Preserve"`; unbundled Node/SSR
+targets need their own Node configuration. `skipLibCheck` does not fix missing
+subpaths or consumer callability errors. See the [public import map](../ADR/ADR-012-public-module-exports.md).
+
 ## Parser output changes
 
 The markdown-it 13 → 15 upgrade preserves authored Unicode spaces, including
