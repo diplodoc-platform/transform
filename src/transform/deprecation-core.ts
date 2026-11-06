@@ -1,4 +1,4 @@
-import type {LogConsumer} from './log-core';
+import type {DiagnosticOptions, LogConsumer} from './log-core';
 
 /** Stable identifiers belong to a feature's migration contract, not its message text. */
 export type DeprecationCode = string;
@@ -80,18 +80,23 @@ function formatWarning(descriptor: DeprecationDescriptor, usage: DeprecationUsag
  * Create an explicit document or build scope for deprecation diagnostics.
  *
  * @param options - Existing logger and feature-specific compatibility choices.
- * @param warnInScope - Host forwarding for a warning with scope-owned deduplication.
+ * @param warnInScope - Forward a formatted message through the selected host.
  * @returns A synchronous reporter whose deduplication state belongs only to this scope.
  */
 export function createDeprecationReporter(
-    options: {log?: LogConsumer; compatibility?: CompatibilityPolicy},
+    options: Pick<DiagnosticOptions, 'deprecationWarnings' | 'log'> & {
+        compatibility?: CompatibilityPolicy;
+    },
     warnInScope: (message: string, consumer?: LogConsumer) => void,
 ): DeprecationReporter {
-    const seen = new Set<string>();
+    const seen = options.deprecationWarnings === false ? undefined : new Set<string>();
     const compatibility = {...options.compatibility};
 
     return {
         warn(descriptor, usage) {
+            if (!seen) {
+                return;
+            }
             const message = formatWarning(descriptor, usage);
             const key = JSON.stringify([
                 descriptor.code,
@@ -110,7 +115,7 @@ export function createDeprecationReporter(
             seen.add(key);
         },
         reset() {
-            seen.clear();
+            seen?.clear();
         },
         compatibility(code) {
             return Object.prototype.hasOwnProperty.call(compatibility, code)

@@ -31,6 +31,7 @@ const coreKeys = new Set(
         generateID: true,
         log: true,
         diagnostics: true,
+        deprecationWarnings: true,
         compatibility: true,
         pluginConfiguration: true,
         sanitizeOptions: true,

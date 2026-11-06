@@ -11,6 +11,7 @@ export interface DiagnosticCollector {
     info(message: string): void;
     warn(message: string): void;
     error(message: string): void;
+    deprecation?(message: string): void;
     get(): DiagnosticLogs;
     add(logs: DiagnosticLogs): void;
     clear(): void;
@@ -20,6 +21,8 @@ export interface DiagnosticCollector {
 export interface DiagnosticOptions {
     log?: LogConsumer;
     diagnostics?: DiagnosticCollector;
+    /** Set false to suppress deprecation diagnostics for this invocation. */
+    deprecationWarnings?: boolean;
 }
 
 type DiagnosticLabels = {info: () => string; warn: () => string; error: () => string};
@@ -28,7 +31,21 @@ const scopedAdapters = new WeakMap<LogConsumer, (message: string) => void>();
 const managedConsumers = new WeakMap<LogConsumer, () => LogConsumer | undefined>();
 
 /** Minimal logging contract accepted from embedding applications. */
-export type LogConsumer = Pick<Logger, LogLevels.INFO | LogLevels.WARN | LogLevels.ERROR>;
+export type LogConsumer = Pick<DiagnosticCollector, 'info' | 'warn' | 'error' | 'deprecation'>;
+
+/**
+ * Forward a deprecation once, including to existing three-method loggers.
+ * @param consumer - Diagnostic sink to notify.
+ * @param message - Formatted warning text.
+ * @returns Nothing.
+ */
+export function forwardDeprecation(consumer: LogConsumer, message: string): void {
+    if (consumer.deprecation) {
+        consumer.deprecation(message);
+    } else {
+        consumer.warn(message);
+    }
+}
 
 /**
  * Create a collector with execution-host formatting and private adapter caches.
@@ -75,6 +92,7 @@ export function createDiagnosticHost(labels: DiagnosticLabels, snapshots = false
     const log = {
         [LogLevels.INFO]: createLogger(LogLevels.INFO),
         [LogLevels.WARN]: createLogger(LogLevels.WARN),
+        deprecation: createLogger(LogLevels.WARN),
         [LogLevels.ERROR]: createLogger(LogLevels.ERROR),
         LogLevels,
         get: () =>
@@ -161,6 +179,10 @@ export function createDiagnosticHost(labels: DiagnosticLabels, snapshots = false
                     consumer.warn(message);
                 }
             },
+            deprecation(message) {
+                log.deprecation(message);
+                forwardDeprecation(consumer, message);
+            },
             error(message) {
                 log.error(message);
                 consumer.error(message);
@@ -177,7 +199,8 @@ export function createDiagnosticHost(labels: DiagnosticLabels, snapshots = false
     return {log, getLogger, warnInScope};
 }
 
-export type Logger = ReturnType<typeof createDiagnosticHost>['log'];
+export type Logger = Omit<ReturnType<typeof createDiagnosticHost>['log'], 'deprecation'> &
+    Pick<LogConsumer, 'deprecation'>;
 
 /**
  * Whether a logger already belongs to an explicitly selected document.
@@ -225,6 +248,18 @@ export function createDocumentLogger(
         },
     };
     const logger = host.getLogger(consumer);
+    logger.deprecation = (message) => {
+        if (options.deprecationWarnings === false) {
+            return;
+        }
+        host.log.deprecation(message);
+        if (options.diagnostics) {
+            forwardDeprecation(options.diagnostics, message);
+        }
+        if (external && external !== options.diagnostics) {
+            forwardDeprecation(external, message);
+        }
+    };
     logger.add = (messages) => {
         host.log.add(messages);
         options.diagnostics?.add(messages);
@@ -245,12 +280,18 @@ export function createDocumentLogger(
 /**
  * A parser-owned facade; selection never escapes this parser's closure.
  * @param current - Select the active/latest sink owned by that parser.
+ * @param emitDeprecations - Whether to forward deprecations to the selected sink.
  * @returns A stable logger for callbacks installed once.
  */
-export function createLoggerFacade(current: () => Logger): Logger {
+export function createLoggerFacade(current: () => Logger, emitDeprecations = true): Logger {
     const logger: Logger = {
         info: (message) => current().info(message),
         warn: (message) => current().warn(message),
+        deprecation(message) {
+            if (emitDeprecations) {
+                forwardDeprecation(current(), message);
+            }
+        },
         error: (message) => current().error(message),
         get: () => current().get(),
         add: (messages) => current().add(messages),

@@ -5,6 +5,7 @@ import {
     createCollector,
     createDiagnosticHost,
     createDocumentLogger as createLogger,
+    forwardDeprecation,
     isDocumentLogger,
 } from '../log-core';
 import {createDeprecationReporter as createReporter} from '../deprecation-core';
@@ -15,7 +16,7 @@ const labels = {
     warn: () => 'WARN',
     error: () => 'ERR',
 };
-const {log, getLogger, warnInScope} = createDiagnosticHost(labels);
+const {log, getLogger} = createDiagnosticHost(labels);
 
 /**
  * Create an explicit browser project/build collector.
@@ -46,7 +47,8 @@ function getInvocationLogger(options: DiagnosticOptions) {
 export function createBrowserReporter(
     options: DiagnosticOptions & {compatibility?: CompatibilityPolicy} = {},
 ): DeprecationReporter {
-    return createReporter({...options, log: getInvocationLogger(options)}, warnInScope);
+    const logger = getInvocationLogger(options);
+    return createReporter(options, (message) => forwardDeprecation(logger, message));
 }
 
 export {log, getLogger};

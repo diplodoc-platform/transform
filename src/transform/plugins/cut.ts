@@ -12,6 +12,7 @@ type AdapterOptions = {
     output?: string;
     path?: string;
     deprecations?: DeprecationReporter;
+    deprecationWarnings?: boolean;
     directiveSyntax?: DirectiveSyntax;
     log?: {warn(message: string): void};
 };
@@ -20,7 +21,7 @@ type CutCollector = {collect(input: string, options: {destRoot: string}): void};
 const cutCallback = (md: MarkdownIt, options?: AdapterOptions) => {
     const invocation = unwrapBuiltin(options, cutCallback);
     const mode = directiveMode(invocation.options?.directiveSyntax, invocation.automatic);
-    if (!invocation.automatic) {
+    if (!invocation.automatic && invocation.options?.deprecationWarnings !== false) {
         const context = invocation.options;
         context?.deprecations?.warn(
             {

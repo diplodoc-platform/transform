@@ -8,6 +8,14 @@ function record(value: unknown): value is Record<string, unknown> {
     return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
 
+function logger(value: unknown, required: string[]): boolean {
+    return (
+        record(value) &&
+        (value.deprecation === undefined || typeof value.deprecation === 'function') &&
+        required.every((method) => typeof value[method] === 'function')
+    );
+}
+
 function stringMap(value: unknown): boolean {
     return record(value) && Object.values(value).every(strings);
 }
@@ -44,17 +52,9 @@ export function validCoreValue(key: string, value: unknown): boolean {
         case 'lang':
             return supportedLanguages.some((lang) => lang === value);
         case 'log':
-            return (
-                record(value) &&
-                ['info', 'warn', 'error'].every((method) => typeof value[method] === 'function')
-            );
+            return logger(value, ['info', 'warn', 'error']);
         case 'diagnostics':
-            return (
-                record(value) &&
-                ['info', 'warn', 'error', 'get', 'add', 'clear', 'isEmpty'].every(
-                    (method) => typeof value[method] === 'function',
-                )
-            );
+            return logger(value, ['info', 'warn', 'error', 'get', 'add', 'clear', 'isEmpty']);
         case 'compatibility':
             return (
                 record(value) &&
@@ -111,8 +111,9 @@ export function validSanitizeValue(key: string, value: unknown): boolean {
  * @returns Whether the value satisfies the existing builtin's declared contract.
  */
 export function validBuiltinValue(key: string, value: unknown): boolean {
-    if (key === 'directiveSyntax')
+    if (key === 'directiveSyntax') {
         return ['disabled', 'enabled', 'only'].some((mode) => mode === value);
+    }
     return validOtherBuiltinValue(key, value);
 }
 

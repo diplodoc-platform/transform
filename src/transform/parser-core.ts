@@ -90,13 +90,17 @@ export function createParser(
         if (!sink) throw new Error('Expected a parser-owned diagnostic sink');
         return sink;
     };
-    const logger = createLoggerFacade(currentLogger);
+    const emitDeprecations = options.deprecationWarnings !== false;
+    const logger = createLoggerFacade(currentLogger, emitDeprecations);
     const setupReporter = host.createReporter({...options, log: logger});
     let activeReporter: DeprecationReporter | undefined;
     let completedReporter: DeprecationReporter | undefined;
     const reporter: DeprecationReporter = {
-        warn: (descriptor, usage) =>
-            (activeReporter ?? completedReporter ?? setupReporter).warn(descriptor, usage),
+        warn(descriptor, usage) {
+            if (emitDeprecations) {
+                (activeReporter ?? completedReporter ?? setupReporter).warn(descriptor, usage);
+            }
+        },
         reset: () => (activeReporter ?? completedReporter ?? setupReporter).reset(),
         compatibility: (code) =>
             (activeReporter ?? completedReporter ?? setupReporter).compatibility(code),
@@ -207,7 +211,7 @@ export function createParser(
             const documentEnv = last ?? context.pending;
             const scope = reporters.get(documentEnv) ?? setupReporter;
             return run(documentEnv, scope, loggers.get(documentEnv) ?? currentLogger(), () => {
-                scope.warn(
+                reporter.warn(
                     {
                         code: 'UNASSOCIATED_DOCUMENT_TOKENS',
                         feature: 'Compiling tokens without their document context',

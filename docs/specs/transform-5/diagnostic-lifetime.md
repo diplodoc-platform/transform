@@ -81,3 +81,20 @@ setup diagnostics once; success/failure/reentry; tokens-only roots; all levels,
 runtime Liquid/frontmatter and sanitizer diagnostics; nested includes/fragments;
 external logger scoped re-emission; Node/browser parity; installed native CJS/ESM
 and strict declaration fixtures. Keep legacy mutable `log` behavior tests intact.
+
+## Deprecation warnings
+
+Deprecations remain enabled by default. Preserve their existing messages in the
+document's `logs.warn` and in explicit build collectors. When an external logger
+provides `deprecation(message)`, forward through that callback exactly once per
+reported occurrence. Fall back to `warn(message)` for existing loggers. Ordinary
+warnings always go to `warn`, including warnings emitted by third-party plugins.
+The category is selected by the emitter, independent of the message text.
+
+Flat Node and browser options, the typed core builder and standalone diagnostic
+entry points accept `deprecationWarnings: false`. Skip deprecation formatting,
+deduplication and retention in this mode. Keep parser compatibility choices,
+ordinary warnings, actual errors and HTML unchanged. Explicit custom reporters
+and first-document loggers supplied to the low-level parser retain their identity
+and policy but do not override the global opt-out. The adapted CLI can therefore display
+deprecations without including them in its strict warning count.

@@ -306,7 +306,7 @@ const index = (md: MarkdownIt, opts: Opts) => {
     }
 
     const plugin = (state: StateCore) => {
-        if (opts.inlineSvg !== undefined) {
+        if (opts.inlineSvg !== undefined && opts.deprecationWarnings !== false) {
             deprecations.warn(INLINE_SVG_DEPRECATION, {
                 option: 'inlineSvg',
                 ...(opts.path ? {location: {path: opts.path}} : {}),

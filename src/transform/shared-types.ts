@@ -104,6 +104,7 @@ export interface MarkdownItPluginOpts {
     log: Logger;
     /** Provided by Transform; optional for callers constructing plugin options themselves. */
     deprecations?: DeprecationReporter;
+    deprecationWarnings?: boolean;
     compatibility?: CompatibilityPolicy;
     lang: Lang;
     root: string;
