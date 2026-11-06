@@ -30,16 +30,15 @@ options can overlap: when block-code protection is explicitly disabled, the new
 inline-code default may still recognize matching backticks across lines. Set both
 options false when you need the previous unprotected-code behavior.
 
-The existing inline scanner is retained, including multiline code spans. A
-physical newline alone does not end a recognized code span. Delimiter-looking
-text inside it can be literal code, so an unmatched backtick can also consume
-apparent later row delimiters. Complex mixed backtick runs retain their existing
-interpretation. This migration changes the omitted default, not that grammar.
+A matching pair of backticks can span several lines. Inside that span, pipes and
+row delimiters are literal code. A backtick with no matching closer stays
+literal. Complex mixed backtick runs retain their existing interpretation.
 
 ### If the next row disappears
 
 Check the preceding cell for a stray backtick. In this example, the apostrophe
-in `CDN's` was typed as a backtick, and the command ends with an apostrophe.
+in `CDN's` was typed as a backtick. It pairs with the opening backtick of the
+command on the next row, so the separator between the two becomes code.
 
 ```markdown
 #|
