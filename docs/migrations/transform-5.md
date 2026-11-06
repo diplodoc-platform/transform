@@ -56,9 +56,11 @@ import sup from '@diplodoc/transform/plugins/sup';
 import type {ParserEnv} from '@diplodoc/transform/types';
 ```
 
-CommonJS `.cts` uses `import sup = require('@diplodoc/transform/plugins/sup')`;
-the type-only import is unchanged. Only for an application built by a bundler,
-use `"moduleResolution": "Bundler"` with `"module": "Preserve"`; native Node/SSR
+For `.cts` compiled by `tsc`, use `import sup = require('@diplodoc/transform/plugins/sup')`;
+the type-only import is unchanged. When running `.cts` directly in Node.js, use
+ordinary `require()` instead: Node's type stripping does not support import assignments.
+Only for an application built by a bundler,
+use `"moduleResolution": "Bundler"` with `"module": "Preserve"`; unbundled Node/SSR
 targets need their own Node configuration. `skipLibCheck` does not fix missing
 subpaths or consumer callability errors. See the [public import map](../ADR/ADR-012-public-module-exports.md).
 

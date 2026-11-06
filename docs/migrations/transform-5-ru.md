@@ -52,8 +52,10 @@ import sup from '@diplodoc/transform/plugins/sup';
 import type {ParserEnv} from '@diplodoc/transform/types';
 ```
 
-В CommonJS `.cts` используйте `import sup = require('@diplodoc/transform/plugins/sup')`;
-импорт только типа не меняется. Только если приложение собирается сборщиком,
+В `.cts`, компилируемом `tsc`, используйте `import sup = require('@diplodoc/transform/plugins/sup')`;
+импорт только типа не меняется. При прямом запуске `.cts` в Node.js используйте
+обычный `require()`: удаление типов в Node не поддерживает import-присваивания.
+Только если приложение собирается сборщиком,
 задайте `"moduleResolution": "Bundler"` с `"module": "Preserve"`; для прямого
 выполнения в Node/SSR нужна отдельная конфигурация Node. `skipLibCheck` не исправляет
 поиск публичных путей или ошибки вызова в коде потребителя.
