@@ -64,6 +64,7 @@ function changeSourceMap({
 type Args2 = {
     log: LogConsumer;
     deprecations?: DeprecationReporter;
+    deprecationWarnings?: boolean;
     forTag: Tag;
     vars: Record<string, unknown>;
     content: string;
@@ -77,6 +78,7 @@ type Args2 = {
 function inlineConditions({
     log,
     deprecations,
+    deprecationWarnings,
     forTag,
     vars,
     content,
@@ -119,7 +121,11 @@ function inlineConditions({
                 length,
             },
         };
-        res += applyLiquid(forTemplate, newVars, path, {log, deprecations}).trimEnd();
+        res += applyLiquid(forTemplate, newVars, path, {
+            log,
+            deprecations,
+            deprecationWarnings,
+        }).trimEnd();
     });
 
     const contentLinesTotal = res.split('\n').length - 1;
@@ -179,9 +185,10 @@ export default function cycles(
         sourceMap?: Record<number, number>;
         log?: LogConsumer;
         deprecations?: DeprecationReporter;
+        deprecationWarnings?: boolean;
     } = {},
 ) {
-    const {sourceMap, log = defaultLog, deprecations} = settings;
+    const {sourceMap, log = defaultLog, deprecations, deprecationWarnings} = settings;
 
     const R_LIQUID = /({%-?([\s\S]*?)-?%})/g;
     const FOR_SYNTAX = new RegExp(`(\\w+)\\s+in\\s+(${variable.source})`);
@@ -245,6 +252,7 @@ export default function cycles(
                     forTag,
                     log,
                     deprecations,
+                    deprecationWarnings,
                     vars,
                     content: input,
                     match,

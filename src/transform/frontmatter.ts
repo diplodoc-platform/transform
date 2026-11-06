@@ -5,6 +5,7 @@ import {dedent} from 'ts-dedent';
 import cloneDeepWith from 'lodash/cloneDeepWith';
 
 import {log as defaultLog} from './log';
+import {forwardDeprecation} from './log-core';
 
 export type FrontMatter = {
     [key: string]: unknown;
@@ -51,11 +52,17 @@ const duplicateKeysCompatibleLoad = (
     yaml: string,
     filePath: string | undefined,
     log: LogConsumer,
+    deprecationWarnings: boolean,
 ) => {
     try {
         return load(yaml);
     } catch (e) {
         if (e instanceof YAMLException) {
+            const result = load(yaml, {json: true});
+            if (!deprecationWarnings) {
+                return result;
+            }
+
             const duplicateKeysDeprecationWarning = dedent`
                 In ${filePath ?? '(unknown)'}: Encountered a YAML parsing exception when processing file metadata: ${e.reason}.
                 It's highly possible the input file contains duplicate mapping keys.
@@ -64,9 +71,9 @@ const duplicateKeysCompatibleLoad = (
                 without further notice, so the build WILL fail when supplied with YAML-incompatible meta.
             `;
 
-            log.warn(duplicateKeysDeprecationWarning);
+            forwardDeprecation(log, duplicateKeysDeprecationWarning);
 
-            return load(yaml, {json: true});
+            return result;
         }
 
         throw e;
@@ -77,6 +84,7 @@ export const extractFrontMatter = (
     fileContent: string,
     filePath?: string,
     logger: LogConsumer = defaultLog,
+    deprecationWarnings = true,
 ): [FrontMatter, string] => {
     const matches = matchMetadata(fileContent);
 
@@ -89,6 +97,7 @@ export const extractFrontMatter = (
                     escapeLiquid(metadata),
                     filePath,
                     logger,
+                    deprecationWarnings,
                 ) as FrontMatter,
                 (v) => (typeof v === 'string' ? unescapeLiquid(v) : undefined),
             ),

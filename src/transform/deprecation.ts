@@ -2,8 +2,8 @@ import type {DiagnosticOptions} from './log-core';
 import type {CompatibilityPolicy, DeprecationReporter} from './deprecation-core';
 
 import {createDeprecationReporter as createReporter} from './deprecation-core';
+import {forwardDeprecation} from './log-core';
 import {getInvocationLogger} from './diagnostic-context';
-import {warnInScope} from './log';
 
 export type {
     CompatibilityMode,
@@ -24,5 +24,6 @@ export type {
 export function createDeprecationReporter(
     options: DiagnosticOptions & {compatibility?: CompatibilityPolicy} = {},
 ): DeprecationReporter {
-    return createReporter({...options, log: getInvocationLogger(options)}, warnInScope);
+    const logger = getInvocationLogger(options);
+    return createReporter(options, (message) => forwardDeprecation(logger, message));
 }

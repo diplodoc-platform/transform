@@ -1,15 +1,11 @@
 import type {IDGenerator} from '@diplodoc/utils';
-import type {DiagnosticCollector, LogConsumer} from './log-core';
+import type {DiagnosticOptions} from './log-core';
 import type {CompatibilityPolicy} from './deprecation-core';
 import type {Highlighter} from './highlighter';
 import type {Lang} from './shared-types';
 
 /** Parser settings shared by the existing Node and browser execution hosts. */
-export interface CoreParserOptions {
-    /** Forward plugin messages while retaining the collected Transform diagnostics. */
-    log?: LogConsumer;
-    /** Explicit build/project aggregation; document output diagnostics remain isolated. */
-    diagnostics?: DiagnosticCollector;
+export interface CoreParserOptions extends DiagnosticOptions {
     /** Explicit per-feature migration choices; unspecified features use their current contract. */
     compatibility?: CompatibilityPolicy;
     extractTitle?: boolean;

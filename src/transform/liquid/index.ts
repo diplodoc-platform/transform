@@ -131,6 +131,7 @@ function applySnippet<
             sourceMap,
             log: logger,
             deprecations: settings?.deprecations,
+            deprecationWarnings: settings?.deprecationWarnings,
         });
     }
 
@@ -195,7 +196,8 @@ function liquidSnippet<
     settings = {
         ...settings,
         log: logger,
-        deprecations: settings?.deprecations ?? createDeprecationReporter({log: logger}),
+        deprecations:
+            settings?.deprecations ?? createDeprecationReporter({...settings, log: logger}),
     };
     warnBundledEngine('Liquid', path, settings);
     return applySnippet<B, C>(input, vars, path, settings);
@@ -222,10 +224,16 @@ function liquidDocument<
     settings = {
         ...settings,
         log: logger,
-        deprecations: settings?.deprecations ?? createDeprecationReporter({log: logger}),
+        deprecations:
+            settings?.deprecations ?? createDeprecationReporter({...settings, log: logger}),
     };
     warnBundledEngine('Liquid', path, settings);
-    const [frontMatter, strippedContent] = extractFrontMatter(input, path, logger);
+    const [frontMatter, strippedContent] = extractFrontMatter(
+        input,
+        path,
+        logger,
+        settings.deprecationWarnings,
+    );
 
     const liquidedFrontMatter = cloneDeepWith(frontMatter, (value: unknown) =>
         typeof value === 'string'

@@ -145,6 +145,18 @@ standalone Liquid/lint helpers that return no logs, pass `diagnostics` and/or an
 external `log` to retain/forward messages. See the
 [lifetime contract](../specs/transform-5/diagnostic-lifetime.md).
 
+Deprecation warnings are enabled by default. To omit them for a build, pass
+`deprecationWarnings: false` to Transform, or `core: {deprecationWarnings: false}`
+to `defineTransformOptions`. Node and browser support this setting. With warnings
+enabled, a logger can implement `deprecation(message)` to handle this category
+separately. Existing three-method loggers receive it through `warn`. The same
+messages remain available in `Output.logs.warn`.
+
+The CLI branch adapted for Transform 5 displays these warnings without failing
+`--strict`. Use `--no-deprecation-warnings` or set `deprecationWarnings: false`
+in the CLI YAML configuration to suppress them. Other warnings still count in
+strict builds.
+
 ## Select plugins explicitly
 
 The existing flat options and legacy `plugins` callback array remain supported.

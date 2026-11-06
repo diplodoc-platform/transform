@@ -39,14 +39,14 @@ function extractAttributes(state: StateBlock, pos: number): Record<string, strin
  * @param {Token} contentToken - Search the content of this token for the class.
  * @param {Token} tdOpenToken - Parent td_open token. Extracted class is applied to this token.
  * @param reporter - Parser-owned diagnostic scope.
- * @param location - Original cell source location.
+ * @param getLocation - Original cell source location.
  * @returns {void}
  */
 function extractAndApplyClassFromToken(
     contentToken: Token,
     tdOpenToken: Token,
-    reporter: DeprecationReporter,
-    location: DeprecationLocation,
+    reporter: DeprecationReporter | undefined,
+    getLocation: () => DeprecationLocation,
 ): void {
     const allAttrs = trailingClassBlock(contentToken.content);
     if (!allAttrs) {
@@ -57,8 +57,8 @@ function extractAndApplyClassFromToken(
     const attrsClass = attrs?.class?.join(' ');
 
     if (attrsClass) {
-        if (attrsClass.split(' ').some((c) => c.startsWith('cell-align-'))) {
-            reporter.warn(legacyAlignment, {location});
+        if (reporter && attrsClass.split(' ').some((c) => c.startsWith('cell-align-'))) {
+            reporter.warn(legacyAlignment, {location: getLocation()});
         }
         tdOpenToken.attrJoin('class', attrsClass);
         // remove the class from the token so that it's not propagated to tr or table level
@@ -239,7 +239,10 @@ const clearTokens = (tableStart: number, tokens: Token[]): void => {
 };
 
 type TableContext = Partial<
-    Pick<MarkdownItPluginOpts, 'path' | 'log' | 'deprecations' | 'compatibility'>
+    Pick<
+        MarkdownItPluginOpts,
+        'path' | 'log' | 'deprecations' | 'compatibility' | 'deprecationWarnings'
+    >
 >;
 
 /**
@@ -249,7 +252,10 @@ type TableContext = Partial<
  */
 export function createTablePlugin(createReporter: (options: TableContext) => DeprecationReporter) {
     const yfmTable = (md: MarkdownIt, opts: YfmTablePluginOptions & TableContext = {}) => {
-        const reporter = opts.deprecations ?? createReporter(opts);
+        const reporter =
+            opts.deprecationWarnings === false
+                ? undefined
+                : (opts.deprecations ?? createReporter(opts));
         md.use(directiveParser());
         const tableRule = (
             state: StateBlock,
@@ -381,13 +387,13 @@ export function createTablePlugin(createReporter: (options: TableContext) => Dep
                         contentToken,
                         rowTokens[rowTokens.length - 1],
                         reporter,
-                        {
+                        () => ({
                             path:
                                 [state.env.path, opts.path].find((path) => path?.trim()) ??
                                 '<input>',
                             line: begin.line + 1,
                             column: begin.pos - state.bMarks[begin.line] + 1,
-                        },
+                        }),
                     );
                 }
 

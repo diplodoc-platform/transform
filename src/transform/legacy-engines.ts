@@ -21,6 +21,9 @@ export function warnBundledEngine(
     path: string | undefined,
     diagnostics: LegacyEngineDiagnostics = {},
 ): void {
+    if (diagnostics.deprecationWarnings === false) {
+        return;
+    }
     const reporter = diagnostics.deprecations ?? createDeprecationReporter(diagnostics);
     const liquid = engine === 'Liquid';
     reporter.warn(

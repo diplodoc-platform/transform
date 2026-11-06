@@ -25,7 +25,12 @@ function applyLiquid(input: string, options: OptionsType, deprecations: Deprecat
 
     return disableLiquid || isLiquided
         ? input
-        : liquidDocument(input, vars, path, {conditionsInCode, deprecations, log: options.log});
+        : liquidDocument(input, vars, path, {
+              conditionsInCode,
+              deprecations,
+              log: options.log,
+              deprecationWarnings: options.deprecationWarnings,
+          });
 }
 
 function handleError(error: unknown, logger: Logger, path?: string): never {

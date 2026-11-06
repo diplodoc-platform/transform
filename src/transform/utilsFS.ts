@@ -94,6 +94,7 @@ export function getFileFragment(
             log: options.log,
             diagnostics: options.diagnostics,
             compatibility: options.compatibility,
+            deprecationWarnings: options.deprecationWarnings,
             deprecations: options.deprecations,
             withSourceMap: true,
             conditionsInCode,

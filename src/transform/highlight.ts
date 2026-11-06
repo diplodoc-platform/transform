@@ -1,6 +1,6 @@
 import type {HighlightLangMap} from './typings';
 import type {HighlightJsApi, Highlighter} from './highlighter';
-import type {LogConsumer} from './log';
+import type {DiagnosticOptions} from './log';
 
 import {createDeprecationReporter} from './deprecation';
 import {createHighlightJsHighlighter} from './highlighter';
@@ -15,7 +15,7 @@ import {renderHighlight} from './highlighter/renderer';
  */
 export function createLegacyHighlighter(
     languages: HighlightLangMap = {},
-    scope: {log?: LogConsumer} = {},
+    scope: DiagnosticOptions = {},
 ): Highlighter {
     createDeprecationReporter(scope).warn(
         {
@@ -57,7 +57,7 @@ export function createLegacyHighlighter(
  */
 export default function makeHighlight(
     languages: HighlightLangMap = {},
-    scope: {log?: LogConsumer} = {},
+    scope: DiagnosticOptions = {},
 ) {
     return renderHighlight(createLegacyHighlighter(languages, scope));
 }

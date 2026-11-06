@@ -25,13 +25,14 @@ const tabs: (
         generateID?: IDGenerator;
         path?: string;
         deprecations?: DeprecationReporter;
+        deprecationWarnings?: boolean;
         directiveSyntax?: DirectiveSyntax;
         log?: {warn(message: string): void};
     },
 ) => void = (md, options) => {
     const invocation = unwrapBuiltin(options, tabs);
     const mode = directiveMode(invocation.options?.directiveSyntax, invocation.automatic);
-    if (!invocation.automatic) {
+    if (!invocation.automatic && invocation.options?.deprecationWarnings !== false) {
         const context = invocation.options;
         context?.deprecations?.warn(
             {

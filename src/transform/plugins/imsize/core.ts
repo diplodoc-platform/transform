@@ -15,7 +15,7 @@ const legacyDimensions: DeprecationDescriptor = {
 };
 
 type DiagnosticContext = Partial<
-    Pick<MarkdownItPluginOpts, 'path' | 'deprecations' | 'compatibility'>
+    Pick<MarkdownItPluginOpts, 'path' | 'deprecations' | 'compatibility' | 'deprecationWarnings'>
 > & {log?: LogConsumer};
 
 function usages(tokens: Token[]): {path?: string}[] {
@@ -44,11 +44,20 @@ export function createImsizePlugin(
         md.inline.ruler.before(
             'emphasis',
             'image',
-            imageWithSize(md, opts, {
-                image: (span, token) => markLegacyImage(token, span.path),
-            }),
+            imageWithSize(
+                md,
+                opts,
+                opts.deprecationWarnings === false
+                    ? undefined
+                    : {
+                          image: (span, token) => markLegacyImage(token, span.path),
+                      },
+            ),
         );
         md.core.ruler.after('inline', 'imsize_deprecation', (state) => {
+            if (opts.deprecationWarnings === false) {
+                return;
+            }
             const images = usages(state.tokens);
             if (!images.length) {
                 return;
