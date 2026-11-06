@@ -36,6 +36,35 @@ text inside it can be literal code, so an unmatched backtick can also consume
 apparent later row delimiters. Complex mixed backtick runs retain their existing
 interpretation. This migration changes the omitted default, not that grammar.
 
+### If the next row disappears
+
+Check the preceding cell for a stray backtick. In this example, the apostrophe
+in `CDN's` was typed as a backtick, and the command ends with an apostrophe.
+
+```markdown
+#|
+|| Option | On the CDN`s end. ||
+|| Example | Run `--subnets=id1'. ||
+|| Pattern | Use `x|y`. ||
+|#
+```
+
+Use an apostrophe in prose and matching backticks around the command. If the
+prose should display a literal backtick, escape it as `` \` ``.
+
+```markdown
+#|
+|| Option | On the CDN's end. ||
+|| Example | Run `--subnets=id1`. ||
+|| Pattern | Use `x|y`. ||
+|#
+```
+
+With the Transform 5 defaults, the corrected table has three rows and two cells
+per row. Use
+`table_ignoreSplittersInInlineCode: false` only when you need the old default for
+the whole table parser. It also splits the pipe in the valid `x|y` example.
+
 ## Cell alignment
 
 Replace final `.cell-align-*` content attributes with cell attributes immediately

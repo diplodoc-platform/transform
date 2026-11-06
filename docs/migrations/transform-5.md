@@ -197,8 +197,10 @@ independent and work with general attributes disabled.
 
 Table separators inside inline code are protected by default. For the old
 omitted-option behavior set `table_ignoreSplittersInInlineCode: false`; if also
-using block-code compatibility, review both splitter settings. Legacy cell alignment
-remains supported with an actual-use warning. Prefer `::{align="center"}` after
+using block-code compatibility, review both splitter settings. If a row disappears,
+check the previous cell for an accidental or unclosed backtick. [Table examples](transform-5-tables.md#if-the-next-row-disappears)
+
+Legacy cell alignment remains supported with an actual-use warning. Prefer `::{align="center"}` after
 the cell marker; [table migration](transform-5-tables.md) documents supported
 values and `migrateTableAlignment`.
 
