@@ -79,7 +79,10 @@ for (const {source, legacyDefault} of modules.values()) {
         `${output}.mjs`,
         header +
             [
-                `import implementation from ${JSON.stringify(specifier)};`,
+                `import * as namespace from ${JSON.stringify(specifier)};`,
+                // Node exposes the compiled CommonJS module as the default; loaders
+                // that honor TypeScript's __esModule already expose its namespace.
+                'const implementation = namespace.default?.__esModule ? namespace.default : namespace;',
                 ...names.map((name) => `export const ${name} = implementation.${name};`),
                 ...(hasDefault ? ['export default implementation.default;'] : []),
                 '',

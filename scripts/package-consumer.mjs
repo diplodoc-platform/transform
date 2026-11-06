@@ -147,6 +147,10 @@ for (const [subpath, target] of Object.entries(publicEntryInventory())) {
     }
 }
 for (const {source} of publicModules) {
+    // A public default marked as a CommonJS namespace would be ambiguous in bundlers.
+    const compiled = require(join(installedRoot, 'lib', source + '.js'));
+    assert.equal(compiled.__esModule, true, source);
+    assert.ok(!compiled.default?.__esModule, source);
     if (!source.endsWith('/index')) {
         continue;
     }
