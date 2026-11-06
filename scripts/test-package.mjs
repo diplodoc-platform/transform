@@ -14,6 +14,7 @@ import {createRequire} from 'node:module';
 import {tmpdir} from 'node:os';
 import {dirname, join} from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
+import {build as buildWithVite} from 'vite';
 
 import {publicEntryInventory} from './public-api.mjs';
 import {verifyBrowserPackage} from './test-browser-package.mjs';
@@ -116,6 +117,23 @@ try {
         cwd: consumerRoot,
         stdio: 'inherit',
     });
+    // Vite unwraps TypeScript CommonJS defaults when building for the browser.
+    const viteEntry = join(consumerRoot, 'vite-consumer.mjs');
+    writeFileSync(
+        viteEntry,
+        `import sup from '@diplodoc/transform/plugins/sup';
+import {ImsizeAttr} from '@diplodoc/transform/lib/plugins/imsize/const.js';
+import logger, {getLogger, log} from '@diplodoc/transform/log';
+export const result = [typeof sup, ImsizeAttr.Width, typeof getLogger, typeof log.warn, logger === log];`,
+    );
+    await buildWithVite({
+        root: consumerRoot,
+        configFile: false,
+        logLevel: 'error',
+        build: {lib: {entry: viteEntry, formats: ['es'], fileName: () => 'consumer.mjs'}},
+    });
+    const viteConsumer = await import(pathToFileURL(join(consumerRoot, 'dist/consumer.mjs')));
+    assert.deepEqual(viteConsumer.result, ['function', 'width', 'function', 'function', true]);
     copyFileSync(
         join(projectRoot, 'scripts/diagnostics-package-consumer.mjs'),
         join(consumerRoot, 'diagnostics-consumer.mjs'),
