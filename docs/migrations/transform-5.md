@@ -32,11 +32,45 @@ imports and do not execute automatically. Browser callers must provide their own
 include preparation and resource policy. See [public exports](../ADR/ADR-012-public-module-exports.md)
 and [browser integration](browser-entry.md).
 
+If browser rendering fails, for example on an unexpanded include, display the
+source as text and keep your application’s existing error reporting in the catch
+handler. Only insert HTML returned by a successful transform:
+
+```ts
+import transform from '@diplodoc/transform/browser';
+
+function renderPreview(
+  container: HTMLElement,
+  source: string,
+  reportError: (error: unknown) => void,
+) {
+  try {
+    container.innerHTML = transform(source).result.html;
+  } catch (error) {
+    container.textContent = source;
+    reportError(error);
+  }
+}
+```
+
+If the caller requires an HTML string, escape the fallback source as HTML text
+before returning it. Test the component that displays the result: put
+`{% include [part](part.md) %}` and `<i data-probe>text</i>` in separate paragraphs (with a blank line between them).
+The fallback must show the literal tag without creating an `i[data-probe]`
+element. Repeat with an unrelated renderer error, then confirm that valid
+Markdown still renders as HTML.
+
 Transform uses markdown-it 15. Hosts supplying their own MarkdownIt instance or
 plugins should validate their actual parser and type versions, registration order,
 metadata and output; do not assume every plugin's full parser types are compatible
 across versions. Native 13 compatibility of a given adapter does not make an
 unpatched 13 installation secure.
+
+For a preset shared by Transform 4 and 5, carry over the actual option values
+(such as allowed HTML tags and attributes) and map them to each version's API.
+Avoid casting an older parser or callback to the new type. If the preset owns
+plugins or a tokenizer, test them on both engines and adapt them separately
+where their contracts differ.
 
 ### Custom emoji plugins
 
