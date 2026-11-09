@@ -2352,3 +2352,222 @@ describe('table header-rows attribute', () => {
         expect(logs.warn.some((w: string) => w.includes('header-rows'))).toBe(false);
     });
 });
+
+describe('table column widths', () => {
+    it('should render colgroup with widths option', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            |:{widths="30px auto 100px"}
+            || A | B | C ||
+            |#
+            `),
+        ).toMatchSnapshot();
+    });
+
+    it('should pad missing widths with auto', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            |:{widths="50px"}
+            || A | B | C ||
+            |#
+            `),
+        ).toMatchSnapshot();
+    });
+
+    it('should ignore extra widths beyond column count', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            |:{widths="10px 20px 30px 40px"}
+            || A | B ||
+            |#
+            `),
+        ).toMatchSnapshot();
+    });
+
+    it('should handle percentage width values', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            |:{widths="25% 75%"}
+            || A | B ||
+            |#
+            `),
+        ).toMatchSnapshot();
+    });
+
+    it('should parse multiple options with only widths taking effect', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            |:{widths="30px auto"}
+            |:{unknown-option="some value"}
+            || A | B ||
+            |#
+            `),
+        ).toMatchSnapshot();
+    });
+
+    it('should override widths when specified on multiple lines', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            |:{widths="30px auto 100px"}
+            |:{widths="10px 20px 30px"}
+            || A | B | C ||
+            |#
+            `),
+        ).toMatchSnapshot();
+    });
+
+    it('should render table without options unchanged', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            || A | B | C ||
+            |#
+            `),
+        ).toMatchSnapshot();
+    });
+
+    it('should combine widths with table attributes', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            |:{widths="30px auto"}
+            || A | B ||
+            |# {.my-table}
+            `),
+        ).toMatchSnapshot();
+    });
+
+    it('should not render colgroup when widths value is empty', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            |:{widths=""}
+            || A | B ||
+            |#
+            `),
+        ).toMatchSnapshot();
+    });
+
+    it('should use max column count across all rows', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            |:{widths="10px 20px 30px"}
+            || A | B ||
+            || X | Y | Z ||
+            |#
+            `),
+        ).toMatchSnapshot();
+    });
+
+    it('should support widths in nested tables', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            ||
+            #|
+            |:{widths="50px 100px"}
+            || inner A | inner B ||
+            |#
+            ||
+            |#
+            `),
+        ).toMatchSnapshot();
+    });
+
+    it('should not apply outer widths to inner table', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            |:{widths="10px 20px"}
+            ||
+            #|
+            || inner A | inner B ||
+            |#
+            |
+            Text
+            ||
+            |#
+            `),
+        ).toMatchSnapshot();
+    });
+
+    it('should apply different widths to outer and inner tables independently', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            |:{widths="10px 20px"}
+            ||
+            Text
+            |
+            #|
+            |:{widths="50px 100px"}
+            || inner A | inner B ||
+            |#
+            ||
+            |#
+            `),
+        ).toMatchSnapshot();
+    });
+
+    it('should render widths alongside colspan', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            |:{widths="30px auto 100px"}
+            || A | B | C ||
+            || X | > | Z ||
+            |#
+            `),
+        ).toMatchSnapshot();
+    });
+
+    it('should render colgroup for single column table', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            |:{widths="200px"}
+            || A ||
+            |#
+            `),
+        ).toMatchSnapshot();
+    });
+
+    it('should handle table with options but no content rows', () => {
+        expect(
+            transformYfm(dd`
+            #|
+            |:{widths="30px auto"}
+            |#
+            `),
+        ).toMatchSnapshot();
+    });
+
+    it('should store widths in yfm_table_open token meta', () => {
+        const md = new MarkdownIt().use(table, {log});
+        const tokens = md.parse(
+            dd`
+            #|
+            |:{widths="30px auto 100px"}
+            || A | B | C ||
+            |#
+            `,
+            {},
+        );
+        const tableOpen = tokens.find((t: {type: string}) => t.type === 'yfm_table_open');
+        expect(tableOpen).toBeDefined();
+        expect(tableOpen?.meta).toEqual({
+            widths: ['30px', 'auto', '100px'],
+            rawAttrs: {
+                widths: '30px auto 100px',
+            },
+        });
+    });
+});
+
