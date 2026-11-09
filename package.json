@@ -120,7 +120,7 @@
   "overrides": {
     "cheerio": {
       ".": "1.2.0",
-      "undici": "7.21.0"
+      "undici": "7.30.2"
     }
   }
 }
