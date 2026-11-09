@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.78.13](https://github.com/diplodoc-platform/transform/compare/v4.78.12...v4.78.13) (2026-11-09)
+
+
+### Bug Fixes
+
+* **deps:** align patched transitive dependencies and pin policy ([de15b42](https://github.com/diplodoc-platform/transform/commit/de15b42d478aa0b5cba5af6c1c1e13547d69615b))
+* **deps:** pin a consistent runtime baseline for candidate train ([7499f26](https://github.com/diplodoc-platform/transform/commit/7499f26474ce11a17762b6332f0f4d6d846038b0))
+
 ## [4.78.12](https://github.com/diplodoc-platform/transform/compare/v4.78.11...v4.78.12) (2026-10-28)
 
 
