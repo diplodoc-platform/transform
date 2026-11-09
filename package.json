@@ -62,13 +62,13 @@
     "@diplodoc/tabs-extension": "^3.10.7",
     "@diplodoc/utils": "^2.3.6",
     "chalk": "^4.1.2",
-    "cheerio": "^1.0.0",
+    "cheerio": "1.2.0",
     "css": "^3.0.0",
     "cssfilter": "0.0.10",
     "get-root-node-polyfill": "1.0.0",
     "github-slugger": "^1.5.0",
-    "js-yaml": "^4.1.0",
-    "lodash": "^4.17.23",
+    "js-yaml": "4.3.2",
+    "lodash": "4.18.1",
     "markdown-it": "^13.0.2",
     "markdown-it-attrs": "4.3.1",
     "markdown-it-deflist": "2.1.0",
@@ -115,6 +115,12 @@
   "peerDependenciesMeta": {
     "highlight.js": {
       "optional": true
+    }
+  },
+  "overrides": {
+    "cheerio": {
+      ".": "1.2.0",
+      "undici": "7.21.0"
     }
   }
 }
