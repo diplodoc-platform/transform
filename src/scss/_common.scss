@@ -224,6 +224,11 @@
             );
         }
 
+        // Multiline table header cells already paint their own (possibly translucent) background.
+        &[data-header-rows] > thead {
+            background-color: transparent;
+        }
+
         tr:first-child {
             td,
             th {
@@ -231,7 +236,7 @@
             }
         }
 
-        tr:last-child {
+        tr:last-child:not(:where(table[data-header-rows] > thead:has(+ tbody) > tr)) {
             td,
             th {
                 border-bottom: none;
@@ -268,11 +273,17 @@
         }
     }
 
-    &:not(.yfm_no-stripe-table) table tr:nth-child(2n) {
-        background-color: var(
-            --yfm-color-table-stripe-row-background,
-            var(--yfm-color-table-stripe-row-background-private)
-        );
+    &:not(.yfm_no-stripe-table) table {
+        // Count stripes across the header/body boundary as in the original single row group.
+        $odd-header-body: 'table[data-header-rows] > thead:has(> tr:last-child:nth-child(odd)) + tbody';
+
+        tr:nth-child(even):not(:where(#{$odd-header-body} > tr)),
+        :where(#{$odd-header-body}) > tr:nth-child(odd) {
+            background-color: var(
+                --yfm-color-table-stripe-row-background,
+                var(--yfm-color-table-stripe-row-background-private)
+            );
+        }
     }
 
     hr {

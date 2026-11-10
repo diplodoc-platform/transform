@@ -2190,6 +2190,63 @@ describe('table header-rows attribute', () => {
     const table3x3 =
         '#|\n|:{header-rows="1"}\n|| A | B | C ||\n|| D | E | F ||\n|| G | H | I ||\n|#';
 
+    it('renders separate groups while editors still see one body and its original line map', () => {
+        const md = new MarkdownIt().use(table);
+        const tokens = md.parse(table3x3, {});
+        const groups = tokens.filter(({tag}) => ['thead', 'tbody'].includes(tag));
+        const html = md.renderer.render(tokens, md.options, {});
+        expect(html).toContain('<thead>\n<tr data-header="true">');
+        expect(html).toContain('</thead>\n<tbody>\n<tr>');
+        expect(html).toContain('</tbody>\n</table>');
+        expect(
+            groups.map(({type, nesting, level, block, map}) => [type, nesting, level, block, map]),
+        ).toEqual([
+            ['yfm_tbody_open', 1, 1, true, [1, 5]],
+            ['yfm_tbody_close', -1, 1, true, null],
+        ]);
+    });
+
+    it.each(['before', 'after'])(
+        'respects a custom boundary renderer installed %s the plugin',
+        (when) => {
+            const md = new MarkdownIt();
+            if (when === 'after') md.use(table);
+            md.renderer.rules.yfm_tbody_open = () => '<tbody class="custom">\n';
+            if (when === 'before') md.use(table);
+            const html = md.render(table3x3);
+            expect(html).not.toContain('thead');
+            expect(html).toContain('<tbody class="custom">');
+            expect(html.match(/<\/tbody>/g)).toHaveLength(1);
+        },
+    );
+
+    it('keeps a single body when a rowspan starts above and ends below the boundary', () => {
+        const text = '#|\n|:{header-rows="2"}\n|| A | B ||\n|| C | ^ ||\n|| D | ^ ||\n|#';
+        const html = transformYfm(text);
+        expect(html).not.toContain('<thead>');
+        expect(html).toContain('<tbody>\n<tr data-header="true">');
+        expect(html).toContain('<th scope="col" rowspan="3">');
+        expect(
+            parseTokens(text)
+                .filter(({tag}) => tag === 'tbody')
+                .map(({map}) => map),
+        ).toEqual([[1, 5], null]);
+    });
+
+    it('splits rows when spans stay inside their own groups', () => {
+        const text =
+            '#|\n|:{header-rows="2"}\n|| A | B ||\n|| ^ | C ||\n|| D | E ||\n|| ^ | F ||\n|#';
+        const html = transformYfm(text);
+        expect(html).toContain('<thead>\n<tr data-header="true">\n<th scope="col" rowspan="2">');
+        expect(html).toContain('</thead>\n<tbody>\n<tr>\n<td rowspan="2">');
+    });
+
+    it.each(['3', '99'])('emits only the header when all rows are covered (%s)', (count) => {
+        const html = transformYfm(table3x3.replace('header-rows="1"', `header-rows="${count}"`));
+        expect(html).toContain('</thead>\n</table>');
+        expect(html).not.toContain('<tbody>');
+    });
+
     it('first row cell-open tokens have tag="th", others have "td"', () => {
         const tokens = parseTokens(table3x3);
         const tdOpens = findTokens(tokens, 'yfm_td_open');

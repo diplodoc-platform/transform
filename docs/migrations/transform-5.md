@@ -256,6 +256,11 @@ reference and the definition to a label without a leading caret, or disable
 
 ## Attributes, tables, images and SVG
 
+YFM tables with a positive `header-rows` now group header rows in `<thead>`.
+If a `rowspan` crosses from the header into the body, the table keeps a single
+`<tbody>`. To find headers in either layout, select `tr[data-header]`.
+Check custom CSS and plugins that assume all rows are children of `tbody`.
+
 General Markdown attributes now default to off. Set `enableMarkdownAttrs: true`
 in flat options, or `core.enableMarkdownAttrs` in the builder, when the document
 corpus requires them. Heading anchors and adjacent image dimensions remain
