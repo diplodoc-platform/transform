@@ -153,9 +153,11 @@ const ROWSPAN_SYMBOL = '^';
  *
  * @param contentMap string[][]
  * @param tokenMap Token[][]
- * @return {void}
+ * @param headerRows Number of leading header rows, when declared.
+ * @returns Whether the table has header rows that can form a separate HTML row group.
  */
-const applySpans = (contentMap: string[][], tokenMap: Token[][]): void => {
+const applySpans = (contentMap: string[][], tokenMap: Token[][], headerRows: number | null) => {
+    let crossesHeader = false;
     for (let i = 0; i < contentMap.length; i++) {
         for (let j = 0; j < contentMap[0].length; j++) {
             if (contentMap[i][j] === COLSPAN_SYMBOL) {
@@ -196,12 +198,16 @@ const applySpans = (contentMap: string[][], tokenMap: Token[][]): void => {
                         break;
                     } else {
                         tokenMap[row][j].attrSet('rowspan', rowSpanFactor.toString());
+                        if (headerRows !== null && row < headerRows && i >= headerRows) {
+                            crossesHeader = true;
+                        }
                         break;
                     }
                 }
             }
         }
     }
+    return headerRows !== null && contentMap.length > 0 && !crossesHeader;
 };
 
 /**
@@ -238,6 +244,34 @@ const clearTokens = (tableStart: number, tokens: Token[]): void => {
     });
 };
 
+// Editors consume the single yfm_tbody node. Only the HTML renderer splits it into row groups.
+function installSectionRenderer(md: MarkdownIt) {
+    const rules = md.renderer.rules;
+    const boundaries = ['yfm_tbody_open', 'yfm_tbody_close', 'yfm_tr_open'];
+    if (boundaries.some((type) => rules[type])) return;
+
+    const render: NonNullable<(typeof rules)[string]> = (
+        tokens,
+        index,
+        options,
+        _env,
+        renderer,
+    ) => {
+        const html = renderer.renderToken(tokens, index, options);
+        const section = tokens[index].meta?.yfmTableSection;
+        // A custom handler for even one boundary owns its markup; keep all three in legacy shape.
+        if (
+            !section ||
+            !boundaries.every((type) => rules[type] === render) ||
+            Object.prototype.hasOwnProperty.call(renderer, 'renderToken')
+        )
+            return html;
+        if (section === 'tbody') return '</thead>\n<tbody>\n' + html;
+        return html.replace(/^(\n?<\/?)tbody\b/, '$1thead');
+    };
+    for (const type of boundaries) rules[type] = render;
+}
+
 type TableContext = Partial<
     Pick<
         MarkdownItPluginOpts,
@@ -257,6 +291,7 @@ export function createTablePlugin(createReporter: (options: TableContext) => Dep
                 ? undefined
                 : (opts.deprecations ?? createReporter(opts));
         md.use(directiveParser());
+        installSectionRenderer(md);
         const tableRule = (
             state: StateBlock,
             startLine: number,
@@ -309,8 +344,9 @@ export function createTablePlugin(createReporter: (options: TableContext) => Dep
             token.map = [startLine, endOfTable];
             const headerRows = applyTableAttributes(token, attrs, tableAttrs, opts.log);
 
-            token = state.push('yfm_tbody_open', 'tbody', 1);
-            token.map = [startLine + 1, endOfTable - 1];
+            const bodyOpen = state.push('yfm_tbody_open', 'tbody', 1);
+            bodyOpen.map = [startLine + 1, endOfTable - 1];
+            let firstBodyRow: Token | undefined;
 
             const maxRowLength = Math.max(...rows.map((row) => row.cols.length));
 
@@ -337,6 +373,7 @@ export function createTablePlugin(createReporter: (options: TableContext) => Dep
                 const cellTag = isHeaderRow ? 'th' : 'td';
 
                 token = state.push('yfm_tr_open', 'tr', 1);
+                if (i === headerRows) firstBodyRow = token;
                 token.map = [rowLineStarts, rowLineEnds];
                 token.meta = token.meta || {};
                 token.meta.rawAttrs = rowRawAttrs;
@@ -411,10 +448,18 @@ export function createTablePlugin(createReporter: (options: TableContext) => Dep
                 token = state.push('yfm_tr_close', 'tr', -1);
             }
 
-            applySpans(contentMap, cellsMap);
+            const separateHeader = applySpans(contentMap, cellsMap, headerRows);
             clearTokens(tableStart, state.tokens);
 
-            token = state.push('yfm_tbody_close', 'tbody', -1);
+            const bodyClose = state.push('yfm_tbody_close', 'tbody', -1);
+            if (separateHeader) {
+                bodyOpen.meta = {yfmTableSection: 'thead'};
+                if (firstBodyRow) {
+                    firstBodyRow.meta = {...firstBodyRow.meta, yfmTableSection: 'tbody'};
+                } else {
+                    bodyClose.meta = {yfmTableSection: 'thead'};
+                }
+            }
 
             token = state.push('yfm_table_close', 'table', -1);
             state.tokens[state.tokens.length - 1].map = [endOfTable - 1, endOfTable];

@@ -1,5 +1,22 @@
 # Transform 5 tables
 
+## Header rows
+
+With `|:{header-rows="2"}`, the first two rows are header rows.
+Transform groups them in `<thead>`, and `sticky-header` pins them together.
+Tables without a declared header keep their existing structure.
+
+If a vertical merge (`^`) spans the header/body boundary, all rows remain
+in one `<tbody>` so the cell can span both rows. Header rows keep their
+`data-header` attribute in either layout. Use `tr[data-header]` to find them
+and `table.rows` when you need all rows of a particular table.
+
+Markdown-it consumers, including editors, still receive one pair of
+`yfm_tbody_open` and `yfm_tbody_close` tokens around all rows. If you
+provide your own renderer for either of those tokens, for `yfm_tr_open`,
+or override the renderer instance’s `renderToken` method, your renderer
+controls the sections and retains the previous single-body layout by default.
+
 ## Pipes inside inline code
 
 YFM tables now ignore cell separators inside recognized inline code by default:
