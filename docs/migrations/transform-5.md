@@ -87,6 +87,28 @@ Avoid casting an older parser or callback to the new type. If the preset owns
 plugins or a tokenizer, test them on both engines and adapt them separately
 where their contracts differ.
 
+### Legacy Liquid evaluator imports
+
+The historical `/lib/liquid/evaluation` default import may be callable after
+CommonJS interop, or a namespace whose `default` is that callable in native ESM.
+Normalize the module shape while retaining the legacy boolean evaluator:
+
+```ts
+import evaluation from '@diplodoc/transform/lib/liquid/evaluation';
+
+function resolveEvaluator<Evaluator extends (...args: never[]) => unknown>(
+  value: Evaluator | {default: Evaluator},
+) {
+  return typeof value === 'function' ? value : value.default;
+}
+
+const evaluateCondition = resolveEvaluator(evaluation);
+evaluateCondition('audience == "public"', {audience: 'public'}); // true
+```
+
+The named `evalExp` returns the uncoerced value and is not a drop-in boolean API
+replacement. Test both module formats if your package supports Transform 4 and 5.
+
 ### Custom emoji plugins
 
 If a preset fails with `md.utils.assign is not a function` while registering

@@ -197,6 +197,28 @@ Transform использует markdown-it 15. Если приложение п�
 регистрации, метаданные и выход. Адаптер, совместимый с отдельной версией 13,
 не гарантирует совместимость всех плагинов и безопасность старой установки.
 
+### Старый импорт Liquid evaluator
+
+Default-импорт исторического `/lib/liquid/evaluation` после CommonJS interop может
+быть функцией, а в native ESM — namespace с этой функцией в `default`.
+Нормализуйте форму модуля, сохранив прежний boolean evaluator:
+
+```ts
+import evaluation from '@diplodoc/transform/lib/liquid/evaluation';
+
+function resolveEvaluator<Evaluator extends (...args: never[]) => unknown>(
+  value: Evaluator | {default: Evaluator},
+) {
+  return typeof value === 'function' ? value : value.default;
+}
+
+const evaluateCondition = resolveEvaluator(evaluation);
+evaluateCondition('audience == "public"', {audience: 'public'}); // true
+```
+
+Именованный `evalExp` возвращает исходное значение и не заменяет boolean API
+напрямую. Если пакет поддерживает Transform 4 и 5, проверьте оба формата модулей.
+
 ### Свой плагин emoji
 
 Если при регистрации `markdown-it-emoji` возникает ошибка
