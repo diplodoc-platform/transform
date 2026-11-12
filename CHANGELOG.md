@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.0.0 (2026-10-30)
+## 5.0.0-beta.1 (2026-11-12)
 
 ### Changes
 
@@ -9,6 +9,8 @@
 - Add table and image-dimension migration helpers; retain deprecated syntax with actual-use diagnostics.
 - Extract Notes to its extension while retaining Transform paths and styles; add independently selectable inline syntax, footnotes and task lists.
 - Deprecate explicit legacy cut/tabs callbacks and type forwarding paths for removal in Transform 6, subject to release gates.
+- Use exact new-major beta dependencies under the `transform5` npm tag; stable releases remain on `latest`.
+- Build the pinned Markdown-it sources with native class fields for Node and browser entry points, preserving parser behavior and third-party notices.
 
 Block directives are integrated in the major branch: the standard preset accepts
 legacy and colon Cut/Notes/Tabs syntax by default. Standalone factories and

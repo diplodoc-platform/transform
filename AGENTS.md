@@ -499,7 +499,12 @@ module shapes, public declarations, or asset delivery. Keep callable CJS root an
 plugin types, explicit ESM names, and optional-highlighter absence working.
 See `docs/ADR/ADR-012-public-module-exports.md` for contracts and migration paths.
 
-Node 24 is the tested supported runtime; ES2018 remains the syntax target. Keep
+Node 24 is the tested supported runtime. Server TypeScript retains its ES2018
+target; the private Markdown-it runtime and browser bundles target ES2022 to
+preserve native class fields. Build the pinned parser sources from the installed
+source map with `scripts/markdown-it-sources.mjs`, retain bundled notices, and run
+`npm run test:package` after parser-build changes. See
+`docs/ADR/ADR-013-markdown-it-runtime-build.md`. Keep
 Liquid/YFMLint implementations and their compatibility imports until their
 separate removal is authorized. `lib/vendor/` contains generated declarations
 for the isolated patched SVG bundle, not a runtime registry SVGO dependency.

@@ -23,6 +23,7 @@ import {verifyImageDimensionsGraph} from './test-image-dimensions-graph.mjs';
 import {verifyBlockDirectivesGraph} from './test-block-directives-graph.mjs';
 import {verifyInlineSyntaxGraph} from './test-inline-syntax-graph.mjs';
 import {verifyTableAlignmentGraph} from './test-table-alignment-graph.mjs';
+import {verifyMarkdownItPackage} from './test-markdown-it-package.mjs';
 
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const temporaryRoot = realpathSync(mkdtempSync(join(tmpdir(), 'diplodoc-svgo-package-')));
@@ -52,6 +53,7 @@ try {
     execFileSync('tar', ['-xzf', join(temporaryRoot, packed[0].filename), '-C', extractedRoot]);
 
     const packageRoot = join(extractedRoot, 'package');
+    verifyMarkdownItPackage(packageRoot, projectRoot);
     const require = createRequire(join(packageRoot, 'package.json'));
     const svgoModule = join(packageRoot, 'lib/svgo.js');
     assert.match(readFileSync(join(packageRoot, 'lib/svgo.LICENSES.txt'), 'utf8'), /svgo@4\.1\.0/);
@@ -108,6 +110,21 @@ try {
             stdio: 'inherit',
         },
     );
+    const installedRequire = createRequire(join(consumerRoot, 'package.json'));
+    const installedRoot = join(consumerRoot, 'node_modules/@diplodoc/transform');
+    const OptimizedMarkdownIt = installedRequire(
+        join(installedRoot, 'lib/markdown-it-runtime.js'),
+    ).default;
+    let parserConstructor;
+    const parser = installedRequire('@diplodoc/transform/parser')({
+        plugins: [
+            (md) => {
+                parserConstructor = md.constructor;
+            },
+        ],
+    });
+    parser.parseDocument('A paragraph.');
+    assert.equal(parserConstructor, new OptimizedMarkdownIt().constructor);
     copyFileSync(join(projectRoot, 'scripts/public-api.mjs'), join(consumerRoot, 'public-api.mjs'));
     copyFileSync(
         join(projectRoot, 'scripts/package-consumer.mjs'),
