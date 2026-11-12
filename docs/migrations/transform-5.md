@@ -5,9 +5,24 @@
 **TL;DR:** Inventory the actual dependency graph and browser assets, prepare Node
 24 and markdown-it 15, explicitly configure attributes and highlighting, then
 validate document contexts, plugins and rendered output. Keep a genuine Transform
-4 for hosts that require it. As of 2 November 2026, stable Transform 5 publication
-is held; the merged major source and locally reviewed consumer patches are not published releases.
-Recheck the registry and compatible dependencies before migration.
+4 for hosts that require it. Use the explicit beta version for prerelease testing;
+stable Transform 5 is not released and `latest` remains on version 4.
+
+## Installing the beta
+
+Confirm availability, then install the exact beta from the `transform5` channel:
+
+```sh
+npm view @diplodoc/transform@5.0.0-beta.1 version
+npm install @diplodoc/transform@5.0.0-beta.1
+```
+
+The coordinated graph uses Utils `3.0.0-beta.2`, Directive `1.0.0-beta.2`, Cut
+`2.0.0-beta.1`, Tabs `4.0.0-beta.1`, File `1.0.0-beta.1` and Notes `1.0.0-beta.1`.
+Update direct dependencies accordingly. Stable major ranges do not include their betas; library
+authors must explicitly agree on the tested beta peer range. Do not force peer
+installation. Some locally reviewed compatibility fixes for legacy hosts remain
+unpublished; see the mixed Transform 4/5 limitations below.
 
 This guide describes the Transform 5 migration contracts. Validate your own
 documents and integrations against the exact installed package before adoption.
@@ -158,14 +173,14 @@ Use a separate dependency name for owned Transform 5 runtime or validation code
 when those hosts share an application. Check actual package resolution from each
 host; an alias or a successful build does not prove its peer parser changed.
 
-A genuine 4.78.12 and 5.0.0-transform5.0 installation currently fails strict
-TypeScript 6/7 with `TS2374` when its two Utils versions both declare a global
-Window symbol index. The validated local graph replaces only the legacy
-Utils 2.3.6 copy with `2.3.7-transform5-compat4.0`; Transform 5 retains its own
-Utils candidate. This compatibility patch preserves runtime code but removes
-broad ambient symbol typing, which can affect callers using arbitrary Window
-symbols. It is not published. Validate an approved dependency fix before adoption;
-`skipLibCheck` does not establish compatibility of those declarations.
+Utils `3.0.0-beta.2` removes its broad global `Window` symbol index. Earlier
+candidates, including Utils `3.0.0-beta.1`, produced `TS2374` when both Utils 2
+and 3 were loaded by strict TypeScript. Update the modern Utils copy and keep a
+real Utils 2/markdown-it 13 graph for legacy hosts. The corrected mixed-package
+gate checks strict ESM/CommonJS declarations and shared queue behavior with native
+markdown-it 13 and 15. Projects that assign arbitrary symbol properties to Window
+must declare their own properties instead of relying on Utils' former ambient
+index. Verify your complete host graph with `skipLibCheck: false`.
 
 ## Diagnostic ownership
 

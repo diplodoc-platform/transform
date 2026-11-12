@@ -6,10 +6,10 @@ import type {PluginInstallation} from './plugin-configuration';
 import type {SanitizeOptions} from './sanitize-core';
 import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 
-import DefaultMarkdownIt from 'markdown-it';
 import attrs from 'markdown-it-attrs';
 import {createIDGeneratorByStrategy} from '@diplodoc/utils';
 
+import DefaultMarkdownIt from './markdown-it-runtime';
 import {bindFootnoteRoot, compileFootnoteOutput, prepareFootnoteTitle} from './footnote-data';
 import {createDocumentEnv} from './document-data';
 import {createLoggerFacade} from './log-core';
