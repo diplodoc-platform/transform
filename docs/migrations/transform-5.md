@@ -94,7 +94,7 @@ CommonJS interop, or a namespace whose `default` is that callable in native ESM.
 Normalize the module shape while retaining the legacy boolean evaluator:
 
 ```ts
-import evaluation from '@diplodoc/transform/lib/liquid/evaluation';
+import evaluation from '@diplodoc/transform/lib/liquid/evaluation.js';
 
 function resolveEvaluator<Evaluator extends (...args: never[]) => unknown>(
   value: Evaluator | {default: Evaluator},
@@ -106,6 +106,7 @@ const evaluateCondition = resolveEvaluator(evaluation);
 evaluateCondition('audience == "public"', {audience: 'public'}); // true
 ```
 
+Keep the `.js` suffix so native ESM can resolve the historical Transform 4 path.
 The named `evalExp` returns the uncoerced value and is not a drop-in boolean API
 replacement. Test both module formats if your package supports Transform 4 and 5.
 

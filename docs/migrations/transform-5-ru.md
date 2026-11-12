@@ -204,7 +204,7 @@ Default-импорт исторического `/lib/liquid/evaluation` пос�
 Нормализуйте форму модуля, сохранив прежний boolean evaluator:
 
 ```ts
-import evaluation from '@diplodoc/transform/lib/liquid/evaluation';
+import evaluation from '@diplodoc/transform/lib/liquid/evaluation.js';
 
 function resolveEvaluator<Evaluator extends (...args: never[]) => unknown>(
   value: Evaluator | {default: Evaluator},
@@ -216,6 +216,7 @@ const evaluateCondition = resolveEvaluator(evaluation);
 evaluateCondition('audience == "public"', {audience: 'public'}); // true
 ```
 
+Сохраните суффикс `.js`, чтобы native ESM нашёл старый путь в Transform 4.
 Именованный `evalExp` возвращает исходное значение и не заменяет boolean API
 напрямую. Если пакет поддерживает Transform 4 и 5, проверьте оба формата модулей.
 
