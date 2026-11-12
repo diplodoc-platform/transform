@@ -81,6 +81,13 @@ metadata and output; do not assume every plugin's full parser types are compatib
 across versions. Native 13 compatibility of a given adapter does not make an
 unpatched 13 installation secure.
 
+Transform ships its own optimized build of the pinned markdown-it sources. Its
+parser and Token constructors are distinct from a separately imported
+`markdown-it` installation. Custom plugins should use the parser and state objects
+they receive; review constructor equality and `instanceof` checks against an
+independently imported engine. Parser rules and native class-field semantics are
+preserved.
+
 For a preset shared by Transform 4 and 5, carry over the actual option values
 (such as allowed HTML tags and attributes) and map them to each version's API.
 Avoid casting an older parser or callback to the new type. If the preset owns
