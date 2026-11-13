@@ -1,8 +1,8 @@
 import type {MarkdownItPluginOpts} from '../typings';
 
-import MarkdownIt from 'markdown-it';
 import {relative} from 'path';
 
+import MarkdownIt from '../../markdown-it-runtime';
 import {getSrcTokenAttr, isLocalUrl} from '../../utils';
 import {resolveRelativePath} from '../../utilsFS';
 import deflist from '../deflist';

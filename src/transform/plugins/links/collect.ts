@@ -1,9 +1,9 @@
 import type {DiagnosticOptions} from '../../log-core';
 
-import MarkdownIt from 'markdown-it';
 import {sep} from 'path';
 import {parseHref} from '@diplodoc/utils';
 
+import MarkdownIt from '../../markdown-it-runtime';
 import {getInvocationLogger} from '../../diagnostic-context';
 import {DEFAULT_LANG} from '../../constants';
 import {PAGE_LINK_REGEXP, getHrefTokenAttr, isLocalUrl} from '../../utils';

@@ -3,7 +3,6 @@ import type {CutBoundary} from '@diplodoc/cut-extension/plugin';
 import type {NoteBoundary} from '@diplodoc/notes-extension/plugin';
 import type {TabsBoundary} from '@diplodoc/tabs-extension/plugin';
 
-import MarkdownIt from 'markdown-it';
 import attrs from 'markdown-it-attrs';
 import {
     directiveParser,
@@ -15,6 +14,7 @@ import {TokenType, transform as cut, recognizeCutBoundary} from '@diplodoc/cut-e
 import {createNotesPlugin, recognizeNoteBoundary} from '@diplodoc/notes-extension/plugin';
 import {recognizeTabsBoundary, transform as tabs} from '@diplodoc/tabs-extension/plugin';
 
+import MarkdownIt from '../markdown-it-runtime';
 import {normalizeDocumentResources} from '../document-context-core';
 import {includedSourceRanges} from '../preprocessors/included/boundaries';
 import {createTablePlugin} from '../plugins/table/core';

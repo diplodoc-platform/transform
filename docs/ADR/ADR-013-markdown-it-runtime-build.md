@@ -10,7 +10,11 @@ the browser build: its published ESM input is already lowered, so changing the
 target alone does not recover native fields. Ship the
 runtime and its complete third-party notices inside Transform; installation does
 not modify upstream dependencies or depend on install hooks. Keep the existing
-Markdown-it dependency for declarations and compatibility entry points.
+Markdown-it dependency for declarations and compatibility entry points. All Node
+auxiliary parser construction, including visibility filtering, migrations and
+link/image collectors, uses the same private runtime. Escaping utilities also
+construct this runtime when obtaining utils, so they do not load a second stock
+parser graph at startup. Dependency-owned parser imports remain separate.
 
 Preserve native class fields, including property descriptors and the behavior of
 inherited setters. Moving initializers into constructor assignments would change
@@ -21,6 +25,10 @@ independently installed Markdown-it copy.
 
 The installed-package gate compares HTML, serialized tokens and environments with
 the pinned distribution on public fixtures, and verifies inherited-setter behavior
-and actual use by the public parser. Integration and performance acceptance use
-the exact packed runtime. Reconsider the private build after upstream distribution
+and actual use by the public parser. The installed auxiliary API gate refuses
+parsing through the stock dependency while exercising visibility, all migrations
+and both collectors through native CJS and ESM entry points. A fresh-process
+startup probe verifies utility loading and records dependency-owned bare imports
+before any stock reference is loaded. Integration and
+performance acceptance use the exact packed runtime. Reconsider the private build after upstream distribution
 provides equivalent performance and compatibility.
