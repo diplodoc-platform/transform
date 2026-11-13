@@ -22,36 +22,17 @@ export function findBlockTokens(tokens: Token[], id: string) {
         const token = tokens[i];
 
         if (typeof start === 'number' && startToken) {
-            if (startToken.type === 'paragraph_open' && token.type === 'paragraph_close') {
-                end = i + 1;
+            const boundary = findBlockBoundary(startToken, token, i);
+            if (typeof boundary === 'number') {
+                end = boundary;
                 break;
-            } else if (startToken.type === 'heading_open') {
-                if (
-                    token.type === 'heading_open' &&
-                    token.tag === startToken.tag &&
-                    !isFootnoteBody(token)
-                ) {
-                    end = i;
-                    break;
-                } else if (i === tokens.length - 1) {
-                    end = tokens.length;
-                }
+            }
+            if (startToken.type === 'heading_open' && i === tokens.length - 1) {
+                end = tokens.length;
             }
         }
 
-        const explicitId = token.attrGet('id');
-        // Child headings have no generated anchors yet. Recognize their existing
-        // standalone IDs, including aliases, without consuming attributes or mutating tokens.
-        const matchesHeadingId =
-            token.type === 'heading_open' &&
-            matchesCustomHeadingId(tokens[i + 1]?.content || '', id, String(explicitId ?? ''));
-
-        if (
-            (token.type === 'paragraph_open' || token.type === 'heading_open') &&
-            !isFootnoteBody(token) &&
-            (explicitId === id || matchesHeadingId) &&
-            typeof start === 'undefined'
-        ) {
+        if (matchesBlockId(tokens, i, id) && typeof start === 'undefined') {
             startToken = token;
             start = i;
         }
@@ -64,6 +45,36 @@ export function findBlockTokens(tokens: Token[], id: string) {
     }
 
     return blockTokens;
+}
+
+function findBlockBoundary(start: Token, token: Token, index: number): number | undefined {
+    if (start.type === 'paragraph_open' && token.type === 'paragraph_close') {
+        return index + 1;
+    }
+    if (
+        start.type === 'heading_open' &&
+        token.type === 'heading_open' &&
+        token.tag === start.tag &&
+        !isFootnoteBody(token)
+    ) {
+        return index;
+    }
+    return undefined;
+}
+
+function matchesBlockId(tokens: Token[], index: number, id: string): boolean {
+    const token = tokens[index];
+    const explicitId = token.attrGet('id');
+    // Child headings have no generated anchors yet. Recognize their existing
+    // standalone IDs, including aliases, without consuming attributes or mutating tokens.
+    const matchesHeadingId =
+        token.type === 'heading_open' &&
+        matchesCustomHeadingId(tokens[index + 1]?.content || '', id, String(explicitId ?? ''));
+    return (
+        (token.type === 'paragraph_open' || token.type === 'heading_open') &&
+        !isFootnoteBody(token) &&
+        (explicitId === id || matchesHeadingId)
+    );
 }
 
 export function headingInfo(tokens: Token[], idx: number) {
