@@ -15,6 +15,11 @@ import {pathToFileURL} from 'node:url';
 
 const root = realpathSync(process.argv[1]);
 const require = createRequire(join(root, 'package.json'));
+const dependencyRoot = join(root, 'node_modules') + sep;
+const isCoreOwned = (parent) => parent?.startsWith(root + sep) && !parent.startsWith(dependencyRoot);
+assert.equal(isCoreOwned(join(root, 'lib/markdown-it-utils.js')), true);
+assert.equal(isCoreOwned(join(root, 'api/index.cjs')), true);
+assert.equal(isCoreOwned(join(root, 'node_modules/@diplodoc/file-extension/build/plugin/index-node.js')), false);
 const load = Module._load;
 const bareImports = [];
 Module._load = function (request, parent, ...args) {
@@ -31,7 +36,7 @@ try {
     const esm = await import(pathToFileURL(join(root, 'api/index.mjs')));
     assert.equal(cjs, esm.default);
     assert.ok(cjs('A **strong** body.').result.html.includes('<strong>strong</strong>'));
-    const coreImports = bareImports.filter(({parent}) => parent?.startsWith(root + sep));
+    const coreImports = bareImports.filter(({parent}) => isCoreOwned(parent));
     assert.deepEqual(coreImports, [], 'Core runtime loaded bare Markdown-it');
     console.log(JSON.stringify({utilityBareImports: 0, coreBareImports: 0, dependencyBareImports: bareImports}));
 } finally {
