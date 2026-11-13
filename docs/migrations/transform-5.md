@@ -428,7 +428,14 @@ The [block directives guide](../block-directives.md) describes the
 complete grammar, examples and migration limits. These contracts cover the three
 supported owners.
 
-## Accepted local consumers and asset delivery
+## Historical prerelease validation: consumers and asset delivery
+
+This section records checks of earlier local candidates. The versions below
+identify those historical artifacts; they are not installation instructions or
+the current beta dependency set. For the published beta and its coordinated
+dependencies, use [Installing the beta](#installing-the-beta). Revalidate your
+own consumer graph and assets after updating; the older results do not establish
+acceptance of a different package version.
 
 The genuine `5.0.0-transform5.0` archive was normally installed and checked in
 CLI, Translation, SDK/yfmlint, request-time Viewer and VS Code integrations.
