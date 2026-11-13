@@ -1,5 +1,6 @@
 {
   "tagPrefix": "v",
+  "bootstrap-sha": "9e834f1c74e8222d003e683c9c2422cc4f8263e8",
   "packages": {
     ".": {
       "release-type": "node",
