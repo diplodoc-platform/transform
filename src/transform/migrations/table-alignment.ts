@@ -6,8 +6,7 @@ import type {CellData, RowPositions} from '../plugins/table/positions';
 import type {AlignmentSuffix} from '../plugins/table/suffix';
 import type {YfmTablePluginOptions} from '../plugins/table/types';
 
-import DefaultMarkdownIt from 'markdown-it';
-
+import DefaultMarkdownIt from '../markdown-it-runtime';
 import {LogLevels} from '../log';
 import tablePlugin from '../plugins/table';
 import {alignmentSuffix, horizontalEnd} from '../plugins/table/suffix';

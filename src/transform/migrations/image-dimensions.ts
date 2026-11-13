@@ -2,9 +2,9 @@ import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {ParserEnv} from '../typings';
 import type {ImageSizeObserver, ImageSizeSpan} from '../plugins/imsize/positions';
 
-import MarkdownIt from 'markdown-it';
 import attrs from 'markdown-it-attrs';
 
+import MarkdownIt from '../markdown-it-runtime';
 import {imageWithSize} from '../plugins/imsize/plugin';
 import {createTablePlugin} from '../plugins/table/core';
 

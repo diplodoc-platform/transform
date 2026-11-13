@@ -24,6 +24,7 @@ import {verifyBlockDirectivesGraph} from './test-block-directives-graph.mjs';
 import {verifyInlineSyntaxGraph} from './test-inline-syntax-graph.mjs';
 import {verifyTableAlignmentGraph} from './test-table-alignment-graph.mjs';
 import {verifyMarkdownItPackage} from './test-markdown-it-package.mjs';
+import {verifyAuxiliaryMarkdownItPackage} from './test-auxiliary-markdown-it-package.mjs';
 
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const temporaryRoot = realpathSync(mkdtempSync(join(tmpdir(), 'diplodoc-svgo-package-')));
@@ -112,6 +113,7 @@ try {
     );
     const installedRequire = createRequire(join(consumerRoot, 'package.json'));
     const installedRoot = join(consumerRoot, 'node_modules/@diplodoc/transform');
+    await verifyAuxiliaryMarkdownItPackage(installedRoot, consumerRoot);
     const OptimizedMarkdownIt = installedRequire(
         join(installedRoot, 'lib/markdown-it-runtime.js'),
     ).default;

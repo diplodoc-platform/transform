@@ -3,12 +3,13 @@ import type {MarkdownIt} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {ContainerDirectiveHandler, ContainerDirectiveParams} from '@diplodoc/directive';
 import type {MarkdownItPluginCb} from './typings';
 
-import MarkdownItImpl from 'markdown-it';
 import {
     directiveParser,
     registerContainerDirective,
     tokenizeBlockContent,
 } from '@diplodoc/directive';
+
+import MarkdownItImpl from '../markdown-it-runtime';
 
 export type {ContentAudience, VisibilityMode} from '../shared-types';
 
