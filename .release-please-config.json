@@ -3,6 +3,8 @@
   "packages": {
     ".": {
       "release-type": "node",
+      "versioning": "prerelease",
+      "prerelease": false,
       "include-component-in-tag": false,
       "changelog-path": "CHANGELOG.md",
       "version-file": "package.json",
