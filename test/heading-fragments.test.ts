@@ -9,6 +9,7 @@ import parser from '../src/transform/md';
 import includes from '../src/transform/plugins/includes';
 import anchors from '../src/transform/plugins/anchors';
 import {findBlockTokens} from '../src/transform/utils';
+import {markFootnoteBody} from '../src/transform/footnote-data';
 
 let root: string;
 beforeAll(() => {
@@ -92,4 +93,68 @@ it('keeps explicit IDs authoritative and does not infer paragraph or mixed-attri
     document.tokens[0].attrSet('id', 'explicit');
     expect(findBlockTokens(document.tokens, 'simple')).toHaveLength(0);
     expect(findBlockTokens(document.tokens, 'explicit')).not.toHaveLength(0);
+});
+
+describe('fragment token boundaries', () => {
+    const parse = (source: string) =>
+        parser({plugins: [], enableMarkdownAttrs: false}).parseDocument(source).tokens;
+
+    it('includes the paragraph close and refuses an unterminated paragraph', () => {
+        const tokens = parse('Selected paragraph\n\nNext paragraph');
+        tokens[0].attrSet('id', 'selected');
+        const selected = findBlockTokens(tokens, 'selected');
+        expect(selected).toHaveLength(3);
+        expect(selected.every((token, index) => token === tokens[index])).toBe(true);
+        expect(selected[2].type).toBe('paragraph_close');
+        expect(findBlockTokens(tokens.slice(0, 2), 'selected')).toEqual([]);
+    });
+
+    it('stops at the next same-level heading, retaining nested and higher-level headings', () => {
+        const tokens = parse(
+            '## Selected {#selected}\n\nBody\n\n### Nested\n\nNested body\n\n' +
+                '# Higher\n\nHigher body\n\n## Stop\n\nExcluded',
+        );
+        const stop = tokens.findIndex(
+            (token, index) =>
+                token.type === 'heading_open' && tokens[index + 1]?.content === 'Stop',
+        );
+        const before = JSON.stringify(tokens);
+        const selected = findBlockTokens(tokens, 'selected');
+        expect(selected).toEqual(tokens.slice(0, stop));
+        expect(selected.every((token, index) => token === tokens[index])).toBe(true);
+        expect(
+            selected.filter((token) => token.type === 'heading_open').map((token) => token.tag),
+        ).toEqual(['h2', 'h3', 'h1']);
+        expect(JSON.stringify(tokens)).toBe(before);
+    });
+
+    it('retains the EOF index semantics for complete sections and isolated heading openers', () => {
+        const tokens = parse('## Last\n\nBody');
+        tokens[0].attrSet('id', 'selected');
+        expect(findBlockTokens(tokens, 'selected')).toEqual(tokens);
+        expect(findBlockTokens(tokens.slice(0, 1), 'selected')).toEqual([]);
+        expect(findBlockTokens(tokens.slice(0, 2), 'selected')).toEqual(tokens.slice(0, 2));
+    });
+
+    it('excludes footnote-body starts and ignores footnote-body heading boundaries', () => {
+        const tokens = parse(
+            '## Footnote start\n\nIgnored\n\n## Selected\n\nBody\n\n' +
+                '## Footnote boundary\n\nStill selected\n\n## Stop\n\nExcluded',
+        );
+        const heading = (title: string) =>
+            tokens.findIndex(
+                (token, index) =>
+                    token.type === 'heading_open' && tokens[index + 1]?.content === title,
+            );
+        const start = heading('Selected');
+        const footnote = heading('Footnote boundary');
+        const stop = heading('Stop');
+        tokens[0].attrSet('id', 'selected');
+        tokens[start].attrSet('id', 'selected');
+        markFootnoteBody(tokens.slice(0, start));
+        markFootnoteBody(tokens.slice(footnote, stop));
+        const selected = findBlockTokens(tokens, 'selected');
+        expect(selected).toEqual(tokens.slice(start, stop));
+        expect(selected.every((token, index) => token === tokens[start + index])).toBe(true);
+    });
 });
