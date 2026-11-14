@@ -107,6 +107,21 @@ const {result} = transform(content, {
 
 This is useful when you need to implement specific sanitization rules or integrate with a different sanitization library. The sanitizer function should accept HTML string as input and return sanitized HTML.
 
+### Passive HTML embeds
+
+The default sanitizer preserves `srcdoc` only for HTML-extension iframes marked
+`data-yfm-sandbox-mode="srcdoc"` with an explicit passive sandbox: empty, or only
+`allow-same-origin`. For CLI integration, configure the HTML plugin with
+`sandbox: 'allow-same-origin'` so its parent runtime can read the embedded document.
+Keep `sanitizeHtml` enabled in CLI and the HTML plugin's default sanitizer enabled.
+
+Embedded markup is sanitized again with the default outer policy. Nested frames,
+objects, embeds and author-supplied base/meta tags are removed; a fixed CSP blocks
+scripts, objects and base URLs. Unsafe sandbox flags, including `allow-scripts`,
+leave `srcdoc` blocked. Ordinary iframe URLs follow the existing sanitizer policy;
+explicit sandbox restrictions are retained.
+This mode intentionally does not support active scripts or nested browsing contexts.
+
 ## License
 
 MIT

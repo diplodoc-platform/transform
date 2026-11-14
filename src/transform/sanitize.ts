@@ -8,6 +8,7 @@ import * as cheerio from 'cheerio';
 import css from 'css';
 
 import log from './log';
+import {isPassiveIframe, sanitizeIframe} from './sanitize-iframe';
 
 export type SanitizeFunction = (
     html: string,
@@ -558,6 +559,7 @@ export const defaultOptions: SanitizeOptions = {
     allowedAttributes: {
         ...sanitizeHtml.defaults.allowedAttributes,
         '*': allowedAttributes,
+        iframe: ['srcdoc', 'sandbox'],
     },
     allowedSchemesAppliedToAttributes: [
         ...sanitizeHtml.defaults.allowedSchemesAppliedToAttributes,
@@ -565,6 +567,10 @@ export const defaultOptions: SanitizeOptions = {
         'from',
         'to',
     ],
+    // An empty sandbox enables all restrictions and must not be dropped.
+    nonBooleanAttributes: sanitizeHtml.defaults.nonBooleanAttributes.filter(
+        (name) => name !== 'sandbox',
+    ),
     allowVulnerableTags: true,
     parser: defaultParseOptions,
     cssWhiteList: defaultCssWhitelist,
@@ -577,6 +583,28 @@ export const defaultOptions: SanitizeOptions = {
         }),
     },
 };
+
+/**
+ * Apply the outer policy to embedded markup without nested browsing contexts.
+ *
+ * @param html The decoded embedded document.
+ * @returns Sanitized embedded content.
+ */
+function sanitizeEmbeddedHtml(html: string): string {
+    const options: SanitizeOptions = {
+        ...defaultOptions,
+        allowedTags: allowedTags.filter(
+            (tag) => !['iframe', 'object', 'embed', 'base', 'meta'].includes(tag),
+        ),
+        transformTags: {
+            ...defaultOptions.transformTags,
+            // Transform hooks also run for disallowed tags. Do not recurse into srcdoc.
+            iframe: (tagName) => ({tagName, attribs: {}}),
+        },
+    };
+
+    return sanitizeInternal(html, options, undefined, false);
+}
 
 // dangerous patterns
 const DANGEROUS_TAGS_RE =
@@ -837,10 +865,11 @@ export function sanitizeStyles(html: string, options: SanitizeOptions) {
     return styles + content;
 }
 
-export function sanitize(
+function sanitizeInternal(
     html: string,
-    options?: SanitizeOptions,
-    additionalOptions?: SanitizeOptions,
+    options: SanitizeOptions | undefined,
+    additionalOptions: SanitizeOptions | undefined,
+    allowPassiveIframe: boolean,
 ) {
     const sanitizeOptions = options || defaultOptions;
 
@@ -855,7 +884,49 @@ export function sanitize(
 
     const modifiedHtml = needToSanitizeStyles ? sanitizeStyles(html, sanitizeOptions) : html;
 
-    return sanitizeHtml(modifiedHtml, sanitizeOptions);
+    const transformAll = sanitizeOptions.transformTags?.['*'];
+    const transformTag =
+        typeof transformAll === 'string'
+            ? sanitizeHtml.simpleTransform(transformAll, {})
+            : transformAll;
+
+    return sanitizeHtml(modifiedHtml, {
+        ...sanitizeOptions,
+        transformTags: {
+            ...sanitizeOptions.transformTags,
+            // Enforce the iframe policy after custom per-tag and wildcard transforms.
+            '*': (tagName, attribs) => {
+                const tag = transformTag ? transformTag(tagName, attribs) : {tagName, attribs};
+                if (tag.tagName.toLowerCase() !== 'iframe') return tag;
+                return {
+                    ...tag,
+                    ...sanitizeIframe(
+                        tag.tagName,
+                        tag.attribs,
+                        allowPassiveIframe ? sanitizeEmbeddedHtml : undefined,
+                    ),
+                };
+            },
+        },
+        exclusiveFilter: (frame) => {
+            const filtered = sanitizeOptions.exclusiveFilter?.(frame);
+            if (filtered) return filtered;
+            // Attribute filtering must never retain srcdoc while dropping sandbox.
+            return (
+                frame.tag.toLowerCase() === 'iframe' &&
+                Object.prototype.hasOwnProperty.call(frame.attribs, 'srcdoc') &&
+                !isPassiveIframe(frame.attribs)
+            );
+        },
+    });
+}
+
+export function sanitize(
+    html: string,
+    options?: SanitizeOptions,
+    additionalOptions?: SanitizeOptions,
+) {
+    return sanitizeInternal(html, options, additionalOptions, true);
 }
 
 export default sanitize;
