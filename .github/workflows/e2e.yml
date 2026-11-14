@@ -9,7 +9,8 @@ on:
 jobs:
   verify_files:
     name: Verify Files
-    runs-on: ubuntu-latest
+    # Playwright 1.60 supports Ubuntu 24.04; ubuntu-latest has moved to 26.04.
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
