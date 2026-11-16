@@ -321,6 +321,15 @@ describe('Anchors', () => {
 
             expect(html).toEqual('<h2 id="custom-id">Test heading</h2>\n');
         });
+
+        it('should keep a space after inline markup when a heading has a custom id', () => {
+            const source = '## Open the **next** chapter {#chapter}';
+
+            expect(html(source)).toContain('<strong>next</strong> chapter');
+            expect(html(source, {disableCommonAnchors: true})).toEqual(
+                '<h2 id="chapter">Open the <strong>next</strong> chapter</h2>\n',
+            );
+        });
     });
 
     describe('when useCommonAnchorButtons is true', () => {
