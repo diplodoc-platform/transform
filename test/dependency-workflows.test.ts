@@ -1,5 +1,6 @@
 import {readFileSync} from 'fs';
 import {resolve} from 'path';
+import {runInNewContext} from 'vm';
 import {load} from 'js-yaml';
 import {describe, expect, it} from 'vitest';
 
@@ -26,6 +27,34 @@ type Workflow = {
 };
 const workflow = (name: string) =>
     load(readFileSync(resolve(__dirname, `../.github/workflows/${name}.yml`), 'utf8')) as Workflow;
+
+function enabled(
+    expression: string | undefined,
+    author: string,
+    actor = author,
+    fork = false,
+    branch = 'topic',
+) {
+    expect(typeof expression).toBe('string');
+    return Boolean(
+        runInNewContext(expression || 'false', {
+            github: {
+                actor,
+                repository: 'owner/transform',
+                event: {
+                    pull_request: {
+                        user: {login: author},
+                        head: {
+                            ref: branch,
+                            repo: {full_name: fork ? 'fork/transform' : 'owner/transform'},
+                        },
+                    },
+                },
+            },
+            startsWith: (value: string, prefix: string) => value.startsWith(prefix),
+        }),
+    );
+}
 
 describe('Dependabot workflow boundaries', () => {
     it('runs coverage tests and preserves artifacts independently of Sonar publication', () => {
@@ -60,7 +89,9 @@ describe('Dependabot workflow boundaries', () => {
         const lock = workflow('package-lock');
         const verify = lock.jobs['verify-dependabot-lock'];
         expect(lock.permissions).toEqual({contents: 'read'});
-        expect(verify.if).toBe("github.event.pull_request.user.login == 'dependabot[bot]'");
+        expect(enabled(verify.if, 'dependabot[bot]')).toBe(true);
+        expect(enabled(verify.if, 'dependabot[bot]', 'maintainer')).toBe(true);
+        expect(enabled(verify.if, 'maintainer')).toBe(false);
         expect(verify.steps.find((step) => step.uses === 'actions/checkout@v5')?.with).toEqual({
             'persist-credentials': false,
         });
@@ -85,6 +116,41 @@ describe('Dependabot workflow boundaries', () => {
         );
         expect(writer.if).toContain("github.event.pull_request.user.login != 'dependabot[bot]'");
         expect(writer.if).toContain("github.actor != 'dependabot[bot]'");
+    });
+
+    it('keeps verifier and writer mutually exclusive across compatible lockfile workflow versions', () => {
+        const lock = workflow('package-lock');
+        const verify = lock.jobs['verify-dependabot-lock'];
+        const writer = lock.jobs['update-package-lock'];
+        const candidate = 'codex/dependency-candidate-0123456789abcdef';
+        // Accept the current stable template and its immutable-candidate successor.
+        const supportsCandidates = enabled(
+            verify.if,
+            'diplodoc-bot',
+            'maintainer',
+            false,
+            candidate,
+        );
+        const cases = [
+            {author: 'dependabot[bot]', actor: 'dependabot[bot]'},
+            {author: 'dependabot[bot]', actor: 'maintainer'},
+            {author: 'maintainer', actor: 'dependabot[bot]'},
+            {author: 'maintainer', actor: 'maintainer'},
+            {author: 'maintainer', actor: 'maintainer', fork: true},
+            {author: 'diplodoc-bot', actor: 'maintainer', branch: candidate},
+            {author: 'diplodoc-bot', actor: 'yc-ui-bot', branch: candidate},
+            {author: 'diplodoc-bot', actor: 'maintainer', branch: candidate, fork: true},
+        ];
+        for (const row of cases) {
+            const immutable =
+                row.author === 'dependabot[bot]' ||
+                (supportsCandidates && row.branch === candidate);
+            const verifies = enabled(verify.if, row.author, row.actor, row.fork, row.branch);
+            const writes = enabled(writer.if, row.author, row.actor, row.fork, row.branch);
+            expect(verifies).toBe(immutable);
+            expect(writes).toBe(!immutable && !row.fork && row.actor !== 'dependabot[bot]');
+            expect(verifies && writes).toBe(false);
+        }
     });
 
     it('preserves the required lock context and fails unless the applicable lane succeeds', () => {
