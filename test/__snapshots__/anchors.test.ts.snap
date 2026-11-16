@@ -58,7 +58,7 @@ exports[`Anchors > should add multiple anchors 1`] = `
 </pre>
 `;
 
-exports[`Anchors > should add multiple anchors when included 1`] = `
+exports[`Anchors > should add only the last custom anchor when included 1`] = `
 <h2 id="test0">
   <a href="link.html#test0"
      class="yfm-anchor yfm-clipboard-anchor"
@@ -75,40 +75,18 @@ exports[`Anchors > should add multiple anchors when included 1`] = `
 <p>
   Content before include
 </p>
-<h1 id="test1">
-  <a id="test3"
-     href="link.html#test3"
+<h1 id="test3">
+  <a href="link.html#test3"
      class="yfm-anchor yfm-clipboard-anchor"
      aria-hidden="true"
   >
     <span class="visually-hidden"
           data-no-index="true"
     >
-      Title
+      Title {#test1} {#test2}
     </span>
   </a>
-  <a id="test2"
-     href="link.html#test2"
-     class="yfm-anchor yfm-clipboard-anchor"
-     aria-hidden="true"
-  >
-    <span class="visually-hidden"
-          data-no-index="true"
-    >
-      Title
-    </span>
-  </a>
-  <a href="link.html#test1"
-     class="yfm-anchor yfm-clipboard-anchor"
-     aria-hidden="true"
-  >
-    <span class="visually-hidden"
-          data-no-index="true"
-    >
-      Title
-    </span>
-  </a>
-  Title
+  Title {#test1} {#test2}
 </h1>
 <p>
   Content
