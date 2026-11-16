@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.78.14](https://github.com/diplodoc-platform/transform/compare/v4.78.13...v4.78.14) (2026-11-16)
+
+
+### Bug Fixes
+
+* **ci:** keep Playwright on its supported Ubuntu runner ([dd3b223](https://github.com/diplodoc-platform/transform/commit/dd3b223b29cbb60ab8f62d8df2390bf78926d117))
+* preserve passive HTML embeds through sanitization ([7a4f417](https://github.com/diplodoc-platform/transform/commit/7a4f4178063424fd7a08bd77482b3ca1215d9632))
+
 ## [4.78.13](https://github.com/diplodoc-platform/transform/compare/v4.78.12...v4.78.13) (2026-11-09)
 
 
