@@ -8,6 +8,7 @@ import * as cheerio from 'cheerio';
 import css from 'css';
 
 import log from './log';
+import {isPassiveIframe, sanitizeIframe} from './sanitize-iframe';
 
 export type SanitizeFunction = (
     html: string,
@@ -558,6 +559,7 @@ export const defaultOptions: SanitizeOptions = {
     allowedAttributes: {
         ...sanitizeHtml.defaults.allowedAttributes,
         '*': allowedAttributes,
+        iframe: ['srcdoc', 'sandbox'],
     },
     allowedSchemesAppliedToAttributes: [
         ...sanitizeHtml.defaults.allowedSchemesAppliedToAttributes,
@@ -565,6 +567,10 @@ export const defaultOptions: SanitizeOptions = {
         'from',
         'to',
     ],
+    // An empty sandbox enables all restrictions and must not be dropped.
+    nonBooleanAttributes: sanitizeHtml.defaults.nonBooleanAttributes.filter(
+        (name) => name !== 'sandbox',
+    ),
     allowVulnerableTags: true,
     parser: defaultParseOptions,
     cssWhiteList: defaultCssWhitelist,
@@ -577,6 +583,25 @@ export const defaultOptions: SanitizeOptions = {
         }),
     },
 };
+
+/**
+ * Build the outer policy for embedded markup without nested browsing contexts.
+ *
+ * @returns Options shared by passive frames in one outer sanitizer invocation.
+ */
+function embeddedHtmlOptions(): SanitizeOptions {
+    return {
+        ...defaultOptions,
+        allowedTags: allowedTags.filter(
+            (tag) => !['iframe', 'object', 'embed', 'base', 'meta'].includes(tag),
+        ),
+        transformTags: {
+            ...defaultOptions.transformTags,
+            // Transform hooks also run for disallowed tags. Do not recurse into srcdoc.
+            iframe: (tagName) => ({tagName, attribs: {}}),
+        },
+    };
+}
 
 // dangerous patterns
 const DANGEROUS_TAGS_RE =
@@ -837,10 +862,11 @@ export function sanitizeStyles(html: string, options: SanitizeOptions) {
     return styles + content;
 }
 
-export function sanitize(
+function sanitizeInternal(
     html: string,
-    options?: SanitizeOptions,
-    additionalOptions?: SanitizeOptions,
+    options: SanitizeOptions | undefined,
+    additionalOptions: SanitizeOptions | undefined,
+    allowPassiveIframe: boolean,
 ) {
     const sanitizeOptions = options || defaultOptions;
 
@@ -855,7 +881,61 @@ export function sanitize(
 
     const modifiedHtml = needToSanitizeStyles ? sanitizeStyles(html, sanitizeOptions) : html;
 
-    return sanitizeHtml(modifiedHtml, sanitizeOptions);
+    const transformAll = sanitizeOptions.transformTags?.['*'];
+    const transformTag =
+        typeof transformAll === 'string'
+            ? sanitizeHtml.simpleTransform(transformAll, {})
+            : transformAll;
+    const iframeAttributes = new WeakSet<Attributes>();
+    let embeddedOptions: SanitizeOptions | undefined;
+
+    const sanitizeEmbeddedHtml = (content: string): string => {
+        embeddedOptions ??= embeddedHtmlOptions();
+
+        return sanitizeInternal(content, embeddedOptions, undefined, false);
+    };
+
+    return sanitizeHtml(modifiedHtml, {
+        ...sanitizeOptions,
+        transformTags: {
+            ...sanitizeOptions.transformTags,
+            // Enforce the iframe policy after custom per-tag and wildcard transforms.
+            '*': (tagName, attribs) => {
+                const tag = transformTag ? transformTag(tagName, attribs) : {tagName, attribs};
+                if (tag.tagName.toLowerCase() !== 'iframe') return tag;
+
+                const iframe = sanitizeIframe(
+                    tag.tagName,
+                    tag.attribs,
+                    allowPassiveIframe ? sanitizeEmbeddedHtml : undefined,
+                );
+                iframeAttributes.add(iframe.attribs);
+
+                return {...tag, ...iframe};
+            },
+        },
+        exclusiveFilter: (frame) => {
+            // Attribute filtering must never retain srcdoc while dropping sandbox.
+            // frame.tag is the original tag; track the attributes of the emitted iframe.
+            if (
+                iframeAttributes.has(frame.attribs) &&
+                Object.prototype.hasOwnProperty.call(frame.attribs, 'srcdoc') &&
+                !isPassiveIframe(frame.attribs)
+            ) {
+                return true;
+            }
+
+            return sanitizeOptions.exclusiveFilter?.(frame) || false;
+        },
+    });
+}
+
+export function sanitize(
+    html: string,
+    options?: SanitizeOptions,
+    additionalOptions?: SanitizeOptions,
+) {
+    return sanitizeInternal(html, options, additionalOptions, true);
 }
 
 export default sanitize;
