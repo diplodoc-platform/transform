@@ -233,7 +233,7 @@ export function resolveMinimalBrowserOptions(
             const result: unknown = sanitize(html, sanitizeOptions);
             if (typeof result !== 'string') {
                 try {
-                    Promise.prototype.then.call(result, undefined, () => undefined);
+                    Promise.prototype.then.call(result).catch(() => undefined);
                 } catch {
                     // Non-Promise values are rejected below without invoking arbitrary thenables.
                 }
