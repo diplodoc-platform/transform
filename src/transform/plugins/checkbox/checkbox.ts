@@ -38,6 +38,7 @@ function matchOpenToken(tokens: Token[], i: number) {
 }
 
 export type CheckboxOptions = {
+    /** Fixed prefix. Omit it to generate a namespace for each document. */
     idPrefix?: string;
     divClass?: string;
     /** @default true */
@@ -48,12 +49,11 @@ export const checkboxReplace = function (
     _md: MarkdownIt,
     opts?: CheckboxOptions,
 ): (state: StateCore) => void {
-    const defaults: Required<CheckboxOptions> = {
+    const defaults = {
         divClass: 'checkbox',
-        idPrefix: 'checkbox',
         disabled: true,
     };
-    const options = Object.assign(defaults, opts);
+    const options = {...defaults, ...opts};
 
     const createTokens = function (state: StateCore, checkbox: ParsedCheckbox): Token[] {
         let token: Token;
@@ -69,9 +69,9 @@ export const checkboxReplace = function (
         nodes.push(token);
 
         /**
-         * <input type="checkbox" id="checkbox{n}" checked="true">
+         * <input type="checkbox" id="..." checked="true">
          */
-        const id = options.idPrefix + nextCheckboxId(state.env);
+        const id = nextCheckboxId(state.env, options.idPrefix);
         token = new state.Token(CheckboxTokenType.CheckboxInput, 'input', 0);
         token.block = true;
         token.map = [checkbox.startLine, checkbox.endLine];
@@ -88,7 +88,7 @@ export const checkboxReplace = function (
         nodes.push(token);
 
         /**
-         * <label for="checkbox{n}">
+         * <label for="...">
          */
         token = new state.Token(CheckboxTokenType.CheckboxLabelOpen, 'label', 1);
         token.attrs = [['for', id]];

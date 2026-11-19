@@ -31,6 +31,8 @@ export interface ParserEnv extends Env {
     assets?: string[];
     included?: Record<string, string>;
     path?: string;
+    /** Namespace for legacy Checkbox IDs in this document, including its fragments. */
+    checkboxIdPrefix?: string;
     includes?: string[];
     terms?: Record<string, string>;
     changelogs?: ChangelogItem[];
