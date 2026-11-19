@@ -34,6 +34,7 @@ function enabled(
     actor = author,
     fork = false,
     branch = 'topic',
+    forkOwner = 'fork',
 ) {
     expect(typeof expression).toBe('string');
     return Boolean(
@@ -46,11 +47,16 @@ function enabled(
                         user: {login: author},
                         head: {
                             ref: branch,
-                            repo: {full_name: fork ? 'fork/transform' : 'owner/transform'},
+                            repo: {
+                                full_name: fork ? `${forkOwner}/transform` : 'owner/transform',
+                                fork,
+                                owner: {login: fork ? forkOwner : 'owner'},
+                            },
                         },
                     },
                 },
             },
+            always: () => true,
             startsWith: (value: string, prefix: string) => value.startsWith(prefix),
         }),
     );
@@ -154,12 +160,32 @@ describe('Dependabot workflow boundaries', () => {
     });
 
     it('preserves the required lock context and fails unless the applicable lane succeeds', () => {
-        const result = workflow('package-lock').jobs['package-lock-result'];
+        const {jobs} = workflow('package-lock');
+        const result = jobs['package-lock-result'];
+        const verify = jobs['verify-dependabot-lock'];
+        const writer = jobs['update-package-lock'];
+        const prepared = 'codex/dependency-group-0123456789abcdef01234567';
+        const supportsPrepared = verify.if?.includes('codex/dependency-group-') === true;
+
         expect(result.name).toBe('Update package-lock.json');
         expect(result.needs).toEqual(['verify-dependabot-lock', 'update-package-lock']);
-        expect(result.if).toBe(
-            'always() && github.event.pull_request.head.repo.full_name == github.repository',
-        );
+        expect(result.if).toMatch(/^always\(\)\s*&&/);
+        expect(enabled(result.if, 'maintainer')).toBe(true);
+        expect(enabled(result.if, 'dependabot[bot]', 'maintainer')).toBe(true);
+        expect(enabled(result.if, 'contributor', 'maintainer', true)).toBe(false);
+        expect(enabled(result.if, 'diplodoc-bot', 'maintainer', true, prepared)).toBe(false);
+        expect(
+            enabled(result.if, 'contributor', 'maintainer', true, prepared, 'diplodoc-bot'),
+        ).toBe(false);
+        expect(
+            enabled(result.if, 'diplodoc-bot', 'maintainer', true, prepared, 'diplodoc-bot'),
+        ).toBe(supportsPrepared);
+        expect(
+            enabled(verify.if, 'diplodoc-bot', 'maintainer', true, prepared, 'diplodoc-bot'),
+        ).toBe(supportsPrepared);
+        expect(
+            enabled(writer.if, 'diplodoc-bot', 'maintainer', true, prepared, 'diplodoc-bot'),
+        ).toBe(false);
         const gate = result.steps[0];
         expect(gate.env?.LOCK_RESULT).toContain('needs.verify-dependabot-lock.result');
         expect(gate.env?.LOCK_RESULT).toContain('needs.update-package-lock.result');
