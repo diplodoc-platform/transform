@@ -24,15 +24,16 @@ test('explicit task-list removal preserves legacy checkbox list markup', () => {
     const source = '- [x] Complete\n- [ ] Pending';
     const both = transform(source, {disableLiquid: true, plugins: [...defaultPlugins, checkbox]});
     expect(both.result.html).toContain('class="yfm-task-label"');
+    const legacyCheckbox = (md: MarkdownItType) => checkbox(md, {idPrefix: 'checkbox'});
     const callbacks = transform(source, {
         disableLiquid: true,
-        plugins: [...defaultPlugins.filter((plugin) => plugin !== taskList), checkbox],
+        plugins: [...defaultPlugins.filter((plugin) => plugin !== taskList), legacyCheckbox],
     });
     const configured = transform(source, {
         disableLiquid: true,
         pluginConfiguration: {
             disable: ['task-list'],
-            plugins: [defineLegacyPlugin({id: 'custom/checkbox', plugin: checkbox})({})],
+            plugins: [defineLegacyPlugin({id: 'custom/checkbox', plugin: legacyCheckbox})({})],
         },
     });
     expect(configured.result.html).toBe(callbacks.result.html);

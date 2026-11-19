@@ -243,15 +243,45 @@ describe('document lifecycle', () => {
         expect(consumer.warn.mock.calls[0][0]).toContain('6.0.0');
     });
 
-    test('checkbox state is fresh per document while custom generator identity remains exact', () => {
+    test('checkbox documents get separate namespaces while the custom host generator stays intact', () => {
         const generateID = vi.fn(() => 'application-id');
         const plugin: MarkdownItPluginCb = (_md, options) =>
             expect(options.generateID).toBe(generateID);
         const md = parser({plugins: [checkbox, plugin], generateID});
         const a = md.compileDocument(md.parseDocument('[ ] A'));
         const b = md.compileDocument(md.parseDocument('[ ] B'));
-        expect(a).toContain('id="checkbox0"');
-        expect(b).toContain('id="checkbox0"');
+        const aId = a.match(/id="(checkbox-[a-z0-9]+-0)"/)?.[1];
+        const bId = b.match(/id="(checkbox-[a-z0-9]+-0)"/)?.[1];
+
+        expect(aId).toEqual(expect.any(String));
+        expect(bId).toEqual(expect.any(String));
+        expect(aId).not.toBe(bId);
+        expect(a).toContain(`for="${aId}"`);
+        expect(b).toContain(`for="${bId}"`);
+    });
+
+    test('uses a document prefix ahead of a fixed Checkbox plugin prefix', () => {
+        const md = parser({plugins: [(native) => checkbox(native, {idPrefix: 'fixed-'})]});
+        const article = md.parseDocument('[ ] A\n[X] B', (env) => {
+            env.checkboxIdPrefix = 'article-';
+        });
+        const comment = md.parseDocument('[X] C');
+
+        expect(md.compileDocument(article)).toContain('for="article-0"');
+        expect(md.compileDocument(article)).toContain('id="article-1"');
+        expect(md.compileDocument(comment)).toContain('id="fixed-0"');
+    });
+
+    test('nested checkboxes share the same prefix and sequence as the parent', () => {
+        const native = new NativeMarkdownIt().use(checkbox);
+        const env = createDocumentEnv();
+        env.checkboxIdPrefix = 'article-';
+        expect(native.render('[ ] Parent', env)).toContain('id="article-0"');
+
+        const tokens = parseDocumentFragment(native, '[X] Child', env, {purpose: 'fragment'});
+        const html = native.renderer.render(tokens, native.options, env);
+        expect(html).toContain('id="article-1"');
+        expect(html).toContain('for="article-1"');
     });
 
     test('raw MarkdownIt meta writer uses the exact supplied env and remains compatible', () => {

@@ -9,9 +9,11 @@ import type {
 import type {DeprecationReporter} from './deprecation-core';
 import type {FootnoteService} from './footnote-data';
 
+import {createIDGeneratorByStrategy} from '@diplodoc/utils';
+
 import {createDocumentEnv} from './document-data';
 
-type Services = {checkbox: number; footnotes?: FootnoteService};
+type Services = {checkbox: number; checkboxPrefix?: string; footnotes?: FootnoteService};
 type Context = {
     pending: DocumentEnv;
     current?: ParserEnv;
@@ -23,6 +25,7 @@ type Context = {
 const contexts = new WeakMap<MarkdownIt, Context>();
 const services = new WeakMap<ParserEnv, Services>();
 const fragments = new WeakMap<ParsedDocumentFragment, {md: MarkdownIt; contributions: ParserEnv}>();
+const generateCheckboxNamespace = createIDGeneratorByStrategy('random');
 
 /**
  * Read the canonical context without installing native host defaults.
@@ -147,13 +150,22 @@ export function withDocumentEnv<T>(md: MarkdownIt, env: ParserEnv, action: () =>
     }
 }
 
-export function nextCheckboxId(env: ParserEnv): number {
+function getDocumentServices(env: ParserEnv): Services {
     let value = services.get(env);
     if (!value) {
         value = {checkbox: 0};
         services.set(env, value);
     }
-    return value.checkbox++;
+    return value;
+}
+
+export function nextCheckboxId(env: ParserEnv, pluginPrefix?: string): string {
+    const value = getDocumentServices(env);
+    const prefix =
+        env.checkboxIdPrefix ??
+        pluginPrefix ??
+        (value.checkboxPrefix ??= generateCheckboxNamespace('checkbox') + '-');
+    return prefix + value.checkbox++;
 }
 
 function unique<T>(values: T[]): T[] {
@@ -295,12 +307,7 @@ export function parseChildDocumentResult(
         delete child['has-yfm-cut'];
         delete child['has-yfm-file'];
         child.included = {...parent.included};
-        let shared = services.get(parent);
-        if (!shared) {
-            shared = {checkbox: 0};
-            services.set(parent, shared);
-        }
-        services.set(child, shared);
+        services.set(child, getDocumentServices(parent));
         const tokens = withDocumentEnv(md, child, () => {
             const prepared = prepare ? prepare(source) : source;
             if (typeof prepared !== 'string') {
@@ -412,7 +419,5 @@ export function footnoteService(env: ParserEnv): FootnoteService | undefined {
     return services.get(env)?.footnotes;
 }
 export function setFootnoteService(env: ParserEnv, footnotes: FootnoteService): void {
-    const service = services.get(env) ?? {checkbox: 0};
-    service.footnotes = footnotes;
-    services.set(env, service);
+    getDocumentServices(env).footnotes = footnotes;
 }
