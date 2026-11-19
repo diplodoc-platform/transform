@@ -8,6 +8,11 @@ retains its separate default-on policy.
 
 [All markdownlint rules](https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md)
 
+This compatibility entry bundles the pinned markdownlint 0.32.1 rule engine
+with its upstream types and license. The installed entry resolves the same
+native Markdown-it 15 dependency as Transform. The build-only engine's
+parser override keeps source tests on that version too.
+
 ## YFM001 - Inline code line length
 
 Tags: line_length

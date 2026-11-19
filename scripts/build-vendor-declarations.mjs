@@ -1,5 +1,5 @@
 import {createRequire} from 'node:module';
-import {mkdirSync, readFileSync, writeFileSync} from 'node:fs';
+import {copyFileSync, mkdirSync, readFileSync, writeFileSync} from 'node:fs';
 import {dirname, relative, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import ts from 'typescript';
@@ -37,3 +37,18 @@ const declaration = readFileSync(declarationPath, 'utf8')
     .replace(/(['"])svgo\1/g, "'./vendor/svgo/lib/svgo-node.js'")
     .replace(/(['"])svgo\/browser\1/g, "'./vendor/svgo/lib/svgo.js'");
 writeFileSync(declarationPath, declaration);
+
+const markdownlintTypes = dirname(require.resolve('markdownlint'));
+const lintOutput = resolve(root, 'lib/yfmlint/vendor');
+mkdirSync(lintOutput, {recursive: true});
+for (const file of ['markdownlint.d.ts', 'configuration.d.ts']) {
+    copyFileSync(resolve(markdownlintTypes, file), resolve(lintOutput, file));
+}
+const lintDeclaration = resolve(root, 'lib/yfmlint/legacy-markdownlint.d.ts');
+writeFileSync(
+    lintDeclaration,
+    readFileSync(lintDeclaration, 'utf8').replace(
+        /(['"])markdownlint\1/g,
+        "'./vendor/markdownlint'",
+    ),
+);
