@@ -141,9 +141,15 @@ try {
     writeFileSync(
         viteEntry,
         `import sup from '@diplodoc/transform/plugins/sup';
+import monospace from '@diplodoc/transform/plugins/monospace';
+import browserTransform, {definePlugin} from '@diplodoc/transform/browser/minimal';
 import {ImsizeAttr} from '@diplodoc/transform/lib/plugins/imsize/const.js';
 import logger, {getLogger, log} from '@diplodoc/transform/log';
-export const result = [typeof sup, ImsizeAttr.Width, typeof getLogger, typeof log.warn, logger === log];`,
+export const result = [typeof sup, ImsizeAttr.Width, typeof getLogger, typeof log.warn, logger === log];
+const samples = definePlugin({id: 'app/samples', setup(md) { md.use(monospace); }})({});
+export const minimalHtml = browserTransform('Output: ##sample##', {
+    pluginConfiguration: {preset: 'none', plugins: [samples]},
+}).result.html;`,
     );
     await buildWithVite({
         root: consumerRoot,
@@ -153,6 +159,7 @@ export const result = [typeof sup, ImsizeAttr.Width, typeof getLogger, typeof lo
     });
     const viteConsumer = await import(pathToFileURL(join(consumerRoot, 'dist/consumer.mjs')));
     assert.deepEqual(viteConsumer.result, ['function', 'width', 'function', 'function', true]);
+    assert.match(viteConsumer.minimalHtml, /<samp>sample<\/samp>/);
     copyFileSync(
         join(projectRoot, 'scripts/diagnostics-package-consumer.mjs'),
         join(consumerRoot, 'diagnostics-consumer.mjs'),
@@ -494,6 +501,10 @@ void typedLabel; void pathIsNotGuaranteed;
     const configurationTypes = `
 import underline from '@diplodoc/transform/plugins/underline';
 import subscript from '@diplodoc/transform/plugins/subscript';
+import sup from '@diplodoc/transform/plugins/sup';
+import monospace from '@diplodoc/transform/plugins/monospace';
+import notes from '@diplodoc/transform/plugins/notes';
+import type NativeMarkdownIt from 'markdown-it' with {'resolution-mode': 'import'};
 import cut from '@diplodoc/transform/plugins/cut';
 import tabs from '@diplodoc/transform/plugins/tabs';
 import legacyCut from '@diplodoc/transform/lib/plugins/cut';
@@ -516,6 +527,10 @@ const typedTaskList: MarkdownItPluginCb = taskList;
 void typedFootnotes; void typedTaskList;
 const typedUnderline: MarkdownItPluginCb = underline;
 const typedSubscript: (md: MarkdownIt) => void = subscript;
+declare const nativeParser: InstanceType<typeof NativeMarkdownIt>;
+nativeParser.use(sup).use(monospace);
+declare const noteOptions: Omit<Parameters<typeof notes>[1], 'notesAutotitle'>;
+nativeParser.use(notes, noteOptions);
 configuration.defineTransformOptions({plugins: {enable: ['underline', 'subscript', 'footnotes', 'task-list'], options: {underline: {}, subscript: {}, footnotes: {}, 'task-list': {}}}});
 configuration.defineTransformOptions({plugins: {options: {cut: {directiveSyntax: 'enabled'}, notes: {directiveSyntax: 'only'}, tabs: {directiveSyntax: 'disabled'}}}});
 // @ts-expect-error Directive modes are a closed per-feature enum.

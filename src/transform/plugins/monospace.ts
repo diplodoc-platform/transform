@@ -1,8 +1,7 @@
-import type {Delimiter} from 'markdown-it' with {'resolution-mode': 'import'};
+import type {Delimiter, MarkdownIt} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {StateInline} from '../typings';
-import type {MarkdownItPluginCb} from './typings';
 
-const monospace: MarkdownItPluginCb = (md) => {
+const monospace = (md: MarkdownIt) => {
     function postProcess(state: StateInline, delimiters: Delimiter[]) {
         let token;
         const loneMarkers = [];
