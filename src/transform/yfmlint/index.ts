@@ -1,6 +1,7 @@
 import type {Dictionary} from 'lodash';
 import type {Rule} from './legacy-markdownlint';
 import type {LogLevels, Logger} from '../log';
+import type {MarkdownIt} from '../typings';
 import type {Options} from './typings';
 import type {LegacyEngineDiagnostics} from '../legacy-engines';
 
@@ -77,6 +78,9 @@ function yfmlint(opts: Options) {
     }
 
     const plugins = [
+        (md: MarkdownIt) => {
+            md.linkify.set({fuzzyLink: true, fuzzyEmail: true, urlAuth: true});
+        },
         ...(resolveMarkdownAttrs(opts.enableMarkdownAttrs) ? [attrs] : []),
         ...(customPlugins || []),
     ];
