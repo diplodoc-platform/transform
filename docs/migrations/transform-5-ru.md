@@ -136,6 +136,12 @@ const output = transform('# Заголовок');
 | Браузерная сборка                                           | `/browser`, `/browser/minimal`                                                                                                                                             |
 | Ресурсы                                                     | `/runtime`, `/runtime/base`, `/runtime/yfm-only`, `/runtime/print`; аналогичные `/styles`, `/styles/base`, `/styles/yfm-only`, `/styles/print`; `/scss/*` и `/dist/scss/*` |
 
+Node API и публичные подмодули Node поддерживают ESM и CommonJS.
+`/browser` и `/browser/minimal` — ESM; их парсер и функции контекста нужно
+импортировать из выбранной браузерной точки. Загрузку JS и CSS настраивает сборщик.
+Точные имена плагинов и совместимых путей перечислены в
+[публичном API](../../scripts/public-api.mjs) и [exports пакета](../../package.json).
+
 Для часто встречающихся старых импортов используйте точечное соответствие:
 
 | Раньше                                  | Предпочтительно в новом коде                                                                 |
@@ -248,6 +254,20 @@ md.use(bare, {defs: {wave: '👋'}});
 Запустите также проверку типов в пакете, который регистрирует плагин: версии
 деклараций markdown-it у потребителей могут различаться.
 
+Замените `markdown-it/lib/token` и типы из namespace вроде `MarkdownIt.Token`
+на публичный импорт `Token` из `markdown-it`. Для Markdown-it 15 используются
+встроенные декларации. Отдельные `@types/markdown-it` нужны только другим
+версиям парсера в графе. Перед строковой обработкой атрибутов проверьте тип.
+
+```ts
+import type {Token} from 'markdown-it';
+
+function readAttribute(token: Token, name: string): string | undefined {
+  const value = token.attrGet(name);
+  return typeof value === 'string' || typeof value === 'number' ? String(value) : undefined;
+}
+```
+
 ## Изменения HTML после обновления парсера
 
 При переходе с markdown-it 13 на 15 сохраняются авторские Unicode-пробелы,
@@ -328,6 +348,33 @@ CLI. Остальные предупреждения по-прежнему уч�
 
 ## Настройки и набор плагинов
 
+Если приложение уже формирует список callback, можно сохранить опции,
+порядок и `.collect` при переходе к именованной конфигурации.
+
+```ts
+import transform from '@diplodoc/transform';
+import {transform as createCut} from '@diplodoc/cut-extension';
+import {defineLegacyPlugin, defineTransformOptions} from '@diplodoc/transform/configuration';
+
+const cut = createCut({bundle: false, directiveSyntax: 'disabled'});
+const before = transform(source, {plugins: [cut]});
+
+const customCut = defineLegacyPlugin({id: 'app/cut', plugin: cut})({});
+const after = transform(
+  source,
+  defineTransformOptions({
+    plugins: {preset: 'none', plugins: [customCut]},
+  }),
+);
+```
+
+`customCut.plugin.collect` сохраняет исходную функцию. Вызов с потоком токенов
+и параметрами сбора остаётся у приложения. Для нового плагина используйте
+`definePlugin`. Метод `setup(md, options, context)` получает настройки плагина и
+контекст отдельно. Связи `requires`, `before` и `after` задают порядок
+установки выбранных плагинов. Для настройки встроенного плагина достаточно
+передать его ID и настройки.
+
 Плоские настройки и прежний массив callback `plugins` сохраняются. Собственный
 массив **заменяет** стандартный список: сохраните все нужные callback и их порядок.
 Для нового кода можно явно описать состав:
@@ -384,6 +431,11 @@ const options = defineTransformOptions({
 плагинов. В стандартном preset старый `checkbox` не включён. При подключении обоих
 callback элементы списка первым обрабатывает `task-list`; отдельные абзацы
 со старым checkbox продолжают обрабатываться отдельно.
+Для нескольких результатов на одной странице legacy Checkbox по умолчанию
+генерирует отдельный префикс для документа. Если ID должны быть стабильными,
+задайте разные `env.checkboxIdPrefix` в инициализаторе `parseDocument`.
+В опубликованной `5.0.0-beta.1` используйте отдельный callback с уникальным
+`idPrefix` для каждого документа.
 
 Старые метки ссылок, начинающиеся с `^`, теперь могут стать сносками:
 `[^^name]` с определением `[^^name]: ...` распознаётся как сноска с меткой
@@ -409,6 +461,14 @@ Notes **остаются включены по умолчанию**, как и �
 что надо менять стандартный preset или импортировать второй экземпляр Notes CSS.
 
 ## Атрибуты и подсветка
+
+| Markdown                                      | Результат в стандартном пресете 5                                                            | Как сохранить прежний вывод                                                   |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `[Ссылка](url){.wide}`                        | Общие атрибуты выключены.                                                                    | Укажите `enableMarkdownAttrs: true`.                                          |
+| `example.com`                                 | По умолчанию текст. При `linkify: true` Transform сохраняет распознавание доменов без схемы. | Сохраните свой выбор `linkify` при обновлении Markdown-it.                    |
+| `++слово++`, `H~2~O`, `- [x] Готово` и сноски | Стандартный пресет обрабатывает эти конструкции.                                             | Отключите соответствующий builtin, если это был обычный текст.                |
+| `:::cut [Подробнее]` и закрывающий маркер     | Обрабатывается наряду со старым Cut.                                                         | Для старого синтаксиса используйте `options.cut.directiveSyntax: 'disabled'`. |
+| Блок кода с указанием языка                   | Без явного адаптера синтаксическая подсветка выключена.                                      | Подключите highlighter как показано ниже.                                     |
 
 Общие Markdown-атрибуты теперь выключены по умолчанию. Если документы зависят
 от них, задайте `enableMarkdownAttrs: true` в плоских настройках либо
@@ -615,6 +675,10 @@ const secondHtml = md.compileDocument(second);
 console.log(first.env.meta, second.env.meta);
 ```
 
+У handle есть `tokens`, `env` и `logs`. Свойства `env.meta` и `env.assets`
+содержат данные страницы и объявленные ресурсы. Читайте `logs` после компиляции,
+если ваш renderer может добавить диагностику.
+
 Настройки и плагины фиксируются при создании парсера; для других root/path/options
 создайте новый. Пользовательский `generateID` сохраняет свою идентичность и
 состояние. Инициализация данных конкретного документа задаётся вторым аргументом
@@ -707,6 +771,8 @@ Utils, сохранив реальный граф Utils 2 / markdown-it 13 у с
 выполнять произвольные URL из документа.
 
 Transform уже включает стили Notes; не добавляйте дубликат standalone CSS.
+Сборки с самостоятельным Tabs обновляйте вместе с его разметкой. Новые связи
+панелей с заголовками использует runtime при переходе по якорю.
 Для компиляции публичных Sass-исходников подключите `NodePackageImporter` Sass,
 который разрешает `pkg:` импорты. Потребителям готового CSS это не нужно:
 
@@ -723,6 +789,34 @@ const result = sass.compile('app.scss', {
 `disableLiquid` или `isLiquided`, но один `isLiquided` не отключает Liquid в
 дочерних helper. Standalone YFMLint асинхронен: вызывайте его с `await` вне
 синхронного конвейера Transform.
+
+## Минимальная браузерная сборка
+
+Для минимальной browser-сборки подключите один проверенный callback явно.
+
+```ts
+import transform, {definePlugin} from '@diplodoc/transform/browser/minimal';
+import monospace from '@diplodoc/transform/plugins/monospace';
+
+const samples = definePlugin({
+  id: 'app/samples',
+  setup(md) {
+    md.use(monospace);
+  },
+})({});
+const result = transform('Вывод: ##пример##', {
+  pluginConfiguration: {preset: 'none', plugins: [samples]},
+});
+```
+
+`preset: 'none'` отключает регистрацию встроенных плагинов. Сам
+`/browser/minimal` также исключает их реализации из сборки. В браузере не
+подключайте Node-модули `/utils/fs` и `/plugins/includes`, а ID встроенных
+плагинов не используйте для своих callback. Настройки `buildYfmHtmlBlockOptions`
+из HTML-extension задают политику отдельного блока. В браузерный
+`sanitizeOptions` передавайте только поддерживаемые настройки документа.
+Финальная санитизация применяется и к HTML, который создал плагин.
+[Браузерный API](browser-entry.md)
 
 ## Проверка и завершение
 

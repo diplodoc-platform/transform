@@ -65,6 +65,15 @@ existing sanitizer policy. Final sanitization applies to trusted plugin and
 highlighter output too. Custom sanitizer replacements, style-sanitizer bypasses
 and parser callbacks are unavailable in this browser API.
 
+When using `@diplodoc/html-extension`, give each HTML block its own supported
+sanitizer configuration through the extension. The Node `buildYfmHtmlBlockOptions`
+helper returns a block policy, including fields outside the browser document
+schema. Do not pass that entire object to browser `sanitizeOptions`. Select
+explicit data-only document settings such as `allowedTags` or
+`allowedAttributes`. Final document sanitization still applies to the output of
+plugins. Handle content requiring a Node-only policy in the host or on the
+server before handing supported input to the browser renderer.
+
 ```typescript
 import {createParser, definePlugin} from '@diplodoc/transform/browser/minimal';
 
@@ -81,6 +90,28 @@ const parser = createParser({pluginConfiguration: {plugins: [badge]}});
 const article = parser.parseDocument('Content');
 const html = parser.compileDocument(article);
 ```
+
+Import one portable callback directly when building a minimal bundle.
+
+```typescript
+import transform, {definePlugin} from '@diplodoc/transform/browser/minimal';
+import monospace from '@diplodoc/transform/plugins/monospace';
+
+const samples = definePlugin({
+  id: 'app/samples',
+  setup(md) {
+    md.use(monospace);
+  },
+})({});
+
+const output = transform('Output: ##sample##', {
+  pluginConfiguration: {preset: 'none', plugins: [samples]},
+});
+```
+
+Only import callbacks verified for browser bundling. Node helpers such as
+`/utils/fs` and `/plugins/includes` require host services. Builtin IDs stay
+reserved even in the minimal entry.
 
 Builtin installation order and dependency/ordering constraints remain shared.
 `preset:'none'` removes feature callbacks while keeping core repairs, the content
