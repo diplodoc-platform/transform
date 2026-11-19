@@ -33,6 +33,34 @@ the implicit view returns to a clean feature-initialized environment.
 Custom per-document initialization belongs in `parseDocument(input, env => {...})`.
 Do not freeze/seal the forwarding view; the error points to the plain document env.
 
+## Checkbox IDs
+
+Legacy Checkbox is an explicit plugin. It generates a document namespace by
+default so separately rendered HTML fragments can share a DOM. For stable
+application-owned IDs, pass a different prefix for each document.
+
+```typescript
+import parser from '@diplodoc/transform/parser';
+import checkbox from '@diplodoc/transform/plugins/checkbox';
+
+const md = parser({plugins: [checkbox]});
+const article = md.parseDocument('[ ] Read the article', (env) => {
+  env.checkboxIdPrefix = 'article-';
+});
+const comment = md.parseDocument('[x] Read the comment', (env) => {
+  env.checkboxIdPrefix = 'comment-42-';
+});
+const html = md.compileDocument(article) + md.compileDocument(comment);
+```
+
+The prefix is inherited by nested fragments, which share the Checkbox counter.
+It overrides the fixed `idPrefix` option of the callback. An application that
+chooses fixed prefixes must keep them distinct across documents rendered into
+the same DOM.
+
+The published Transform `5.0.0-beta.1` supports only the callback's fixed
+`idPrefix`. Use a separate callback configuration per document with that beta.
+
 ## Plugins and nested content
 
 Read and write metadata/assets through `state.env.meta` and `state.env.assets`.

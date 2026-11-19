@@ -47,6 +47,21 @@ imports and do not execute automatically. Browser callers must provide their own
 include preparation and resource policy. See [public exports](../ADR/ADR-012-public-module-exports.md)
 and [browser integration](browser-entry.md).
 
+| Public path after `@diplodoc/transform`                                                       | Purpose and loading                                                                                                                                |
+| --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Package root                                                                                  | Synchronous Markdown to HTML on Node, ESM or CommonJS                                                                                              |
+| `/parser`, `/document`, `/types`                                                              | Reusable Node parser, document and fragment helpers, and public type imports. Browser parser and document functions come from the browser entries. |
+| `/configuration`, `/plugins`, individual `/plugins/<name>`                                    | Named configuration, the Node preset, and standalone callbacks or collectors. Bundle only verified portable callbacks for browsers.                |
+| `/highlighter`, `/highlighter/legacy`                                                         | Explicit adapters. Use `createHighlightJsHighlighter` from a browser entry when composing a browser renderer.                                      |
+| `/preprocessors`, `/frontmatter`, `/utils`, `/utils/fs`, `/sanitize`, `/log`, `/deprecation`  | Node-side helpers. In particular, filesystem adapters do not belong in a browser bundle.                                                           |
+| `/migrations/image-dimensions`, `/migrations/block-directives`, `/migrations/table-alignment` | Synchronous source-to-source migrations. Run them before rendering.                                                                                |
+| `/browser`, `/browser/minimal`                                                                | Native ESM browser renderer with the standard features or explicit composition.                                                                    |
+| `/runtime`, `/styles`, their `/base`, `/yfm-only` and `/print` variants, `/scss/*`            | Client assets. Resolve them through the asset loader or bundler.                                                                                   |
+
+For exact names and the retained compatibility paths, check the
+[`exports` of the installed version](../../package.json) and the
+[public API inventory](../../scripts/public-api.mjs).
+
 If browser rendering fails, for example on an unexpanded include, display the
 source as text and keep your application’s existing error reporting in the catch
 handler. Only insert HTML returned by a successful transform:
@@ -163,6 +178,25 @@ use `"moduleResolution": "Bundler"` with `"module": "Preserve"`; unbundled Node/
 targets need their own Node configuration. `skipLibCheck` does not fix missing
 subpaths or consumer callability errors. See the [public import map](../ADR/ADR-012-public-module-exports.md).
 
+Replace private paths such as `markdown-it/lib/token` and namespace type names
+such as `MarkdownIt.Token` with public types from Markdown-it 15. Remove the
+separate `@types/markdown-it` from the v15 consumer unless another installed
+host needs it. Narrow token attributes before string operations.
+
+```ts
+import type {Token} from 'markdown-it';
+import type {StateCore} from '@diplodoc/transform/types';
+
+function readAttribute(token: Token, name: string): string | undefined {
+  const value = token.attrGet(name);
+  return typeof value === 'string' || typeof value === 'number' ? String(value) : undefined;
+}
+
+function visit(state: StateCore) {
+  return state.tokens.map((token) => readAttribute(token, 'id'));
+}
+```
+
 ## Parser output changes
 
 The markdown-it 13 → 15 upgrade preserves authored Unicode spaces, including
@@ -277,6 +311,34 @@ const output = transform(source, options);
 sanitizer. Do not supply the legacy callback array and named configuration in the
 same call. See the [plugin configuration contract](../specs/transform-5/plugin-configuration.md).
 
+For a host that already owns its callback list, wrap its callbacks only when
+switching to named configuration. For example, migrate a custom Cut installation
+without changing its registration or collector.
+
+```ts
+import transform from '@diplodoc/transform';
+import {transform as createCut} from '@diplodoc/cut-extension';
+import {defineLegacyPlugin, defineTransformOptions} from '@diplodoc/transform/configuration';
+
+const cut = createCut({bundle: false, directiveSyntax: 'disabled'});
+const before = transform(source, {plugins: [cut]});
+
+const customCut = defineLegacyPlugin({id: 'app/cut', plugin: cut})({});
+const after = transform(
+  source,
+  defineTransformOptions({
+    plugins: {preset: 'none', plugins: [customCut]},
+  }),
+);
+```
+
+`customCut.plugin.collect` keeps the original collector. The embedding application
+still invokes it with its token stream and collector-specific options. For new
+plugins, `definePlugin({id, setup})` gives `setup(md, options, context)` separate
+plugin settings and host context. Keep application IDs distinct from builtin IDs.
+Use `requires`, `before` and `after` for registration constraints against selected
+plugins. Use the named builtin settings directly when no custom callback is needed.
+
 To extend an existing spread preset, use the [named composition recipe](cut-tabs-types.md).
 Explicit callback arrays still warn; retain their disabled directive modes when
 migrating to the named preset.
@@ -293,6 +355,10 @@ for callback lists and document ownership.
 If you explicitly use the legacy `checkbox` callback, disable `task-list` in
 the named configuration, or omit its callback from your replacement plugin
 array. The standard preset does not enable legacy `checkbox`.
+Legacy Checkbox generates a unique namespace per document by default. If your
+host needs reproducible IDs, set a distinct `env.checkboxIdPrefix` in the
+`parseDocument` initializer, or pass `idPrefix` to a separately configured
+Checkbox callback. See [document contexts](document-context.md#checkbox-ids).
 
 Existing link labels starting with a caret can now be parsed as footnotes:
 `[^^name]` with `[^^name]: ...` has footnote label `^name`. Rename both the
@@ -300,6 +366,14 @@ reference and the definition to a label without a leading caret, or disable
 `footnotes` to retain the old interpretation.
 
 ## Attributes, tables, images and SVG
+
+| Markdown                                          | What changes with the standard preset                                                                                                                                                  | Compatibility setting                                                     |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `[Link](url){.wide}`                              | General attributes are off.                                                                                                                                                            | Set `enableMarkdownAttrs: true` to attach the class.                      |
+| `example.com`                                     | Remains text by default because linkification is off. With `linkify: true`, Transform keeps recognizing bare domains even though native Markdown-it 15 changed its fuzzy-link default. | Keep the existing `linkify` choice.                                       |
+| `++word++`, `H~2~O`, `- [x] done`, and a footnote | These can now produce an underline, subscript, disabled checkbox or footnote.                                                                                                          | Disable the corresponding builtin IDs.                                    |
+| `:::cut [More]` with a matching closing fence     | The standard preset parses it as Cut alongside the legacy syntax.                                                                                                                      | Set `options.cut.directiveSyntax: 'disabled'` for the legacy-only preset. |
+| A code fence with a language tag                  | It renders without syntax highlighting unless the host supplies an adapter.                                                                                                            | Install and pass the [explicit highlighter](transform-5-highlighter.md).  |
 
 YFM tables with a positive `header-rows` now group header rows in `<thead>`.
 If a `rowspan` crosses from the header into the body, the table keeps a single
@@ -371,6 +445,10 @@ and explicit include/reference purpose. The caller owns cache lifetime and sourc
 mapping; failed or reference-only children do not commit parent resources. See
 [document contexts](document-context.md) and [footnote ownership](../footnotes.md).
 
+The returned handle contains `tokens`, `env` and `logs`. Read metadata and
+declared resources from `env.meta` and `env.assets`. Take diagnostics from the
+same handle after compilation if your renderer can emit additional messages.
+
 ## Retained APIs and extension resources
 
 Bundled Liquid and YFMLint remain available with their existing behavior in 5.
@@ -391,6 +469,13 @@ owning its callback list may use `@diplodoc/notes-extension/plugin`; supply its
 existing formatter and title options. Avoid importing standalone Notes CSS again
 when Transform already supplies it. Sass consumers compiling Transform's public
 sources need Sass `NodePackageImporter` for the `pkg:` imports. See [Notes migration](notes-extension.md).
+
+Rebuild and deploy client JavaScript and CSS with the renderer. Updating
+`@diplodoc/transform` alone does not replace assets already embedded in a Client
+or Viewer build. Pick one owner for each bundle. If the selected Transform asset
+set already includes an extension, omit its standalone asset. For separately
+bundled Tabs, deploy markup and runtime together so anchor navigation can use the
+new tab IDs.
 
 ## Block directives
 
