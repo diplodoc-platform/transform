@@ -261,6 +261,12 @@ test('minimal preserves the guard and propagates sanitizer failures', () => {
     expect(() =>
         Reflect.apply(minimal, undefined, ['text', {sanitize: () => Promise.reject(failure)}]),
     ).toThrow('Browser sanitizer must return a string');
+
+    const then = vi.fn();
+    expect(() => Reflect.apply(minimal, undefined, ['text', {sanitize: () => ({then})}])).toThrow(
+        'Browser sanitizer must return a string',
+    );
+    expect(then).not.toHaveBeenCalled();
 });
 
 test('minimal rejects a malformed sanitizer before plugin setup', () => {
