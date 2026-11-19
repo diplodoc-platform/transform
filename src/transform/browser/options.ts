@@ -1,6 +1,8 @@
 import type {OptionsType} from '../typings';
 import type {BuiltinPluginId} from '../plugin-ids';
+import type {ParserHost} from '../parser-core';
 import type {
+    BrowserMinimalTransformOptions,
     BrowserPluginConfiguration,
     BrowserSanitizeOptions,
     BrowserTransformOptions,
@@ -11,6 +13,11 @@ import {builtinOptionKeys} from '../plugin-settings';
 
 import {BrowserUnsupportedFeatureError} from './errors';
 import {validBuiltinValue, validCoreValue, validIdList, validSanitizeValue} from './validation';
+
+export interface BrowserParserConfiguration {
+    options: OptionsType;
+    sanitize?: ParserHost['sanitize'];
+}
 
 const coreKeys = new Set(
     Object.keys({
@@ -57,6 +64,7 @@ const sanitizeKeys = new Set(
         allowProtocolRelative: true,
     } satisfies Record<keyof BrowserSanitizeOptions, true>),
 );
+const minimalKeys = new Set([...coreKeys, 'sanitize']);
 
 function unsupported(option: string): never {
     throw new BrowserUnsupportedFeatureError(
@@ -158,15 +166,17 @@ function validateConfiguration(configuration: BrowserPluginConfiguration): void 
  * Reject unsupported host capabilities before native parser construction or caller setup.
  * @param options - Closed caller settings, also validated for JavaScript consumers.
  * @param available - This entry's actual finite builtin inventory.
+ * @param acceptedKeys - This entry's supported option keys.
  * @returns A fresh shared-parser options object without mutating caller settings.
  */
 export function resolveBrowserOptions(
     options: BrowserTransformOptions,
     available: readonly BuiltinPluginId[],
+    acceptedKeys = coreKeys,
 ): OptionsType {
     requireObject(options, 'options');
-    validateKeys(options, coreKeys);
-    validateValues(options, validCoreValue);
+    validateKeys(options, acceptedKeys);
+    validateValues(options, (key, setting) => key === 'sanitize' || validCoreValue(key, setting));
     const configuration: BrowserPluginConfiguration = options.pluginConfiguration ?? {};
     requireObject(configuration, 'pluginConfiguration');
     validateKeys(configuration, configurationKeys, 'pluginConfiguration.');
@@ -202,5 +212,34 @@ export function resolveBrowserOptions(
             : (options.enableMarkdownAttrs ?? false),
         pluginConfiguration: configuration,
         sanitizeOptions: options.sanitizeOptions ? {...options.sanitizeOptions} : undefined,
+    };
+}
+
+export function resolveMinimalBrowserOptions(
+    options: BrowserMinimalTransformOptions = {},
+): BrowserParserConfiguration {
+    const {sanitize, ...resolved} = resolveBrowserOptions(options, [], minimalKeys);
+
+    if (sanitize === undefined) {
+        return {options: resolved};
+    }
+    if (typeof sanitize !== 'function') {
+        throw new TypeError('Invalid browser option "sanitize"');
+    }
+
+    return {
+        options: resolved,
+        sanitize(html, sanitizeOptions) {
+            const result: unknown = sanitize(html, sanitizeOptions);
+            if (typeof result !== 'string') {
+                try {
+                    Promise.prototype.then.call(result, undefined, () => undefined);
+                } catch {
+                    // Non-Promise values are rejected below without invoking arbitrary thenables.
+                }
+                throw new TypeError('Browser sanitizer must return a string');
+            }
+            return result;
+        },
     };
 }

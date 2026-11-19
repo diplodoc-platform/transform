@@ -10,6 +10,8 @@ import transform, {
     type DocumentEnv,
 } from '@diplodoc/transform/browser';
 import minimal, {
+    createParser as createMinimalParser,
+    type BrowserSanitizeFunction,
     type BrowserTransformOptions as MinimalOptions,
 } from '@diplodoc/transform/browser/minimal';
 
@@ -39,7 +41,14 @@ const documentEnv: DocumentEnv = document.env;
 parser.compileDocument(document);
 materializeFootnoteTokens(document.tokens, document.tokens.slice(0, 3));
 transform('ref[^a]', {pluginConfiguration: {enable: ['footnotes', 'task-list']}});
-minimal(html, {pluginConfiguration: {preset: 'none'}});
+const sanitize: BrowserSanitizeFunction = (rendered, settings) =>
+    settings?.allowedTags ? rendered : '';
+minimal(html, {pluginConfiguration: {preset: 'none'}, sanitize});
+createMinimalParser({sanitize});
+// @ts-expect-error The standard browser entry uses its own sanitizer.
+transform('text', {sanitize});
+// @ts-expect-error The minimal sanitizer must return a string synchronously.
+minimal('text', {sanitize: async (rendered) => rendered});
 // @ts-expect-error Node filesystem options are not browser capabilities.
 transform('text', {root: '/docs'});
 // @ts-expect-error Filesystem output is not a browser plugin capability.
