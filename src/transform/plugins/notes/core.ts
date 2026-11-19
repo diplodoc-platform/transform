@@ -6,7 +6,7 @@ import {createNotesPlugin as createStandaloneNotesPlugin} from '@diplodoc/notes-
 import {directiveMode, reportDirectiveDiagnostic, unwrapBuiltin} from '../../builtin-invocation';
 
 type NotesPluginParams = {
-    notesAutotitle: boolean;
+    notesAutotitle?: boolean;
     directiveSyntax?: DirectiveSyntax;
 };
 
