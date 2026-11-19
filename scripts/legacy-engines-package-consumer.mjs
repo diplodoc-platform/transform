@@ -55,11 +55,17 @@ yfmlint({
     plugins: [
         (md) => {
             lintParser = md;
+            md.set({linkify: true});
         },
     ],
     pluginOptions: {log: getLogger(logger), path: 'packed-legacy-lint.md'},
 });
 assert.ok(lintParser instanceof MarkdownIt);
+assert.match(lintParser.render('example.org'), /<a href="http:\/\/example\.org">/);
+assert.match(
+    lintParser.render('https://user@example.org'),
+    /<a href="https:\/\/user@example\.org">/,
+);
 yfmlint({
     input: '# heading\n',
     pluginOptions: {log: getLogger(logger), path: 'packed-legacy-lint.md'},
