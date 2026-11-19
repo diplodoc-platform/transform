@@ -1,6 +1,6 @@
 {
   "name": "@diplodoc/transform",
-  "version": "5.0.0-beta.1",
+  "version": "5.0.0-beta.2",
   "description": "A simple transformer of text in YFM (Yandex Flavored Markdown) to HTML",
   "keywords": [
     "markdown",
@@ -62,10 +62,10 @@
   },
   "dependencies": {
     "@diplodoc/cut-extension": "2.0.0-beta.1",
-    "@diplodoc/directive": "1.0.0-beta.2",
+    "@diplodoc/directive": "1.0.0-beta.3",
     "@diplodoc/file-extension": "1.0.0-beta.1",
     "@diplodoc/notes-extension": "1.0.0-beta.1",
-    "@diplodoc/tabs-extension": "4.0.0-beta.1",
+    "@diplodoc/tabs-extension": "4.0.0-beta.2",
     "@diplodoc/utils": "3.0.0-beta.2",
     "@mdit/plugin-tasklist": "1.1.4",
     "@types/lodash": "^4.17.23",

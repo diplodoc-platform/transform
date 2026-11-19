@@ -7,17 +7,17 @@
 Оно описывает контракт подготовленного исходного кода Transform 5 и помогает
 оценить и выполнить переход на доступный, проверенный артефакт.
 
-Для проверки мажора используйте `5.0.0-beta.1` из канала `transform5`.
+Для проверки мажора используйте `5.0.0-beta.2` из канала `transform5`.
 Сначала подтвердите доступность точной версии, затем установите её:
 
 ```sh
-npm view @diplodoc/transform@5.0.0-beta.1 version
-npm install @diplodoc/transform@5.0.0-beta.1
+npm view @diplodoc/transform@5.0.0-beta.2 version
+npm install @diplodoc/transform@5.0.0-beta.2
 ```
 
 У расширений этого графа тоже beta-версии с новыми мажорами. Если приложение
-объявляет их напрямую, используйте Utils `3.0.0-beta.2`, Directive `1.0.0-beta.2`,
-Cut `2.0.0-beta.1`, Tabs `4.0.0-beta.1`, File `1.0.0-beta.1` и Notes `1.0.0-beta.1`.
+объявляет их напрямую, используйте Utils `3.0.0-beta.2`, Directive `1.0.0-beta.3`,
+Cut `2.0.0-beta.1`, Tabs `4.0.0-beta.2`, File `1.0.0-beta.1` и Notes `1.0.0-beta.1`.
 Обычный диапазон стабильного мажора
 не включает его beta. Не используйте `--force` для обхода peer dependencies.
 Для библиотеки отдельно согласуйте peer range на конкретную beta.

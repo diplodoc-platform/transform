@@ -13,12 +13,12 @@ stable Transform 5 is not released and `latest` remains on version 4.
 Confirm availability, then install the exact beta from the `transform5` channel:
 
 ```sh
-npm view @diplodoc/transform@5.0.0-beta.1 version
-npm install @diplodoc/transform@5.0.0-beta.1
+npm view @diplodoc/transform@5.0.0-beta.2 version
+npm install @diplodoc/transform@5.0.0-beta.2
 ```
 
-The coordinated graph uses Utils `3.0.0-beta.2`, Directive `1.0.0-beta.2`, Cut
-`2.0.0-beta.1`, Tabs `4.0.0-beta.1`, File `1.0.0-beta.1` and Notes `1.0.0-beta.1`.
+The coordinated graph uses Utils `3.0.0-beta.2`, Directive `1.0.0-beta.3`, Cut
+`2.0.0-beta.1`, Tabs `4.0.0-beta.2`, File `1.0.0-beta.1` and Notes `1.0.0-beta.1`.
 Update direct dependencies accordingly. Stable major ranges do not include their betas; library
 authors must explicitly agree on the tested beta peer range. Do not force peer
 installation. Some locally reviewed compatibility fixes for legacy hosts remain
