@@ -232,11 +232,11 @@ export function resolveMinimalBrowserOptions(
         sanitize(html, sanitizeOptions) {
             const result: unknown = sanitize(html, sanitizeOptions);
             if (typeof result !== 'string') {
-                try {
-                    Promise.prototype.then.call(result).catch(() => undefined);
-                } catch {
-                    // Non-Promise values are rejected below without invoking arbitrary thenables.
-                }
+                // The native call checks the Promise brand across browser realms.
+                // The executor captures its synchronous error for other return values.
+                new Promise((resolve) => {
+                    resolve(Promise.prototype.then.call(result));
+                }).catch(() => undefined);
                 throw new TypeError('Browser sanitizer must return a string');
             }
             return result;
