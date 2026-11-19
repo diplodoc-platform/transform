@@ -36,7 +36,7 @@
   "scripts": {
     "build": "npm run build:lib && npm run build:dist",
     "build:dist": "node ./scripts/build-static.mjs",
-    "build:lib": "npm run patch:svgo && tsc -p tsconfig.transform.json && node scripts/build-svgo.mjs && node scripts/build-markdown-it.mjs && node scripts/build-vendor-declarations.mjs && node scripts/build-public-api.mjs && npm run build:browser",
+    "build:lib": "npm run patch:svgo && tsc -p tsconfig.transform.json && node scripts/build-svgo.mjs && node scripts/build-markdown-it.mjs && node scripts/build-legacy-markdownlint.mjs && node scripts/build-vendor-declarations.mjs && node scripts/build-public-api.mjs && npm run build:browser",
     "dev:lib": "npm run build:lib && tsc -w -p tsconfig.transform.json",
     "dev:playground": "node ./scripts/dev.mjs",
     "preplayground": "cd playground && npm ci --ignore-scripts || (exit 0)",
@@ -85,7 +85,6 @@
     "markdown-it-ins": "4.0.0",
     "markdown-it-sub": "2.0.0",
     "markdown-it-sup": "1.0.0",
-    "markdownlint": "^0.32.1",
     "markdownlint-rule-helpers": "0.17.2",
     "quick-lru": "^5.1.1",
     "sanitize-html": "^2.18.0",
@@ -108,6 +107,7 @@
     "jest-serializer-html": "^7.1.0",
     "jsdom": "^25.0.1",
     "markdown-it-testgen": "^0.1.6",
+    "markdownlint": "0.32.1",
     "npm-run-all": "^4.1.5",
     "patch-package": "^8.0.1",
     "postcss": "^8.4.27",
@@ -131,6 +131,9 @@
     "cheerio": {
       ".": "1.2.0",
       "undici": "7.30.2"
+    },
+    "markdownlint": {
+      "markdown-it": "$markdown-it"
     }
   },
   "publishConfig": {
