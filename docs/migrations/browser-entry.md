@@ -33,7 +33,7 @@ image dimensions remain independent features.
 
 `@diplodoc/transform/browser/minimal` has no builtin implementations or companion
 extension imports. It retains native Markdown parsing, shared core repairs,
-explicit highlighting and mandatory final HTML/CSS sanitization. Its attrs default
+explicit highlighting and final HTML/CSS sanitization. Its attrs default
 is explicitly false; explicit true is supported. Enabling, disabling or configuring
 an unavailable builtin fails. An application can supply an explicit compatible
 plugin through named configuration.
@@ -62,8 +62,24 @@ The data-only sanitizer settings are `cssWhiteList`, `allowedTags`,
 `allowedAttributes`, `allowedSchemes`, `allowedSchemesByTag`,
 `allowedSchemesAppliedToAttributes`, and `allowProtocolRelative`. They use the
 existing sanitizer policy. Final sanitization applies to trusted plugin and
-highlighter output too. Custom sanitizer replacements, style-sanitizer bypasses
-and parser callbacks are unavailable in this browser API.
+highlighter output too. The standard browser entry always uses the built-in
+sanitizer.
+
+The minimal entry also accepts a synchronous `sanitize` function in
+`transform` and `createParser` options. It receives the final renderer HTML
+and the optional validated `sanitizeOptions` object. The application owns its
+HTML and CSS policy when it supplies this function. Transform uses the returned
+string as the document HTML and propagates callback errors. Omitting `sanitize`
+uses the built-in sanitizer. The content guard still runs before rendering.
+
+```typescript
+import {createParser} from '@diplodoc/transform/browser/minimal';
+import {sanitizeDocumentHtml} from './application-sanitizer.js';
+
+const parser = createParser({sanitize: sanitizeDocumentHtml});
+const document = parser.parseDocument(source);
+const html = parser.compileDocument(document);
+```
 
 When using `@diplodoc/html-extension`, give each HTML block its own supported
 sanitizer configuration through the extension. The Node `buildYfmHtmlBlockOptions`
@@ -71,8 +87,8 @@ helper returns a block policy, including fields outside the browser document
 schema. Do not pass that entire object to browser `sanitizeOptions`. Select
 explicit data-only document settings such as `allowedTags` or
 `allowedAttributes`. Final document sanitization still applies to the output of
-plugins. Handle content requiring a Node-only policy in the host or on the
-server before handing supported input to the browser renderer.
+plugins. Supply your application policy through the minimal entry when it needs
+settings beyond those options.
 
 ```typescript
 import {createParser, definePlugin} from '@diplodoc/transform/browser/minimal';

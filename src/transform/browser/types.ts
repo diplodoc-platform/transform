@@ -19,6 +19,9 @@ export interface BrowserPluginConfiguration extends Omit<PluginConfiguration, 'o
 
 export type BrowserSanitizeOptions = SanitizeDataOptions;
 
+/** Application-owned synchronous policy for the final rendered HTML and CSS. */
+export type BrowserSanitizeFunction = (html: string, options?: BrowserSanitizeOptions) => string;
+
 /** Closed synchronous browser contract; host files and preprocessors are unavailable. */
 export interface BrowserTransformOptions extends CoreParserOptions {
     pluginConfiguration?: BrowserPluginConfiguration;
@@ -45,4 +48,5 @@ export interface BrowserMinimalTransformOptions extends Omit<
     'pluginConfiguration'
 > {
     pluginConfiguration?: BrowserMinimalPluginConfiguration;
+    sanitize?: BrowserSanitizeFunction;
 }

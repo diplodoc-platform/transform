@@ -226,6 +226,75 @@ test('browser sanitizer normalization cannot inherit a Node bypass option', () =
     expect(result.result.html).not.toContain('position:fixed');
 });
 
+test('minimal supports an explicit final HTML and CSS policy for each parser', () => {
+    const source = '<p style="position:fixed;color:red">text</p>';
+    const sanitizeOptions = {allowedTags: ['p']};
+    const sanitize = vi.fn(() => '<p class="application-policy">text</p>');
+    const parser = createMinimalParser({allowHTML: true, sanitizeOptions, sanitize});
+    const document = parser.parseDocument(source);
+
+    expect(sanitize).not.toHaveBeenCalled();
+    expect(minimal(source, {allowHTML: true}).result.html).not.toContain('position:fixed');
+    expect(parser.compileDocument(document)).toBe('<p class="application-policy">text</p>');
+    expect(sanitize.mock.calls).toEqual([
+        ['<p style="position:fixed;color:red">text</p>', sanitizeOptions],
+    ]);
+    expect(minimal(source, {allowHTML: true, sanitize}).result.html).toBe(
+        '<p class="application-policy">text</p>',
+    );
+    expect(sanitize).toHaveBeenLastCalledWith(
+        '<p style="position:fixed;color:red">text</p>',
+        undefined,
+    );
+});
+
+test('minimal preserves the guard and propagates sanitizer failures', () => {
+    const failure = new Error('Application sanitization failed');
+    const sanitize = vi.fn(() => {
+        throw failure;
+    });
+    expect(() => minimal('{% include [part](part.md) %}', {sanitize})).toThrow(
+        BrowserUnsupportedFeatureError,
+    );
+    expect(sanitize).not.toHaveBeenCalled();
+    expect(() => minimal('text', {sanitize})).toThrow(failure);
+    expect(() =>
+        Reflect.apply(minimal, undefined, ['text', {sanitize: () => Promise.reject(failure)}]),
+    ).toThrow('Browser sanitizer must return a string');
+});
+
+test('minimal rejects a malformed sanitizer before plugin setup', () => {
+    const setup = vi.fn();
+    const options = {
+        sanitize: null,
+        pluginConfiguration: {plugins: [definePlugin({id: 'host', setup})({})]},
+    };
+
+    expect(() => Reflect.apply(createMinimalParser, undefined, [options])).toThrow(
+        'Invalid browser option "sanitize"',
+    );
+    expect(setup).not.toHaveBeenCalled();
+});
+
+test('minimal preserves existing sanitizer settings while ignoring an inherited callback', () => {
+    const sanitize = vi.fn(() => '<p>unexpected</p>');
+    const options: Parameters<typeof minimal>[1] = Object.create({
+        sanitize,
+        sanitizeOptions: {allowedTags: []},
+    });
+
+    expect(minimal('text', options).result.html).toBe('text\n');
+    expect(sanitize).not.toHaveBeenCalled();
+});
+
+test('minimal rejects unknown JavaScript options without evaluating their getters', () => {
+    const get = vi.fn(() => true);
+    const options = Object.defineProperty({}, 'unexpected', {enumerable: true, get});
+
+    expect(() => minimal('text', options)).toThrow(BrowserUnsupportedFeatureError);
+    expect(get).not.toHaveBeenCalled();
+});
+
 test('browser admits selected cached footnotes through the canonical document API', () => {
     let native: MarkdownIt | undefined;
     const generateID = vi.fn(() => 'browser');

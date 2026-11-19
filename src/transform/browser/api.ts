@@ -1,33 +1,35 @@
 import type {ParserHost} from '../parser-core';
-import type {BuiltinPluginId} from '../plugin-ids';
+import type {Logger} from '../log-core';
 import type {DocumentParser} from '../shared-types';
+import type {BrowserParserConfiguration} from './options';
 import type {BrowserOutput, BrowserTransformOptions} from './types';
 
 import {createParser as createSharedParser} from '../parser-core';
 
-import {resolveBrowserOptions} from './options';
 import {createDocumentLogger} from './diagnostics';
 
 /**
  * Bind both browser entrypoints to the same parser/lifecycle implementation.
  * @param host - Real finite browser host with this entry's selected callbacks.
- * @param available - Actual builtin IDs in this entry's canonical order.
+ * @param resolveOptions - Validator and policy selection for this browser entry.
  * @returns Synchronous transform and owned-document parser APIs.
  */
-export function createBrowserApi<Options extends BrowserTransformOptions = BrowserTransformOptions>(
+export function createBrowserApi<Options extends BrowserTransformOptions>(
     host: ParserHost,
-    available: readonly BuiltinPluginId[],
+    resolveOptions: (options?: Options) => BrowserParserConfiguration,
 ) {
+    function startParser({options, sanitize}: BrowserParserConfiguration, logger?: Logger) {
+        const parserHost = sanitize ? {...host, sanitize} : host;
+        return createSharedParser(options, parserHost, undefined, logger);
+    }
+
     /**
      * Create a configured synchronous parser with owned document handles.
      * @param options - Supported browser parser and composition settings.
      * @returns Reusable parser sharing the canonical document lifecycle.
      */
     function createParser(options?: Options): DocumentParser {
-        return createSharedParser(
-            resolveBrowserOptions(options === undefined ? {} : options, available),
-            host,
-        );
+        return startParser(resolveOptions(options));
     }
 
     /**
@@ -37,10 +39,10 @@ export function createBrowserApi<Options extends BrowserTransformOptions = Brows
      * @returns Rendered document data and the browser host's collected diagnostics.
      */
     function transform(source: string, options?: Options): BrowserOutput {
-        const resolved = resolveBrowserOptions(options === undefined ? {} : options, available);
-        const logger = createDocumentLogger(resolved);
+        const configuration = resolveOptions(options);
+        const logger = createDocumentLogger(configuration.options);
         try {
-            const parser = createSharedParser(resolved, host, undefined, logger);
+            const parser = startParser(configuration, logger);
             const document = parser.parseDocument(source);
             const html = parser.compileDocument(document);
             return {result: {...document.env, html}, logs: logger.get()};
