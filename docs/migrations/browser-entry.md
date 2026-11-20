@@ -81,14 +81,40 @@ const document = parser.parseDocument(source);
 const html = parser.compileDocument(document);
 ```
 
-When using `@diplodoc/html-extension`, give each HTML block its own supported
-sanitizer configuration through the extension. The Node `buildYfmHtmlBlockOptions`
-helper returns a block policy, including fields outside the browser document
-schema. Do not pass that entire object to browser `sanitizeOptions`. Select
-explicit data-only document settings such as `allowedTags` or
-`allowedAttributes`. Final document sanitization still applies to the output of
-plugins. Supply your application policy through the minimal entry when it needs
-settings beyond those options.
+### HTML extension preview
+
+The [working HTML extension example](../../e2e/fixtures/html-extension/app.mjs)
+uses two sanitizer policies. The extension's `htmlBlockDefaultSanitizer`
+sanitizes the block head and body before they go into the iframe. The minimal
+entry's document `sanitize` callback preserves `srcdoc` and `sandbox` on
+the generated iframe. Raw Markdown HTML is disabled, and the HTML extension
+is the only enabled plugin. Keep that distinction when adapting the document
+policy to your own set of plugins.
+
+`buildYfmHtmlBlockOptions` builds a policy for the contents of the block. Fields
+such as `nonBooleanAttributes` fall outside the browser `sanitizeOptions`
+schema. Use the extension's `sanitize` setting for a custom block policy.
+
+The example loads the HTML extension runtime and switches the iframe body between
+light and dark themes. Its browser build uses a
+[CSS adapter](../../e2e/fixtures/html-extension/build.mjs) because this version
+of the extension imports the Node sanitizer. The adapter uses the CSS parser
+and serializer without filesystem source maps.
+
+From the Transform checkout, run:
+
+```sh
+npm ci
+npm run build
+npm ci --prefix e2e
+node e2e/fixtures/html-extension/build.mjs
+```
+
+Serve `build/html-extension-example` over HTTP to open the preview. The
+[Playwright test](../../e2e/tests/html-extension.spec.ts) checks both themes
+and verifies that the iframe grows and shrinks when the viewport changes.
+
+### Custom browser plugins
 
 ```typescript
 import {createParser, definePlugin} from '@diplodoc/transform/browser/minimal';
