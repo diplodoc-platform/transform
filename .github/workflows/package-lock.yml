@@ -19,8 +19,7 @@ jobs:
       github.event.pull_request.user.login == 'dependabot[bot]' ||
       startsWith(github.event.pull_request.head.ref, 'codex/dependency-candidate-') ||
       (github.event.pull_request.user.login == 'diplodoc-bot' &&
-       github.event.pull_request.head.repo.fork &&
-       github.event.pull_request.head.repo.owner.login == 'diplodoc-bot' &&
+       github.event.pull_request.head.repo.full_name == github.repository &&
        startsWith(github.event.pull_request.head.ref, 'codex/dependency-group-'))
     runs-on: ubuntu-latest
     steps:
@@ -50,6 +49,7 @@ jobs:
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.event.pull_request.user.login != 'dependabot[bot]' &&
       !startsWith(github.event.pull_request.head.ref, 'codex/dependency-candidate-') &&
+      !startsWith(github.event.pull_request.head.ref, 'codex/dependency-group-') &&
       github.actor != 'dependabot[bot]'
     steps:
       - name: Checkout code
@@ -103,13 +103,7 @@ jobs:
   package-lock-result:
     name: Update package-lock.json
     needs: [verify-dependabot-lock, update-package-lock]
-    if: >-
-      always() &&
-      (github.event.pull_request.head.repo.full_name == github.repository ||
-       (github.event.pull_request.user.login == 'diplodoc-bot' &&
-       github.event.pull_request.head.repo.fork &&
-       github.event.pull_request.head.repo.owner.login == 'diplodoc-bot' &&
-       startsWith(github.event.pull_request.head.ref, 'codex/dependency-group-')))
+    if: always() && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - name: Require the applicable lockfile check to succeed
@@ -118,8 +112,7 @@ jobs:
             ${{ (github.event.pull_request.user.login == 'dependabot[bot]' ||
             startsWith(github.event.pull_request.head.ref, 'codex/dependency-candidate-') ||
             (github.event.pull_request.user.login == 'diplodoc-bot' &&
-             github.event.pull_request.head.repo.fork &&
-             github.event.pull_request.head.repo.owner.login == 'diplodoc-bot' &&
+             github.event.pull_request.head.repo.full_name == github.repository &&
              startsWith(github.event.pull_request.head.ref, 'codex/dependency-group-'))) &&
             needs.verify-dependabot-lock.result || needs.update-package-lock.result }}
         run: |

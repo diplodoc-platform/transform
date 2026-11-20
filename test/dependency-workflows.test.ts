@@ -41,6 +41,7 @@ function enabled(
         runInNewContext(expression || 'false', {
             github: {
                 actor,
+                event_name: 'pull_request',
                 repository: 'owner/transform',
                 event: {
                     pull_request: {
@@ -57,6 +58,7 @@ function enabled(
                 },
             },
             always: () => true,
+            cancelled: () => false,
             startsWith: (value: string, prefix: string) => value.startsWith(prefix),
         }),
     );
@@ -173,22 +175,41 @@ describe('Dependabot workflow boundaries', () => {
         expect(enabled(result.if, 'maintainer')).toBe(true);
         expect(enabled(result.if, 'dependabot[bot]', 'maintainer')).toBe(true);
         expect(enabled(result.if, 'contributor', 'maintainer', true)).toBe(false);
-        expect(enabled(result.if, 'diplodoc-bot', 'maintainer', true, prepared)).toBe(false);
-        expect(
-            enabled(result.if, 'contributor', 'maintainer', true, prepared, 'diplodoc-bot'),
-        ).toBe(false);
-        expect(
-            enabled(result.if, 'diplodoc-bot', 'maintainer', true, prepared, 'diplodoc-bot'),
-        ).toBe(supportsPrepared);
+        expect(enabled(result.if, 'diplodoc-bot', 'maintainer', false, prepared)).toBe(true);
+        expect(enabled(verify.if, 'diplodoc-bot', 'maintainer', false, prepared)).toBe(
+            supportsPrepared,
+        );
+        expect(enabled(writer.if, 'diplodoc-bot', 'maintainer', false, prepared)).toBe(
+            !supportsPrepared,
+        );
+        expect(enabled(writer.if, 'contributor', 'maintainer', false, prepared)).toBe(
+            !supportsPrepared,
+        );
+        expect(enabled(verify.if, 'contributor', 'maintainer', false, prepared)).toBe(false);
         expect(
             enabled(verify.if, 'diplodoc-bot', 'maintainer', true, prepared, 'diplodoc-bot'),
-        ).toBe(supportsPrepared);
-        expect(
-            enabled(writer.if, 'diplodoc-bot', 'maintainer', true, prepared, 'diplodoc-bot'),
         ).toBe(false);
         const gate = result.steps[0];
         expect(gate.env?.LOCK_RESULT).toContain('needs.verify-dependabot-lock.result');
         expect(gate.env?.LOCK_RESULT).toContain('needs.update-package-lock.result');
         expect(gate.run).toContain('test "$LOCK_RESULT" = success');
+    });
+
+    it('keeps E2E and its artifact available without the report token on prepared PRs', () => {
+        const e2e = workflow('e2e');
+        const {steps} = e2e.jobs.verify_files;
+        const checkout = steps.find((step) => step.name === 'Checkout');
+        const tests = steps.find((step) => step.name === 'Run e2e tests');
+        const artifact = steps.find((step) => step.uses?.startsWith('actions/upload-artifact@'));
+        const report = steps.find((step) => step.name === 'Publish Test Report');
+        const prepared = 'codex/dependency-group-0123456789abcdef01234567';
+
+        expect(e2e.permissions).toEqual({contents: 'read'});
+        expect(checkout?.with?.['persist-credentials']).toBe(false);
+        expect(tests?.run).toBe('npm run test');
+        expect(tests?.if).toBeUndefined();
+        expect(artifact?.with?.name).toBe('playwright-report');
+        expect(enabled(report?.if, 'diplodoc-bot', 'maintainer', false, prepared)).toBe(false);
+        expect(enabled(report?.if, 'maintainer')).toBe(true);
     });
 });
