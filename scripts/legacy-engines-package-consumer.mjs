@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {createRequire} from 'node:module';
+import {dirname, join} from 'node:path';
 
 const packageName = '@diplodoc/transform';
 const {
@@ -12,6 +14,16 @@ const {createDeprecationReporter} = await import(`${packageName}/deprecation`);
 const {getLogger} = await import(`${packageName}/log`);
 
 const load = createRequire(import.meta.url);
+const installedRoot = dirname(dirname(load.resolve(packageName)));
+const lintPath = join(installedRoot, 'lib/yfmlint/legacy-markdownlint.js');
+const fromLint = createRequire(lintPath);
+const MarkdownIt = fromLint('markdown-it');
+assert.match(fromLint('markdown-it/package.json').version, /^15\./);
+assert.throws(() => fromLint.resolve('markdownlint'), {code: 'MODULE_NOT_FOUND'});
+assert.match(
+    readFileSync(lintPath.replace(/\.js$/, '.LICENSES.txt'), 'utf8'),
+    /markdownlint@0\.32\.1/,
+);
 const cjsLiquid = load('@diplodoc/transform/lib/liquid');
 assert.equal(liquidNamespace, cjsLiquid);
 assert.equal(liquidDocument, cjsLiquid.default);
@@ -37,10 +49,23 @@ assert.equal(warnings.length, 1);
 reporter.reset();
 cjsLiquid.liquidDocument('plain', {}, 'legacy.md', settings);
 assert.equal(warnings.length, 2);
+let lintParser;
 yfmlint({
     input: '# heading\n',
+    plugins: [
+        (md) => {
+            lintParser = md;
+            md.set({linkify: true});
+        },
+    ],
     pluginOptions: {log: getLogger(logger), path: 'packed-legacy-lint.md'},
 });
+assert.ok(lintParser instanceof MarkdownIt);
+assert.match(lintParser.render('example.org'), /<a href="http:\/\/example\.org">/);
+assert.match(
+    lintParser.render('https://user@example.org'),
+    /<a href="https:\/\/user@example\.org">/,
+);
 yfmlint({
     input: '# heading\n',
     pluginOptions: {log: getLogger(logger), path: 'packed-legacy-lint.md'},

@@ -1,4 +1,4 @@
-import type {Rule} from 'markdownlint';
+import type {Rule} from '../legacy-markdownlint';
 
 export const yfm006: Rule = {
     names: ['YFM006', 'term-definition-duplicated'],

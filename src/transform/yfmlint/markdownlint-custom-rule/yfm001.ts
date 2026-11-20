@@ -1,4 +1,4 @@
-import type {MarkdownItToken, Rule} from 'markdownlint';
+import type {MarkdownItToken, Rule} from '../legacy-markdownlint';
 
 // @ts-expect-error
 import {addErrorDetailIf, filterTokens, forEachInlineCodeSpan} from 'markdownlint-rule-helpers';

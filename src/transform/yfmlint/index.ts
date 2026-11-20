@@ -1,10 +1,10 @@
 import type {Dictionary} from 'lodash';
-import type {Rule} from 'markdownlint';
+import type {Rule} from './legacy-markdownlint';
 import type {LogLevels, Logger} from '../log';
+import type {MarkdownIt} from '../typings';
 import type {Options} from './typings';
 import type {LegacyEngineDiagnostics} from '../legacy-engines';
 
-import {sync} from 'markdownlint';
 import merge from 'lodash/merge';
 import union from 'lodash/union';
 import attrs from 'markdown-it-attrs';
@@ -14,6 +14,7 @@ import {resolveMarkdownAttrs} from '../parser-policy';
 import {warnBundledEngine} from '../legacy-engines';
 import {getInvocationLogger} from '../diagnostic-context';
 
+import {sync} from './legacy-markdownlint';
 import baseDefaultLintConfig from './yfmlint';
 import {
     yfm001,
@@ -77,6 +78,9 @@ function yfmlint(opts: Options) {
     }
 
     const plugins = [
+        (md: MarkdownIt) => {
+            md.linkify.set({fuzzyLink: true, fuzzyEmail: true, urlAuth: true});
+        },
         ...(resolveMarkdownAttrs(opts.enableMarkdownAttrs) ? [attrs] : []),
         ...(customPlugins || []),
     ];
