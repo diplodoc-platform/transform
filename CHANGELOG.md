@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.78.15](https://github.com/diplodoc-platform/transform/compare/v4.78.14...v4.78.15) (2026-11-21)
+
+
+### Bug Fixes
+
+* verify lockfile workflow behavior across scaffold versions ([d9fc336](https://github.com/diplodoc-platform/transform/commit/d9fc336ee285865f6e10b6d7ce28dbf9513b0a98))
+
 ## [4.78.14](https://github.com/diplodoc-platform/transform/compare/v4.78.13...v4.78.14) (2026-11-16)
 
 
