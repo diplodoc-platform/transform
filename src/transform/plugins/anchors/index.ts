@@ -11,8 +11,8 @@ import {headingInfo} from '../../utils';
 import {ANCHOR_TITLES} from './constants';
 import {
     getCustomIds,
+    getHeadingAttributeSuffix,
     hasEmptyShorthandId,
-    removeCustomId,
     removeCustomIds,
     trimHeadingWhitespace,
 } from './custom-id';
@@ -88,6 +88,45 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
         isLintRun,
     } = options;
 
+    const customIdsBeforeAttrs = new WeakMap<Token, string[] | null>();
+    const prepareHeadingCustomIds = (state: StateCore) => {
+        state.tokens.forEach((token, tokenIndex) => {
+            if (token.type !== 'heading_open') {
+                return;
+            }
+
+            const inlineToken = state.tokens[tokenIndex + 1];
+            const prepared = customIdsBeforeAttrs.has(token);
+            let customIds = customIdsBeforeAttrs.get(token);
+            if (!prepared) {
+                customIds = getCustomIds(inlineToken);
+                customIdsBeforeAttrs.set(token, customIds);
+                if (customIds) {
+                    token.attrSet('id', customIds[0]);
+                    removeCustomIds(inlineToken);
+                }
+            }
+            protectLiteralHeadingAttributes(
+                state,
+                inlineToken,
+                !prepared && !customIds,
+                options.leftDelimiter,
+                options.rightDelimiter,
+            );
+        });
+    };
+    const consumeCustomIds = (token: Token, inlineToken: Token) => {
+        if (customIdsBeforeAttrs.has(token)) {
+            return customIdsBeforeAttrs.get(token);
+        }
+
+        const customIds = getCustomIds(inlineToken);
+        if (customIds) {
+            removeCustomIds(inlineToken);
+        }
+        return customIds;
+    };
+
     const titlesBeforeAttrs = new WeakMap<Token, string>();
     const captureHeadingTitles = (state: StateCore) => {
         state.tokens.forEach((token, tokenIndex) => {
@@ -144,6 +183,7 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
                 const {title, level} = headingInfo(tokens, i);
 
                 const inlineToken = tokens[i + 1];
+                const customIds = consumeCustomIds(token, inlineToken);
                 let id = token.attrGet('id');
                 let ghId: string;
 
@@ -152,19 +192,15 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
                 }
 
                 if (level < 2 && extractTitle) {
-                    const customIds = getCustomIds(inlineToken.content);
                     if (customIds) {
-                        token.attrSet('id', customIds[0]);
+                        setHeadingId(token, customIds[0]);
                     }
-                    removeCustomIds(tokens[i + 1]);
                     i += 3;
                     continue;
                 }
 
-                const customIds = getCustomIds(inlineToken.content);
                 if (customIds) {
                     id = customIds[0];
-                    removeCustomIds(tokens[i + 1]);
                 } else {
                     // Preserve existing automatic URLs when includes ran before attributes.
                     const slugTitle = getSlugTitle(token, title);
@@ -178,7 +214,7 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
                     ghId = slugger.slug(slugTitle);
                 }
 
-                token.attrSet('id', id);
+                setHeadingId(token, id);
 
                 if (ids[id]) {
                     id = id + ids[id]++;
@@ -190,7 +226,7 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
                 const allAnchorIds = customIds ? customIds : [id];
                 const anchorTitle = useCommonAnchorButtons
                     ? ANCHOR_TITLES[lang]
-                    : removeCustomId(title).replace(/`/g, '').trim();
+                    : getAnchorTitle(inlineToken);
 
                 allAnchorIds.forEach((customId) => {
                     const setId = id !== customId;
@@ -242,6 +278,11 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
 
     const hasAttributes = insertOptionalRule('after', 'curly_attributes', 'anchors', plugin);
     if (hasAttributes) {
+        md.core.ruler.before(
+            'curly_attributes',
+            'prepare_heading_custom_ids',
+            prepareHeadingCustomIds,
+        );
         insertOptionalRule('after', 'includes', 'capture_heading_titles', captureHeadingTitles);
     } else if (!insertOptionalRule('after', 'includes', 'anchors', plugin)) {
         md.core.ruler.push('anchors', plugin);
@@ -267,3 +308,59 @@ const index: MarkdownItPluginCb<Options> = (md, options) => {
 };
 
 export = index;
+
+function setHeadingId(token: Token, id: string) {
+    token.attrs = token.attrs?.filter(([name]) => name !== 'id') || null;
+    token.attrSet('id', id);
+}
+
+function getAnchorTitle(token: Token) {
+    return (token.children || [])
+        .filter((child) => ['text', 'text_special', 'code_inline'].includes(child.type))
+        .map((child) => child.content)
+        .join('')
+        .trim();
+}
+
+function protectLiteralHeadingAttributes(
+    state: StateCore,
+    token: Token,
+    allowAttributes: boolean,
+    left = '{',
+    right = '}',
+) {
+    const suffix = allowAttributes ? getHeadingAttributeSuffix(token, left, right) : undefined;
+    token.children =
+        token.children?.flatMap((child, index) => {
+            if (child.type !== 'text') {
+                return [child];
+            }
+
+            const tokens: Token[] = [];
+            const end = suffix?.index === index ? suffix.match.index : child.content.length;
+            let start = 0;
+            for (
+                let delimiter = child.content.indexOf(left);
+                delimiter >= 0 && delimiter < end;
+                delimiter = child.content.indexOf(left, start)
+            ) {
+                if (delimiter > start) {
+                    const text = new state.Token('text', '', 0);
+                    text.content = child.content.slice(start, delimiter);
+                    text.level = child.level;
+                    tokens.push(text);
+                }
+
+                // text_join restores this delimiter after markdown-it-attrs runs.
+                const literal = new state.Token('text_special', '', 0);
+                literal.content = left;
+                literal.level = child.level;
+                tokens.push(literal);
+                start = delimiter + left.length;
+            }
+
+            child.content = child.content.slice(start);
+            tokens.push(child);
+            return tokens;
+        }) || null;
+}
