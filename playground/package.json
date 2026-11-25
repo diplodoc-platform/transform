@@ -68,7 +68,7 @@
     "react-dom": "^18.3.1",
     "sass-embedded": "^1.106.1",
     "typescript": "~6.0.3",
-    "vitest": "^2.1.9"
+    "vitest": "^5.1.1"
   },
   "dependencies": {
     "@diplodoc/cut-extension": "^1.1.7",
