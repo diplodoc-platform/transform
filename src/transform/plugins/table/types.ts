@@ -9,13 +9,12 @@ export type YfmTablePluginOptions = {
      * @default true
      */
     table_ignoreSplittersInBlockCode?: boolean;
-    // TODO: set table_ignoreSplittersInInlineCode=true by default in next major version
     /**
-     * Sets whether to interpret the pipe symbol inside the inline code as a table separator.
+     * Ignore table separators inside recognized inline code when true.
      *
      * Set to true if the code_inline rule is enabled in the parser.
      *
-     * @default false
+     * @default true
      */
     table_ignoreSplittersInInlineCode?: boolean;
     /**

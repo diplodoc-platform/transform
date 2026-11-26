@@ -1,0 +1,1 @@
+export {createLegacyHighlighter} from '../highlight';

@@ -1,4 +1,4 @@
-import type MarkdownIt from 'markdown-it';
+import type {MarkdownIt} from 'markdown-it' with {'resolution-mode': 'import'};
 
 import {TOKEN_NAME, renderTokens, replaceTokens} from './block-anchor';
 
@@ -13,4 +13,4 @@ const blockAnchor = (md: MarkdownIt) => {
     return md;
 };
 
-export = blockAnchor;
+export default blockAnchor;

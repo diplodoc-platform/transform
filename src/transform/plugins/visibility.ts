@@ -1,17 +1,17 @@
-import type MarkdownIt from 'markdown-it';
-import type StateBlock from 'markdown-it/lib/rules_block/state_block';
-import type {ContainerDirectiveParams} from '@diplodoc/directive';
+import type {ContentAudience, VisibilityMode} from '../shared-types';
+import type {MarkdownIt} from 'markdown-it' with {'resolution-mode': 'import'};
+import type {ContainerDirectiveHandler, ContainerDirectiveParams} from '@diplodoc/directive';
 import type {MarkdownItPluginCb} from './typings';
 
-import MarkdownItImpl from 'markdown-it';
 import {
     directiveParser,
     registerContainerDirective,
     tokenizeBlockContent,
 } from '@diplodoc/directive';
 
-export type ContentAudience = 'human' | 'agent';
-export type VisibilityMode = ContentAudience | 'preserve';
+import MarkdownItImpl from '../markdown-it-runtime';
+
+export type {ContentAudience, VisibilityMode} from '../shared-types';
 
 export interface VisibilityError {
     line: number;
@@ -33,6 +33,8 @@ export interface AudienceFilterResult {
     removedCharacters: number;
     errors: VisibilityError[];
 }
+
+type DirectiveState = Parameters<ContainerDirectiveHandler>[0];
 
 type VisibilityMeta = Record<string, unknown> & {
     visibilityAudiences?: ContentAudience[];
@@ -69,7 +71,7 @@ function orderedAudiences(audiences: Iterable<ContentAudience>): ContentAudience
     return AUDIENCE_ORDER.filter((audience) => values.has(audience));
 }
 
-function markAudience(state: StateBlock, audience: ContentAudience): void {
+function markAudience(state: DirectiveState, audience: ContentAudience): void {
     if (!state.env.meta || typeof state.env.meta !== 'object' || Array.isArray(state.env.meta)) {
         state.env.meta = {};
     }
@@ -78,7 +80,7 @@ function markAudience(state: StateBlock, audience: ContentAudience): void {
 }
 
 function emitLintToken(
-    state: StateBlock,
+    state: DirectiveState,
     params: ContainerDirectiveParams,
     audience: ContentAudience | undefined,
 ): void {
@@ -99,11 +101,9 @@ function emitLintToken(
  *
  * @returns Markdown-it plugin for audience visibility blocks.
  */
-export function visibility({
-    audience = 'human',
-    lint = false,
-    onError,
-}: VisibilityOptions = {}): MarkdownIt.PluginSimple {
+export function visibility({audience = 'human', lint = false, onError}: VisibilityOptions = {}): (
+    md: MarkdownIt,
+) => void {
     return (md) => {
         md.use(directiveParser());
         if (lint) {

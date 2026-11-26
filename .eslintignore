@@ -12,10 +12,16 @@ node_modules
 /coverage
 /pages-build
 /playground
-/e2e
+/e2e/**/*
+!/e2e/**/
+!/e2e/fixtures/utils/transformPreset.ts
 /external
 .lintstagedrc.js
 .eslintrc.js
 .prettierrc.js
 .stylelintrc.js
 esbuild/**/*.mjs
+
+# Keep earlier generated adapters ignored in existing build checkouts.
+/api
+/public

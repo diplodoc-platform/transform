@@ -1,7 +1,7 @@
-import type MarkdownIt from 'markdown-it';
-import type Core from 'markdown-it/lib/parser_core';
-import type StateCore from 'markdown-it/lib/rules_core/state_core';
-import type Token from 'markdown-it/lib/token';
+import type {MarkdownIt, Token} from 'markdown-it' with {'resolution-mode': 'import'};
+import type {StateCore} from '../../typings';
+
+import {nextCheckboxId} from '../../document-context';
 
 // eslint-disable-next-line no-useless-escape
 export const pattern = /^\[(X|\s|\_|\-)\]\s(.*)/i;
@@ -38,20 +38,22 @@ function matchOpenToken(tokens: Token[], i: number) {
 }
 
 export type CheckboxOptions = {
+    /** Fixed prefix. Omit it to generate a namespace for each document. */
     idPrefix?: string;
     divClass?: string;
     /** @default true */
     disabled?: boolean;
 };
 
-export const checkboxReplace = function (_md: MarkdownIt, opts?: CheckboxOptions): Core.RuleCore {
-    let lastId = 0;
-    const defaults: Required<CheckboxOptions> = {
+export const checkboxReplace = function (
+    _md: MarkdownIt,
+    opts?: CheckboxOptions,
+): (state: StateCore) => void {
+    const defaults = {
         divClass: 'checkbox',
-        idPrefix: 'checkbox',
         disabled: true,
     };
-    const options = Object.assign(defaults, opts);
+    const options = {...defaults, ...opts};
 
     const createTokens = function (state: StateCore, checkbox: ParsedCheckbox): Token[] {
         let token: Token;
@@ -67,10 +69,9 @@ export const checkboxReplace = function (_md: MarkdownIt, opts?: CheckboxOptions
         nodes.push(token);
 
         /**
-         * <input type="checkbox" id="checkbox{n}" checked="true">
+         * <input type="checkbox" id="..." checked="true">
          */
-        const id = options.idPrefix + lastId;
-        lastId += 1;
+        const id = nextCheckboxId(state.env, options.idPrefix);
         token = new state.Token(CheckboxTokenType.CheckboxInput, 'input', 0);
         token.block = true;
         token.map = [checkbox.startLine, checkbox.endLine];
@@ -87,7 +88,7 @@ export const checkboxReplace = function (_md: MarkdownIt, opts?: CheckboxOptions
         nodes.push(token);
 
         /**
-         * <label for="checkbox{n}">
+         * <label for="...">
          */
         token = new state.Token(CheckboxTokenType.CheckboxLabelOpen, 'label', 1);
         token.attrs = [['for', id]];

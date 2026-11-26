@@ -1,7 +1,11 @@
-import MarkdownIt from 'markdown-it';
+import type {DiagnosticOptions} from '../../log-core';
+
 import {sep} from 'path';
 import {parseHref} from '@diplodoc/utils';
 
+import MarkdownIt from '../../markdown-it-runtime';
+import {getInvocationLogger} from '../../diagnostic-context';
+import {DEFAULT_LANG} from '../../constants';
 import {PAGE_LINK_REGEXP, getHrefTokenAttr, isLocalUrl} from '../../utils';
 import {getSinglePageAnchorId, resolveRelativePath} from '../../utilsFS';
 
@@ -12,7 +16,7 @@ const replaceLinkHref = (input: string, href: string, newHref: string) => {
     return input.replace(`](${href})`, `](${newHref})`);
 };
 
-type Options = {
+type Options = DiagnosticOptions & {
     root: string;
     path: string;
     singlePage: boolean;
@@ -33,7 +37,17 @@ const collect = (input: string, options: Options) => {
     /* Syntax "{% include [Text](_includes/file.md) %}" is parsed as link. Need to ignore errors */
     const needSkipLinkFn = (href: string) => href.includes(`_includes${sep}`);
     const transformLink = (href: string) => href;
-    const md = new MarkdownIt().use(index, {...options, transformLink, needSkipLinkFn});
+    const md = new MarkdownIt().use(index, {
+        ...options,
+        transformLink,
+        needSkipLinkFn,
+        log: getInvocationLogger(options),
+        lang: DEFAULT_LANG,
+        rootPublicPath: '',
+        isLintRun: false,
+        notFoundCb: () => {},
+        getPublicPath: undefined,
+    });
     const tokens = md.parse(result, {});
 
     let i = 0;
@@ -90,4 +104,4 @@ const collect = (input: string, options: Options) => {
     return result;
 };
 
-export = collect;
+export default collect;

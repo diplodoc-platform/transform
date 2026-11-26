@@ -3,6 +3,7 @@ import type {SanitizeOptions} from '../src/transform/sanitize';
 import {load} from 'cheerio';
 
 import transform from '../src/transform';
+import portable from '../src/transform/browser/standard';
 import {defaultOptions, sanitize} from '../src/transform/sanitize';
 
 const escape = (value: string) =>
@@ -257,14 +258,14 @@ describe('passive HTML iframe sanitization', () => {
     });
 });
 
-describe('Transform sanitizer integration', () => {
+describe.each([
+    ['Node', (source: string) => transform(source, {allowHTML: true}).result.html],
+    ['portable', (source: string) => portable(source, {allowHTML: true}).result.html],
+] as const)('%s Transform sanitizer integration', (_host, render) => {
     it('preserves a passive embed and sanitizes its content through the public Transform API', () => {
         const content =
             '<p id="marker" onclick="alert(1)">Visible HTML</p><script>alert(1)</script>';
-        const result = transform(iframe(content), {
-            allowHTML: true,
-            needToSanitizeHtml: true,
-        }).result.html;
+        const result = render(iframe(content));
 
         expect(load(result)('iframe').attr('sandbox')).toBe('allow-same-origin');
         expect(documentFor(result)('#marker').text()).toBe('Visible HTML');

@@ -1,0 +1,646 @@
+# Browser transformation entry points
+
+Diagnostic ownership follows the later [document lifetime contract](diagnostic-lifetime.md):
+fresh document snapshots by default, explicit `diagnostics` aggregation and a
+browser-exported `createDiagnosticCollector`. Earlier notes about retaining host
+collectors do not imply automatic global accumulation.
+
+Task: [DOCSTOOLS-6940](https://st.yandex-team.ru/DOCSTOOLS-6940).
+Design baseline: `6b05899e3b2bb472e89a86abdef93374e6a4dfb5`, including the shared
+attrs policy from major `ea8168f4c468a63b4dabee3d16df6d2c34fb839d`.
+
+The browser entries are ESM-only and share the general-attributes policy with the
+Node host.
+
+## Requirements and scope
+
+The live task requires a public browser entry, basic rendering without mandatory
+`fs`, `path`, or `process` polyfills or special consumer bundler stubs, documented
+extension/runtime/styles composition, and a working browser example.
+
+- [#359](https://github.com/diplodoc-platform/transform/issues/359) identifies
+  `css.stringify` as a source of client `fs`/`path` requirements.
+- [#473](https://github.com/diplodoc-platform/transform/issues/473) requires ordinary
+  application setup without CRACO/webpack `resolve.fallback` changes. Its comments
+  discuss CSS source-map dependencies; they do not authorize copying a sanitizer.
+- [#446](https://github.com/diplodoc-platform/transform/issues/446) also concerns
+  markdown-editor and lowlight/highlight.js. This task covers Transform's reachable
+  feature composition and explicit highlighter loading, not the entire editor
+  application, an editor dependency migration, or a promised byte reduction.
+
+The Node root, default plugin composition, implicit retained Liquid processing,
+and retained YFMLint API remain available. User-authorized deprecation work did
+not authorize removing those engines. An explicit browser subpath selects a
+different host capability contract; do not redirect the package root with a
+top-level `browser` replacement or change Node behavior by environment detection.
+
+No async transformation API, virtual filesystem, generic extension framework,
+process cache, new runtime floor, or Node-engine removal is included.
+
+## Evidence and dependency cut
+
+These references describe source at the design baseline, not a verified final
+browser package. Genuine installed dependencies from the isolated document-context
+checkout were inspected read-only; that checkout contains native MarkdownIt 15,
+not the primary workspace's parser 13 installation.
+
+| Current owner                                                                       | Browser consequence and proposed cut                                                                                                                                                                                                              |
+| ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `md.ts:initMarkdownIt/initPlugins`, `plugin-registry.ts:resolvePluginConfiguration` | Eager Node default registry, preprocessors, sanitizer and utility imports survive through the canonical CJS graph. Extract a shared parser/lifecycle factory receiving a finite host installation, not another whole Transform implementation.    |
+| `utilsFS.ts`, `preprocessors/included/index.ts`                                     | Filesystem/path reads and retained Liquid are host capabilities. Exclude these modules entirely from browser transformation.                                                                                                                      |
+| `plugins/links`, `plugins/anchors/collect`, `plugins/images`                        | File existence/title lookup, single-page collection, SVG reads/optimization and filesystem asset collection stay Node-only. Ordinary Markdown URL/image rendering does not need these collectors.                                                 |
+| `plugins/utils.ts`                                                                  | `process.platform` is used for a legacy newline constant. Separate pure ID/token helpers from the Node collection/newline export; do not ship a process polyfill.                                                                                 |
+| `log.ts`, `deprecation.ts`, `document-context.ts`                                   | Diagnostic collection/reporter behavior must be available without forcing the terminal host graph. Extract finite pure factories, keep the existing Node logger/reporter wrappers, and inject the browser diagnostics into shared lifecycle code. |
+| `sanitize.ts`                                                                       | Preserve sanitizer policy/CSS validation. Node's `css` package barrel reaches source-map filesystem helpers. Supply a real browser CSS adapter to the shared sanitizer factory.                                                                   |
+| `highlighter/renderer.ts`, `highlighter.ts`                                         | The explicit synchronous protocol is reusable. Exclude `highlight.ts` and `/highlighter/legacy`, which own optional `require('highlight.js')`.                                                                                                    |
+| `plugins/cut.ts`, `plugins/tabs.ts`, `plugins/file/index.ts`                        | Existing wrappers already use `bundle:false`. Companion packages have ordinary browser/default exports; prove those actual branches and resource writers. Do not resolve their `node` entries in the browser.                                     |
+| `scripts/build-public-api.mjs:moduleExport`                                         | Current facades intentionally point to one Node CJS implementation. Browser exports need a separate explicit build target; pointing another facade at `lib/md.js` cannot cut its Node graph.                                                      |
+
+### Bounded sanitizer proof, 2026-10-27
+
+A source-only probe, outside the source tree, bundled the existing sanitizer under
+ordinary esbuild browser conditions. It supplied no aliases, fallback modules,
+custom resolver plugins, `process`/`Buffer` globals, or define options.
+
+1. The unchanged `import css from 'css'` fails to bundle on unresolved `fs`/`path`.
+2. A real CSS adapter importing `css/lib/parse/index.js` and
+   `css/lib/stringify/identity.js`, then calling the original identity compiler's
+   `compile(ast)`, bundles successfully. This invokes the existing parser and
+   serializer without the source-map feature; it is not an empty Node stub or
+   copied CSS parser. Private adapter declarations must be checked against the
+   installed dependency; do not expose these internal package paths publicly.
+3. The resulting bundle ran in real Chromium with both `process` and `Buffer`
+   absent. Event handlers/JavaScript links were removed; safe color/width survived;
+   dangerous CSS was removed; external SVG `use` references were removed while
+   local `#id` references survived; image dimensions and heading IDs survived; a
+   CSS sourceMappingURL comment did not trigger a read.
+
+The probe used sanitize-html 2.18.0, CSS 3.0.0, PostCSS 8.5.30 and Cheerio 1.2.0
+from that isolated installation. It is feasibility evidence, not acceptance of a
+complete browser Transform graph, all browsers, or all sanitizer options.
+
+PostCSS itself publishes ordinary `browser` mappings disabling optional terminal,
+source-map, filesystem, path and URL server branches. Those upstream conditional
+implementations are part of the supported browser dependency graph.
+Record them in the artifact graph inventory and prove required rendering/security
+does not invoke them. Do not describe this as a graph with zero disabled entries.
+Special application `resolve.fallback`, resolver aliases hiding builtins, injected
+Node globals and new Transform-specific empty modules remain disallowed.
+
+The standard entry preserves sanitize-html, Cheerio, cssfilter and the current
+policy. The bounded proof applies to that implementation.
+
+## Public API and finite compositions
+
+Add explicit `@diplodoc/transform/portable` and
+`@diplodoc/transform/portable/minimal` exports. The former is the standard browser
+composition; the latter has a separately reachable minimal dependency graph.
+The beta paths `/browser` and `/browser/minimal` resolve to the same ESM modules
+and declaration files as their portable counterparts. Both compositions run
+without a DOM. Selecting a runtime flag after importing all standard plugins
+is insufficient for the minimal bundle requirement. The standard entry includes
+its built-in sanitizer.
+
+**Intentional change from the published beta contract.** This supersedes the
+earlier “minimal does not mean unsanitized” invariant. Through `5.0.0-beta.4`,
+omitting `sanitize` selected the built-in sanitizer even in minimal. Removing the HTML and CSS sanitizer from the minimal dependency graph
+means `/portable/minimal` and its `/browser/minimal` alias now return unsanitized
+HTML by default. Applications inserting this output into the DOM must pass a
+synchronous `sanitize` callback. Standard retains its built-in policy.
+
+Both entries provide:
+
+```typescript
+export default function transform(source: string, options?: BrowserTransformOptions): BrowserOutput;
+
+export {transform};
+export function createParser(options?: BrowserTransformOptions): DocumentParser;
+export {
+  createDocumentEnv,
+  envMeta,
+  parseDocumentFragment,
+  parseDocumentFragmentResult,
+  replayDocumentFragment,
+  createHighlightJsHighlighter,
+};
+export type {
+  DocumentEnv,
+  ParsedDocument,
+  ParsedDocumentFragment,
+  ChildParseOptions,
+  ParserEnv,
+  Highlighter,
+  BrowserTransformOptions,
+  BrowserPluginConfiguration,
+};
+export {BrowserUnsupportedFeatureError};
+```
+
+The output retains `{result: {...document.env, html}, logs}`. `createParser` uses
+the reviewed DOCSTOOLS-6951 handle/plain-env contract: fresh roots, exact token/env
+association, owned handles, fixed installation options, derived-token explicit
+handles, child purpose/commit rules, error cleanup, and the documented narrow
+legacy env view. No new async, parallel, deterministic-ID or isolated-global-log
+claim is added. Browser diagnostics are plain text and use the supplied logger;
+they do not initialize Node terminal support. Node collection remains unchanged.
+
+All fragment runtime helpers come from the same selected browser entry/ESM graph,
+not the Node `/document` facade. `parseDocumentFragmentResult` captures a genuine
+opaque same-parser capsule; `replayDocumentFragment` reuses its finite copied
+contributions without parsing, preprocessing, reading, rendering or advancing IDs.
+Initial reference captures but commits nothing; include/fragment/reference merges,
+first-wins terms/materialized mappings, collision atomicity and failure recovery
+match 6951. Tokens stay mutable and retain identity. Foreign/forged capsules fail
+before parent mutation; callers own cache keys/lifetime and fixed flags/options.
+Shared ESM chunks make helpers/context maps identical between standard/minimal
+when imported together. No interoperation with a different Node/browser execution
+graph is promised merely because public data types are shared.
+
+`BrowserTransformOptions` is a closed browser contract, not the entire Node
+`OptionsType` with unsupported fields silently ignored. Reuse host-independent
+domain types rather than copying signatures or forcing browser consumers to load
+Node ambient declarations. Supported core settings are parser HTML/linkify/breaks,
+disabled rules, language, title/headings/inline output, pinned Markdown attributes,
+explicit synchronous highlighter, exact caller ID generator, logger and
+compatibility policy. Plugin-specific settings use the existing named composition
+rules and typed definitions for the builtins available in that entry.
+
+The implementation must publish the exact accepted field/ID list in its types and
+migration guide. Unknown/Node-only options passed from JavaScript throw an
+actionable `BrowserUnsupportedFeatureError` before parsing, with a stable feature
+code and an alternative such as pre-expanding includes on the host. A Node options
+object must not appear to work while silently losing file behavior.
+
+The proposed accepted option names are finite:
+
+```typescript
+export interface BrowserTransformOptions {
+  allowHTML?: boolean;
+  linkify?: boolean;
+  linkifyTlds?: string | string[];
+  breaks?: boolean;
+  disableRules?: string[];
+  lang?: Lang;
+  extractTitle?: boolean;
+  needTitle?: boolean;
+  needFlatListHeadings?: boolean;
+  renderInline?: boolean;
+  enableMarkdownAttrs?: boolean;
+  leftDelimiter?: string;
+  rightDelimiter?: string;
+  highlighter?: Highlighter;
+  generateID?: IDGenerator;
+  log?: LogConsumer;
+  compatibility?: CompatibilityPolicy;
+  pluginConfiguration?: BrowserPluginConfiguration;
+  sanitizeOptions?: BrowserSanitizeOptions;
+}
+```
+
+`BrowserPluginConfiguration` keeps the existing `preset`, `enable`, `disable`,
+`options`, `plugins` composition shape, ordering constraints and typed callbacks.
+Its `preset` values remain exactly `default` and `none`. `default` selects the
+entry's available set: empty for minimal, the exact standard list below for browser. Enabling unavailable builtin IDs fails with the
+standard-entry/explicit-plugin alternative. Supported per-builtin settings match
+the existing typed settings except filesystem `output`; reject that option.
+Plugin context path is absent by default and is not a filesystem capability.
+
+`BrowserSanitizeOptions` exposes `cssWhiteList`, `allowedTags`,
+`allowedAttributes`, `allowedSchemes`, `allowedSchemesByTag`,
+`allowedSchemesAppliedToAttributes`, and `allowProtocolRelative`, with the same
+underlying policy semantics for the standard entry. Minimal forwards these
+settings to the application callback when supplied. Without a callback it
+returns renderer HTML, including plugin and highlighter output, with no
+sanitization. Applications must sanitize that output before inserting it into
+the DOM. For development, minimal accepts `warnOnUnsanitizedHtml: true` to emit
+an ordinary warning when it compiles nonempty output without a callback. The
+setting defaults to `false` and the warning goes through document diagnostics.
+Reject parser/source-map options, Node callbacks, `disableStyleSanitizer`
+and `needToSanitizeHtml:false` in both entries. The standard entry rejects custom
+sanitizer replacement.
+
+| Feature                                                                                                                                                                | Minimal entry                                                                      | Standard browser entry                                                                     |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| CommonMark and links/images by URL                                                                                                                                     | Yes                                                                                | Yes                                                                                        |
+| Final HTML and CSS sanitization                                                                                                                                        | Application-supplied `sanitize` only                                               | Built-in sanitizer                                                                         |
+| YFM metadata, anchors, notes, code controls, definition lists, sup, monospace, tables, image dimensions, terms, block anchors, inline-code controls, visibility, video | Explicit supplied compatible plugins only                                          | Same finite builtin installation order/algorithms as Node, after the dependency cuts above |
+| Cut/tabs/file extension rendering                                                                                                                                      | Explicit compatible browser plugin                                                 | Existing browser implementations with `bundle:false`; URL/resource records only            |
+| General Markdown attrs                                                                                                                                                 | Explicit `enableMarkdownAttrs:true` using the pinned implementation; default false | Final shared default false after DOCSTOOLS-6944B; explicit true retains compatibility      |
+| Explicit synchronous highlighter                                                                                                                                       | Yes                                                                                | Yes                                                                                        |
+| Implicit highlight.js/lowlight, legacy highlighter loader                                                                                                              | No                                                                                 | No                                                                                         |
+| Liquid/YFMLint engines and implicit interpolation                                                                                                                      | No                                                                                 | No                                                                                         |
+| Filesystem includes/included blocks, link-title file inspection, asset copying, SVG filesystem inlining/optimization, single-page collectors                           | No                                                                                 | No                                                                                         |
+
+Minimal has no standard preset imports, table implementation, cut/tabs/file
+implementation or runtime side effects unless explicitly composed. Ordinary
+Markdown features remain available.
+Standard is deliberately not advertised as identical to the Node default preset:
+Node host services remain unavailable. The table implementation/defaults must
+follow the integrated reviewed table task, not another browser scanner variant.
+
+### Executable preset, options and core-prelude contract
+
+The finite preset, option keys, core prelude and unsupported-input boundaries are
+covered by `test/browser-api.test.ts`, `test/browser-standard.test.ts`,
+`test/browser-host.test.ts` and `test/browser-guard.test.ts`. Installed declaration
+and bundle checks live in `scripts/test-browser-package.mjs`. Keep the contract
+in repository tests; production must not load task artifacts.
+
+```typescript
+const standardBuiltinIds = [
+  'meta',
+  'deflist',
+  'cut',
+  'notes',
+  'anchors',
+  'tabs',
+  'code',
+  'sup',
+  'video',
+  'monospace',
+  'table',
+  'file',
+  'imsize',
+  'term',
+  'block-anchor',
+  'inline-code',
+  'visibility',
+  'underline',
+  'subscript',
+] as const;
+const minimalBuiltinIds = [] as const;
+const defaultBuiltinSettings = {}; // No synthesized user settings.
+```
+
+| ID                                                                                        | Allowed browser `pluginConfiguration.options[id]` keys                                                                                   |
+| ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| meta, deflist, cut, tabs, sup, monospace, block-anchor, inline-code, underline, subscript | none                                                                                                                                     |
+| notes                                                                                     | notesAutotitle                                                                                                                           |
+| anchors                                                                                   | supportGithubAnchors, disableCommonAnchors, useCommonAnchorButtons                                                                       |
+| code                                                                                      | codeLineWrapping                                                                                                                         |
+| video                                                                                     | videoUrl, youtube, vimeo, vine, prezi, osf, yandex, vk, rutube, url                                                                      |
+| table                                                                                     | table_ignoreSplittersInBlockCode, table_ignoreSplittersInInlineCode, table_ignoreSplittersInBlockMath, table_ignoreSplittersInInlineMath |
+| file                                                                                      | fileExtraAttrs                                                                                                                           |
+| imsize                                                                                    | enableInlineStyling (preserve the integrated6946 warning contract)                                                                       |
+| term                                                                                      | multilineTermDefinitions                                                                                                                 |
+| visibility                                                                                | contentAudience                                                                                                                          |
+
+Validate containers/IDs/key shape with the shared resolver and browser value kinds
+against its closed declared contract, before feature installation. Node validation
+semantics are unchanged. In particular `output` is unavailable for cut/tabs/file.
+All three wrappers retain `bundle:false`. Cut and file retain
+`directiveSyntax:'disabled'`; tabs retains its actual feature settings and directive
+default from the existing wrapper;
+no collector/copy callback runs. Missing user settings delegate to the current
+shared implementation defaults, rather than a copied browser defaults table.
+Notes default autotitle true, wrapping false, visibility human, multiline terms
+false and all accepted table splitter defaults follow the integrated table implementation. Video service defaults
+remain the single existing constants object. Registry ordering/duplicate IDs/
+requires/before/after checks stay shared; runtime feature-rule ordering is not
+reinterpreted as plugin installation ordering.
+
+Minimal supports no builtin enable/disable/options ID: such IDs fail types and
+JavaScript runtime validation with the standard-entry alternative. Custom plugin
+entries keep the existing `{id,plugin,requires?,before?,after?}` shape and typed
+callback context. Standard builtin IDs stay reserved in both entries, so an
+explicit custom plugin must use its own ID. Custom callbacks may capture typed
+application settings; this task adds no separate browser configuration language
+or browser builder subpath. `preset: 'none'` retains the following prelude and
+the selected entry's final HTML policy.
+
+The exact prelude/installation sequence is:
+
+1. Construct MarkdownIt with `html:false,linkify:false,breaks:true` unless explicitly
+   overridden, current synchronous highlighter protocol, lang ru and caller-owned
+   generator (or the existing random default). Configure fuzzyLink/fuzzyEmail/
+   urlAuth true, then disable requested rules.
+2. Install shared document activation/lifecycle and host diagnostics; validate and
+   resolve the named feature composition before installing feature callbacks.
+3. Resolve attrs through the single shared `resolveMarkdownAttrs` policy. Minimal
+   first normalizes an omitted setting to false; standard forwards it unchanged.
+   Install pinned attrs4.3.1 only when enabled, with default delimiters `{` and `}`.
+4. Install ol-attr-conversion, inline-svg-marker and linkify-strikethrough in that
+   exact order. These are core repairs, not members of either feature preset.
+5. Install the finite unsupported-content guard in actual parsing, respecting the
+   protected-region contract below; it cannot preprocess/evaluate/expand content.
+6. Install selected builtin/custom callbacks in the shared resolved order. Apply
+   explicit linkify TLD additions after installation, only when linkify is enabled.
+7. Parse/compile through the same owned-document/child/capsule lifecycle; retain
+   title and headings. Apply the standard built-in sanitizer or the supplied
+   minimal callback. When minimal has no callback, return unsanitized HTML. No Node default
+   preprocessors, file collectors, root-path/base-URL rewriting or implicit Liquid.
+
+Core title/headings/inline flags default false; disabled rules default empty.
+The final omitted standard attrs default is false through the shared Node policy;
+explicit true retains compatibility. Minimal also defaults false. DOCSTOOLS-6944B
+owns that policy and the consumer compatibility settings. DOCSTOOLS-6940 uses
+its shared resolver. The implementation baseline includes the merged
+DOCSTOOLS-6944B changes. Browser declarations, package and consumer checks
+retain that default. Anchor and image-dimension parsing remain independent of
+general attrs enablement.
+
+### Unsupported content and resource behavior
+
+- Includes/included directives recognized as actual document constructs outside
+  code examples fail explicitly with a source location and the pre-expansion
+  alternative. Do not fetch, open, partially expand or silently discard them.
+  Document-only terms and nested fragments remain supported through the shared
+  child helper. A virtual source resolver is future scope.
+- Literal `{{ value }}` text is not evaluated. Consumers may preprocess trusted
+  templates before calling the browser API. `vars`, legacy lint options,
+  filesystem callbacks and explicit requests for SVG file inlining are rejected
+  as unsupported browser settings. Node's retained engines/defaults do not change.
+- Ordinary relative/absolute image and link URLs remain URLs. Transform performs
+  no network request, existence check, implicit base-path conversion or title
+  lookup. Browser DOM insertion may naturally request permitted image resources;
+  that is the application's document-loading behavior, not transform-time I/O.
+- Preserve imsize dimensions/title/alt parsing and safe style dimensions. Keep
+  original anchor IDs/legacy auto URLs and pinned attrs behavior for supported
+  input. Do not replace filesystem SVG reads with implicit fetch. An SVG image
+  URL remains an image. Raw inline SVG follows the selected entry's HTML policy.
+- `result.assets` does not become a filesystem manifest. Explicit extension
+  `meta.script/style/csp` resource declarations still merge/deduplicate through
+  document contexts. The renderer neither imports nor executes arbitrary URLs
+  from frontmatter/resource metadata. The example loads known runtime/styles
+  explicitly. Application resource policy remains application-owned.
+- Custom plugins and highlighters are trusted caller code. Their own Node imports
+  or external effects are outside the guaranteed builtin graph. Browser plugin
+  documentation must identify required runtime/style imports and host effects.
+
+### Unsupported-input recognizer and fixtures
+
+`BrowserUnsupportedFeatureError` has stable code `BROWSER_UNSUPPORTED_FEATURE`,
+feature `include | materialized-include | option | builtin`, and an actionable
+alternative. Content errors include the original one-based line/column and source
+label `<input>` unless the document/child has an explicit diagnostic label. Options
+errors identify the offending key/ID and happen before parsing. No filesystem
+meaning is assigned to those labels.
+
+Recognize actual standalone include/notitle forms and standalone materialized
+open/close directive lines, including valid opening directives lacking a closing
+block. Reject at root or in an actual nested list/quote/table/term child. A malformed
+lookalike or prose containing an include-looking substring is not a directive.
+Minimal does not recognize YFM tables: the table fixture is standard-only.
+
+Use native parser-aware block/inline recognition in the real parse, with source
+positions. Fence/code-block/inline-backtick rules, escapes and multiline spans
+must retain their existing boundaries; raw HTML comments/attributes are examples,
+not executable directives. No regex over the complete input, second parse that
+executes user rules/IDs twice, stripped comments/code as replacement source, or
+new Markdown scanner framework. If native hooks require a small position tracker,
+prove it on these fixtures before choosing its implementation. The 22 frozen cases
+include the following required distinctions in both entries unless scoped:
+
+| Input/context                                                          | Result                                                |
+| ---------------------------------------------------------------------- | ----------------------------------------------------- |
+| `{% include [child](child.md) %}`; notitle with fragment               | throw include                                         |
+| Same standalone directive in list or blockquote                        | throw include                                         |
+| Same directive in actual YFM table cell (standard only)                | throw include                                         |
+| `{% included (child.md) %}` with/without close; standalone endincluded | throw materialized-include                            |
+| Fenced/indented examples and single/double/multiline backtick spans    | render as code; no error                              |
+| Escaped opener/keyword/endincluded                                     | literal; no error                                     |
+| HTML comment or quoted HTML attribute example                          | no error (selected entry's HTML policy still applies) |
+| `Example: {% include [child](child.md) %}`                             | literal prose; no error                               |
+| Empty target / includeSomething lookalike                              | ordinary Markdown; no error                           |
+| `{{ value }}` and conditional-looking text                             | literal; no implicit engine                           |
+
+Fixtures must also cover CRLF, even/odd escapes, variable backtick runs, nested
+source labels and custom child parsing through both tokens-only and capsule APIs.
+For all rejected inputs, demonstrate no transform-time network/file attempt or
+partial result; guard failures leave the next owned root usable.
+
+## Shared implementation boundary
+
+Extract only the small host-independent parser/render/lifecycle core necessary to
+avoid importing Node host services. A finite internal host object supplies:
+the builtin installation list, preprocessing policy, diagnostic/reporter factory,
+and final HTML policy. Node supplies its current defaults. Browser entries
+supply their explicit composition and unsupported-feature validation.
+
+Parameterize the existing named-plugin resolver with that finite builtin table
+instead of importing `DefaultPlugins` in the shared resolver. Preserve existing
+ordering, requirements, conflict checks and callback identity. Do not implement a
+second plugin configuration language or expose a general service registry.
+
+Split the pure sanitizer policy/value checks from host CSS/HTML traversal plumbing
+only as needed. Node keeps its current CSS wrapper and exact sanitizer options.
+The standard browser entry uses the real no-source-map CSS adapter and ordinary
+upstream browser exports. Shared Node and standard fixtures must demonstrate
+the required CSS escaping, SVG URL and extension policy decisions. Minimal
+keeps the content guard and delegates final HTML/CSS policy to the application.
+Its reachable graph must exclude the built-in sanitizer and CSS sanitizer dependencies.
+
+Keep pure token/ID/URL helpers out of Node filesystem/newline modules. Preserve
+Node-only compatibility exports through their existing wrappers. Reuse reviewed
+document-context logic; do not copy it into a browser implementation. Any pure
+declaration extraction must preserve `ParserEnv` augmentation identity across
+`/types`, `/document`, and the new browser entry types.
+
+## Build and package contract
+
+Browser outputs are built from source under ordinary browser package conditions,
+not by re-exporting the Node CJS `lib/` graph. **Portable subpaths and their aliases
+are ESM-only.** The canonical manifest entries are:
+
+```json
+{
+  "./portable": {
+    "import": {
+      "types": "./dist/browser/standard.d.mts",
+      "default": "./dist/browser/standard.mjs"
+    }
+  },
+  "./portable/minimal": {
+    "import": {
+      "types": "./dist/browser/minimal.d.mts",
+      "default": "./dist/browser/minimal.mjs"
+    }
+  }
+}
+```
+
+There is no require condition, outer default/types/node condition, CJS browser
+artifact or fallback to Node. Even Node24 require(ESM) support must not make
+`require('@diplodoc/transform/portable')` succeed: its expected code is
+`ERR_PACKAGE_PATH_NOT_EXPORTED`, before loading the Node root. A CommonJS host
+may use `await import('@diplodoc/transform/portable')` before entering the synchronous
+transform boundary. Document ordinary ESM usage and test CJS static require/type
+rejection plus dynamic-import success. A web bundler's require-based entry must
+also fail resolution, rather than follow a Node fallback. Existing Node root CJS,
+ESM facades, main/module/types, legacy paths and runtime/style exports are unchanged.
+
+Keep browser entry metadata separate from `stableEntries` (whose existing generator
+adds both Node formats). The `portableEntries` map in the public API inventory
+maps both compositions and their beta aliases to the two ESM outputs. The
+manifest verifier must consume that map without generating Node facades for it.
+A separate source build uses esbuild `platform:'browser',format:'esm',bundle:true,
+splitting:true,target:'es2018',outdir:'dist/browser',outExtension:{'.js':'.mjs'}`
+and linked maps/notices, with standard package resolution conditions and no
+alias/fallback/define/polyfill/custom resolver. Module-based dependency browser
+branches remain permitted only with the inventory/runtime evidence below.
+
+Emit real `.d.mts` public declarations from the implementation. No browser facade
+may export from the full Node typings/configuration/sanitizer declaration graph
+just to borrow a type: those imports can require Node ambient declarations even
+when runtime tree shaking removes them. Extract only shared pure domain types
+needed by both hosts. Keep one canonical ParserEnv/interface augmentation identity
+across Node/types, document and both browser entries; preserve existing Node
+native declaration behavior through reexports. Browser sanitizer options must
+reference the pure allowed data subset, not sanitize-html/htmlparser2 Node parser
+options. Private CSS adapter declarations stay private.
+
+Strict installed browser projects use ES2022+DOM libs, `types:[]`,
+`skipLibCheck:false`, module ESNext/Bundler resolution, with no @types/node in
+their manifest. Inspect the compiler source-file/resolution trace to reject any
+transitive @types/node or Node builtin declaration import; negative globals tests
+must reject process, Buffer, require and NodeJS. Prove augmented ParserEnv through browser handle/child callbacks
+and Node existing augmentation fixtures. Type-negative fixtures reject Node-only
+options, unavailable IDs, foreign config shapes and CJS static import/require.
+
+Use separate minimal/standard entry reachability, with shared ESM chunks where
+appropriate. Ship all referenced chunks, source maps and third-party notices in
+the tarball. Do not accidentally expose temporary files or absolute development
+paths. The entry manifest/build must reject export drift. An ESM facade alone
+cannot supply tree shaking when its implementation imports the entire CJS graph.
+
+Report raw/minified/gzip/brotli and reachable-module inventories for both example
+entries with and without a fixed explicitly selected highlighter grammar. Use
+identical bundler/Node/lock settings. Record measurements, not a size threshold
+invented for #446. Library runtime/styles and editor assets are separate entries
+in the report; do not count editor savings this task has not demonstrated.
+
+## Browser example requirements
+
+Add a small independent example using an installed immutable tarball and a normal
+browser bundler configuration. It must work with no webpack fallback settings,
+Node polyfill package or resolver alias:
+
+```typescript
+import transform, {createParser} from '@diplodoc/transform/portable';
+import '@diplodoc/transform/runtime';
+import '@diplodoc/transform/styles';
+
+const documentTarget = globalThis.document.querySelector<HTMLElement>('#preview')!;
+const parser = createParser({needTitle: true});
+const document = parser.parseDocument('# Browser example\n\nText');
+const html = parser.compileDocument(document);
+documentTarget.innerHTML = html;
+
+// Or render one document synchronously.
+const output = transform('![Example](example.png =320x180)');
+console.log(output.result);
+```
+
+Show explicit extension composition with `transform({bundle:false})` from the
+extension's normal browser export plus its documented runtime/styles imports.
+Demonstrate cut/tabs/file resource metadata, behavior after DOM insertion and
+repeated rendering without duplicate runtime registration. Do not auto-load
+untrusted resource URLs found in metadata.
+
+Show caller-owned lazy loading before the synchronous boundary:
+
+````typescript
+import {createHighlightJsHighlighter} from '@diplodoc/transform/portable';
+
+const [{default: hljs}, {default: javascript}] = await Promise.all([
+  import('highlight.js/lib/core'),
+  import('highlight.js/lib/languages/javascript'),
+]);
+const highlighter = createHighlightJsHighlighter(hljs, {
+  languages: {javascript},
+  allowedLanguages: ['javascript'],
+});
+const output = transform('```javascript\nconst answer = 42;\n```', {highlighter});
+````
+
+The example pins the already tested Highlight.js11.12.0; these extensionless core/
+grammar paths are its normal exports. The browser entries reexport the shared pure
+explicit highlighter helper, not the Node facade; no additional browser/highlighter
+subpath is needed. Old10packages require their version-appropriate .js subpaths
+as already documented by6939. Never import `/highlighter/legacy`.
+No highlighter is required for the basic example; code stays correctly escaped.
+
+## Implementation boundaries
+
+The shared parser, document lifecycle, diagnostics and registry preserve Node
+behavior. Node and the standard browser entry share the built-in sanitizer.
+Standard and minimal have separate dependency graphs and reuse the shared
+plugin implementations.
+
+The image-size implementation retains actual-use warning scope, native reporter
+fallback, private recognition markers, migration purity, grammar quirks and the
+no-removal-before-6 contract. The shared attrs resolver owns the false default;
+Node and browser hosts use the same include grammar and heading behavior.
+
+DOM-only type and augmentation checks require one physical declaration carrier
+and installed trace/negative-global tests. The notes bridge preserves its Russian
+default, titles, maps and diagnostics through the standalone package.
+
+## Acceptance criteria
+
+1. Installed immutable tarball in a clean example project; record source revision,
+   archive hash, dependency versions and exact consumer bundler configuration.
+   Test native ESM/declarations, CJS require rejection and CJS dynamic-import usage; strict browser
+   TypeScript uses DOM/ES libs with `types:[]`, `skipLibCheck:false`, and Bundler
+   resolution. Native Node declaration checks preserve the existing root API.
+2. Plain esbuild browser and Rspack application bundles without fallback,
+   alias/stub plugins, polyfill dependencies, injected `process`/`Buffer`, or custom
+   defines. Inventory ordinary upstream disabled optional branches explicitly;
+   inspect runtime references, not just string matches against a metafile.
+3. Real Chromium, Firefox and WebKit execute rendering with `process`, `Buffer`,
+   Node `require`, and filesystem globals absent. No JSDOM-only acceptance.
+   Import/runtime tests, actual DOM insertion and browser console/network capture
+   prove no mandatory Node dependency or transform-time resource fetch.
+4. Supported standard features, metadata, title/headings, anchors/attrs, table
+   defaults, image dimensions, visibility and extension resources. Minimal graph
+   contains no standard-only implementations, built-in sanitizer or implicit highlighter. Unsupported
+   options/directives produce the documented failures outside protected examples.
+5. For the standard sanitizer, cover hostile HTML/URLs/encoded and escaped CSS, style tags/attributes, malformed CSS,
+   sourceMappingURL comments/data, SVG use/SMIL/namespace references, unknown
+   highlighter languages and malicious callback HTML. Preserve safe anchor IDs,
+   dimensions, local SVG references, necessary runtime attributes and extension
+   CSS allowances. Compare required sanitizer decisions with Node fixtures; do
+   not weaken policy to make a browser test pass. For minimal, verify raw output
+   without a callback and exact application-owned output with a callback.
+6. Document A/B, parseA/parseB/compileA, derived tokens/foreign handles, initializer
+   and render errors, child fragments/resources and augmented ParserEnv behavior
+   match the reviewed context contract. No concurrency or opaque-generator reset
+   claim. Node retained-engine, parser and full package regressions still pass.
+7. The example works from the tarball in both basic and explicit highlighter
+   modes, with extensions/runtime/styles. Capture reachable graph and reproducible
+   size reports. Root/independent review and current-head CI precede integration.
+
+Node-engine removal remains outside this task even when the browser graph excludes
+those modules.
+
+## Review correction: bounded HTML shielding and native table origins
+
+HTML shielding retains its existing native-inline encounter boundary: code,
+escaped openers and HTML skipped by the native parser do not install protection.
+For each encountered tag-like `<`, the protected end is the first `>` reached
+with neither a single nor double quote open, including multiline content. Each
+candidate starts unquoted independently, even if an earlier malformed candidate
+has no closer. Unterminated tags do not install a range; encountered comments
+protect through `-->` or end of source. Compute closing positions with one
+backward pass over the original scope using the three quote states and cached
+comment ends. Do not repeatedly scan the remaining source or change this policy
+by interpreting only a single forward HTML stream.
+
+Native GFM table inline tokens lack maps. Their diagnostic origins must come
+from the mapped native row and ordered raw cells, accounting for blockquote/list
+prefixes, trim, repeated cell text, CRLF normalization and escaped pipes. Follow
+markdown-it's actual splitter: a pipe immediately preceded by a backslash remains
+in the cell and loses that one backslash; unescaped pipes split even inside code
+spans. Preserve original columns through this normalization. Existing mapped YFM
+cell origins keep their own source positions; do not substitute table-start maps.
+These corrections change diagnostic positions and scan work, not table grammar,
+native rendering, include recognition, or which HTML examples are protected.
+
+Encountered HTML ranges use compressed less-than offsets and a prefix-maximum
+index: a source offset is protected exactly when the largest activated end among
+starts at or before it exceeds that offset. Both activation and containment take
+O(log M) work and O(M) memory for M less-than candidates. This includes repeated
+quoted-include examples and does not assume monotonic native inline callbacks.
+Source without a less-than skips HTML suffix indexing. Native cell text is
+accumulated as characters and joined once per cell; escaped-pipe handling pops
+one backslash without copying the growing cell prefix.

@@ -1,0 +1,45 @@
+import type {CompatibilityPolicy, DeprecationReporter} from './deprecation';
+import type {DiagnosticOptions} from './log-core';
+
+import {createDeprecationReporter} from './deprecation';
+
+/** Optional diagnostics for retained bundled engine calls. */
+export interface LegacyEngineDiagnostics extends DiagnosticOptions {
+    compatibility?: CompatibilityPolicy;
+    deprecations?: DeprecationReporter;
+}
+
+/**
+ * Report an actual bundled engine invocation in the caller's scope.
+ * @param engine - Invoked bundled engine.
+ * @param path - Source path, when known.
+ * @param diagnostics - Caller logger, policy and optional shared scope.
+ * @returns Nothing.
+ */
+export function warnBundledEngine(
+    engine: 'Liquid' | 'YFMLint',
+    path: string | undefined,
+    diagnostics: LegacyEngineDiagnostics = {},
+): void {
+    if (diagnostics.deprecationWarnings === false) {
+        return;
+    }
+    const reporter = diagnostics.deprecations ?? createDeprecationReporter(diagnostics);
+    const liquid = engine === 'Liquid';
+    reporter.warn(
+        {
+            code: liquid ? 'TRANSFORM_BUNDLED_LIQUID' : 'TRANSFORM_BUNDLED_YFMLINT',
+            feature: `Transform bundled ${engine} engine`,
+            replacement: liquid
+                ? '@diplodoc/liquid in the caller pipeline, then pass disableLiquid: true to Transform after preprocessing root and included content (isLiquided bypasses only the root)'
+                : '@diplodoc/yfmlint in the caller lint pipeline',
+            removal: {
+                version: '6.0.0',
+            },
+        },
+        {
+            ...(path ? {location: {path}} : {}),
+            api: liquid ? 'liquidDocument/liquidSnippet' : 'yfmlint',
+        },
+    );
+}

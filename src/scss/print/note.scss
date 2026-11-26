@@ -1,7 +1,3 @@
-@media print {
-    .yfm {
-        .yfm-note {
-            page-break-inside: avoid;
-        }
-    }
-}
+@use 'pkg:@diplodoc/notes-extension/scss/notes';
+
+@include notes.notes-print;

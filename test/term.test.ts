@@ -1,5 +1,4 @@
-import type MarkdownIt from 'markdown-it';
-import type StateCore from 'markdown-it/lib/rules_core/state_core';
+import type {MarkdownIt, StateCore} from 'markdown-it';
 
 import {dirname, resolve} from 'path';
 import {readFileSync} from 'fs';
@@ -13,12 +12,15 @@ import sup from '../src/transform/plugins/sup';
 import cut from '../src/transform/plugins/cut';
 import tabs from '../src/transform/plugins/tabs';
 
+import {highlighter} from './highlighter-fixture';
+
 const mocksPath = require.resolve('./utils.ts');
 
 const transformYfm = (text: string, path?: string, opts?: Object) => {
     const {
         result: {html},
     } = transform(text, {
+        highlighter,
         plugins: [includes, links, code, sup, term],
         path: path || mocksPath,
         root: dirname(path || mocksPath),
@@ -146,15 +148,18 @@ describe('Terms', () => {
         expect(clearRandomId(result)).toMatchSnapshot();
     });
 
-    test('Term should be interactive when definition comes entirely from included file', () => {
-        const inputPath = resolve(__dirname, './mocks/term/includeDefinitions.md');
-        const input = readFileSync(inputPath, 'utf8');
-        const result = transformYfm(input, inputPath);
+    test.each([undefined, false, true])(
+        'included definitions remain interactive with attrs=%s',
+        (enableMarkdownAttrs) => {
+            const inputPath = resolve(__dirname, './mocks/term/includeDefinitions.md');
+            const input = readFileSync(inputPath, 'utf8');
+            const result = transformYfm(input, inputPath, {enableMarkdownAttrs});
 
-        expect(result).toContain('term-key=":html"');
-        expect(result).toContain('id=":html_element"');
-        expect(result).toContain('yfm-term_title');
-    });
+            expect(result).toContain('term-key=":html"');
+            expect(result).toContain('id=":html_element"');
+            expect(result).toContain('yfm-term_title');
+        },
+    );
 
     test('Term should use escape regexp like chars', () => {
         const inputPath = resolve(__dirname, './mocks/term/rxlike-term.md');
@@ -319,6 +324,7 @@ describe('Terms', () => {
             const {
                 result: {html},
             } = transform(text, {
+                highlighter,
                 plugins: [includes, links, code, sup, term],
                 path: path || mocksPath,
                 root: dirname(path || mocksPath),

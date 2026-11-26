@@ -1,12 +1,16 @@
 import type {Dictionary} from 'lodash';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {StateCore} from './typings';
+import type {LegacyEngineDiagnostics} from './legacy-engines';
 
 import {readFileSync, realpathSync, statSync} from 'fs';
 import escapeRegExp from 'lodash/escapeRegExp';
 import {basename, join, parse, relative, resolve, sep} from 'path';
 import QuickLRU from 'quick-lru';
 
+import {parseChildDocumentResult} from './document-context';
 import liquidSnippet from './liquid';
+import {getInvocationLogger} from './diagnostic-context';
 import {defaultTransformLink} from './utils';
 import {preprocess} from './preprocessors';
 
@@ -28,7 +32,7 @@ export function resolveRelativePath(fromPath: string, relativePath: string) {
     return resolve(fromDir, relativePath);
 }
 
-export type GetFileTokensOpts = {
+export type GetFileTokensOpts = LegacyEngineDiagnostics & {
     getVarsPerFile?: (path: string) => Record<string, string>;
     vars?: Record<string, unknown>;
     disableLiquid?: boolean;
@@ -39,6 +43,7 @@ export type GetFileTokensOpts = {
     inheritVars?: boolean;
     conditionsInCode?: boolean;
     content?: string;
+    purpose?: 'include' | 'reference';
     root?: string;
 };
 
@@ -47,7 +52,17 @@ export function getFileTokens(
     state: StateCore,
     options: GetFileTokensOpts,
     content?: string,
+): Token[] {
+    return getFileFragment(path, state, options, content).tokens;
+}
+
+export function getFileFragment(
+    path: string,
+    state: StateCore,
+    options: GetFileTokensOpts,
+    content?: string,
 ) {
+    options = {...options, log: getInvocationLogger(options)};
     const {
         getVarsPerFile,
         vars,
@@ -72,10 +87,15 @@ export function getFileTokens(
         }
     }
 
-    let sourceMap;
+    let sourceMap: Dictionary<string> | undefined;
 
     if (!disableLiquid) {
         const liquidResult = liquidSnippet(content, builtVars, path, {
+            log: options.log,
+            diagnostics: options.diagnostics,
+            compatibility: options.compatibility,
+            deprecationWarnings: options.deprecationWarnings,
+            deprecations: options.deprecations,
             withSourceMap: true,
             conditionsInCode,
         });
@@ -84,47 +104,54 @@ export function getFileTokens(
         sourceMap = liquidResult.sourceMap;
     }
 
-    // Run preprocessor
-    content = preprocess(content, options);
+    const tokens = parseChildDocumentResult(
+        state.md,
+        content,
+        state.env,
+        {
+            purpose: options.purpose ?? 'include',
+            path,
+            disableTitleRefSubstitution,
+            disableCircularError,
+        },
+        (childSource) => {
+            content = childSource;
+            // Run preprocessor
+            content = preprocess(content, {...options, path}, undefined, state.md);
 
-    if (!disableLint && lintMarkdown) {
-        // Make path relative to root if root is provided, otherwise use absolute path
-        let lintPath = path;
-        if (options.root) {
-            try {
-                // Use path.relative for proper cross-platform path handling
-                const relativePath = relative(options.root, path);
-                // If relative path doesn't start with '..', it's within root
-                if (!relativePath.startsWith('..')) {
-                    lintPath = relativePath;
+            if (!disableLint && lintMarkdown) {
+                // Make path relative to root if root is provided, otherwise use absolute path
+                let lintPath = path;
+                if (options.root) {
+                    try {
+                        // Use path.relative for proper cross-platform path handling
+                        const relativePath = relative(options.root, path);
+                        // If relative path doesn't start with '..', it's within root
+                        if (!relativePath.startsWith('..')) {
+                            lintPath = relativePath;
+                        }
+                    } catch {
+                        // If relative fails, fall back to string replacement
+                        if (path.startsWith(options.root)) {
+                            lintPath = path.replace(options.root, '').replace(/^[/\\]/, '');
+                        }
+                    }
                 }
-            } catch {
-                // If relative fails, fall back to string replacement
-                if (path.startsWith(options.root)) {
-                    lintPath = path.replace(options.root, '').replace(/^[/\\]/, '');
-                }
+                // Normalize path separators to forward slashes for cross-platform compatibility
+                const normalizedPath = lintPath.replace(/\\/g, '/');
+                // Use only basename for lint error messages to match test expectations
+                // This ensures consistent error message format across platforms
+                const lintPathForMessage = basename(normalizedPath);
+                lintMarkdown({
+                    input: content,
+                    path: lintPathForMessage,
+                    sourceMap,
+                });
             }
-        }
-        // Normalize path separators to forward slashes for cross-platform compatibility
-        const normalizedPath = lintPath.replace(/\\/g, '/');
-        // Use only basename for lint error messages to match test expectations
-        // This ensures consistent error message format across platforms
-        const lintPathForMessage = basename(normalizedPath);
-        lintMarkdown({
-            input: content,
-            path: lintPathForMessage,
-            sourceMap,
-        });
-    }
 
-    const meta = state.md.meta;
-    const tokens = state.md.parse(content, {
-        ...state.env,
-        path,
-        disableTitleRefSubstitution,
-        disableCircularError,
-    });
-    state.md.meta = meta;
+            return content;
+        },
+    );
 
     return tokens;
 }

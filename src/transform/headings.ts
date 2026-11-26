@@ -1,5 +1,7 @@
-import type Token from 'markdown-it/lib/token';
-import type {Heading} from './typings';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
+import type {Heading} from './shared-types';
+
+import {isFootnoteBody} from './footnote-data';
 
 function getTitle(token: Token) {
     return (
@@ -17,11 +19,11 @@ function getHref(token: Token) {
     return '#' + (token.attrGet('id') || '');
 }
 
-export = function getHeadings(tokens: Token[], needFlatListHeadings?: boolean, href = '') {
+export default function getHeadings(tokens: Token[], needFlatListHeadings?: boolean, href = '') {
     return needFlatListHeadings
         ? getFlatListHeadings(tokens, href)
         : getFilteredHeadings(tokens, href);
-};
+}
 
 function getFilteredHeadings(tokens: Token[], href: string) {
     const headings: Heading[] = [];
@@ -29,7 +31,7 @@ function getFilteredHeadings(tokens: Token[], href: string) {
     let prevLevel;
 
     for (let i = 0; i < tokens.length; i++) {
-        const isHeading = tokens[i].type === 'heading_open';
+        const isHeading = tokens[i].type === 'heading_open' && !isFootnoteBody(tokens[i]);
         const level = Number.parseInt(tokens[i].tag.slice(1), 10);
 
         if (isHeading && level >= 2) {
@@ -73,7 +75,7 @@ function getFlatListHeadings(tokens: Token[], href: string) {
     const headings: Heading[] = [];
 
     for (let i = 0; i < tokens.length; i++) {
-        const isHeading = tokens[i].type === 'heading_open';
+        const isHeading = tokens[i].type === 'heading_open' && !isFootnoteBody(tokens[i]);
         const level = Number.parseInt(tokens[i].tag.slice(1), 10);
 
         if (!isHeading) {

@@ -1,0 +1,25 @@
+.yfm {
+    .footnotes {
+        margin-block-start: 1.5em;
+        font-size: 0.9em;
+    }
+
+    .footnote-ref {
+        line-height: 0;
+    }
+
+    .footnote-backref {
+        margin-inline-start: 0.4em;
+        white-space: normal;
+    }
+
+    .footnote-ref a:focus-visible,
+    .footnote-backref:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
+    .footnote-item {
+        scroll-margin-block-start: 1em;
+    }
+}

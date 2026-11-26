@@ -1,4 +1,4 @@
-import type Token from 'markdown-it/lib/token';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {Logger} from '../../log';
 import type {CacheContext, StateCore} from '../../typings';
 import type {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
@@ -53,11 +53,11 @@ type Options = {
     cache?: CacheContext;
 };
 
-const getTitle = (md: MarkdownItIncluded, id: string | null, options: Options) => {
+const getTitle = (id: string | null, options: Options) => {
     const {file, state, opts} = options;
 
     // Check the existed included store and extract it
-    const included = md.included?.[file];
+    const included = state.env.included?.[file];
 
     const fileTokens = getFileTokens(
         file,
@@ -68,6 +68,7 @@ const getTitle = (md: MarkdownItIncluded, id: string | null, options: Options) =
             disableTitleRefSubstitution: true,
             disableCircularError: true,
             inheritVars: false,
+            purpose: 'reference',
         },
         included,
     );
@@ -75,13 +76,13 @@ const getTitle = (md: MarkdownItIncluded, id: string | null, options: Options) =
     return getTitleFromTokens(sourceTokens);
 };
 
-const addTitle = (md: MarkdownItIncluded, options: Options) => {
+const addTitle = (options: Options) => {
     const {hash, state, isEmptyLink, tokens, idx, nextToken, href, currentPath, log, cache} =
         options;
 
     const id = hash && hash.slice(1);
     const key = [id, path].join('::');
-    const title = cache?.get(key) ?? getTitle(md, id, options);
+    const title = cache?.get(key) ?? getTitle(id, options);
     cache?.set(key, title);
 
     if (title) {
@@ -104,7 +105,7 @@ interface ProcOpts extends MarkdownItPluginOpts {
     transformLink: (v: string) => string;
     notFoundCb: (v: string) => void;
     needSkipLinkFn: (v: string) => boolean;
-    getPublicPath: (options: ProcOpts, v?: string) => string;
+    getPublicPath?: (options: ProcOpts, v?: string) => string;
 }
 
 function getDefaultPublicPath(
@@ -123,13 +124,7 @@ function getDefaultPublicPath(
 }
 
 // eslint-disable-next-line complexity
-function processLink(
-    md: MarkdownItIncluded,
-    state: StateCore,
-    tokens: Token[],
-    idx: number,
-    opts: ProcOpts,
-) {
+function processLink(state: StateCore, tokens: Token[], idx: number, opts: ProcOpts) {
     const {
         path: startPath,
         root,
@@ -201,7 +196,7 @@ function processLink(
         isPageFile &&
         !state.env.disableTitleRefSubstitution
     ) {
-        addTitle(md, {
+        addTitle({
             hash,
             file,
             state,
@@ -229,7 +224,7 @@ function processLink(
     linkToken.attrSet('href', linkHrefTransformer(patchedHref));
 }
 
-const index: MarkdownItPluginCb<ProcOpts & Options> = (md: MarkdownItIncluded, opts) => {
+const index: MarkdownItPluginCb<ProcOpts> = (md: MarkdownItIncluded, opts) => {
     const plugin = (state: StateCore) => {
         const tokens = state.tokens;
         let i = 0;
@@ -243,14 +238,14 @@ const index: MarkdownItPluginCb<ProcOpts & Options> = (md: MarkdownItIncluded, o
                     const token = childrenTokens[j];
 
                     const isLinkOpenToken = token.type === 'link_open';
-                    const tokenClass = token.attrGet('class');
+                    const tokenClass = String(token.attrGet('class') ?? '');
 
                     /*  Don't process anchor links */
                     const isYfmAnchor = tokenClass ? tokenClass.includes('yfm-anchor') : false;
                     const wasProcessedBefore = Boolean(token.meta?.yfmLinkPluginProcessed);
 
                     if (isLinkOpenToken && !wasProcessedBefore && !isYfmAnchor) {
-                        processLink(md, state, childrenTokens, j, opts);
+                        processLink(state, childrenTokens, j, opts);
 
                         token.meta ??= {};
                         token.meta.yfmLinkPluginProcessed = true;
@@ -271,4 +266,4 @@ const index: MarkdownItPluginCb<ProcOpts & Options> = (md: MarkdownItIncluded, o
     }
 };
 
-export = index;
+export default index;

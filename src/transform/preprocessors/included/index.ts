@@ -1,10 +1,10 @@
 import type {MarkdownItPreprocessorCb} from '../../typings';
 import type {MarkdownItIncluded} from '../../plugins/includes/types';
 
+import {getDocumentEnv} from '../../document-context';
 import {getFullIncludePath} from '../../utilsFS';
 
-const INCLUDE_REGEXP = /^\s*{%\s*included\s*\((.+?)\)\s*%}\s*$/;
-const INCLUDE_END_REGEXP = /^\s*{% endincluded %}\s*$/;
+import {includedPathKey, isIncludedEnd} from './boundaries';
 
 const preprocessLine = (
     lines: string[],
@@ -20,16 +20,9 @@ const preprocessLine = (
 ) => {
     const hasIncludedCache = md && root && path;
     const str = lines[start];
-    const match = str?.match(INCLUDE_REGEXP);
+    const includePathKey = includedPathKey(str);
 
     // Protect from unmatched results
-    if (!match) {
-        return false;
-    }
-
-    const includePathKey = match[1];
-
-    // Protect from empty path
     if (!includePathKey) {
         return false;
     }
@@ -45,7 +38,7 @@ const preprocessLine = (
         if (str === null) {
             break;
         }
-        if (str?.match(INCLUDE_END_REGEXP)) {
+        if (isIncludedEnd(str)) {
             break;
         }
         data.push(str);
@@ -53,9 +46,8 @@ const preprocessLine = (
 
     // No included cache for lint mode
     if (hasIncludedCache) {
-        if (!md.included) {
-            md.included = {};
-        }
+        const env = getDocumentEnv(md);
+        env.included ??= {};
 
         // Normalize the path to absolute
         let includePath = getFullIncludePath(includePaths[0], root, path);
@@ -65,7 +57,7 @@ const preprocessLine = (
         }
 
         // Store the included content
-        md.included[includePath] = data.join('\n');
+        env.included[includePath] = data.join('\n');
     }
 
     // Remove the content of the included file
@@ -105,4 +97,4 @@ const index: MarkdownItPreprocessorCb<{
     return input;
 };
 
-export = index;
+export default index;

@@ -1,0 +1,14 @@
+.yfm {
+    .task-list-item {
+        list-style-type: none;
+    }
+
+    .yfm-task-label {
+        cursor: default;
+    }
+
+    .task-list-item input[type='checkbox'] {
+        margin-inline-end: 0.4em;
+        vertical-align: middle;
+    }
+}

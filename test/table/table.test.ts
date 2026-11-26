@@ -8,11 +8,13 @@ import transform from '../../src/transform';
 import table from '../../src/transform/plugins/table';
 import includes from '../../src/transform/plugins/includes';
 import {log} from '../../src/transform/log';
+import {highlighter} from '../highlighter-fixture';
 
 const transformYfm = (text: string, opts?: YfmTablePluginOptions) => {
     const {
         result: {html},
     } = transform(text, {
+        highlighter,
         plugins: [table],
         enableMarkdownAttrs: false,
         ...opts,
@@ -833,7 +835,10 @@ describe('Table plugin', () => {
                 ||
                 |#
                 `,
-                    {table_ignoreSplittersInBlockCode: false},
+                    {
+                        table_ignoreSplittersInBlockCode: false,
+                        table_ignoreSplittersInInlineCode: false,
+                    },
                 ),
             ).toBe(dd`
                 <table>
@@ -854,13 +859,16 @@ describe('Table plugin', () => {
         });
     });
 
-    it('should split cells by pipe in inline-code', () => {
+    it('should split cells by pipe in inline-code with explicit legacy false', () => {
         expect(
-            transformYfm(dd`
+            transformYfm(
+                dd`
             #|
             || code \`before|after\` code ||
             |#
-            `),
+            `,
+                {table_ignoreSplittersInInlineCode: false},
+            ),
         ).toBe(dd`
             <table>
             <tbody>
@@ -1722,6 +1730,7 @@ const transformWithIncludes = (text: string) => {
     const {
         result: {html},
     } = transform(text, {
+        highlighter,
         plugins: [table, includes],
         path: mocksPath,
         enableMarkdownAttrs: false,
@@ -2021,7 +2030,9 @@ describe('cell align attribute', () => {
         const {
             result: {html},
             logs,
-        } = transform(`#|\n||::{halign="${halign}" valign="${valign}"} A ||\n|#`);
+        } = transform(`#|\n||::{halign="${halign}" valign="${valign}"} A ||\n|#`, {
+            disableLiquid: true,
+        });
 
         expect(html).toContain(`data-halign="${halign}"`);
         expect(html).toContain(`data-valign="${valign}"`);
@@ -2070,7 +2081,7 @@ describe('cell align attribute', () => {
         const {
             result: {html},
             logs,
-        } = transform(`#|\n||::{${attr}="${value}"} A ||\n|#`);
+        } = transform(`#|\n||::{${attr}="${value}"} A ||\n|#`, {disableLiquid: true});
 
         expect(html).toContain('<td>');
         expect(logs.warn).toEqual([
@@ -2082,7 +2093,7 @@ describe('cell align attribute', () => {
         const {
             result: {html},
             logs,
-        } = transform('#|\n||::{align="center"} A ||\n|#');
+        } = transform('#|\n||::{align="center"} A ||\n|#', {disableLiquid: true});
 
         expect(html).toContain('<td data-align="center" class="cell-align-center">');
         expect(logs.warn).toEqual([
@@ -2092,17 +2103,19 @@ describe('cell align attribute', () => {
         ]);
     });
 
-    it('should forward one align deprecation warning across cells and documents', () => {
+    it('should forward one align deprecation warning per document', () => {
         const warnings: string[] = [];
-        const logger = {...log, warn: (message: string) => warnings.push(message)};
+        const logger = {...log, deprecation: (message: string) => warnings.push(message)};
         const input = '#|\n||::{align="center"} A |::{align="bottom-right"} B ||\n|#';
 
-        transform(input, {log: logger});
-        transform(input, {log: logger});
+        transform(input, {log: logger, disableLiquid: true});
+        transform(input, {log: logger, disableLiquid: true});
 
-        expect(warnings).toEqual([
-            'Deprecated: use halign and valign instead of the table cell align attribute.',
-        ]);
+        expect(warnings).toEqual(
+            Array(2).fill(
+                'Deprecated: use halign and valign instead of the table cell align attribute.',
+            ),
+        );
     });
 
     it('align="top-left" adds cell-align-top-left class on td', () => {
@@ -2151,13 +2164,12 @@ describe('deprecated cell-align class', () => {
             logs,
         } = transform('#|\n|| Text {.cell-align-center} ||\n|#', {
             plugins: [table],
+            disableLiquid: true,
             enableMarkdownAttrs: false,
         });
         expect(html).toContain('<td class="cell-align-center">');
         expect(logs.warn).toEqual([
-            expect.stringContaining(
-                'Deprecated: use halign and valign instead of .cell-align-* class in cell content "{ }".',
-            ),
+            expect.stringContaining('::{halign="..." valign="..."} after the cell marker'),
         ]);
     });
 
@@ -2274,6 +2286,63 @@ describe('table header-rows attribute', () => {
     const table3x3 =
         '#|\n|:{header-rows="1"}\n|| A | B | C ||\n|| D | E | F ||\n|| G | H | I ||\n|#';
 
+    it('renders separate groups while editors still see one body and its original line map', () => {
+        const md = new MarkdownIt().use(table);
+        const tokens = md.parse(table3x3, {});
+        const groups = tokens.filter(({tag}) => ['thead', 'tbody'].includes(tag));
+        const html = md.renderer.render(tokens, md.options, {});
+        expect(html).toContain('<thead>\n<tr data-header="true">');
+        expect(html).toContain('</thead>\n<tbody>\n<tr>');
+        expect(html).toContain('</tbody>\n</table>');
+        expect(
+            groups.map(({type, nesting, level, block, map}) => [type, nesting, level, block, map]),
+        ).toEqual([
+            ['yfm_tbody_open', 1, 1, true, [1, 5]],
+            ['yfm_tbody_close', -1, 1, true, null],
+        ]);
+    });
+
+    it.each(['before', 'after'])(
+        'respects a custom boundary renderer installed %s the plugin',
+        (when) => {
+            const md = new MarkdownIt();
+            if (when === 'after') md.use(table);
+            md.renderer.rules.yfm_tbody_open = () => '<tbody class="custom">\n';
+            if (when === 'before') md.use(table);
+            const html = md.render(table3x3);
+            expect(html).not.toContain('thead');
+            expect(html).toContain('<tbody class="custom">');
+            expect(html.match(/<\/tbody>/g)).toHaveLength(1);
+        },
+    );
+
+    it('keeps a single body when a rowspan starts above and ends below the boundary', () => {
+        const text = '#|\n|:{header-rows="2"}\n|| A | B ||\n|| C | ^ ||\n|| D | ^ ||\n|#';
+        const html = transformYfm(text);
+        expect(html).not.toContain('<thead>');
+        expect(html).toContain('<tbody>\n<tr data-header="true">');
+        expect(html).toContain('<th scope="col" rowspan="3">');
+        expect(
+            parseTokens(text)
+                .filter(({tag}) => tag === 'tbody')
+                .map(({map}) => map),
+        ).toEqual([[1, 5], null]);
+    });
+
+    it('splits rows when spans stay inside their own groups', () => {
+        const text =
+            '#|\n|:{header-rows="2"}\n|| A | B ||\n|| ^ | C ||\n|| D | E ||\n|| ^ | F ||\n|#';
+        const html = transformYfm(text);
+        expect(html).toContain('<thead>\n<tr data-header="true">\n<th scope="col" rowspan="2">');
+        expect(html).toContain('</thead>\n<tbody>\n<tr>\n<td rowspan="2">');
+    });
+
+    it.each(['3', '99'])('emits only the header when all rows are covered (%s)', (count) => {
+        const html = transformYfm(table3x3.replace('header-rows="1"', `header-rows="${count}"`));
+        expect(html).toContain('</thead>\n</table>');
+        expect(html).not.toContain('<tbody>');
+    });
+
     it('first row cell-open tokens have tag="th", others have "td"', () => {
         const tokens = parseTokens(table3x3);
         const tdOpens = findTokens(tokens, 'yfm_td_open');
@@ -2310,9 +2379,9 @@ describe('table header-rows attribute', () => {
     it('first yfm_tr_open has data-header="true", others do not', () => {
         const tokens = parseTokens(table3x3);
         const trOpens = findTokens(tokens, 'yfm_tr_open');
-        expect(trOpens[0]!.attrGet('data-header')).toBe('true');
-        expect(trOpens[1]!.attrGet('data-header')).toBeNull();
-        expect(trOpens[2]!.attrGet('data-header')).toBeNull();
+        expect(trOpens[0]?.attrGet('data-header')).toBe('true');
+        expect(trOpens[1]?.attrGet('data-header')).toBeNull();
+        expect(trOpens[2]?.attrGet('data-header')).toBeNull();
     });
 
     it('yfm_table_open has data-header-rows="1"', () => {

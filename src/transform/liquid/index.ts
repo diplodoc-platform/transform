@@ -1,8 +1,13 @@
 import type {Dictionary} from 'lodash';
 import type {ArgvSettings} from './services/argv';
+import type {LegacyEngineDiagnostics} from '../legacy-engines';
+import type {LogConsumer} from '../log-core';
 
 import cloneDeepWith from 'lodash/cloneDeepWith';
 
+import {warnBundledEngine} from '../legacy-engines';
+import {getInvocationLogger} from '../diagnostic-context';
+import {createDeprecationReporter} from '../deprecation';
 import {composeFrontMatter, extractFrontMatter} from '../frontmatter';
 
 import applySubstitutions from './substitutions';
@@ -47,14 +52,17 @@ function saveCode(
     str: string,
     vars: Record<string, unknown>,
     codes: string[],
-    path?: string,
-    substitutions?: boolean,
+    path: string | undefined,
+    substitutions: boolean | undefined,
+    logger: LogConsumer,
 ) {
     return replace(
         fence,
         fence,
         (code) => {
-            const codeWithVars = substitutions ? applySubstitutions(code, vars, path) : code;
+            const codeWithVars = substitutions
+                ? applySubstitutions(code, vars, path, logger)
+                : code;
             const index = codes.push(codeWithVars) - 1;
 
             /* Keep the same count of lines to avoid transformation of the source map */
@@ -71,14 +79,14 @@ function repairCode(str: string, codes: string[]) {
     return replace(fence, fence, (code) => codes[Number(code)], str);
 }
 
-function liquidSnippet<
+function applySnippet<
     B extends boolean = false,
     C = B extends false ? string : {output: string; sourceMap: Dictionary<string>},
 >(
     originInput: string,
     vars: Record<string, unknown>,
     path?: string,
-    settings?: ArgvSettings & {withSourceMap?: B},
+    settings?: ArgvSettings & LegacyEngineDiagnostics & {withSourceMap?: B},
 ): C {
     const {
         cycles = true,
@@ -100,11 +108,12 @@ function liquidSnippet<
         withSourceMap,
     });
 
+    const logger = getInvocationLogger(settings);
     const codes: string[] = [];
 
     let output = conditionsInCode
         ? originInput
-        : saveCode(originInput, vars, codes, path, substitutions);
+        : saveCode(originInput, vars, codes, path, substitutions, logger);
 
     let sourceMap: Record<number, number> = {};
 
@@ -118,16 +127,26 @@ function liquidSnippet<
     }
 
     if (cycles) {
-        output = applyCycles(output, vars, path, {sourceMap});
+        output = applyCycles(output, vars, path, {
+            sourceMap,
+            log: logger,
+            deprecations: settings?.deprecations,
+            deprecationWarnings: settings?.deprecationWarnings,
+        });
     }
 
     if (conditions) {
         const strict = conditions === 'strict';
-        output = applyConditions(output, vars, path, {sourceMap, strict, useLegacyConditions});
+        output = applyConditions(output, vars, path, {
+            sourceMap,
+            strict,
+            useLegacyConditions,
+            log: logger,
+        });
     }
 
     if (substitutions) {
-        output = applySubstitutions(output, vars, path);
+        output = applySubstitutions(output, vars, path, logger);
     }
 
     if (!conditionsInCode && typeof output === 'string') {
@@ -156,6 +175,42 @@ function linesCount(content: string) {
     return count;
 }
 
+/**
+ * @deprecated Compose @diplodoc/liquid explicitly. Removal no earlier than Transform 6.
+ * @param input - Source to process.
+ * @param vars - Variables visible to the bundled engine.
+ * @param path - Source path, when known.
+ * @param settings - Existing engine settings and optional caller diagnostics.
+ * @returns Processed source, or source and its map when requested.
+ */
+function liquidSnippet<
+    B extends boolean = false,
+    C = B extends false ? string : {output: string; sourceMap: Dictionary<string>},
+>(
+    input: string,
+    vars: Record<string, unknown>,
+    path?: string,
+    settings?: ArgvSettings & LegacyEngineDiagnostics & {withSourceMap?: B},
+): C {
+    const logger = getInvocationLogger(settings);
+    settings = {
+        ...settings,
+        log: logger,
+        deprecations:
+            settings?.deprecations ?? createDeprecationReporter({...settings, log: logger}),
+    };
+    warnBundledEngine('Liquid', path, settings);
+    return applySnippet<B, C>(input, vars, path, settings);
+}
+
+/**
+ * @deprecated Compose @diplodoc/liquid explicitly. Removal no earlier than Transform 6.
+ * @param input - Source to process.
+ * @param vars - Variables visible to the bundled engine.
+ * @param path - Source path, when known.
+ * @param settings - Existing engine settings and optional caller diagnostics.
+ * @returns Processed source, or source and its map when requested.
+ */
 function liquidDocument<
     B extends boolean = false,
     C = B extends false ? string : {output: string; sourceMap: Dictionary<string>},
@@ -163,17 +218,30 @@ function liquidDocument<
     input: string,
     vars: Record<string, unknown>,
     path?: string,
-    settings?: ArgvSettings & {withSourceMap?: B},
+    settings?: ArgvSettings & LegacyEngineDiagnostics & {withSourceMap?: B},
 ): C {
-    const [frontMatter, strippedContent] = extractFrontMatter(input, path);
+    const logger = getInvocationLogger(settings);
+    settings = {
+        ...settings,
+        log: logger,
+        deprecations:
+            settings?.deprecations ?? createDeprecationReporter({...settings, log: logger}),
+    };
+    warnBundledEngine('Liquid', path, settings);
+    const [frontMatter, strippedContent] = extractFrontMatter(
+        input,
+        path,
+        logger,
+        settings.deprecationWarnings,
+    );
 
     const liquidedFrontMatter = cloneDeepWith(frontMatter, (value: unknown) =>
         typeof value === 'string'
-            ? liquidSnippet(value, vars, path, {...settings, withSourceMap: false})
+            ? applySnippet(value, vars, path, {...settings, withSourceMap: false})
             : undefined,
     );
 
-    const liquidedResult = liquidSnippet(strippedContent, vars, path, settings);
+    const liquidedResult = applySnippet(strippedContent, vars, path, settings);
     const liquidedContent =
         typeof liquidedResult === 'object' ? liquidedResult.output : liquidedResult;
 

@@ -1,4 +1,4 @@
-import type {Rule} from 'markdownlint';
+import type {Rule} from '../legacy-markdownlint';
 
 export const yfm004: Rule = {
     names: ['YFM004', 'table-not-closed'],

@@ -1,3 +1,5 @@
+import type {SanitizeFunction} from '../src/transform/sanitize';
+
 import transform from '../src/transform';
 import sanitizeHtml, {defaultOptions} from '../src/transform/sanitize';
 
@@ -15,6 +17,24 @@ const html = (text: string, options?: Parameters<typeof transform>[1]) => {
 describe('Sanitize HTML utility', () => {
     it('sanitize-utility should sanitize html', () => {
         expect(sanitizeHtml('<img src=a onerror=alert(1)>')).toMatchSnapshot();
+    });
+
+    it('applies Node styles policy before the custom sanitizer unless explicitly disabled', () => {
+        const source = '<p style="position:fixed;color:red">text</p>';
+        const calls: [string, boolean | undefined][] = [];
+        const sanitize: SanitizeFunction = (rendered, options) => {
+            calls.push([rendered, options?.disableStyleSanitizer]);
+            return '<p>custom</p>';
+        };
+
+        expect(html(source, {sanitize})).toBe('<p>custom</p>');
+        expect(html(source, {sanitize, sanitizeOptions: {disableStyleSanitizer: true}})).toBe(
+            '<p>custom</p>',
+        );
+        expect(calls).toEqual([
+            ['<p style="color:red;">text</p>', undefined],
+            [source, true],
+        ]);
     });
 
     describe('transform should sanitize html by default l', () => {

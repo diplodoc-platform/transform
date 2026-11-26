@@ -1,5 +1,6 @@
 import merge from 'lodash/merge';
 
+import {withoutBundledEngineWarnings} from '../utils';
 import yfmlint from '../../src/transform/yfmlint';
 import {LogLevels, log} from '../../src/transform/log';
 
@@ -56,7 +57,11 @@ describe('YFM001', () => {
             lintConfig,
         });
 
-        expect(log.isEmpty()).toEqual(true);
+        expect(
+            withoutBundledEngineWarnings(log.get().warn).length === 0 &&
+                log.get().error.length === 0 &&
+                log.get().info.length === 0,
+        ).toEqual(true);
     });
 
     it('All inline codes are longer than value', () => {
@@ -66,7 +71,7 @@ describe('YFM001', () => {
             lintConfig: {...lintConfig, YFM001: {maximum: 5}},
         });
 
-        expect(log.get().warn.length).toEqual(4);
+        expect(withoutBundledEngineWarnings(log.get().warn).length).toEqual(4);
     });
 
     it('Change log level', () => {

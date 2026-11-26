@@ -21,7 +21,7 @@ export default defineConfig({
             all: true,
             provider: 'v8',
             include: ['src/**'],
-            exclude: ['src/**/*.test.ts', 'src/**/*.spec.ts', 'test/**/*'],
+            exclude: ['src/**/*.test.ts', 'src/**/*.spec.ts', 'test/**/*', '**/*.d.ts'],
             excludeAfterRemap: true,
             reporter: ['text', 'json', 'html', 'lcov'],
         },

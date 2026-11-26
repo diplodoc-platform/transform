@@ -1,0 +1,403 @@
+import type {BrowserTransformOptions, MarkdownIt} from '../src/transform/browser/standard';
+
+import {buildSync} from 'esbuild';
+import {vi} from 'vitest';
+
+import standard, {
+    BrowserUnsupportedFeatureError,
+    createDocumentEnv,
+    createParser,
+    definePlugin,
+    materializeFootnoteTokens,
+    parseDocumentFragmentResult,
+    replayDocumentFragment,
+} from '../src/transform/browser/standard';
+import minimal, {createParser as createMinimalParser} from '../src/transform/browser/minimal';
+import {log} from '../src/transform/browser/diagnostics';
+import nodeLog from '../src/transform/log';
+import {createIncludeRegExp} from '../src/transform/plugins/includes/syntax';
+
+beforeEach(() => {
+    log.clear();
+    nodeLog.clear();
+});
+
+test.each([standard, minimal])(
+    'public browser API retains document shape, shared attrs policy and isolated diagnostics',
+    (transform) => {
+        const source = '# Title {.custom}';
+        const result = transform(source);
+        expect(result.result).toHaveProperty('headings');
+        expect(result.result).toHaveProperty('title', '');
+        expect(result.result.html).not.toContain('class="custom"');
+        expect(result.result.html).toContain('{.custom}');
+        expect(result.logs).not.toBe(log.get());
+        expect(log.isEmpty()).toBe(true);
+        expect(transform(source, {enableMarkdownAttrs: true}).result.html).toContain(
+            'class="custom"',
+        );
+        expect(nodeLog.isEmpty()).toBe(true);
+    },
+);
+
+test('standard sanitizes document HTML while minimal returns renderer output', () => {
+    const source = '<p style="position:fixed;color:red">text</p>';
+    const options = {allowHTML: true};
+    const parser = createMinimalParser(options);
+
+    expect(standard(source, options).result.html).toBe('<p style="color:red">text</p>');
+    expect(minimal(source, options).result.html).toBe(source);
+    expect(parser.compileDocument(parser.parseDocument(source))).toBe(source);
+    expect(minimal(source).result.html).toContain('&lt;p style=');
+});
+
+test('standard filters disallowed raw HTML attributes and URL schemes', () => {
+    const source = '<img src="image.png" onerror="bad()"><a href="javascript:bad()">link</a>';
+    expect(standard(source, {allowHTML: true}).result.html).not.toMatch(/onerror|javascript:/);
+});
+
+test('standard binds the real additive underline/subscript callbacks while minimal has no feature implementations', () => {
+    expect(standard('++under++ H~2~O').result.html).toContain('<u>under</u> H<sub>2</sub>O');
+    expect(minimal('++under++ H~2~O').result.html).toContain('++under++ H~2~O');
+    const {metafile} = buildSync({
+        entryPoints: ['src/transform/browser/minimal.ts'],
+        bundle: true,
+        platform: 'browser',
+        format: 'esm',
+        write: false,
+        metafile: true,
+    });
+    const paths = Object.keys(metafile.inputs);
+    expect(
+        paths.some((path) =>
+            /(?:standard-plugins|plugins\/(?:table|notes|footnotes|task-list|imsize|includes\/index)|(?:cut|file|tabs)-extension|markdown-it-footnote|@mdit\/plugin-tasklist)/.test(
+                path,
+            ),
+        ),
+    ).toBe(false);
+    expect(
+        paths.some((path) =>
+            /(?:highlight\.js|lowlight|chalk|utilsFS|liquid\/|plugins\/utils\.ts)/.test(path),
+        ),
+    ).toBe(false);
+    expect(paths.join('\n')).not.toMatch(
+        /sanitize-core\.ts|browser\/css\.ts|node_modules\/(?:sanitize-html|cssfilter|cheerio|css)\//,
+    );
+});
+
+test.each([
+    {root: '/docs'},
+    {path: 'host.md'},
+    {plugins: []},
+    {preprocessors: []},
+    {disableLiquid: true},
+    {isLiquided: true},
+    {vars: {}},
+    {included: false},
+    {needToSanitizeHtml: false},
+    {warnOnUnsanitizedHtml: true},
+    {sanitize: () => 'unsafe'},
+    {inlineSvg: true},
+    {highlightLangs: {}},
+    {tokens: true},
+    {getPublicPath: () => '/docs'},
+    {sanitizeOptions: {disableStyleSanitizer: true}},
+    {sanitizeOptions: {parser: {lowerCaseTags: true}}},
+    {pluginConfiguration: {unexpected: true}},
+    {pluginConfiguration: {options: {tabs: {output: '/tmp'}}}},
+    {pluginConfiguration: {options: {file: {output: '/tmp'}}}},
+    {pluginConfiguration: {options: {cut: {output: '/tmp'}}}},
+])('unsupported JavaScript option fails before parser/user-rule execution: %j', (unsupported) => {
+    const setup = vi.fn();
+    const plugin = definePlugin({id: 'caller', setup})(undefined);
+    const options = {
+        pluginConfiguration: {plugins: [plugin]},
+        ...unsupported,
+    };
+    expect(() => Reflect.apply(standard, undefined, ['text', options])).toThrow(
+        BrowserUnsupportedFeatureError,
+    );
+    expect(setup).not.toHaveBeenCalled();
+    expect(nodeLog.isEmpty()).toBe(true);
+});
+
+test('minimal rejects enabling an unavailable builtin before caller setup', () => {
+    const setup = vi.fn();
+    const options: BrowserTransformOptions = {
+        pluginConfiguration: {
+            enable: ['notes'],
+            plugins: [definePlugin({id: 'caller', setup})(undefined)],
+        },
+    };
+    expect(() => Reflect.apply(minimal, undefined, ['text', options])).toThrow(
+        /Import @diplodoc\/transform\/portable/,
+    );
+    expect(setup).not.toHaveBeenCalled();
+    expect(minimal('text', {pluginConfiguration: {preset: 'default'}}).result.html).toBe(
+        '<p>text</p>\n',
+    );
+});
+
+test('browser preset:none installs the guard and typed caller setup exactly once with the exact ID generator', () => {
+    const generateID = vi.fn(() => 'fixed');
+    const rules = vi.fn();
+    const setup = vi.fn((md: MarkdownIt, _settings: undefined, context) => {
+        expect(context.generateID).toBe(generateID);
+        md.core.ruler.push('caller', rules);
+    });
+    const parser = createParser({
+        generateID,
+        pluginConfiguration: {
+            preset: 'none',
+            plugins: [definePlugin({id: 'caller', setup})(undefined)],
+        },
+    });
+    expect(setup).toHaveBeenCalledOnce();
+    expect(() => parser.parseDocument('{% include [part](part.md) %}')).toThrow(
+        BrowserUnsupportedFeatureError,
+    );
+    expect(rules).not.toHaveBeenCalled();
+    expect(parser.compileDocument(parser.parseDocument('text'))).toBe('<p>text</p>\n');
+    expect(rules).toHaveBeenCalledOnce();
+    expect(generateID).not.toHaveBeenCalled();
+});
+
+test('both browser entries share genuine same-native-parser capsules without admitting foreign parser ownership', () => {
+    let native: MarkdownIt | undefined;
+    const plugin = definePlugin({
+        id: 'capture',
+        setup(md) {
+            native = md;
+        },
+    })(undefined);
+    createMinimalParser({pluginConfiguration: {plugins: [plugin]}}).parseDocument('initialize');
+    if (!native) {
+        throw new Error('Expected actual native parser');
+    }
+    const parent = createDocumentEnv();
+    const fragment = parseDocumentFragmentResult(native, 'child', parent, {purpose: 'reference'});
+    expect(parent.headings).toEqual([]);
+    replayDocumentFragment(native, fragment, parent, {purpose: 'fragment'});
+    expect(fragment.tokens[1].content).toBe('child');
+});
+
+test('include matching is one canonical grammar with fresh mutable RegExp instances', () => {
+    const first = createIncludeRegExp();
+    const second = createIncludeRegExp();
+    expect(first).not.toBe(second);
+    expect(first.exec('{% include notitle [Title](part.md#heading) %}')?.slice(1)).toEqual([
+        'notitle',
+        'Title',
+        'part.md#heading',
+    ]);
+    for (const source of ['{% include [part](part.md) %}', '{%include[part](part.md)%}']) {
+        expect(() => standard(source)).toThrow(BrowserUnsupportedFeatureError);
+    }
+    for (const source of [
+        'prefix {% include [part](part.md) %}',
+        '\\{% include [part](part.md) %}',
+        '`{% include [part](part.md) %}`',
+    ]) {
+        expect(() => standard(source)).not.toThrow();
+    }
+});
+
+test.each([
+    null,
+    [],
+    {allowHTML: 'true'},
+    {lang: 'missing'},
+    {generateID: 1},
+    {highlighter: {highlight() {}}},
+    {disableRules: 'fence'},
+    {log: {warn() {}}},
+    {compatibility: {FEATURE: 'wildcard'}},
+    {pluginConfiguration: {preset: 'minimal'}},
+    {pluginConfiguration: {enable: 'notes'}},
+    {pluginConfiguration: {plugins: [{}]}},
+    {pluginConfiguration: {options: {notes: {notesAutotitle: 'yes'}}}},
+    {pluginConfiguration: {options: {video: {youtube: {width: '100%'}}}}},
+    {sanitizeOptions: {allowedTags: true}},
+    {sanitizeOptions: {cssWhiteList: {color: 'yes'}}},
+    {sanitizeOptions: {allowedAttributes: {'*': [{name: 'data-x', values: 1}]}}},
+])('invalid JavaScript value is rejected before parsing: %j', (options) => {
+    expect(() => Reflect.apply(standard, undefined, ['text', options])).toThrow(TypeError);
+});
+
+test.each([
+    {pluginConfiguration: {disable: ['notes']}},
+    {pluginConfiguration: {options: {notes: {}}}},
+])('minimal rejects every unavailable builtin reference: %j', (options) => {
+    expect(() => Reflect.apply(minimal, undefined, ['text', options])).toThrow(
+        BrowserUnsupportedFeatureError,
+    );
+});
+
+test('browser sanitizer normalization cannot inherit a Node bypass option', () => {
+    const sanitizeOptions = Object.create({disableStyleSanitizer: true});
+    sanitizeOptions.allowedTags = ['p'];
+    sanitizeOptions.allowedAttributes = {'*': ['style']};
+    const result = standard('<p style="position:fixed;color:red">text</p>', {
+        allowHTML: true,
+        sanitizeOptions,
+    });
+    expect(result.result.html).not.toContain('position:fixed');
+});
+
+test('minimal supports an explicit final HTML and CSS policy for each parser', () => {
+    const source = '<p style="position:fixed;color:red">text</p>';
+    const sanitizeOptions = {allowedTags: ['p']};
+    const sanitize = vi.fn(() => '<p class="application-policy">text</p>');
+    const parser = createMinimalParser({allowHTML: true, sanitizeOptions, sanitize});
+    const document = parser.parseDocument(source);
+
+    expect(sanitize).not.toHaveBeenCalled();
+    expect(parser.compileDocument(document)).toBe('<p class="application-policy">text</p>');
+    expect(sanitize.mock.calls).toEqual([
+        ['<p style="position:fixed;color:red">text</p>', sanitizeOptions],
+    ]);
+    expect(minimal(source, {allowHTML: true, sanitize}).result.html).toBe(
+        '<p class="application-policy">text</p>',
+    );
+    expect(sanitize).toHaveBeenLastCalledWith(
+        '<p style="position:fixed;color:red">text</p>',
+        undefined,
+    );
+});
+
+test('minimal optionally warns when returning unsanitized HTML', () => {
+    const source = '<p>text</p>';
+    const options = {allowHTML: true, warnOnUnsanitizedHtml: true};
+    const warning = expect.stringContaining('/portable/minimal returned unsanitized HTML');
+    const parser = createMinimalParser(options);
+    const document = parser.parseDocument(source);
+    const empty = parser.parseDocument('');
+
+    expect(minimal(source, {allowHTML: true}).logs.warn).toEqual([]);
+    expect(minimal(source, {...options, warnOnUnsanitizedHtml: false}).logs.warn).toEqual([]);
+    expect(minimal(source, options)).toMatchObject({
+        result: {html: source},
+        logs: {warn: [warning]},
+    });
+    expect(minimal(source, {...options, sanitize: (html) => html}).logs.warn).toEqual([]);
+    expect(document.logs.warn).toEqual([]);
+    expect(parser.compileDocument(document)).toBe(source);
+    expect(document.logs.warn).toEqual([warning]);
+    expect(parser.compileDocument(empty)).toBe('');
+    expect(empty.logs.warn).toEqual([]);
+    expect(log.isEmpty()).toBe(true);
+});
+
+test('minimal rejects an invalid unsanitized HTML warning setting', () => {
+    expect(() =>
+        Reflect.apply(minimal, undefined, ['text', {warnOnUnsanitizedHtml: 'true'}]),
+    ).toThrow('Invalid browser option "warnOnUnsanitizedHtml"');
+});
+
+test('minimal preserves the guard and propagates sanitizer failures', () => {
+    const failure = new Error('Application sanitization failed');
+    const sanitize = vi.fn(() => {
+        throw failure;
+    });
+    expect(() => minimal('{% include [part](part.md) %}')).toThrow(BrowserUnsupportedFeatureError);
+    expect(() => minimal('{% include [part](part.md) %}', {sanitize})).toThrow(
+        BrowserUnsupportedFeatureError,
+    );
+    expect(sanitize).not.toHaveBeenCalled();
+    expect(() => minimal('text', {sanitize})).toThrow(failure);
+    expect(() =>
+        Reflect.apply(minimal, undefined, ['text', {sanitize: () => Promise.reject(failure)}]),
+    ).toThrow('Browser sanitizer must return a string');
+
+    const then = vi.fn();
+    expect(() => Reflect.apply(minimal, undefined, ['text', {sanitize: () => ({then})}])).toThrow(
+        'Browser sanitizer must return a string',
+    );
+    expect(then).not.toHaveBeenCalled();
+});
+
+test('minimal rejects a malformed sanitizer before plugin setup', () => {
+    const setup = vi.fn();
+    const options = {
+        sanitize: null,
+        pluginConfiguration: {plugins: [definePlugin({id: 'host', setup})({})]},
+    };
+
+    expect(() => Reflect.apply(createMinimalParser, undefined, [options])).toThrow(
+        'Invalid browser option "sanitize"',
+    );
+    expect(setup).not.toHaveBeenCalled();
+});
+
+test('minimal forwards sanitizer settings only to an explicitly supplied callback', () => {
+    const sanitize = vi.fn(() => '<p>unexpected</p>');
+    const options: Parameters<typeof minimal>[1] = Object.create({
+        sanitize,
+        sanitizeOptions: {allowedTags: []},
+    });
+
+    expect(minimal('text', options).result.html).toBe('<p>text</p>\n');
+    expect(minimal('text', {sanitizeOptions: {allowedTags: []}}).result.html).toBe('<p>text</p>\n');
+    expect(sanitize).not.toHaveBeenCalled();
+});
+
+test('minimal rejects unknown JavaScript options without evaluating their getters', () => {
+    const get = vi.fn(() => true);
+    const options = Object.defineProperty({}, 'unexpected', {enumerable: true, get});
+
+    expect(() => minimal('text', options)).toThrow(BrowserUnsupportedFeatureError);
+    expect(get).not.toHaveBeenCalled();
+});
+
+test('browser admits selected cached footnotes through the canonical document API', () => {
+    let native: MarkdownIt | undefined;
+    const generateID = vi.fn(() => 'browser');
+    const host = definePlugin({
+        id: 'capture-parser',
+        setup(md) {
+            native = md;
+        },
+    })({});
+    const parser = createParser({
+        generateID,
+        extractTitle: true,
+        pluginConfiguration: {plugins: [host]},
+    });
+    const root = parser.parseDocument('# Title[^a]\n\n[^a]: - [x] root');
+    if (!native) throw new Error('Missing native parser');
+    const child = parseDocumentFragmentResult(native, 'child[^a]\n\n[^a]: child note', root.env, {
+        purpose: 'reference',
+    });
+    const first = materializeFootnoteTokens(child.tokens, child.tokens.slice(0, 3));
+    const second = materializeFootnoteTokens(child.tokens, child.tokens.slice(0, 3));
+    replayDocumentFragment(native, child, root.env, {purpose: 'include'});
+    root.tokens.push(...first, ...second);
+    const html = root.env.title + parser.compileDocument(root);
+    const ids = [...html.matchAll(/id="([^"]+)"/g)].map((match) => match[1]);
+    for (const match of html.matchAll(/href="#([^"]+)"/g)) expect(ids).toContain(match[1]);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(html).toContain('disabled');
+    expect(generateID).toHaveBeenCalledTimes(1);
+});
+
+test.each([
+    'unknown',
+    '',
+    'constructor',
+    '__proto__',
+    'prototype',
+    'toString',
+    'valueOf',
+    'hasOwnProperty',
+    '__defineGetter__',
+])('rejects an unsupported JavaScript browser language %s before generation', (lang) => {
+    const generateID = vi.fn(() => 'unused');
+    expect(() =>
+        standard('note[^a]\n\n[^a]: text', {
+            // @ts-expect-error Deliberately exercise untyped JavaScript caller input.
+            lang,
+            generateID,
+        }),
+    ).toThrow('Invalid browser option "lang"');
+    expect(generateID).not.toHaveBeenCalled();
+});

@@ -1,6 +1,6 @@
 import type {Dictionary} from 'lodash';
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-import type {Plugin, Rule} from 'markdownlint';
+import type {Plugin, Rule} from './legacy-markdownlint';
 import type {MarkdownItPreprocessorCb} from '../typings';
 import type {LintConfig, PluginOptions} from '.';
 
@@ -13,7 +13,6 @@ export interface Options {
     lintConfig?: LintConfig;
     customLintRules?: Rule[];
     sourceMap?: Dictionary<string>;
-    // TODO: set false in next major
-    /** @default true */
+    /** Enable general Markdown attributes explicitly; disabled by default. */
     enableMarkdownAttrs?: boolean;
 }
