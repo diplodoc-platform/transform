@@ -107,6 +107,7 @@ export const IndependentAlignment: MarkdownSnippetStory = {
             ||::{halign="start" valign="top"} **Header** |::{halign="center" valign="center"} **Header** |::{halign="end" valign="bottom"} **Header** ||
             ||::{halign="start" valign="top"} **Body** |::{halign="center" valign="center"} **Body** |::{halign="end" valign="bottom"} **Body** ||
             ||::{align="bottom-right" halign="start"} **Horizontal** |::{align="top-left" valign="bottom"} **Vertical** |::{halign="end" valign="center"} **Both** {.cell-align-top-left} ||
+            ||::{halign="end"} **H only** |::{valign="bottom"} **V only** | **Default** ||
             |#
         `,
     },
