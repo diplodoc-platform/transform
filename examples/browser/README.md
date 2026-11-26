@@ -28,7 +28,10 @@ serving to preserve Unicode parser data.
 The application chooses trusted runtime/style bundles itself. It must not load
 arbitrary metadata URLs as executable resources.
 
-The minimal selector demonstrates the independent empty builtin composition.
+The minimal selector displays the generated HTML as text. The minimal entry
+contains no built-in sanitizer and returns unsanitized HTML without a
+`sanitize` callback. Supply your application's own sanitizer before inserting
+its output into the DOM.
 Filesystem includes fail with a pre-expansion message; templates remain literal.
 See [the browser migration guide](../../docs/migrations/browser-entry.md) for the
 closed option contract, typed plugins and strict browser TypeScript settings.

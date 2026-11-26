@@ -7,8 +7,10 @@ import {createBrowserHost} from './host';
 import {resolveMinimalBrowserOptions} from './options';
 
 const minimalPlugins: ParserHost['defaultPlugins'] = [];
-const host = createBrowserHost(minimalPlugins, (options) =>
-    resolvePluginConfiguration(options, minimalPlugins, []),
+const host = createBrowserHost(
+    minimalPlugins,
+    (options) => resolvePluginConfiguration(options, minimalPlugins, []),
+    (html) => html,
 );
 const {transform, createParser} = createBrowserApi(host, resolveMinimalBrowserOptions);
 

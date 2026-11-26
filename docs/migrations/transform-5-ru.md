@@ -165,8 +165,10 @@ Cut/Tabs устарели и запланированы к удалению в 6
 используйте `await import('@diplodoc/transform/browser')`. Browser API не читает
 файлы, не выполняет Liquid и YFMLint, не копирует изображения и не раскрывает
 include: подготовьте содержимое на стороне хоста. Он не загружает ресурсы из
-метаданных и не исполняет произвольные URL. Minimal не устанавливает встроенные
-функциональные плагины; оба варианта сохраняют финальную санитизацию. Runtime и
+метаданных и не исполняет произвольные URL. `/browser` применяет встроенную
+санитизацию. `/browser/minimal` исключает из сборки встроенные плагины и
+санитайзер. Без callback `sanitize` он возвращает HTML без санитизации.
+Перед вставкой такого результата в DOM подключите свой санитайзер. Runtime и
 стили подключаются отдельно.
 
 ```ts
@@ -792,11 +794,14 @@ const result = sass.compile('app.scss', {
 
 ## Минимальная браузерная сборка
 
-Для минимальной browser-сборки подключите один проверенный callback явно.
+Подключите к минимальной браузерной сборке нужные плагины и собственную
+синхронную функцию `sanitize`. Без неё HTML всего документа, в том числе
+вывод плагинов и подсветки, возвращается без санитизации.
 
 ```ts
 import transform, {definePlugin} from '@diplodoc/transform/browser/minimal';
 import monospace from '@diplodoc/transform/plugins/monospace';
+import {sanitizeDocumentHtml} from './application-sanitizer.js';
 
 const samples = definePlugin({
   id: 'app/samples',
@@ -805,6 +810,7 @@ const samples = definePlugin({
   },
 })({});
 const result = transform('Вывод: ##пример##', {
+  sanitize: sanitizeDocumentHtml,
   pluginConfiguration: {preset: 'none', plugins: [samples]},
 });
 ```
@@ -814,8 +820,8 @@ const result = transform('Вывод: ##пример##', {
 подключайте Node-модули `/utils/fs` и `/plugins/includes`, а ID встроенных
 плагинов не используйте для своих callback. Настройки `buildYfmHtmlBlockOptions`
 из HTML-extension задают политику отдельного блока. В браузерный
-`sanitizeOptions` передавайте только поддерживаемые настройки документа.
-Финальная санитизация применяется и к HTML, который создал плагин.
+`sanitizeOptions` передавайте только поддерживаемые настройки документа. В
+`minimal` они передаются в ваш callback и сами по себе не санитизируют HTML.
 [Браузерный API](browser-entry.md)
 
 ## Проверка и завершение

@@ -1,19 +1,10 @@
 import {buildSync} from 'esbuild';
 
 import nodeParser from '../src/transform/md';
-import {createParser} from '../src/transform/parser-core';
-import {resolvePluginConfiguration} from '../src/transform/plugin-registry-core';
-import {createBrowserHost} from '../src/transform/browser/host';
-import {standardPlugins} from '../src/transform/browser/standard-plugins';
+import {createParser as browserParser} from '../src/transform/browser/standard';
 import {log} from '../src/transform/browser/diagnostics';
 
 beforeEach(() => log.clear());
-
-function browser() {
-    return createBrowserHost(standardPlugins, (options) =>
-        resolvePluginConfiguration(options, standardPlugins),
-    );
-}
 
 test.each([
     '# Title {#stable}\n\nBody **bold**.',
@@ -27,9 +18,9 @@ test.each([
     '{% list tabs %}\n\n- First\n\n  Body\n\n- Second\n\n  Other\n\n{% endlist %}',
 ])('actual standard callbacks retain Node output: %s', (source) => {
     for (const enableMarkdownAttrs of [false, true]) {
-        const options = {enableMarkdownAttrs, generateID: () => 'fixed', preprocessors: []};
-        const expected = nodeParser(options);
-        const actual = createParser(options, browser());
+        const options = {enableMarkdownAttrs, generateID: () => 'fixed'};
+        const expected = nodeParser({...options, preprocessors: []});
+        const actual = browserParser(options);
         expect(actual.compileDocument(actual.parseDocument(source))).toBe(
             expected.compileDocument(expected.parseDocument(source)),
         );

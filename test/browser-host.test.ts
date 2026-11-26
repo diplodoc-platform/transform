@@ -104,7 +104,11 @@ test('browser helpers retain canonical capsule ownership and plain native fallba
 
 test('browser guard is outside feature IDs, installed once, and retained for preset:none', () => {
     const calls = vi.fn();
-    const host = createBrowserHost([], (options) => resolvePluginConfiguration(options, []));
+    const host = createBrowserHost(
+        [],
+        (options) => resolvePluginConfiguration(options, []),
+        browserSanitize,
+    );
     const install = vi.fn(host.installGuard);
     host.installGuard = install;
     const parser = createParser(
@@ -132,7 +136,7 @@ test('browser guard is outside feature IDs, installed once, and retained for pre
 test('browser source positions survive frontmatter and native CRLF normalization', () => {
     const parser = createParser(
         {},
-        createBrowserHost([meta], () => undefined),
+        createBrowserHost([meta], () => undefined, browserSanitize),
     );
     try {
         parser.parseDocument(
@@ -169,7 +173,7 @@ test('the real browser host retains final sanitizer protection for HTML and call
             allowHTML: true,
             highlighter: () => ({html: '<img src="x" onerror="bad()"><script>bad()</script>'}),
         },
-        createBrowserHost([], () => undefined),
+        createBrowserHost([], () => undefined, browserSanitize),
     );
     const result = parser.compileDocument(
         parser.parseDocument('<p onclick="bad()" style="color:red">safe</p>\n\n```js\nsource\n```'),

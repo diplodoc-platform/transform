@@ -55,16 +55,19 @@ and [browser integration](browser-entry.md).
 | `/highlighter`, `/highlighter/legacy`                                                         | Explicit adapters. Use `createHighlightJsHighlighter` from a browser entry when composing a browser renderer.                                      |
 | `/preprocessors`, `/frontmatter`, `/utils`, `/utils/fs`, `/sanitize`, `/log`, `/deprecation`  | Node-side helpers. In particular, filesystem adapters do not belong in a browser bundle.                                                           |
 | `/migrations/image-dimensions`, `/migrations/block-directives`, `/migrations/table-alignment` | Synchronous source-to-source migrations. Run them before rendering.                                                                                |
-| `/browser`, `/browser/minimal`                                                                | Native ESM browser renderer with the standard features or explicit composition.                                                                    |
+| `/browser`, `/browser/minimal`                                                                | Native ESM. The standard entry sanitizes HTML. Minimal returns unsanitized HTML unless you pass your own `sanitize` callback.                      |
 | `/runtime`, `/styles`, their `/base`, `/yfm-only` and `/print` variants, `/scss/*`            | Client assets. Resolve them through the asset loader or bundler.                                                                                   |
 
 For exact names and the retained compatibility paths, check the
 [`exports` of the installed version](../../package.json) and the
 [public API inventory](../../scripts/public-api.mjs).
 
+Use your own synchronous `sanitize` callback before inserting output from
+`/browser/minimal` into the DOM. See the [browser entry guide](browser-entry.md).
+
 If browser rendering fails, for example on an unexpanded include, display the
 source as text and keep your application’s existing error reporting in the catch
-handler. Only insert HTML returned by a successful transform:
+handler. The standard browser entry sanitizes the HTML in this example:
 
 ```ts
 import transform from '@diplodoc/transform/browser';

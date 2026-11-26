@@ -160,6 +160,10 @@ package paths/versions, fixture selection, commands and results. Use isolated
 installations of actual tarballs, not only source/workspace aliases. Check nested
 resolutions from yfmlint and other plugins so an old parser cannot hide failures.
 
+The standard browser entry applies the built-in sanitizer. Minimal consumers
+must pass their own sanitizer before DOM insertion. Without it, minimal returns
+unsanitized HTML.
+
 | Layer               | Required checks                                                                                                             |
 | ------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | Transform           | Typecheck, lint, complete unit suite, build, installable package verification and relevant E2E                              |

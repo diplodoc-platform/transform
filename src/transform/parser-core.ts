@@ -25,7 +25,6 @@ import {normalizeSvgInline} from './plugins/images/options';
 import {configureHighlighter} from './highlighter/renderer';
 import extractTitle from './title';
 import getHeadings from './headings';
-import {defaultOptions} from './sanitize-core';
 import {resolveMarkdownAttrs} from './parser-policy';
 import {olAttrConversion} from './plugins/ol-attr-conversion';
 import linkifyStrikethrough from './plugins/linkify-strikethrough';
@@ -56,8 +55,8 @@ export interface ParserHost {
         options?: SanitizeOptions,
         additionalOptions?: SanitizeOptions,
         logger?: Logger,
+        custom?: OptionsType['sanitize'],
     ): string;
-    sanitizeStyles(html: string, options: SanitizeOptions, logger?: Logger): string;
 }
 
 // The attrs 4.3 declarations omit the options supported by the pinned runtime.
@@ -426,42 +425,19 @@ function initCompiler(
                     tokens = tokens.filter((token) => token.type === 'inline');
                 }
 
-                // Generate HTML
-                let html = md.renderer.render(tokens, md.options, env);
+                const html = md.renderer.render(tokens, md.options, env);
 
                 if (!needToSanitizeHtml) {
                     return html;
                 }
 
-                // If a custom sanitizer was used, we need to ensure styles are sanitized
-                // unless explicitly disabled via disableStyleSanitizer option
-                if (sanitize && !(sanitizeOptions?.disableStyleSanitizer ?? false)) {
-                    const baseOptions = sanitizeOptions || defaultOptions;
-
-                    const mergedOptions = {
-                        ...baseOptions,
-                        cssWhiteList: {
-                            ...(defaultOptions.cssWhiteList || {}),
-                            ...(baseOptions.cssWhiteList || {}),
-                            ...(env.additionalOptionsCssWhiteList || {}),
-                        },
-                    };
-
-                    html = host.sanitizeStyles(html, mergedOptions, logger);
-                }
-
-                const sanitizedHtml = sanitize
-                    ? sanitize(html, sanitizeOptions)
-                    : host.sanitize(
-                          html,
-                          sanitizeOptions,
-                          {
-                              cssWhiteList: env.additionalOptionsCssWhiteList,
-                          },
-                          logger,
-                      );
-
-                return sanitizedHtml;
+                return host.sanitize(
+                    html,
+                    sanitizeOptions,
+                    {cssWhiteList: env.additionalOptionsCssWhiteList},
+                    logger,
+                    sanitize,
+                );
             },
             generateID,
             renderInline,
