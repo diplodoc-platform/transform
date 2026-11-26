@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {
+    copyFileSync,
     existsSync,
     mkdirSync,
     mkdtempSync,
@@ -13,6 +14,17 @@ import {createRequire} from 'node:module';
 import {tmpdir} from 'node:os';
 import {dirname, join} from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
+import {build as buildWithVite} from 'vite';
+
+import {publicEntryInventory} from './public-api.mjs';
+import {verifyBrowserPackage} from './test-browser-package.mjs';
+import {verifyHighlighterGraph} from './test-highlighter-graph.mjs';
+import {verifyImageDimensionsGraph} from './test-image-dimensions-graph.mjs';
+import {verifyBlockDirectivesGraph} from './test-block-directives-graph.mjs';
+import {verifyInlineSyntaxGraph} from './test-inline-syntax-graph.mjs';
+import {verifyTableAlignmentGraph} from './test-table-alignment-graph.mjs';
+import {verifyMarkdownItPackage} from './test-markdown-it-package.mjs';
+import {verifyAuxiliaryMarkdownItPackage} from './test-auxiliary-markdown-it-package.mjs';
 
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const temporaryRoot = realpathSync(mkdtempSync(join(tmpdir(), 'diplodoc-svgo-package-')));
@@ -42,6 +54,7 @@ try {
     execFileSync('tar', ['-xzf', join(temporaryRoot, packed[0].filename), '-C', extractedRoot]);
 
     const packageRoot = join(extractedRoot, 'package');
+    verifyMarkdownItPackage(packageRoot, projectRoot);
     const require = createRequire(join(packageRoot, 'package.json'));
     const svgoModule = join(packageRoot, 'lib/svgo.js');
     assert.match(readFileSync(join(packageRoot, 'lib/svgo.LICENSES.txt'), 'utf8'), /svgo@4\.1\.0/);
@@ -73,18 +86,21 @@ try {
     const consumerRoot = join(temporaryRoot, 'consumer');
     mkdirSync(consumerRoot);
     const manifest = JSON.parse(readFileSync(join(projectRoot, 'package.json'), 'utf8'));
-    const typeDependencies = Object.fromEntries(
-        Object.entries(manifest.devDependencies).filter(([name]) => name.startsWith('@types/')),
-    );
+    const companions = process.env.TRANSFORM_PACKAGE_COMPANIONS
+        ? JSON.parse(readFileSync(process.env.TRANSFORM_PACKAGE_COMPANIONS, 'utf8'))
+        : {};
     writeFileSync(
         join(consumerRoot, 'package.json'),
         JSON.stringify({
             private: true,
             dependencies: {
                 '@diplodoc/transform': `file:${join(temporaryRoot, packed[0].filename)}`,
-                'highlight.js': '^11.8.0',
-                ...typeDependencies,
+                '@types/node': manifest.devDependencies['@types/node'],
+                ...companions,
             },
+            overrides: Object.fromEntries(
+                Object.keys(companions).map((name) => [name, `$${name}`]),
+            ),
         }),
     );
     execFileSync(
@@ -95,18 +111,290 @@ try {
             stdio: 'inherit',
         },
     );
+    const installedRequire = createRequire(join(consumerRoot, 'package.json'));
+    const installedRoot = join(consumerRoot, 'node_modules/@diplodoc/transform');
+    await verifyAuxiliaryMarkdownItPackage(installedRoot, consumerRoot);
+    const OptimizedMarkdownIt = installedRequire(
+        join(installedRoot, 'lib/markdown-it-runtime.js'),
+    ).default;
+    let parserConstructor;
+    const parser = installedRequire('@diplodoc/transform/parser')({
+        plugins: [
+            (md) => {
+                parserConstructor = md.constructor;
+            },
+        ],
+    });
+    parser.parseDocument('A paragraph.');
+    assert.equal(parserConstructor, new OptimizedMarkdownIt().constructor);
+    copyFileSync(join(projectRoot, 'scripts/public-api.mjs'), join(consumerRoot, 'public-api.mjs'));
+    copyFileSync(
+        join(projectRoot, 'scripts/package-consumer.mjs'),
+        join(consumerRoot, 'consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
+    // Vite unwraps TypeScript CommonJS defaults when building for the browser.
+    const viteEntry = join(consumerRoot, 'vite-consumer.mjs');
+    writeFileSync(
+        viteEntry,
+        `import sup from '@diplodoc/transform/plugins/sup';
+import monospace from '@diplodoc/transform/plugins/monospace';
+import browserTransform, {definePlugin} from '@diplodoc/transform/portable/minimal';
+import {ImsizeAttr} from '@diplodoc/transform/lib/plugins/imsize/const.js';
+import logger, {getLogger, log} from '@diplodoc/transform/log';
+export const result = [typeof sup, ImsizeAttr.Width, typeof getLogger, typeof log.warn, logger === log];
+const samples = definePlugin({id: 'app/samples', setup(md) { md.use(monospace); }})({});
+export const minimalHtml = browserTransform('Output: ##sample##', {
+    pluginConfiguration: {preset: 'none', plugins: [samples]},
+}).result.html;`,
+    );
+    await buildWithVite({
+        root: consumerRoot,
+        configFile: false,
+        logLevel: 'error',
+        build: {lib: {entry: viteEntry, formats: ['es'], fileName: () => 'consumer.mjs'}},
+    });
+    const viteConsumer = await import(pathToFileURL(join(consumerRoot, 'dist/consumer.mjs')));
+    assert.deepEqual(viteConsumer.result, ['function', 'width', 'function', 'function', true]);
+    assert.match(viteConsumer.minimalHtml, /<samp>sample<\/samp>/);
+    copyFileSync(
+        join(projectRoot, 'scripts/diagnostics-package-consumer.mjs'),
+        join(consumerRoot, 'diagnostics-consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'diagnostics-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
+    copyFileSync(
+        join(projectRoot, 'scripts/footnotes-package-consumer.mjs'),
+        join(consumerRoot, 'footnotes-consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'footnotes-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
+    // Static imports are evaluated in the real installed consumer, independent of source self-resolution.
+    writeFileSync(
+        join(consumerRoot, 'static-consumer.mjs'),
+        `
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+import transform, {transform as namedTransform} from '@diplodoc/transform';
+import underline from '@diplodoc/transform/plugins/underline';
+import subscript from '@diplodoc/transform/plugins/subscript';
+import cut from '@diplodoc/transform/plugins/cut';
+import tabs from '@diplodoc/transform/plugins/tabs';
+import legacyCut from '@diplodoc/transform/lib/plugins/cut';
+import legacyTabs from '@diplodoc/transform/lib/plugins/tabs';
+import legacyUtils from '@diplodoc/transform/lib/utils.js';
+import legacySanitize from '@diplodoc/transform/lib/sanitize.js';
+import legacyLiquid from '@diplodoc/transform/lib/liquid/index.js';
+import sanitize from '@diplodoc/transform/sanitize';
+import footnotes from '@diplodoc/transform/plugins/footnotes';
+import taskList from '@diplodoc/transform/plugins/task-list';
+import parser from '@diplodoc/transform/parser';
+import images, {replaceSvgContent} from '@diplodoc/transform/plugins/images';
+import log, {getLogger} from '@diplodoc/transform/log';
+import {createDeprecationReporter} from '@diplodoc/transform/deprecation';
+import {getFileTokens} from '@diplodoc/transform/utils/fs';
+import {builtinPluginIds, definePlugin, defineTransformOptions} from '@diplodoc/transform/configuration';
+import {createHighlightJsHighlighter} from '@diplodoc/transform/highlighter';
+import {createLegacyHighlighter} from '@diplodoc/transform/highlighter/legacy';
+const require = createRequire(import.meta.url);
+assert.equal(transform, namedTransform);
+const preset = require('@diplodoc/transform/plugins');
+assert.equal(cut, legacyCut);
+assert.equal(tabs, legacyTabs);
+assert.equal(legacyUtils, require('@diplodoc/transform/lib/utils'));
+assert.equal(typeof legacyUtils.isLocalUrl, 'function');
+assert.equal(legacySanitize, require('@diplodoc/transform/lib/sanitize'));
+assert.equal(legacySanitize.default, sanitize);
+assert.equal(legacyLiquid.default, require('@diplodoc/transform/lib/liquid').liquidDocument);
+assert.equal(cut, require('@diplodoc/transform/plugins/cut'));
+assert.equal(tabs, require('@diplodoc/transform/lib/plugins/tabs'));
+assert.ok(preset.includes(cut));
+assert.ok(preset.includes(tabs));
+assert.equal(typeof cut.collect, 'function');
+assert.equal(underline, require('@diplodoc/transform/plugins/underline').default);
+assert.equal(subscript, require('@diplodoc/transform/plugins/subscript').default);
+assert.equal(footnotes, require('@diplodoc/transform/plugins/footnotes').default);
+assert.equal(taskList, require('@diplodoc/transform/plugins/task-list').default);
+assert.equal(transform, require('@diplodoc/transform'));
+assert.equal(parser, require('@diplodoc/transform/parser'));
+assert.equal(images.replaceSvgContent, replaceSvgContent);
+assert.equal(typeof getLogger, 'function');
+assert.equal(typeof createDeprecationReporter, 'function');
+assert.equal(typeof getFileTokens, 'function');
+assert.equal(log, require('@diplodoc/transform/log').default);
+assert.equal(definePlugin, require('@diplodoc/transform/configuration').definePlugin);
+assert.equal(builtinPluginIds, require('@diplodoc/transform/configuration').builtinPluginIds);
+assert.equal(defineTransformOptions, require('@diplodoc/transform/configuration').defineTransformOptions);
+assert.equal(createHighlightJsHighlighter, require('@diplodoc/transform/highlighter').createHighlightJsHighlighter);
+assert.equal(createLegacyHighlighter, require('@diplodoc/transform/highlighter/legacy').createLegacyHighlighter);
+assert.match(transform('Static ESM', defineTransformOptions()).result.html, /Static ESM/);
+`,
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'static-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
+    copyFileSync(
+        join(projectRoot, 'scripts/highlighter-package-consumer.mjs'),
+        join(consumerRoot, 'highlighter-consumer.mjs'),
+    );
+    execFileSync(
+        process.execPath,
+        [join(consumerRoot, 'highlighter-consumer.mjs'), '--without-peer'],
+        {cwd: consumerRoot, stdio: 'inherit'},
+    );
+    copyFileSync(
+        join(projectRoot, 'scripts/legacy-engines-package-consumer.mjs'),
+        join(consumerRoot, 'legacy-engines-consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'legacy-engines-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
+    copyFileSync(
+        join(projectRoot, 'scripts/table-alignment-package-consumer.mjs'),
+        join(consumerRoot, 'table-alignment-consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'table-alignment-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
+    copyFileSync(
+        join(projectRoot, 'scripts/image-dimensions-package-consumer.mjs'),
+        join(consumerRoot, 'image-dimensions-consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'image-dimensions-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
+    copyFileSync(
+        join(projectRoot, 'scripts/block-directives-package-consumer.mjs'),
+        join(consumerRoot, 'block-directives-consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'block-directives-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
+    copyFileSync(
+        join(projectRoot, 'scripts/inline-syntax-package-consumer.mjs'),
+        join(consumerRoot, 'inline-syntax-consumer.mjs'),
+    );
+    execFileSync(process.execPath, [join(consumerRoot, 'inline-syntax-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
     const consumerRequire = createRequire(join(consumerRoot, 'package.json'));
     assert.throws(() => consumerRequire.resolve('svgo'), {code: 'MODULE_NOT_FOUND'});
+    assert.throws(() => consumerRequire.resolve('highlight.js'), {code: 'MODULE_NOT_FOUND'});
+
+    const installedTransform = consumerRequire('@diplodoc/transform');
+    assert.match(installedTransform('```js\nconst x = "<";\n```').result.html, /&lt;/);
+    const installedEsm = await import(
+        pathToFileURL(consumerRequire.resolve('@diplodoc/transform'))
+    );
+    assert.equal(installedEsm.default, installedTransform);
+    const installedParserRequire = createRequire(consumerRequire.resolve('@diplodoc/transform'));
+    assert.equal(installedParserRequire('markdown-it/package.json').version, '15.0.3');
+
+    for (const transform of [installedTransform, installedEsm.default]) {
+        const forwardedOutputs = [];
+        const captureOutput = (_md, options) => forwardedOutputs.push(options.output);
+        transform('plain', {plugins: [captureOutput], output: '/consumer/runtime-assets'});
+        transform('plain', {plugins: [captureOutput]});
+        assert.deepEqual(forwardedOutputs, ['/consumer/runtime-assets', undefined]);
+
+        assert.equal(
+            transform('a\nb\n: definition').result.html,
+            '<p>a<br />\nb<br />\n: definition</p>\n',
+        );
+        assert.equal(
+            transform('example.com', {plugins: [], linkify: true}).result.html,
+            '<p><a href="http://example.com">example.com</a></p>\n',
+        );
+        assert.match(
+            transform(
+                '{% list tabs %}\n\n- First\n\n  Content\n\n- Second\n\n  More\n\n{% endlist %}',
+            ).result.html,
+            /role="tabpanel"/,
+        );
+    }
     writeFileSync(
-        join(consumerRoot, 'consumer.ts'),
+        join(consumerRoot, 'consumer.cts'),
         `
 import transform = require('@diplodoc/transform');
+import type {Options as NamedOptions, Output as NamedOutput, ContentAudience, VisibilityMode} from '@diplodoc/transform';
+import typedCut = require('@diplodoc/transform/plugins/cut');
+import typedLegacyCut = require('@diplodoc/transform/lib/plugins/cut');
+const sameCollector: typeof typedCut.collect = typedLegacyCut.collect;
+typedCut.collect('', {destRoot: '.'});
+void sameCollector;
 import images = require('@diplodoc/transform/lib/plugins/images');
-import init = require('@diplodoc/transform/lib/md');
+import init = require('@diplodoc/transform/parser');
 const options: transform.Options = {svgMaxEntityCount: 1024};
-transform('example', options);
+transform.transform('example', options);
+const output: transform.Output = transform('example', options);
+const namedOptions: NamedOptions = options;
+const namedOutput: NamedOutput = output;
+const audience: ContentAudience = 'human';
+const visibility: VisibilityMode = 'preserve';
+const namespaceAudience: transform.ContentAudience = audience;
+const namespaceVisibility: transform.VisibilityMode = visibility;
+void [namedOptions, namedOutput, namespaceAudience, namespaceVisibility];
+void output;
 init(options);
 images.replaceSvgContent('<svg/>', {width: null, height: null, title: null, svgMaxEntityCount: 1024});
+`,
+    );
+    writeFileSync(
+        join(consumerRoot, 'consumer.mts'),
+        `
+import transform, {transform as named} from '@diplodoc/transform';
+import type {Options as NamedOptions, Output as NamedOutput, ContentAudience, VisibilityMode} from '@diplodoc/transform';
+import typedCut from '@diplodoc/transform/plugins/cut';
+import typedLegacyCut from '@diplodoc/transform/lib/plugins/cut';
+import legacyUtils from '@diplodoc/transform/lib/utils.js';
+import legacySanitize from '@diplodoc/transform/lib/sanitize.js';
+import legacyLiquid from '@diplodoc/transform/lib/liquid/index.js';
+import {liquidDocument as currentLiquid} from '@diplodoc/transform/lib/liquid';
+legacyUtils.isLocalUrl('relative.md');
+legacySanitize.default('<b>text</b>');
+const legacyLiquidFunction: typeof currentLiquid = legacyLiquid.default;
+void legacyLiquidFunction;
+const sameCollector: typeof typedCut.collect = typedLegacyCut.collect;
+typedCut.collect('', {destRoot: '.'});
+void sameCollector;
+import parser from '@diplodoc/transform/parser';
+import images from '@diplodoc/transform/plugins/images';
+import {type OptionsType} from '@diplodoc/transform/types';
+import type {OptionsType as LegacyOptions} from '@diplodoc/transform/lib/typings';
+import type {OptionsType as LegacyPluginOptions} from '@diplodoc/transform/lib/plugins/typings';
+const legacyTypeCheck: LegacyOptions & LegacyPluginOptions = {};
+void legacyTypeCheck;
+const options: OptionsType = {};
+const legacyOptions: transform.Options = options;
+const namedOptions: NamedOptions = options;
+const namedOutput: NamedOutput = named('text', namedOptions);
+const namespaceOutput: transform.Output = namedOutput;
+const audience: ContentAudience = 'human';
+const visibility: VisibilityMode = 'preserve';
+const namespaceAudience: transform.ContentAudience = audience;
+const namespaceVisibility: transform.VisibilityMode = visibility;
+void [namespaceOutput, namespaceAudience, namespaceVisibility];
+named('text', legacyOptions);
+parser(options);
+images.replaceSvgContent('<svg/>', {width: null, height: null, title: null});
+import {getFileTokens} from '@diplodoc/transform/lib/utilsFS.js';
+const tokens = transform('example', {tokens: true});
+const tokenType: string = tokens[0].type;
+void tokenType;
+void getFileTokens;
 `,
     );
     writeFileSync(
@@ -116,25 +404,541 @@ images.replaceSvgContent('<svg/>', {width: null, height: null, title: null, svgM
                 strict: true,
                 skipLibCheck: false,
                 noEmit: true,
-                esModuleInterop: true,
+                esModuleInterop: false,
+                ignoreDeprecations: '6.0',
                 module: 'Node16',
                 moduleResolution: 'Node16',
                 target: 'ES2022',
                 types: ['node'],
             },
-            files: ['consumer.ts'],
+            files: ['consumer.cts', 'consumer.mts'],
         }),
     );
-    execFileSync(
-        process.execPath,
-        [projectRequire.resolve('typescript/lib/tsc.js'), '-p', consumerRoot],
-        {stdio: 'inherit'},
+    const legacyEngineTypes = `
+import {liquidDocument, liquidSnippet} from '@diplodoc/transform/lib/liquid';
+import {createDeprecationReporter} from '@diplodoc/transform/deprecation';
+import {getLogger} from '@diplodoc/transform/log';
+import {type PluginOptions as LegacyLintPluginOptions} from '@diplodoc/transform/lib/yfmlint';
+const diagnostics = {log: {info(_message: string) {}, warn(_message: string) {}, error(_message: string) {}}};
+const deprecations = createDeprecationReporter(diagnostics);
+const legacyLintOptions: LegacyLintPluginOptions = {log: getLogger(diagnostics.log), deprecations, compatibility: {TRANSFORM_BUNDLED_YFMLINT: 'legacy'}};
+void legacyLintOptions;
+const mapped = liquidDocument('plain', {}, 'guide.md', {...diagnostics, deprecations, withSourceMap: true});
+const mappedOutput: string = mapped.output;
+const sourceMap: Record<string, string> = mapped.sourceMap;
+const plain: string = liquidSnippet('plain', {}, undefined, diagnostics);
+// @ts-expect-error Plain return is not a source-map object.
+plain.output;
+// @ts-expect-error Source-map output remains a string.
+const invalidOutput: number = mapped.output;
+void mappedOutput; void sourceMap; void invalidOutput;
+`;
+    for (const file of ['consumer.cts', 'consumer.mts']) {
+        const path = join(consumerRoot, file);
+        writeFileSync(path, `${readFileSync(path, 'utf8')}\n${legacyEngineTypes}`);
+    }
+    copyFileSync(
+        join(projectRoot, 'scripts/document-package-consumer.mjs'),
+        join(consumerRoot, 'document-consumer.mjs'),
     );
+    execFileSync(process.execPath, [join(consumerRoot, 'document-consumer.mjs')], {
+        cwd: consumerRoot,
+        stdio: 'inherit',
+    });
+    const documentTypes = `
+import {createDocumentEnv, type DocumentEnv, type ParsedDocument} from '@diplodoc/transform/document';
+import type {ParserEnv} from '@diplodoc/transform/types';
+declare module '@diplodoc/transform/types' {
+    interface ParserEnv {requestLabel?: string;}
+}
+const documents = DOCUMENT_FACTORY({});
+const firstDocument: ParsedDocument = documents.parseDocument('A', (env) => {env.requestLabel = 'A';});
+const secondDocument = documents.parseDocument('B');
+const typedContext: ParserEnv = firstDocument.env;
+const typedLabel: string | undefined = typedContext.requestLabel;
+const plainEnv: DocumentEnv = createDocumentEnv();
+import {parseDocumentFragmentResult, replayDocumentFragment, type ParsedDocumentFragment} from '@diplodoc/transform/document';
+let fragmentMd!: import('@diplodoc/transform/types').MarkdownIt;
+DOCUMENT_FACTORY({plugins: [(md) => {fragmentMd = md;}]});
+const fragment = parseDocumentFragmentResult(fragmentMd, 'child', plainEnv, {purpose: 'reference'}, source => source);
+replayDocumentFragment(fragmentMd, fragment, plainEnv, {purpose: 'include'});
+fragment.tokens.push(...fragment.tokens);
+// @ts-expect-error Opaque handles cannot be structurally forged.
+const forgedFragment: ParsedDocumentFragment = {tokens: fragment.tokens};
+// @ts-expect-error Source preparation must complete synchronously.
+parseDocumentFragmentResult(fragmentMd, 'child', plainEnv, {purpose: 'include'}, async source => source);
+// @ts-expect-error The handle's token-array property cannot be reassigned.
+fragment.tokens = [];
+void forgedFragment;
+
+import {createDiagnosticCollector, type DiagnosticCollector, type DiagnosticLogs} from '@diplodoc/transform/log';
+const projectDiagnostics: DiagnosticCollector = createDiagnosticCollector();
+const scopedDiagnosticsParser = DOCUMENT_FACTORY({diagnostics: projectDiagnostics});
+const scopedDiagnosticsDocument = scopedDiagnosticsParser.parseDocument('text');
+const handleDiagnostics: DiagnosticLogs = scopedDiagnosticsDocument.logs;
+const parserDiagnostics: DiagnosticLogs = scopedDiagnosticsParser.logs;
+// @ts-expect-error A shared collector must implement the complete explicit collector contract.
+DOCUMENT_FACTORY({diagnostics: {warn(message: string) { void message; }}});
+void [handleDiagnostics, parserDiagnostics];
+
+documents.compile(firstDocument.tokens.slice(), firstDocument);
+documents.compileDocument(secondDocument);
+// @ts-expect-error Core title remains a string.
+plainEnv.title = 42;
+// @ts-expect-error Augmented custom fields keep their declared type.
+plainEnv.requestLabel = 42;
+// @ts-expect-error Path may be absent on ordinary transforms.
+const pathIsNotGuaranteed: string = plainEnv.path;
+void typedLabel; void pathIsNotGuaranteed;
+`;
+    for (const file of ['consumer.cts', 'consumer.mts']) {
+        const path = join(consumerRoot, file);
+        writeFileSync(
+            path,
+            `${readFileSync(path, 'utf8')}\n${documentTypes.replaceAll('DOCUMENT_FACTORY', file.endsWith('.cts') ? 'init' : 'parser')}`,
+        );
+    }
+    const configurationTypes = `
+import underline from '@diplodoc/transform/plugins/underline';
+import subscript from '@diplodoc/transform/plugins/subscript';
+import sup from '@diplodoc/transform/plugins/sup';
+import monospace from '@diplodoc/transform/plugins/monospace';
+import notes from '@diplodoc/transform/plugins/notes';
+import type NativeMarkdownIt from 'markdown-it' with {'resolution-mode': 'import'};
+import cut from '@diplodoc/transform/plugins/cut';
+import tabs from '@diplodoc/transform/plugins/tabs';
+import legacyCut from '@diplodoc/transform/lib/plugins/cut';
+import legacyTabs from '@diplodoc/transform/lib/plugins/tabs';
+import footnotes from '@diplodoc/transform/plugins/footnotes';
+import taskList from '@diplodoc/transform/plugins/task-list';
+import type {MarkdownIt, MarkdownItPluginCb} from '@diplodoc/transform/types';
+import {transform as createCut} from '@diplodoc/cut-extension';
+import {transform as createTabs} from '@diplodoc/tabs-extension';
+const directCut: MarkdownItPluginCb = createCut({bundle: false, directiveSyntax: 'disabled'});
+const directTabs: MarkdownItPluginCb = createTabs({bundle: false});
+const assetOptions: import('@diplodoc/transform/types').OptionsType = {output: '/consumer/runtime-assets'};
+// @ts-expect-error Runtime asset destinations must be strings.
+const invalidAssetOptions: import('@diplodoc/transform/types').OptionsType = {output: 42};
+// @ts-expect-error Plugin runtime asset destinations must be strings.
+const invalidPluginOutput: Pick<import('@diplodoc/transform/types').MarkdownItPluginOpts, 'output'> = {output: 42};
+void [directCut, directTabs, assetOptions, invalidAssetOptions, invalidPluginOutput];
+const typedFootnotes: MarkdownItPluginCb = footnotes;
+const typedTaskList: MarkdownItPluginCb = taskList;
+void typedFootnotes; void typedTaskList;
+const typedUnderline: MarkdownItPluginCb = underline;
+const typedSubscript: (md: MarkdownIt) => void = subscript;
+declare const nativeParser: InstanceType<typeof NativeMarkdownIt>;
+nativeParser.use(sup).use(monospace);
+declare const noteOptions: Omit<Parameters<typeof notes>[1], 'notesAutotitle'>;
+nativeParser.use(notes, noteOptions);
+configuration.defineTransformOptions({plugins: {enable: ['underline', 'subscript', 'footnotes', 'task-list'], options: {underline: {}, subscript: {}, footnotes: {}, 'task-list': {}}}});
+configuration.defineTransformOptions({plugins: {options: {cut: {directiveSyntax: 'enabled'}, notes: {directiveSyntax: 'only'}, tabs: {directiveSyntax: 'disabled'}}}});
+// @ts-expect-error Directive modes are a closed per-feature enum.
+configuration.defineTransformOptions({plugins: {options: {cut: {directiveSyntax: 'invented'}}}});
+// @ts-expect-error Inline File syntax is outside the block-owner configuration.
+configuration.defineTransformOptions({plugins: {options: {file: {directiveSyntax: 'enabled'}}}});
+// @ts-expect-error Block syntax cannot leak into a shared flat core option.
+configuration.defineTransformOptions({core: {directiveSyntax: 'enabled'}});
+// @ts-expect-error Footnotes has a closed empty options schema.
+configuration.defineTransformOptions({plugins: {options: {footnotes: {inline: true}}}});
+// @ts-expect-error Task-list has a closed empty options schema.
+configuration.defineTransformOptions({plugins: {options: {'task-list': {disabled: false}}}});
+// @ts-expect-error Underline has a closed empty options schema.
+configuration.defineTransformOptions({plugins: {options: {underline: {tag: 'ins'}}}});
+// @ts-expect-error Subscript has a closed empty options schema.
+configuration.defineTransformOptions({plugins: {options: {subscript: {parseInline: true}}}});
+// @ts-expect-error New syntax IDs are exact.
+configuration.defineTransformOptions({plugins: {enable: ['underlined']}});
+void typedUnderline; void typedSubscript;
+import {migrateImageDimensions, type ImageDimensionsMigrationResult} from '@diplodoc/transform/migrations/image-dimensions';
+const imageMigration: ImageDimensionsMigrationResult = migrateImageDimensions('![a](a =20x30)', {path: 'guide.md'});
+const imageSource: string = imageMigration.output;
+// @ts-expect-error No document/plugin/generator execution hook in the pure migration API.
+migrateImageDimensions('', {generateID: () => 'id'});
+// @ts-expect-error Diagnostic label must be a string.
+migrateImageDimensions('', {path: 42});
+// @ts-expect-error Migration remains synchronous.
+const asyncImage: Promise<ImageDimensionsMigrationResult> = migrateImageDimensions('');
+// @ts-expect-error Parser diagnostic context is not a named builtin feature option.
+configuration.defineTransformOptions({plugins: {options: {imsize: {path: 'invented.md'}}}});
+void imageSource; void asyncImage;
+
+import {migrateBlockDirectives, type BlockDirectivesMigrationResult} from '@diplodoc/transform/migrations/block-directives';
+const blockMigration: BlockDirectivesMigrationResult = migrateBlockDirectives('', {path: 'guide.md'});
+const blockOutput: string = blockMigration.output;
+// @ts-expect-error The pure API does not run plugin callbacks or file traversal.
+migrateBlockDirectives('', {plugins: []});
+// @ts-expect-error The diagnostic label is a string.
+migrateBlockDirectives('', {path: 42});
+// @ts-expect-error Original source edits are readonly.
+blockMigration.edits.push({start: 0, end: 0, replacement: ''});
+// @ts-expect-error The source contract remains synchronous.
+const asynchronousBlockMigration: Promise<BlockDirectivesMigrationResult> = blockMigration;
+void blockOutput; void asynchronousBlockMigration;
+
+import {migrateTableAlignment, type TableAlignmentMigrationResult, type YfmTablePluginOptions} from '@diplodoc/transform/migrations/table-alignment';
+const tableOptions: YfmTablePluginOptions = {table_ignoreSplittersInInlineCode: false};
+const migration: TableAlignmentMigrationResult = migrateTableAlignment('', {path: 'guide.md', table: tableOptions});
+const migratedSource: string = migration.output;
+// @ts-expect-error Existing splitter options retain boolean types.
+migrateTableAlignment('', {table: {table_ignoreSplittersInInlineCode: 'false'}});
+// @ts-expect-error Migrator options have no plugin execution hook.
+migrateTableAlignment('', {plugins: []});
+// @ts-expect-error Migration remains synchronous.
+const promisedMigration: Promise<TableAlignmentMigrationResult> = migrateTableAlignment('');
+void migratedSource; void promisedMigration;
+import {type Highlighter, type HighlightJsLegacyApi, createHighlightJsHighlighter} from '@diplodoc/transform/highlighter';
+const callback: Highlighter = () => ({html: '', classes: ['custom']});
+transform('code', configuration.defineTransformOptions({core: {highlighter: callback}}));
+const legacyInstance: HighlightJsLegacyApi = {versionString: '10.0.3', getLanguage: () => true, highlight: (_language, _source, _ignore) => ({value: ''})};
+createHighlightJsHighlighter(legacyInstance);
+// @ts-expect-error Async callback output cannot cross the synchronous boundary.
+const asyncCallback: Highlighter = async () => ({html: ''});
+// @ts-expect-error A result needs an HTML fragment.
+const invalidCallback: Highlighter = () => ({classes: []});
+// @ts-expect-error Await module loading before creating the adapter.
+createHighlightJsHighlighter(Promise.resolve(legacyInstance));
+void asyncCallback; void invalidCallback;
+
+const custom = configuration.definePlugin<{label: string}, {label: string}>({
+    id: 'package/typed',
+    setup(_md, options, context) {
+        options.label.toUpperCase();
+        const path: string | undefined = context.path;
+        context.deprecations.compatibility('PACKAGE');
+        context.generateID();
+        void path;
+        // @ts-expect-error Source paths are optional in an ordinary transform call.
+        const guaranteedPath: string = context.path;
+        // @ts-expect-error Shared context is not custom plugin configuration.
+        options.log;
+        void guaranteedPath;
+    },
+    collect(input, options) {
+        const count: number = options.tokenStream.length;
+        return options.label + input + count;
+    },
+});
+const configured = custom({label: 'typed'});
+configured.plugin.collect?.('source', {label: 'collector', tokenStream: []});
+const settings: configuration.TransformConfiguration = {
+    plugins: {preset: 'none', enable: ['notes'], plugins: [configured], options: {notes: undefined}},
+};
+transform('text', configuration.defineTransformOptions(settings));
+const parsedTokens = transform('text', configuration.defineTransformOptions({core: {tokens: true}}));
+const tokenName: string = parsedTokens[0].type;
+void tokenName;
+// @ts-expect-error Builtin IDs are finite.
+configuration.defineTransformOptions({plugins: {disable: ['note']}});
+// @ts-expect-error Core options are closed.
+configuration.defineTransformOptions({core: {allowHTLM: true}});
+// @ts-expect-error Builtin settings preserve actual value types.
+configuration.defineTransformOptions({plugins: {options: {notes: {notesAutotitle: 'false'}}}});
+// @ts-expect-error Custom configuration values are checked.
+custom({label: false});
+// @ts-expect-error Custom configuration rejects unknown keys.
+custom({label: 'typed', unknown: true});
+`;
+    for (const extension of ['cts', 'mts']) {
+        const path = join(consumerRoot, `consumer.${extension}`);
+        const importLine =
+            extension === 'cts'
+                ? "import configuration = require('@diplodoc/transform/configuration');"
+                : "import * as configuration from '@diplodoc/transform/configuration';";
+        writeFileSync(path, `${readFileSync(path, 'utf8')}\n${importLine}\n${configurationTypes}`);
+    }
+
+    const typeEntries = Object.entries(publicEntryInventory()).filter(
+        ([, entry]) => typeof entry !== 'string',
+    );
+    for (const extension of ['cts', 'mts']) {
+        const typeImports = typeEntries
+            .map(([subpath, entry], index) => {
+                const name = `@diplodoc/transform${subpath === '.' ? '' : subpath.slice(1)}`;
+                return extension === 'cts'
+                    ? `${entry.require ? '' : '// @ts-expect-error Browser subpaths are ESM-only.\n'}import type API${index} = require('${name}');`
+                    : `import type * as API${index} from '${name}';`;
+            })
+            .join('\n');
+        const path = join(consumerRoot, `consumer.${extension}`);
+        writeFileSync(path, `${readFileSync(path, 'utf8')}\n${typeImports}\n`);
+    }
+    for (const module of ['Node16', 'NodeNext', 'Preserve']) {
+        const configPath = join(consumerRoot, 'tsconfig.json');
+        const config = JSON.parse(readFileSync(configPath, 'utf8'));
+        config.compilerOptions.module = module;
+        config.compilerOptions.moduleResolution = module === 'Preserve' ? 'Bundler' : module;
+        // Bundler consumers use ESM; native CJS is checked separately without interop.
+        config.files = module === 'Preserve' ? ['consumer.mts'] : ['consumer.cts', 'consumer.mts'];
+        writeFileSync(configPath, JSON.stringify(config));
+        execFileSync(
+            process.execPath,
+            [projectRequire.resolve('typescript/lib/tsc.js'), '-p', consumerRoot],
+            {stdio: 'inherit'},
+        );
+    }
+
+    verifyBrowserPackage(
+        consumerRoot,
+        projectRequire.resolve('typescript/lib/tsc.js'),
+        projectRequire('esbuild').buildSync,
+    );
+
+    // Actual native hosts must accept the finite callback in both module modes.
+    for (const [version, types] of [
+        ['13.0.2', '13.0.9'],
+        ['14.1.0', '14.1.2'],
+        ['15.0.3', undefined],
+    ]) {
+        const nativeRoot = join(temporaryRoot, `native${version.split('.')[0]}`);
+        mkdirSync(nativeRoot);
+        writeFileSync(
+            join(nativeRoot, 'package.json'),
+            JSON.stringify({
+                private: true,
+                dependencies: {
+                    '@diplodoc/transform': `file:${join(temporaryRoot, packed[0].filename)}`,
+                    'markdown-it': version,
+                    '@types/markdown-it': types,
+                    '@types/node': manifest.devDependencies['@types/node'],
+                },
+            }),
+        );
+        execFileSync(
+            process.execPath,
+            [process.env.npm_execpath, 'install', '--ignore-scripts', '--no-audit', '--no-fund'],
+            {cwd: nativeRoot, stdio: 'inherit'},
+        );
+        if (version.startsWith('13.')) {
+            copyFileSync(
+                join(projectRoot, 'scripts/document-package-consumer.mjs'),
+                join(nativeRoot, 'document-consumer.mjs'),
+            );
+            execFileSync(
+                process.execPath,
+                [join(nativeRoot, 'document-consumer.mjs'), '--native13'],
+                {
+                    cwd: nativeRoot,
+                    stdio: 'inherit',
+                },
+            );
+        }
+        copyFileSync(
+            join(projectRoot, 'scripts/footnotes-native-consumer.mjs'),
+            join(nativeRoot, 'footnotes-native.mjs'),
+        );
+        execFileSync(process.execPath, [join(nativeRoot, 'footnotes-native.mjs')], {
+            cwd: nativeRoot,
+            stdio: 'inherit',
+        });
+        const fixture = `
+import footnotes from '@diplodoc/transform/plugins/footnotes';
+import taskList from '@diplodoc/transform/plugins/task-list';
+import {envMeta, createDocumentEnv, materializeFootnoteTokens} from '@diplodoc/transform/document';
+const md = new MarkdownIt().use(envMeta).use(footnotes, {generateID: () => 'host'}).use(taskList);
+taskList(new MarkdownIt());
+footnotes(new MarkdownIt(), {generateID: () => 'direct'});
+const env = createDocumentEnv();
+const tokens = md.parse('body[^a]\\n\\n[^a]: note', env);
+const copied = materializeFootnoteTokens(tokens, tokens.slice(0, 3), tokens[0]);
+md.renderer.render(copied, md.options, env);
+const name: unknown = env.meta?.name;
+void name;
+`;
+        const operationsStart = fixture.indexOf('const md =');
+        writeFileSync(
+            join(nativeRoot, 'consumer.cts'),
+            version.startsWith('15.')
+                ? // Upstream 15.0.3's require declaration omits TS resolution-mode
+                  // on its own import types. Use its real ESM declaration from CJS.
+                  fixture.slice(0, operationsStart) +
+                      "async function check() { const {default: MarkdownIt} = await import('markdown-it');\n" +
+                      fixture.slice(operationsStart) +
+                      '\n} void check;\n'
+                : "import MarkdownIt = require('markdown-it');\n" + fixture,
+        );
+        writeFileSync(
+            join(nativeRoot, 'consumer.mts'),
+            "import MarkdownIt from 'markdown-it';\n" + fixture,
+        );
+        for (const module of ['Node16', 'NodeNext']) {
+            writeFileSync(
+                join(nativeRoot, 'tsconfig.json'),
+                JSON.stringify({
+                    compilerOptions: {
+                        target: 'ES2022',
+                        module,
+                        moduleResolution: module,
+                        strict: true,
+                        noEmit: true,
+                        skipLibCheck: false,
+                        esModuleInterop: false,
+                        ignoreDeprecations: '6.0',
+                    },
+                    files: ['consumer.cts', 'consumer.mts'],
+                }),
+            );
+            execFileSync(
+                process.execPath,
+                [projectRequire.resolve('typescript/lib/tsc.js'), '-p', nativeRoot],
+                {stdio: 'inherit'},
+            );
+        }
+    }
+
+    writeFileSync(
+        join(consumerRoot, 'with-highlighter.mts'),
+        `
+import transform from '@diplodoc/transform';
+import hljs from 'highlight.js';
+import {createHighlightJsHighlighter} from '@diplodoc/transform/highlighter';
+type LanguageFn = Parameters<typeof hljs.registerLanguage>[1];
+const language: LanguageFn = () => ({contains: []});
+transform('text', {highlighter: createHighlightJsHighlighter(hljs, {languages: {custom: language}})});
+transform('text', {highlighter: createHighlightJsHighlighter({default: hljs}), highlightLangs: {custom: language}});
+`,
+    );
+    writeFileSync(
+        join(consumerRoot, 'with-highlighter.cjs'),
+        `
+const assert = require('node:assert/strict');
+const transform = require('@diplodoc/transform');
+const hljs = require('highlight.js');
+const {createHighlightJsHighlighter} = require('@diplodoc/transform/highlighter');
+let registeredWithActualApi = false;
+const language = (api) => {
+    registeredWithActualApi = api === hljs;
+    return {contains: [{begin: /fixture/, className: 'keyword'}]};
+};
+const html = transform('~~~custom\\nfixture\\n~~~', {highlighter: createHighlightJsHighlighter(hljs), highlightLangs: {custom: language}}).result.html;
+assert.equal(registeredWithActualApi, true);
+assert.match(html, /hljs-keyword/);
+`,
+    );
+    const withHighlighterConfig = JSON.parse(
+        readFileSync(join(consumerRoot, 'tsconfig.json'), 'utf8'),
+    );
+    withHighlighterConfig.compilerOptions.module = 'NodeNext';
+    withHighlighterConfig.compilerOptions.moduleResolution = 'NodeNext';
+    withHighlighterConfig.files = ['consumer.cts', 'consumer.mts', 'with-highlighter.mts'];
+    writeFileSync(join(consumerRoot, 'tsconfig.json'), JSON.stringify(withHighlighterConfig));
+    for (const version of ['10.0.3', '10.6.0', '10.7.0', '11.12.0']) {
+        execFileSync(
+            process.execPath,
+            [
+                process.env.npm_execpath,
+                'install',
+                '--ignore-scripts',
+                '--no-audit',
+                '--no-fund',
+                `highlight.js@${version}`,
+            ],
+            {cwd: consumerRoot, stdio: 'inherit'},
+        );
+        // 10.0.3 has no bundled declarations; 10.6 has only the legacy declaration.
+        // Core/legacy structural declarations are checked above without the optional peer.
+        if (version === '10.7.0' || version === '11.12.0') {
+            for (const module of ['Node16', 'NodeNext', 'Preserve']) {
+                const config = {
+                    ...withHighlighterConfig,
+                    compilerOptions: {
+                        ...withHighlighterConfig.compilerOptions,
+                        module,
+                        moduleResolution: module === 'Preserve' ? 'Bundler' : module,
+                    },
+                };
+                if (module === 'Preserve') {
+                    config.files = ['consumer.mts', 'with-highlighter.mts'];
+                }
+                writeFileSync(join(consumerRoot, 'tsconfig.json'), JSON.stringify(config));
+                execFileSync(
+                    process.execPath,
+                    [projectRequire.resolve('typescript/lib/tsc.js'), '-p', consumerRoot],
+                    {stdio: 'inherit'},
+                );
+            }
+        }
+        execFileSync(process.execPath, [join(consumerRoot, 'highlighter-consumer.mjs')], {
+            cwd: consumerRoot,
+            stdio: 'inherit',
+        });
+        if (version === '10.7.0' || version === '11.12.0') {
+            execFileSync(
+                process.execPath,
+                [join(consumerRoot, 'highlighter-consumer.mjs'), '--selected-core'],
+                {
+                    cwd: consumerRoot,
+                    stdio: 'inherit',
+                },
+            );
+        }
+        execFileSync(process.execPath, [join(consumerRoot, 'with-highlighter.cjs')], {
+            cwd: consumerRoot,
+            stdio: 'inherit',
+        });
+        execFileSync(process.execPath, [join(consumerRoot, 'consumer.mjs')], {
+            cwd: consumerRoot,
+            stdio: 'inherit',
+        });
+    }
+
+    // Bundle the installed browser entry points independently: base/yfm-only must
+    // retain their split contents rather than silently resolving to the full runtime.
+    const {buildSync} = projectRequire('esbuild');
+    verifyHighlighterGraph(consumerRoot, buildSync);
+    verifyTableAlignmentGraph(consumerRoot, buildSync);
+    verifyImageDimensionsGraph(consumerRoot, buildSync);
+    verifyBlockDirectivesGraph(consumerRoot, buildSync);
+    const {JSDOM} = projectRequire('jsdom');
+    for (const variant of ['', '/base', '/yfm-only', '/print']) {
+        const result = buildSync({
+            stdin: {
+                contents: `import '@diplodoc/transform/runtime${variant}';`,
+                resolveDir: consumerRoot,
+            },
+            bundle: true,
+            platform: 'browser',
+            target: 'es2018',
+            write: false,
+        });
+        const browser = new JSDOM('<main class="yfm"><p>Browser runtime fixture</p></main>', {
+            runScripts: 'outside-only',
+            url: 'https://example.test',
+        });
+        browser.window.matchMedia = () => ({
+            matches: false,
+            addEventListener() {},
+            removeEventListener() {},
+        });
+        browser.window.eval(result.outputFiles[0].text);
+        browser.window.close();
+        buildSync({
+            stdin: {
+                contents: `import '@diplodoc/transform/styles${variant}';`,
+                resolveDir: consumerRoot,
+            },
+            bundle: true,
+            platform: 'browser',
+            outdir: join(consumerRoot, 'browser-styles'),
+            write: false,
+        });
+    }
+    const sass = projectRequire('sass');
+    verifyInlineSyntaxGraph(consumerRoot, buildSync, sass, projectRequire('css').parse);
+    const stylesheet = sass.compileString('@use "pkg:@diplodoc/transform/scss/yfm-base.scss";', {
+        importers: [new sass.NodePackageImporter(consumerRoot)],
+        logger: sass.Logger.silent,
+    });
+    assert.match(stylesheet.css, /\.yfm/);
 
     // eslint-disable-next-line no-console
     console.log(
-        'The npm tarball contains the patched parser and licenses; public types compile without SVGO and with skipLibCheck disabled.',
+        'The npm tarball renders through native CJS/ESM loading, contains the patched SVG parser and licenses, and compiles CJS/ESM consumers with skipLibCheck disabled.',
     );
 } finally {
-    rmSync(temporaryRoot, {recursive: true, force: true});
+    if (process.env.TRANSFORM_KEEP_PACKAGE_FIXTURE) {
+        process.stdout.write(`Package fixture retained at ${temporaryRoot}\n`);
+    } else {
+        rmSync(temporaryRoot, {recursive: true, force: true});
+    }
 }

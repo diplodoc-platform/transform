@@ -1,6 +1,6 @@
 {
   "name": "@diplodoc/transform",
-  "version": "4.79.0",
+  "version": "5.0.0-beta.1",
   "description": "A simple transformer of text in YFM (Yandex Flavored Markdown) to HTML",
   "keywords": [
     "markdown",
@@ -13,7 +13,8 @@
     "generator"
   ],
   "engines": {
-    "npm": ">=11.5.1"
+    "npm": ">=11.5.1",
+    "node": ">=24"
   },
   "homepage": "https://github.com/diplodoc-platform/transform#readme",
   "bugs": {
@@ -25,8 +26,9 @@
   },
   "license": "MIT",
   "author": "YFM Team <yfm-team@yandex.ru>",
-  "main": "lib/index.js",
+  "main": "./api/index.cjs",
   "files": [
+    "api",
     "dist",
     "lib",
     "src"
@@ -34,8 +36,8 @@
   "scripts": {
     "build": "npm run build:lib && npm run build:dist",
     "build:dist": "node ./scripts/build-static.mjs",
-    "build:lib": "npm run patch:svgo && tsc -p tsconfig.transform.json && node scripts/build-svgo.mjs",
-    "dev:lib": "tsc -w -p tsconfig.transform.json",
+    "build:lib": "npm run patch:svgo && tsc -p tsconfig.transform.json && node scripts/build-svgo.mjs && node scripts/build-markdown-it.mjs && node scripts/build-legacy-markdownlint.mjs && node scripts/build-vendor-declarations.mjs && node scripts/build-public-api.mjs && npm run build:browser",
+    "dev:lib": "npm run build:lib && tsc -w -p tsconfig.transform.json",
     "dev:playground": "node ./scripts/dev.mjs",
     "preplayground": "cd playground && npm ci --ignore-scripts || (exit 0)",
     "playground": "run-p dev:*",
@@ -53,14 +55,21 @@
     "lock": "npm install --no-workspaces --package-lock-only --ignore-scripts",
     "patch:svgo": "node scripts/patch-svgo.mjs",
     "prepack": "npm run patch:svgo",
-    "test:package": "npm run build && node scripts/test-package.mjs"
+    "test:package": "npm run build && node scripts/test-package.mjs",
+    "exports:update": "node scripts/build-public-api.mjs --write-manifest",
+    "build:browser": "node scripts/build-browser.mjs",
+    "test:performance": "node scripts/performance/run.mjs"
   },
   "dependencies": {
-    "@diplodoc/cut-extension": "^1.1.8",
-    "@diplodoc/directive": "^0.4.0",
-    "@diplodoc/file-extension": "^0.2.8",
-    "@diplodoc/tabs-extension": "^3.10.7",
-    "@diplodoc/utils": "^2.3.6",
+    "@diplodoc/cut-extension": "^2.0.0-beta.2",
+    "@diplodoc/directive": "^1.0.0-beta.4",
+    "@diplodoc/file-extension": "^1.0.0-beta.2",
+    "@diplodoc/notes-extension": "^1.0.0-beta.2",
+    "@diplodoc/tabs-extension": "^4.0.0-beta.3",
+    "@diplodoc/utils": "^3.0.0-beta.3",
+    "@mdit/plugin-tasklist": "1.1.4",
+    "@types/lodash": "^4.17.23",
+    "@types/sanitize-html": "^2.9.3",
     "chalk": "^4.1.2",
     "cheerio": "1.2.0",
     "css": "^3.0.0",
@@ -69,11 +78,13 @@
     "github-slugger": "^1.5.0",
     "js-yaml": "4.3.2",
     "lodash": "4.18.1",
-    "markdown-it": "^13.0.2",
+    "markdown-it": "15.0.3",
     "markdown-it-attrs": "4.3.1",
-    "markdown-it-deflist": "2.1.0",
+    "markdown-it-deflist": "4.0.0",
+    "markdown-it-footnote": "4.0.0",
+    "markdown-it-ins": "4.0.0",
+    "markdown-it-sub": "2.0.0",
     "markdown-it-sup": "1.0.0",
-    "markdownlint": "^0.32.1",
     "markdownlint-rule-helpers": "0.17.2",
     "quick-lru": "^5.1.1",
     "sanitize-html": "^2.18.0",
@@ -85,11 +96,8 @@
     "@types/css": "0.0.34",
     "@types/github-slugger": "^1.3.0",
     "@types/js-yaml": "^4.0.5",
-    "@types/lodash": "^4.17.23",
-    "@types/markdown-it": "^13.0.9",
     "@types/markdown-it-attrs": "4.1.0",
-    "@types/node": "^22.19.7",
-    "@types/sanitize-html": "^2.9.3",
+    "@types/node": "^24.19.2",
     "@vitest/coverage-v8": "^2.1.9",
     "@vitest/ui": "^2.1.8",
     "autoprefixer": "^10.4.15",
@@ -99,6 +107,7 @@
     "jest-serializer-html": "^7.1.0",
     "jsdom": "^25.0.1",
     "markdown-it-testgen": "^0.1.6",
+    "markdownlint": "^0.32.1",
     "npm-run-all": "^4.1.5",
     "patch-package": "^8.0.1",
     "postcss": "^8.4.27",
@@ -107,6 +116,7 @@
     "svgo": "4.1.0",
     "terminal-link": "^2.1.1",
     "typescript": "6.0.3",
+    "vite": "^5.4.21",
     "vitest": "^2.1.8"
   },
   "peerDependencies": {
@@ -121,6 +131,295 @@
     "cheerio": {
       ".": "1.2.0",
       "undici": "7.30.2"
+    },
+    "markdownlint": {
+      "markdown-it": "$markdown-it"
     }
+  },
+  "module": "./api/index.mjs",
+  "types": "./api/index.d.cts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./api/index.d.mts",
+        "default": "./api/index.mjs"
+      },
+      "require": {
+        "types": "./api/index.d.cts",
+        "default": "./api/index.cjs"
+      }
+    },
+    "./parser": {
+      "import": {
+        "types": "./api/md.d.mts",
+        "default": "./api/md.mjs"
+      },
+      "require": {
+        "types": "./api/md.d.cts",
+        "default": "./api/md.cjs"
+      }
+    },
+    "./document": {
+      "import": {
+        "types": "./api/document.d.mts",
+        "default": "./api/document.mjs"
+      },
+      "require": {
+        "types": "./api/document.d.cts",
+        "default": "./api/document.cjs"
+      }
+    },
+    "./configuration": {
+      "import": {
+        "types": "./api/plugin-configuration.d.mts",
+        "default": "./api/plugin-configuration.mjs"
+      },
+      "require": {
+        "types": "./api/plugin-configuration.d.cts",
+        "default": "./api/plugin-configuration.cjs"
+      }
+    },
+    "./highlighter": {
+      "import": {
+        "types": "./api/highlighter.d.mts",
+        "default": "./api/highlighter.mjs"
+      },
+      "require": {
+        "types": "./api/highlighter.d.cts",
+        "default": "./api/highlighter.cjs"
+      }
+    },
+    "./highlighter/legacy": {
+      "import": {
+        "types": "./api/highlighter/legacy.d.mts",
+        "default": "./api/highlighter/legacy.mjs"
+      },
+      "require": {
+        "types": "./api/highlighter/legacy.d.cts",
+        "default": "./api/highlighter/legacy.cjs"
+      }
+    },
+    "./types": {
+      "import": {
+        "types": "./api/typings.d.mts",
+        "default": "./api/typings.mjs"
+      },
+      "require": {
+        "types": "./api/typings.d.cts",
+        "default": "./api/typings.cjs"
+      }
+    },
+    "./plugins": {
+      "import": {
+        "types": "./api/plugins.d.mts",
+        "default": "./api/plugins.mjs"
+      },
+      "require": {
+        "types": "./api/plugins.d.cts",
+        "default": "./api/plugins.cjs"
+      }
+    },
+    "./preprocessors": {
+      "import": {
+        "types": "./api/preprocessors/index.d.mts",
+        "default": "./api/preprocessors/index.mjs"
+      },
+      "require": {
+        "types": "./api/preprocessors/index.d.cts",
+        "default": "./api/preprocessors/index.cjs"
+      }
+    },
+    "./frontmatter": {
+      "import": {
+        "types": "./api/frontmatter.d.mts",
+        "default": "./api/frontmatter.mjs"
+      },
+      "require": {
+        "types": "./api/frontmatter.d.cts",
+        "default": "./api/frontmatter.cjs"
+      }
+    },
+    "./utils": {
+      "import": {
+        "types": "./api/utils.d.mts",
+        "default": "./api/utils.mjs"
+      },
+      "require": {
+        "types": "./api/utils.d.cts",
+        "default": "./api/utils.cjs"
+      }
+    },
+    "./utils/fs": {
+      "import": {
+        "types": "./api/utilsFS.d.mts",
+        "default": "./api/utilsFS.mjs"
+      },
+      "require": {
+        "types": "./api/utilsFS.d.cts",
+        "default": "./api/utilsFS.cjs"
+      }
+    },
+    "./sanitize": {
+      "import": {
+        "types": "./api/sanitize.d.mts",
+        "default": "./api/sanitize.mjs"
+      },
+      "require": {
+        "types": "./api/sanitize.d.cts",
+        "default": "./api/sanitize.cjs"
+      }
+    },
+    "./log": {
+      "import": {
+        "types": "./api/log.d.mts",
+        "default": "./api/log.mjs"
+      },
+      "require": {
+        "types": "./api/log.d.cts",
+        "default": "./api/log.cjs"
+      }
+    },
+    "./deprecation": {
+      "import": {
+        "types": "./api/deprecation.d.mts",
+        "default": "./api/deprecation.mjs"
+      },
+      "require": {
+        "types": "./api/deprecation.d.cts",
+        "default": "./api/deprecation.cjs"
+      }
+    },
+    "./portable": {
+      "import": {
+        "types": "./dist/browser/standard.d.mts",
+        "default": "./dist/browser/standard.mjs"
+      }
+    },
+    "./portable/minimal": {
+      "import": {
+        "types": "./dist/browser/minimal.d.mts",
+        "default": "./dist/browser/minimal.mjs"
+      }
+    },
+    "./browser": {
+      "import": {
+        "types": "./dist/browser/standard.d.mts",
+        "default": "./dist/browser/standard.mjs"
+      }
+    },
+    "./browser/minimal": {
+      "import": {
+        "types": "./dist/browser/minimal.d.mts",
+        "default": "./dist/browser/minimal.mjs"
+      }
+    },
+    "./plugins/*": {
+      "import": {
+        "types": "./api/plugins/*.d.mts",
+        "default": "./api/plugins/*.mjs"
+      },
+      "require": {
+        "types": "./api/plugins/*.d.cts",
+        "default": "./api/plugins/*.cjs"
+      }
+    },
+    "./migrations/*": {
+      "import": {
+        "types": "./api/migrations/*.d.mts",
+        "default": "./api/migrations/*.mjs"
+      },
+      "require": {
+        "types": "./api/migrations/*.d.cts",
+        "default": "./api/migrations/*.cjs"
+      }
+    },
+    "./lib/*.js": {
+      "import": {
+        "types": "./api/*.legacy.d.mts",
+        "default": "./api/*.legacy.mjs"
+      },
+      "require": {
+        "types": "./api/*.d.cts",
+        "default": "./api/*.cjs"
+      }
+    },
+    "./lib/*": {
+      "import": {
+        "types": "./api/*.legacy.d.mts",
+        "default": "./api/*.legacy.mjs"
+      },
+      "require": {
+        "types": "./api/*.d.cts",
+        "default": "./api/*.cjs"
+      }
+    },
+    "./lib": {
+      "import": {
+        "types": "./api/index.legacy.d.mts",
+        "default": "./api/index.legacy.mjs"
+      },
+      "require": {
+        "types": "./api/index.d.cts",
+        "default": "./api/index.cjs"
+      }
+    },
+    "./lib/typings": {
+      "import": {
+        "types": "./api/legacy-typings.d.mts",
+        "default": "./api/typings.legacy.mjs"
+      },
+      "require": {
+        "types": "./api/legacy-typings.d.cts",
+        "default": "./api/typings.cjs"
+      }
+    },
+    "./lib/typings.js": {
+      "import": {
+        "types": "./api/legacy-typings.d.mts",
+        "default": "./api/typings.legacy.mjs"
+      },
+      "require": {
+        "types": "./api/legacy-typings.d.cts",
+        "default": "./api/typings.cjs"
+      }
+    },
+    "./lib/plugins/typings": {
+      "import": {
+        "types": "./api/legacy-typings.d.mts",
+        "default": "./api/plugins/typings.legacy.mjs"
+      },
+      "require": {
+        "types": "./api/legacy-typings.d.cts",
+        "default": "./api/plugins/typings.cjs"
+      }
+    },
+    "./lib/plugins/typings.js": {
+      "import": {
+        "types": "./api/legacy-typings.d.mts",
+        "default": "./api/plugins/typings.legacy.mjs"
+      },
+      "require": {
+        "types": "./api/legacy-typings.d.cts",
+        "default": "./api/plugins/typings.cjs"
+      }
+    },
+    "./runtime": "./dist/js/yfm.js",
+    "./runtime/base": "./dist/js/base.js",
+    "./runtime/yfm-only": "./dist/js/_yfm-only.js",
+    "./runtime/print": "./dist/js/print.js",
+    "./styles": "./dist/css/yfm.css",
+    "./styles/base": "./dist/css/base.css",
+    "./styles/yfm-only": "./dist/css/_yfm-only.css",
+    "./styles/print": "./dist/css/print.css",
+    "./scss/*": "./dist/scss/*",
+    "./dist/scss/*": "./dist/scss/*",
+    "./src/*": "./src/*",
+    "./package.json": "./package.json",
+    "./dist/js/*.js": "./dist/js/*.js",
+    "./dist/js/*.js.map": "./dist/js/*.js.map",
+    "./dist/js/*": "./dist/js/*.js",
+    "./dist/css/*.css": "./dist/css/*.css",
+    "./dist/css/*.css.map": "./dist/css/*.css.map",
+    "./dist/css/*": "./dist/css/*.css"
   }
 }

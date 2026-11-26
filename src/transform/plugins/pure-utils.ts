@@ -1,0 +1,73 @@
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
+import type {Logger} from '../log-core';
+
+export type {IDGenerator, IDGeneratorStrategy} from '@diplodoc/utils';
+export {createIDGenerator, createIDGeneratorByStrategy} from '@diplodoc/utils';
+
+export type MatchTokenFunction = (
+    tokens: Token[],
+    idx: number,
+) => boolean | null | RegExpMatchArray;
+
+/**
+ * Bind the existing close-token search to the host's path formatter.
+ * @param formatPath - Plain browser or original terminal path formatting.
+ * @returns The existing finite token-search factory.
+ */
+export function createNestedCloseTokenIdxFactory(formatPath: (path: string) => string) {
+    const nestedCloseTokenIdxFactory =
+        (
+            tokenName: string,
+            matchOpenToken: MatchTokenFunction,
+            matchCloseToken: MatchTokenFunction,
+        ) =>
+        (tokens: Token[], idx: number, path: string, log: Logger) => {
+            let level = 0;
+            let i = idx;
+            while (i < tokens.length) {
+                if (matchOpenToken(tokens, i)) {
+                    level++;
+                } else if (matchCloseToken(tokens, i)) {
+                    if (level === 0) {
+                        return i;
+                    }
+                    level--;
+                }
+
+                i++;
+            }
+
+            log.error(`${tokenName} must be closed${path ? ` in ${formatPath(path)}` : ''}`);
+
+            return null;
+        };
+
+    return nestedCloseTokenIdxFactory;
+}
+
+/**
+ * Generates a legacy random ID.
+ * @deprecated Use `options.generateID` from plugin context instead.
+ * Fallback preserves legacy random behavior without shared counter state.
+ * @param prefix - Optional prefix to prepend to the generated ID.
+ * @returns Random ID string, optionally prefixed with `${prefix}-`.
+ */
+export function generateID(prefix?: string): string {
+    if (!prefix) {
+        return Math.random().toString(36).substr(2, 8);
+    }
+
+    return `${prefix}-${Math.random().toString(36).substr(2, 8)}`;
+}
+
+export function append<T>(target: Record<string, T[]>, key: string, ...values: T[]) {
+    if (!target[key]) {
+        target[key] = values;
+
+        return;
+    }
+
+    values.forEach((value) => target[key].push(value));
+
+    return target;
+}

@@ -8,7 +8,7 @@ import includes from '../src/transform/plugins/includes';
 import yfmlint from '../src/transform/yfmlint';
 import {log} from '../src/transform/log';
 
-import {callPlugin, tokenize} from './utils';
+import {callPlugin, tokenize, withoutBundledEngineWarnings} from './utils';
 import {codeInBackQuote, notitle, sharpedFile, title} from './data/includes';
 
 const mocksPath = require.resolve('./mocks/link.md');
@@ -194,7 +194,7 @@ describe('Includes', () => {
 
         lintMarkdown({input, path: mocksPath});
 
-        const warn = log.get().warn[0];
+        const warn = withoutBundledEngineWarnings(log.get().warn)[0];
 
         expect(warn).toMatch('include-lint-test.md: 3: YFM001/inline-code-length');
     });

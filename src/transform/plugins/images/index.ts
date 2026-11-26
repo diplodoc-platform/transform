@@ -1,18 +1,31 @@
-import type Token from 'markdown-it/lib/token';
-import type {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
-import type {ImageOptions, StateCore} from '../../typings';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
+import type {MarkdownItPluginOpts} from '../typings';
+import type {ImageOptions, MarkdownIt, StateCore} from '../../typings';
 import type {IDGenerator} from '../utils';
 import type {PluginConfig} from '../../svgo';
+import type {DeprecationDescriptor} from '../../deprecation';
+import type {SvgInlineOptions} from './options';
 
 import {join, sep} from 'path';
 import {bold} from 'chalk';
 import {readFileSync} from 'fs';
 
+import {initializeDocumentField} from '../../document-context';
 import {isFileExists, resolveRelativePath} from '../../utilsFS';
 import {filterTokens, getSrcTokenAttr, isExternalHref} from '../../utils';
 import {generateID as globalGenerateID} from '../utils';
 import {optimize} from '../../svgo';
-import {getLogger} from '../../log';
+import {getInvocationLogger} from '../../diagnostic-context';
+import {createDeprecationReporter} from '../../deprecation';
+
+import {normalizeSvgInline} from './options';
+
+const INLINE_SVG_DEPRECATION: DeprecationDescriptor = {
+    code: 'TRANSFORM_INLINE_SVG',
+    feature: 'The inlineSvg option',
+    replacement: 'svgInline.enabled',
+    removal: {version: '6.0.0'},
+};
 
 const SVG_ENTITY_LIMIT_HINT =
     'To inline this SVG, set svgMaxEntityCount in Transform or content.svgMaxEntityCount / --svg-max-entity-count in CLI.';
@@ -35,10 +48,10 @@ const sanitizeHTMLAttr = (value: string): string => {
         .replace(/>/g, '&gt;');
 };
 
-interface ImageOpts extends MarkdownItPluginOpts {
-    assetsPublicPath: string;
-    inlineSvg?: boolean;
-}
+type ImageOpts = Partial<MarkdownItPluginOpts> &
+    Pick<MarkdownItPluginOpts, 'path' | 'log'> & {
+        assetsPublicPath?: string;
+    };
 
 function replaceImageSrc(
     state: StateCore,
@@ -48,7 +61,7 @@ function replaceImageSrc(
     {assetsPublicPath = sep, root = '', log}: ImageOpts,
 ) {
     if (isFileExists(path)) {
-        state.md.assets?.push(imgSrc);
+        state.env.assets?.push(imgSrc);
     } else {
         log.error(`Asset not found: ${bold(imgSrc)} in ${bold(currentPath)}`);
     }
@@ -59,18 +72,15 @@ function replaceImageSrc(
     return publicSrc.replace(/\\/g, '/');
 }
 
-interface InlineOptions {
-    enabled: boolean;
-    maxFileSize: number;
+interface SVGOpts {
+    notFoundCb?: (s: string) => void;
 }
 
-interface SVGOpts extends MarkdownItPluginOpts {
-    notFoundCb: (s: string) => void;
-    imageOpts: ImageOptions;
-    svgInline: InlineOptions;
-}
-
-function getSvgContent(file: string, from: string, {rawContent, notFoundCb, log, root = ''}: Opts) {
+function getSvgContent(
+    file: string,
+    from: string,
+    {rawContent, notFoundCb, log, root = ''}: Opts & {rawContent: (path: string) => string},
+) {
     try {
         const content = rawContent(file);
 
@@ -100,20 +110,19 @@ function getSvgContent(file: string, from: string, {rawContent, notFoundCb, log,
 
 type Opts = SVGOpts &
     ImageOpts & {
-        rawContent: (path: string) => string;
-        calcPath: (root: string, path: string) => string;
-        replaceImageSrc: (
+        rawContent?: (path: string) => string;
+        calcPath?: (root: string, path: string) => string;
+        replaceImageSrc?: (
             state: StateCore,
             currentPath: string,
             path: string,
             imgSrc: string,
             opts: ImageOpts,
         ) => string;
-        file: string;
     };
 
-function shouldBeInlined(token: Token, opts: InlineOptions) {
-    if (!token.attrGet('src')?.endsWith('.svg')) {
+function shouldBeInlined(token: Token, opts: Required<SvgInlineOptions>) {
+    if (!String(token.attrGet('src') ?? '').endsWith('.svg')) {
         return false;
     }
 
@@ -164,7 +173,8 @@ function collectDataAttrs(
         return result;
     }
 
-    for (const [key, value] of image.attrs) {
+    for (const [key, attr] of image.attrs) {
+        const value = String(attr);
         if (key === 'gallery' && isGalleryValid(value)) {
             result['data-gallery'] = value;
             continue;
@@ -193,7 +203,7 @@ function collectDataAttrs(
         if (
             key.startsWith('data-') &&
             key !== 'data-gallery-src' &&
-            (key !== 'data-gallery-id' || value !== '') &&
+            (key !== 'data-gallery-id' || attr !== '') &&
             (key !== 'data-gallery' || isGalleryValid(value))
         ) {
             result[key] = value;
@@ -201,13 +211,13 @@ function collectDataAttrs(
     }
 
     image.attrs = image.attrs.filter(
-        ([key, value]) =>
+        ([key, attr]) =>
             key !== 'gallery' &&
             key !== 'gallery-id' &&
             key !== 'gallery-src' &&
-            (key !== 'data-gallery' || isGalleryValid(value)) &&
-            (key !== 'data-gallery-id' || value !== '') &&
-            (key !== 'data-gallery-src' || value !== ''),
+            (key !== 'data-gallery' || isGalleryValid(String(attr))) &&
+            (key !== 'data-gallery-id' || attr !== '') &&
+            (key !== 'data-gallery-src' || attr !== ''),
     );
 
     if (result['data-gallery-id']) {
@@ -221,20 +231,15 @@ const getRawFile = (path: string) => {
     return readFileSync(path, 'utf8').toString();
 };
 
-const index: MarkdownItPluginCb<Opts> = (md, opts) => {
+const index = (md: MarkdownIt, opts: Opts) => {
     const {
         rawContent = getRawFile,
         calcPath = resolveRelativePath,
         replaceImageSrc: replaceImage = replaceImageSrc,
     } = opts;
-    // TODO:goldserg need remove support opts.inlineSvg
-    if (opts.inlineSvg !== undefined) {
-        opts.svgInline = {
-            ...opts.svgInline,
-            enabled: opts.inlineSvg,
-        };
-    }
-    md.assets = [];
+    const svgInline = normalizeSvgInline(opts);
+    const deprecations = opts.deprecations ?? createDeprecationReporter(opts);
+    initializeDocumentField(md, 'assets');
 
     function processImageToken(
         image: Token,
@@ -255,21 +260,21 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
         const dataAttrs = collectDataAttrs(image, state, from, calcPath, replaceImage, opts);
         const forceInlineSvg = image.attrGet('inline') === 'true';
         const imageOpts = {
-            width: image.attrGet('width'),
-            height: image.attrGet('height'),
-            title: image.attrGet('title'),
+            width: image.attrGet('width')?.toString(),
+            height: image.attrGet('height')?.toString(),
+            title: image.attrGet('title')?.toString(),
             dataAttrs,
         };
 
         const file = calcPath(from, imgSrc);
 
-        if (shouldBeInlined(image, opts.svgInline)) {
+        if (shouldBeInlined(image, svgInline)) {
             const svgContent = getSvgContent(file, from, {...opts, rawContent});
             if (svgContent) {
-                if (svgContent.length > opts.svgInline.maxFileSize && !forceInlineSvg) {
+                if (svgContent.length > svgInline.maxFileSize && !forceInlineSvg) {
                     image.attrSet(
                         'YFM011',
-                        `Svg size: ${svgContent.length}; Config size: ${opts.svgInline.maxFileSize}; Src: ${bold(file)}`,
+                        `Svg size: ${svgContent.length}; Config size: ${svgInline.maxFileSize}; Src: ${bold(file)}`,
                     );
                 } else {
                     const inlinedSvg = replaceSvgContent(
@@ -301,6 +306,13 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
     }
 
     const plugin = (state: StateCore) => {
+        if (opts.inlineSvg !== undefined && opts.deprecationWarnings !== false) {
+            deprecations.warn(INLINE_SVG_DEPRECATION, {
+                option: 'inlineSvg',
+                ...(opts.path ? {location: {path: opts.path}} : {}),
+            });
+        }
+
         filterTokens(state.tokens, 'inline', (inline, {commented}) => {
             if (commented || !inline.children) {
                 return;
@@ -323,7 +335,7 @@ const index: MarkdownItPluginCb<Opts> = (md, opts) => {
     md.renderer.rules.image_svg = (tokens, index) => {
         const token = tokens[index];
 
-        return token.attrGet('content') || '';
+        return String(token.attrGet('content') ?? '');
     };
 };
 
@@ -395,7 +407,7 @@ function replaceSvgContent(
         if (!isSvgEntityLimitError(error)) {
             throw error;
         }
-        getLogger(options.log).warn(
+        getInvocationLogger(options).warn(
             `SVG entity limit reached: ${options.path ?? '<input>'}. Keeping the image reference. ${SVG_ENTITY_LIMIT_HINT}`,
         );
         return '';
@@ -457,4 +469,5 @@ const imagesPlugin: typeof index & {
     replaceSvgContent,
 });
 
-export = imagesPlugin;
+export {replaceSvgContent};
+export default imagesPlugin;

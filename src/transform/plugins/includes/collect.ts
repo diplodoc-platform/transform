@@ -118,4 +118,4 @@ function collect(input: string, options: IncludeCollectOpts) {
     return input;
 }
 
-export = collect;
+export default collect;

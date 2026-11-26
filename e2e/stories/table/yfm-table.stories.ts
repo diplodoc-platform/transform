@@ -6,6 +6,26 @@ import {getSnippetMeta} from '../../fixtures/utils/storyMeta';
 
 export default {...getSnippetMeta(), title: 'Builtins/table/Multiline Table'};
 
+function stickyHeader(rows: number): MarkdownSnippetStory {
+    return {
+        name: `Sticky header (header-rows=${rows})`,
+        args: {
+            extraOptions: {enableMarkdownAttrs: true},
+            snippet: [
+                '#|',
+                `|:{header-rows="${rows}"}`,
+                ...Array.from({length: 60}, (_, i) => `|| Row ${i + 1} | Value ||`),
+                '|#',
+                '',
+                '{sticky-header}',
+            ].join('\n'),
+        },
+    };
+}
+
+export const StickyOneRow = stickyHeader(1);
+export const StickyThreeRows = stickyHeader(3);
+
 export const Base: MarkdownSnippetStory = {
     name: 'Base',
     args: {

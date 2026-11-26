@@ -1,11 +1,11 @@
 /* eslint-disable max-len */
 
 import type {MarkdownItPluginCb} from './typings';
-import type {IDGenerator} from './utils';
+import type {IDGenerator} from './pure-utils';
 
-import {escapeHtml} from 'markdown-it/lib/common/utils';
+import {escapeHtml} from '../markdown-it-utils';
 
-import {generateID as globalGenerateID} from './utils';
+import {generateID as globalGenerateID} from './pure-utils';
 
 const wrapInFloatingContainer = (
     element: string | undefined,
@@ -86,14 +86,11 @@ const wrapInFloatingContainer = (
 `;
 };
 
-interface EnvTerm {
-    terms: {
-        [keys: string]: string;
-    };
-}
-
-function buildTermRegExp(env: EnvTerm, escape: (str: string) => string): RegExp | null {
-    const termKeys = Object.keys(env.terms);
+function buildTermRegExp(
+    terms: Record<string, string>,
+    escape: (str: string) => string,
+): RegExp | null {
+    const termKeys = Object.keys(terms);
     if (!termKeys.length) {
         return null;
     }
@@ -254,6 +251,10 @@ function restoreTermPlaceholders(html: string, {prefix, placeholders}: TermPlace
 /**
  * Fallback for fence renderers that do not render `token.content` verbatim:
  * replaces term references that are still intact in the rendered HTML.
+ * @param str - Rendered HTML that can still contain term references.
+ * @param reg - Existing term-reference expression.
+ * @param generateID - Caller-owned term ID generator.
+ * @returns Rendered HTML with remaining references replaced.
  */
 function termReplace(str: string, reg: RegExp, generateID: IDGenerator): string {
     reg.lastIndex = 0;
@@ -441,7 +442,9 @@ const code: MarkdownItPluginCb<CodeOptions> = (md, opts) => {
         // Swap term references for placeholders BEFORE highlighting so that
         // language grammars cannot split `[title](*key)` into several spans.
         // The placeholders are restored after the HTML is rendered.
-        const termRE = env?.terms ? buildTermRegExp(env, md.utils.escapeRE) : null;
+        const termRE = env?.terms
+            ? buildTermRegExp((env as {terms: Record<string, string>}).terms, md.utils.escapeRE)
+            : null;
         const termPlaceholders = termRE
             ? replaceTermsWithPlaceholders(token.content, termRE, generateID)
             : null;
@@ -502,4 +505,4 @@ const code: MarkdownItPluginCb<CodeOptions> = (md, opts) => {
     };
 };
 
-export = code;
+export default code;

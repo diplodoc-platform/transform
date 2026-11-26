@@ -1,15 +1,20 @@
 import type {Dictionary} from 'lodash';
-import type {Rule} from 'markdownlint';
+import type {Rule} from './legacy-markdownlint';
 import type {LogLevels, Logger} from '../log';
+import type {MarkdownIt} from '../typings';
 import type {Options} from './typings';
+import type {LegacyEngineDiagnostics} from '../legacy-engines';
 
-import {sync} from 'markdownlint';
 import merge from 'lodash/merge';
 import union from 'lodash/union';
 import attrs from 'markdown-it-attrs';
 
 import {preprocess} from '../preprocessors';
+import {resolveMarkdownAttrs} from '../parser-policy';
+import {warnBundledEngine} from '../legacy-engines';
+import {getInvocationLogger} from '../diagnostic-context';
 
+import {sync} from './legacy-markdownlint';
 import baseDefaultLintConfig from './yfmlint';
 import {
     yfm001,
@@ -28,9 +33,19 @@ const defaultLintRules = [yfm001, yfm002, yfm003, yfm004, yfm005, yfm006, yfm007
 
 const lintCache = new Set();
 
+/**
+ * @deprecated Run @diplodoc/yfmlint in the caller pipeline. Removal no earlier than Transform 6.
+ * @param opts - Existing lint input, plugins, settings and caller diagnostics.
+ * @returns Nothing; diagnostics use the existing logger.
+ */
 function yfmlint(opts: Options) {
+    const pluginOptions: PluginOptions = {
+        ...opts.pluginOptions,
+        log: getInvocationLogger(opts.pluginOptions),
+    };
+    warnBundledEngine('YFMLint', pluginOptions.path, pluginOptions);
     let {input} = opts;
-    const {plugins: customPlugins, pluginOptions, customLintRules, sourceMap} = opts;
+    const {plugins: customPlugins, customLintRules, sourceMap} = opts;
     const {log} = pluginOptions;
     let {path = 'input'} = pluginOptions;
 
@@ -38,6 +53,7 @@ function yfmlint(opts: Options) {
     path = path.replace(/\\/g, '/');
 
     pluginOptions.isLintRun = true;
+    opts.pluginOptions.isLintRun = true;
 
     const {
         LogLevels: {ERROR, WARN, DISABLED},
@@ -61,9 +77,13 @@ function yfmlint(opts: Options) {
         lintRules = union(lintRules, customLintRules);
     }
 
-    // TODO: set to false in next major
-    const {enableMarkdownAttrs = true} = opts;
-    const plugins = customPlugins && [...(enableMarkdownAttrs ? [attrs] : []), ...customPlugins];
+    const plugins = [
+        (md: MarkdownIt) => {
+            md.linkify.set({fuzzyLink: true, fuzzyEmail: true, urlAuth: true});
+        },
+        ...(resolveMarkdownAttrs(opts.enableMarkdownAttrs) ? [attrs] : []),
+        ...(customPlugins || []),
+    ];
     const preparedPlugins = plugins && plugins.map((plugin) => [plugin, pluginOptions]);
 
     // Run preprocessor
@@ -109,7 +129,7 @@ function yfmlint(opts: Options) {
     }
 }
 
-export = yfmlint;
+export default yfmlint;
 
 // eslint-disable-next-line @typescript-eslint/no-namespace, no-redeclare
 namespace yfmlint {
@@ -119,7 +139,7 @@ namespace yfmlint {
         sourceMap?: Dictionary<string>;
     }
 
-    export interface PluginOptions {
+    export interface PluginOptions extends LegacyEngineDiagnostics {
         log: Logger;
         path?: string;
         disableLint?: boolean;
@@ -135,3 +155,8 @@ namespace yfmlint {
 
     export type LintRule = Rule;
 }
+
+export type LintConfig = yfmlint.LintConfig;
+export type PluginOptions = yfmlint.PluginOptions;
+export type LintRule = yfmlint.LintRule;
+export type LintMarkdownFunctionOptions = yfmlint.LintMarkdownFunctionOptions;

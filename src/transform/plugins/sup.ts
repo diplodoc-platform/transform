@@ -1,6 +1,6 @@
-import type {MarkdownItPluginCb} from './typings';
+import type {MarkdownIt} from 'markdown-it' with {'resolution-mode': 'import'};
 
 // @ts-expect-error
 import sup from 'markdown-it-sup';
 
-export = sup as MarkdownItPluginCb;
+export default sup as (md: MarkdownIt) => void;

@@ -12,6 +12,9 @@ const transformYfm = (text: string) => {
     const {
         result: {html},
     } = transform(text, {
+        disableLiquid: true,
+        // This isolated images-plugin suite supplies attributes through the general prelude.
+        enableMarkdownAttrs: true,
         plugins: [images],
         path: mocksPath,
         root: dirname(mocksPath),
@@ -52,6 +55,7 @@ describe('Images plugin', () => {
         const {
             result: {html},
         } = transform(input, {
+            disableLiquid: true,
             plugins: [images],
         });
 
@@ -300,7 +304,11 @@ describe('Images plugin', () => {
             '',
             '[*meetup]: Неформальная встреча.',
         ].join('\n');
-        const {result} = transform(input, {allowHTML: true, needToSanitizeHtml: false});
+        const {result} = transform(input, {
+            allowHTML: true,
+            needToSanitizeHtml: false,
+            enableMarkdownAttrs: true,
+        });
 
         expect(result.html).toContain(
             '<strong class="photo"><svg width="24"><circle/></svg> <i class="yfm yfm-term_title" term-key=":conference"',

@@ -1,7 +1,5 @@
 'use strict';
 
-import type {CheckboxOptions} from '../src/transform/plugins/checkbox/checkbox';
-
 import path from 'node:path';
 import MarkdownIt from 'markdown-it';
 import dd from 'ts-dedent';
@@ -16,7 +14,7 @@ const transformYfm = (text: string) => {
     const {
         result: {html},
     } = transform(text, {
-        plugins: [plugin],
+        plugins: [(md) => plugin(md, {idPrefix: 'checkbox'})],
     });
     return html;
 };
@@ -25,9 +23,7 @@ describe('markdown-it-checkbox', () => {
     describe('markdown-it-checkbox()', () => {
         const md = new MarkdownIt({breaks: true});
 
-        md.use(plugin, {
-            divWrap: false,
-        });
+        md.use(plugin, {idPrefix: 'checkbox'});
         generate(path.join(__dirname, 'data/checkbox/checkbox.txt'), md);
         return it('should pass irrelevant markdown', () => {
             const res = md.render('# test');
@@ -37,7 +33,7 @@ describe('markdown-it-checkbox', () => {
 
     describe('markdown-it-checkbox(options)', () => {
         it('should optionally wrap arround a div layer', () => {
-            const md = new MarkdownIt({}).use(plugin);
+            const md = new MarkdownIt({}).use(plugin, {idPrefix: 'checkbox'});
             const res = md.render('[X] test written');
             assert.equal(
                 res,
@@ -49,7 +45,7 @@ describe('markdown-it-checkbox', () => {
         });
 
         it('should optionally change class of div layer', () => {
-            const md = new MarkdownIt({}).use<CheckboxOptions>(plugin, {divClass: 'cb'});
+            const md = new MarkdownIt({}).use(plugin, {divClass: 'cb', idPrefix: 'checkbox'});
             const res = md.render('[X] test written');
             assert.equal(
                 res,
@@ -61,7 +57,7 @@ describe('markdown-it-checkbox', () => {
         });
 
         it('should optionally change the id', () => {
-            const md = new MarkdownIt({}).use<CheckboxOptions>(plugin, {idPrefix: 'cb'});
+            const md = new MarkdownIt({}).use(plugin, {idPrefix: 'cb'});
             const res = md.render('[X] test written');
             assert.equal(
                 res,
@@ -73,7 +69,7 @@ describe('markdown-it-checkbox', () => {
         });
 
         it('should not set disable attr to checkbox', () => {
-            const md = new MarkdownIt({}).use<CheckboxOptions>(plugin, {disabled: false});
+            const md = new MarkdownIt({}).use(plugin, {disabled: false, idPrefix: 'checkbox'});
             const res = md.render('[X] check');
             assert.equal(
                 res,
@@ -111,7 +107,22 @@ describe('markdown-it-checkbox', () => {
         ~~markup~~
         `;
 
-        const tokens = new MarkdownIt({breaks: true}).use(plugin).parse(markup, {});
+        const tokens = new MarkdownIt({breaks: true})
+            .use(plugin, {idPrefix: 'checkbox'})
+            .parse(markup, {});
         expect(tokens).toMatchSnapshot();
+    });
+
+    it('uses different default namespaces for independently rendered documents', () => {
+        const documents = ['[ ] Article', '[X] Comment'].map(
+            (source) => transform(source, {plugins: [plugin]}).result.html,
+        );
+        const ids = documents.map((html) => html.match(/id="(checkbox-[a-z0-9]+-0)"/)?.[1]);
+
+        expect(ids).toEqual([expect.any(String), expect.any(String)]);
+        expect(ids[0]).not.toBe(ids[1]);
+        documents.forEach((html, index) => {
+            expect(html).toContain(`for="${ids[index]}"`);
+        });
     });
 });

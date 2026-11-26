@@ -26,6 +26,20 @@ Use it in your code to work with text during program execution. For example, to 
 
 > **Note**: Liquid template support and YFMLint integration are deprecated. Use separate packages (`@diplodoc/liquid` and `@diplodoc/yfmlint`) instead.
 
+## General Markdown attributes
+
+General-purpose attributes are opt-in. By default `Hello {name}` and
+`Hello { name }` remain text. Set `enableMarkdownAttrs: true` in flat options,
+or `core: {enableMarkdownAttrs: true}` with `defineTransformOptions`, to retain
+the pinned attributes parser for paragraph IDs, classes and extra attributes.
+Standalone heading IDs and image dimensions keep their dedicated plugin behavior.
+Mixed heading attributes and paragraph-fragment includes require the explicit
+compatibility setting until that content is migrated.
+
+The retained bundled linter uses the same default-off selector. Standalone
+`@diplodoc/yfmlint` has its own default-on compatibility policy; callers should
+pass the same explicit selector to their renderer and linter.
+
 ## Installation {#install}
 
 1. Install a package:
@@ -88,6 +102,17 @@ const {
   logs,
 } = transform(content, {vars});
 ```
+
+### Inline syntax and footnotes
+
+The standard preset enables underline, subscript, reference footnotes, and task
+lists. Select each independently or compose its stable callback with your own
+plugin list. See [inline syntax](docs/inline-syntax.md) and
+[footnotes and task lists](docs/footnotes.md) for configuration and composition.
+
+Cut, Notes and Tabs also have per-feature colon-syntax modes and a pure source
+migrator. See [block directives](docs/block-directives.md) for the grammar,
+examples, diagnostic limits and conservative migration contract.
 
 ### Custom HTML Sanitizer
 
@@ -302,3 +327,29 @@ This ensures the `DOCKER_HOST` is set as necessary.
 ## Documentation
 
 For detailed information about architecture, development, and contributing, see [AGENTS.md](./AGENTS.md).
+
+See the [Transform 5 migration guide](https://github.com/diplodoc-platform/transform/blob/aacb847463e98c4025f05078134b910841e729a2/docs/migrations/transform-5.md) for the
+major-version changes, accepted local consumer checks and known validation limits.
+
+## Public module entry points
+
+Use the package root with either native ESM or CommonJS. Both resolve to the same
+synchronous transform function:
+
+```js
+import transform, {transform as namedTransform} from '@diplodoc/transform';
+// CommonJS: const transform = require('@diplodoc/transform');
+```
+
+The synchronous parser factory is available at `@diplodoc/transform/parser`,
+public types at `/types`, typed plugin configuration builders at `/configuration`,
+and plugins at `/plugins/<name>`. Document environment helpers are available at
+`/document`; see [parser reuse and context migration](docs/migrations/document-context.md).
+Browser assets have
+`/runtime`, `/runtime/base`, `/runtime/yfm-only`, and `/runtime/print` entries;
+styles use the equivalent `/styles` entries. Source SCSS is available through
+`/scss/*`. Existing `lib/*` and distribution imports remain compatibility aliases.
+
+Node.js 24 or newer is supported. See [ADR-012](docs/ADR/ADR-012-public-module-exports.md)
+for the complete export contract, CJS namespace shapes, migration table, and
+package verification matrix.

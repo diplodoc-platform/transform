@@ -1,0 +1,605 @@
+# Migrating to Transform 5
+
+**Language:** English | [Русский: самостоятельное руководство по миграции](transform-5-ru.md)
+
+**TL;DR:** Inventory the actual dependency graph and browser assets, prepare Node
+24 and markdown-it 15, explicitly configure attributes and highlighting, then
+validate document contexts, plugins and rendered output. Keep a genuine Transform
+4 for hosts that require it.
+
+## Installing Transform 5
+
+Check that the stable release is available before updating a consumer:
+
+```sh
+npm view @diplodoc/transform@5.0.0 version
+npm install @diplodoc/transform@5.0.0
+```
+
+If your application declares these companion packages directly, update to Utils 3,
+Directive 1, Cut 2, Tabs 4, File 1 and Notes 1. Verify the installed peer
+dependencies of each host before deploying the new graph.
+
+This guide describes the Transform 5 migration contracts. Validate your own
+documents and integrations against the exact installed package before adoption.
+
+## Imports and runtime
+
+The package requires Node.js 24 or newer; current validation uses Node.js 24.
+The synchronous root API works with both native ESM and CommonJS:
+
+```ts
+import transform, {transform as namedTransform} from '@diplodoc/transform';
+import type {ParserEnv} from '@diplodoc/transform/types';
+
+const output = transform('# Heading');
+```
+
+CommonJS can use `const transform = require('@diplodoc/transform')`. Use the
+stable `/parser`, `/types`, `/document`, `/configuration` and `/plugins/<name>`
+entries for the corresponding APIs. `/portable` and `/portable/minimal` are ESM-only
+and render prepared Markdown without a DOM or Node host services. CommonJS callers
+can use dynamic `import()`. The beta paths `/browser` and `/browser/minimal` are
+aliases for these same entries. Import runtime and styles separately when rendering
+in a browser. See [public exports](../ADR/ADR-012-public-module-exports.md)
+and [browser integration](browser-entry.md).
+
+| Public path after `@diplodoc/transform`                                                       | Purpose and loading                                                                                                                                |
+| --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Package root                                                                                  | Synchronous Markdown to HTML on Node, ESM or CommonJS                                                                                              |
+| `/parser`, `/document`, `/types`                                                              | Reusable Node parser, document and fragment helpers, and public type imports. Browser parser and document functions come from the browser entries. |
+| `/configuration`, `/plugins`, individual `/plugins/<name>`                                    | Named configuration, the Node preset, and standalone callbacks or collectors. Bundle only verified portable callbacks for browsers.                |
+| `/highlighter`, `/highlighter/legacy`                                                         | Explicit adapters. Use `createHighlightJsHighlighter` from a browser entry when composing a browser renderer.                                      |
+| `/preprocessors`, `/frontmatter`, `/utils`, `/utils/fs`, `/sanitize`, `/log`, `/deprecation`  | Node-side helpers. In particular, filesystem adapters do not belong in a browser bundle.                                                           |
+| `/migrations/image-dimensions`, `/migrations/block-directives`, `/migrations/table-alignment` | Synchronous source-to-source migrations. Run them before rendering.                                                                                |
+| `/portable`, `/portable/minimal`                                                              | Native ESM. The standard entry sanitizes HTML. Minimal returns unsanitized HTML unless you pass your own `sanitize` callback.                      |
+| `/runtime`, `/styles`, their `/base`, `/yfm-only` and `/print` variants, `/scss/*`            | Client assets. Resolve them through the asset loader or bundler.                                                                                   |
+
+For exact names and the retained compatibility paths, check the
+[`exports` of the installed version](../../package.json) and the
+[public API inventory](../../scripts/public-api.mjs).
+
+Use your own synchronous `sanitize` callback before inserting output from
+`/portable/minimal` into the DOM. You can opt into a diagnostic for unsanitized
+output with `warnOnUnsanitizedHtml: true`. See the [browser entry guide](browser-entry.md).
+
+If browser rendering fails, for example on an unexpanded include, display the
+source as text and keep your application’s existing error reporting in the catch
+handler. The standard browser entry sanitizes the HTML in this example:
+
+```ts
+import transform from '@diplodoc/transform/portable';
+
+function renderPreview(
+  container: HTMLElement,
+  source: string,
+  reportError: (error: unknown) => void,
+) {
+  try {
+    container.innerHTML = transform(source).result.html;
+  } catch (error) {
+    container.textContent = source;
+    reportError(error);
+  }
+}
+```
+
+If the caller requires an HTML string, escape the fallback source as HTML text
+before returning it. Test the component that displays the result: put
+`{% include [part](part.md) %}` and `<i data-probe>text</i>` in separate paragraphs (with a blank line between them).
+The fallback must show the literal tag without creating an `i[data-probe]`
+element. Repeat with an unrelated renderer error, then confirm that valid
+Markdown still renders as HTML.
+
+Transform uses markdown-it 15. Hosts supplying their own MarkdownIt instance or
+plugins should validate their actual parser and type versions, registration order,
+metadata and output; do not assume every plugin's full parser types are compatible
+across versions. Native 13 compatibility of a given adapter does not make an
+unpatched 13 installation secure.
+
+Transform ships its own optimized build of the pinned markdown-it sources. Its
+parser and Token constructors are distinct from a separately imported
+`markdown-it` installation. Custom plugins should use the parser and state objects
+they receive; review constructor equality and `instanceof` checks against an
+independently imported engine. Parser rules and native class-field semantics are
+preserved.
+
+For a preset shared by Transform 4 and 5, carry over the actual option values
+(such as allowed HTML tags and attributes) and map them to each version's API.
+Avoid casting an older parser or callback to the new type. If the preset owns
+plugins or a tokenizer, test them on both engines and adapt them separately
+where their contracts differ.
+
+### Legacy Liquid evaluator imports
+
+The historical `/lib/liquid/evaluation` default import may be callable after
+CommonJS interop, or a namespace whose `default` is that callable in native ESM.
+Normalize the module shape while retaining the legacy boolean evaluator:
+
+```ts
+import evaluation from '@diplodoc/transform/lib/liquid/evaluation.js';
+
+function resolveEvaluator<Evaluator extends (...args: never[]) => unknown>(
+  value: Evaluator | {default: Evaluator},
+) {
+  return typeof value === 'function' ? value : value.default;
+}
+
+const evaluateCondition = resolveEvaluator(evaluation);
+evaluateCondition('audience == "public"', {audience: 'public'}); // true
+```
+
+Keep the `.js` suffix so native ESM can resolve the historical Transform 4 path.
+The named `evalExp` returns the uncoerced value and is not a drop-in boolean API
+replacement. Test both module formats if your package supports Transform 4 and 5.
+
+### Custom emoji plugins
+
+If a preset fails with `md.utils.assign is not a function` while registering
+`markdown-it-emoji`, check which copy the preset imports. Versions 2.0.2 and
+3.0.0 fail on markdown-it 15 before parsing any text. In the package that
+registers the plugin, install `markdown-it-emoji@3.1.0` as a direct dependency.
+Use its named export for the preset you already use: `full` replaces the 2.x
+default import, and `bare` keeps a custom dictionary. For example:
+
+```js
+import {bare} from 'markdown-it-emoji';
+
+md.use(bare, {defs: {wave: '👋'}});
+```
+
+Keep the existing dictionary, options and plugin order. If another host still
+uses markdown-it 13, keep its dependency graph separate and render the same emoji
+sample on both hosts. Run the plugin owner's type check too: aligning the runtime
+can expose different markdown-it declarations in the two hosts.
+
+## TypeScript module resolution
+
+Use an exports-aware resolver: legacy `moduleResolution: "node"` / `"node10"`
+is unsupported and can miss public subpaths (TS2307) or select non-callable legacy declarations
+(TS2349). This is a TypeScript setting, not Node.js 10 support; the runtime
+requirement remains Node.js 24+.
+
+For Node.js code, set both `"module": "NodeNext"` and
+`"moduleResolution": "NodeNext"`; `"Node16"` / `"Node16"` is also supported.
+Keep the existing module format: `.cts` is CommonJS, `.mts` is ESM, and `.ts`
+follows the nearest `package.json#type` (`"module"` means ESM, otherwise CommonJS).
+Do not change package `type` merely to fix lookup. For example, in ESM:
+
+```ts
+import sup from '@diplodoc/transform/plugins/sup';
+import type {ParserEnv} from '@diplodoc/transform/types';
+```
+
+For `.cts` compiled by `tsc`, use `import sup = require('@diplodoc/transform/plugins/sup')`;
+the type-only import is unchanged. When running `.cts` directly in Node.js, use
+ordinary `require()` instead: Node's type stripping does not support import assignments.
+Only for an application built by a bundler,
+use `"moduleResolution": "Bundler"` with `"module": "Preserve"`; unbundled Node/SSR
+targets need their own Node configuration. `skipLibCheck` does not fix missing
+subpaths or consumer callability errors. See the [public import map](../ADR/ADR-012-public-module-exports.md).
+
+Replace private paths such as `markdown-it/lib/token` and namespace type names
+such as `MarkdownIt.Token` with public types from Markdown-it 15. Remove the
+separate `@types/markdown-it` from the v15 consumer unless another installed
+host needs it. Narrow token attributes before string operations.
+
+```ts
+import type {Token} from 'markdown-it';
+import type {StateCore} from '@diplodoc/transform/types';
+
+function readAttribute(token: Token, name: string): string | undefined {
+  const value = token.attrGet(name);
+  return typeof value === 'string' || typeof value === 'number' ? String(value) : undefined;
+}
+
+function visit(state: StateCore) {
+  return state.tokens.map((token) => readAttribute(token, 'id'));
+}
+```
+
+## Parser output changes
+
+The markdown-it 13 → 15 upgrade preserves authored Unicode spaces, including
+U+00A0 (NBSP), at paragraph edges that 13 trimmed. With line breaks enabled,
+preserving a space before a newline can also add a `<br />`. This can change
+spacing; review HTML snapshots and rendered layout. Remove unintended spaces in
+the Markdown source rather than stripping arbitrary whitespace from output.
+
+The `markdown-it-deflist` upgrade from 2.1 to 4 can add `<p>` wrappers inside
+`<dd>`, for example when a definition contains prose followed by a list or when
+a blank line separates the term from its definition. A short definition following
+a multi-paragraph definition can instead lose its `<p>` wrapper. Review custom
+CSS selectors such as `dd > p`, paragraph margins, and HTML snapshots.
+
+For a definition list, align the term and its `:` or `~` marker with the surrounding
+text. Transform 5 allows up to three extra spaces before the marker. After a blank
+line, four or more start an indented code block. To keep the definition and its
+inline formatting in both versions, put the marker directly below the term. Leave
+intentional code blocks indented.
+
+```markdown
+**Open the curtains**
+: Set a _schedule_.
+
+**Adjust the opening**
+: Choose a percentage.
+```
+
+A line containing only `:` or `~` after a term now creates an empty definition. Even
+a line containing only a non-breaking space can serve as an empty term. To show the
+punctuation as text, write `\:` or `\~`.
+[Definition-list parser 4.0 changes](https://github.com/markdown-it/markdown-it-deflist/blob/4.0.0/CHANGELOG.md)
+
+## Coexisting with Transform 4
+
+Keep a real Transform 4 package for hosts whose peer contract still requires it.
+Use a separate dependency name for owned Transform 5 runtime or validation code
+when those hosts share an application. Check actual package resolution from each
+host; an alias or a successful build does not prove its peer parser changed.
+
+Utils `3.0.0-beta.2` removes its broad global `Window` symbol index. Earlier
+candidates, including Utils `3.0.0-beta.1`, produced `TS2374` when both Utils 2
+and 3 were loaded by strict TypeScript. Update the modern Utils copy and keep a
+real Utils 2/markdown-it 13 graph for legacy hosts. The corrected mixed-package
+gate checks strict ESM/CommonJS declarations and shared queue behavior with native
+markdown-it 13 and 15. Projects that assign arbitrary symbol properties to Window
+must declare their own properties instead of relying on Utils' former ambient
+index. Verify your complete host graph with `skipLibCheck: false`.
+
+## Diagnostic ownership
+
+`Output.logs` now contains only that root document's diagnostics and is a detached
+snapshot. Later roots, parser reuse, and collector clearing do not change earlier
+outputs. Included sources and fragments share the enclosing document's sink.
+A reusable parser exposes `parser.logs`; owned handles expose `document.logs`,
+including diagnostics produced when that older handle is compiled later.
+
+For build-wide history, opt in explicitly:
+
+```ts
+import transform from '@diplodoc/transform';
+import {createDiagnosticCollector} from '@diplodoc/transform/log';
+
+const diagnostics = createDiagnosticCollector();
+const page = transform(source, {path, diagnostics, log: applicationLogger});
+const documentLogs = page.logs;
+const buildLogs = diagnostics.get();
+// Handle the build snapshot, then release its retained diagnostics explicitly.
+diagnostics.clear();
+```
+
+The shared collector is an aggregate mirror; `page.logs` remains document-only.
+`get()` returns copies, `add()` retains supplied duplicates/order, and generic
+logging deduplicates identical formatted messages. The existing exported global
+`log` retains its mutable methods but receives only explicit writes/forwarding or
+`diagnostics: log`. Reading `log.get()` no longer retrieves all ordinary calls.
+Parser setup runs once, so its diagnostics belong to the first root only. For
+standalone Liquid/lint helpers that return no logs, pass `diagnostics` and/or an
+external `log` to retain/forward messages. See the
+[lifetime contract](../specs/transform-5/diagnostic-lifetime.md).
+
+Deprecation warnings are enabled by default. To omit them for a build, pass
+`deprecationWarnings: false` to Transform, or `core: {deprecationWarnings: false}`
+to `defineTransformOptions`. Node and browser support this setting. With warnings
+enabled, a logger can implement `deprecation(message)` to handle this category
+separately. Existing three-method loggers receive it through `warn`. The same
+messages remain available in `Output.logs.warn`.
+
+The CLI branch adapted for Transform 5 displays these warnings without failing
+`--strict`. Use `--no-deprecation-warnings` or set `deprecationWarnings: false`
+in the CLI YAML configuration to suppress them. Other warnings still count in
+strict builds.
+
+## Select plugins explicitly
+
+The existing flat options and legacy `plugins` callback array remain supported.
+A supplied callback array replaces the standard list; preserve your own callbacks
+and their order. For new code, use the closed configuration builder:
+
+```ts
+import transform from '@diplodoc/transform';
+import {defineTransformOptions} from '@diplodoc/transform/configuration';
+
+const options = defineTransformOptions({
+  core: {enableMarkdownAttrs: true},
+  plugins: {disable: ['video'], options: {notes: {notesAutotitle: false}}},
+});
+const output = transform(source, options);
+```
+
+`preset: 'none'` removes builtin feature callbacks, not core parsing or the final
+sanitizer. Do not supply the legacy callback array and named configuration in the
+same call. See the [plugin configuration contract](../specs/transform-5/plugin-configuration.md).
+
+For a host that already owns its callback list, wrap its callbacks only when
+switching to named configuration. For example, migrate a custom Cut installation
+without changing its registration or collector.
+
+```ts
+import transform from '@diplodoc/transform';
+import {transform as createCut} from '@diplodoc/cut-extension';
+import {defineLegacyPlugin, defineTransformOptions} from '@diplodoc/transform/configuration';
+
+const cut = createCut({bundle: false, directiveSyntax: 'disabled'});
+const before = transform(source, {plugins: [cut]});
+
+const customCut = defineLegacyPlugin({id: 'app/cut', plugin: cut})({});
+const after = transform(
+  source,
+  defineTransformOptions({
+    plugins: {preset: 'none', plugins: [customCut]},
+  }),
+);
+```
+
+`customCut.plugin.collect` keeps the original collector. The embedding application
+still invokes it with its token stream and collector-specific options. For new
+plugins, `definePlugin({id, setup})` gives `setup(md, options, context)` separate
+plugin settings and host context. Keep application IDs distinct from builtin IDs.
+Use `requires`, `before` and `after` for registration constraints against selected
+plugins. Use the named builtin settings directly when no custom callback is needed.
+
+To extend an existing spread preset, use the [named composition recipe](cut-tabs-types.md).
+Explicit callback arrays still warn; retain their disabled directive modes when
+migrating to the named preset.
+
+The standard preset has 21 IDs in this order: `meta`, `deflist`, `cut`, `notes`,
+`anchors`, `tabs`, `code`, `sup`, `video`, `monospace`, `table`, `file`, `imsize`,
+`term`, `block-anchor`, `inline-code`, `visibility`, `underline`, `subscript`,
+`footnotes`, and `task-list`. The last four are
+enabled by default and independently selectable; their settings are empty. Task
+list checkboxes are disabled. Superscript retains its caret syntax. See
+[inline syntax](../inline-syntax.md) and [footnotes and task lists](../footnotes.md)
+for callback lists and document ownership.
+
+If you explicitly use the legacy `checkbox` callback, disable `task-list` in
+the named configuration, or omit its callback from your replacement plugin
+array. The standard preset does not enable legacy `checkbox`.
+Legacy Checkbox generates a unique namespace per document by default. If your
+host needs reproducible IDs, set a distinct `env.checkboxIdPrefix` in the
+`parseDocument` initializer, or pass `idPrefix` to a separately configured
+Checkbox callback. See [document contexts](document-context.md#checkbox-ids).
+
+Existing link labels starting with a caret can now be parsed as footnotes:
+`[^^name]` with `[^^name]: ...` has footnote label `^name`. Rename both the
+reference and the definition to a label without a leading caret, or disable
+`footnotes` to retain the old interpretation.
+
+## Attributes, tables, images and SVG
+
+| Markdown                                          | What changes with the standard preset                                                                                                                                                  | Compatibility setting                                                     |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `[Link](url){.wide}`                              | General attributes are off.                                                                                                                                                            | Set `enableMarkdownAttrs: true` to attach the class.                      |
+| `example.com`                                     | Remains text by default because linkification is off. With `linkify: true`, Transform keeps recognizing bare domains even though native Markdown-it 15 changed its fuzzy-link default. | Keep the existing `linkify` choice.                                       |
+| `++word++`, `H~2~O`, `- [x] done`, and a footnote | These can now produce an underline, subscript, disabled checkbox or footnote.                                                                                                          | Disable the corresponding builtin IDs.                                    |
+| `:::cut [More]` with a matching closing fence     | The standard preset parses it as Cut alongside the legacy syntax.                                                                                                                      | Set `options.cut.directiveSyntax: 'disabled'` for the legacy-only preset. |
+| A code fence with a language tag                  | It renders without syntax highlighting unless the host supplies an adapter.                                                                                                            | Install and pass the [explicit highlighter](transform-5-highlighter.md).  |
+
+YFM tables with a positive `header-rows` now group header rows in `<thead>`.
+If a `rowspan` crosses from the header into the body, the table keeps a single
+`<tbody>`. To find headers in either layout, select `tr[data-header]`.
+Check custom CSS and plugins that assume all rows are children of `tbody`.
+
+General Markdown attributes now default to off. Set `enableMarkdownAttrs: true`
+in flat options, or `core.enableMarkdownAttrs` in the builder, when the document
+corpus requires them. Heading anchors and adjacent image dimensions remain
+independent and work with general attributes disabled.
+
+Table separators inside inline code are protected by default. For the old
+omitted-option behavior set `table_ignoreSplittersInInlineCode: false`; if also
+using block-code compatibility, review both splitter settings. If a row disappears,
+look for backticks that accidentally pair across cells or rows. Use an apostrophe
+in prose, escape a literal backtick, and close inline code in its own cell.
+[Table examples](transform-5-tables.md#if-the-next-row-disappears)
+
+Legacy cell alignment remains supported with an actual-use warning. Prefer `::{align="center"}` after
+the cell marker; [table migration](transform-5-tables.md) documents supported
+values and `migrateTableAlignment`.
+
+`TABLE_CELL_ALIGN_CLASS` points to the start of the cell in the Markdown passed
+to the parser. Liquid processing and expanded includes can shift the line number.
+In that case, search the source file and its includes for `.cell-align-*`.
+
+Legacy image dimensions such as `![Alt](image.png =300x200)` still render and
+warn on actual use. Prefer `![Alt](image.png){width=300 height=200}`. The pure
+`migrateImageDimensions` helper reports ambiguous cases for manual review; see
+[image dimensions](image-dimensions.md). Both helpers return original UTF-16
+edit offsets and diagnostics; neither writes files or expands includes.
+
+Replace `inlineSvg` with `svgInline.enabled`. If both are supplied,
+`svgInline.enabled` takes precedence even when false. `inlineSvg` remains a
+compatibility alias in 5 and emits an actual-use diagnostic; its scheduled removal
+is Transform 6. Preserve the SVG sanitizer and existing entity-limit policy.
+
+An incomplete `svgInline` object now consistently inherits the 2 MiB file-size
+limit. Transform 4 could lose that limit with `{enabled: true}`; this was a
+normalization bug. If your application intentionally inlines larger SVG files,
+choose an explicit limit, for example:
+
+```ts
+transform(source, {svgInline: {enabled: true, maxFileSize: 4 * 1024 * 1024}});
+```
+
+Without an explicit override, a file larger than 2 MiB stays an image reference.
+The existing image attribute `{inline=true}` still forces inlining; XML entity
+safeguards and sanitization remain active. See the [SVG option ADR](../ADR/ADR-011-svg-inline-option.md).
+The existing check counts UTF-16 units in the SVG text; the MiB values correspond
+to ASCII content, not a new encoded-byte measurement.
+
+## Highlighting and document ownership
+
+Highlighting is no longer loaded implicitly. Without a caller-supplied
+`highlighter`, code is rendered as escaped plain text. Install and load a supported
+Highlight.js version explicitly, then construct the synchronous adapter with
+`createHighlightJsHighlighter` from `/highlighter`. See the [highlighter guide](transform-5-highlighter.md)
+for ESM loading and supported versions.
+
+Different installed Highlight.js versions can produce different classes and
+nested `<span>` elements even when the code text is unchanged. Pin the intended
+version and review highlighting styles and HTML snapshots.
+
+A reusable parser owns a separate environment for each document. Retain the handle
+from `parseDocument` and pass it to `compileDocument`; use `state.env.meta` and
+`state.env.assets` in plugins. For child content use the documented fragment API
+and explicit include/reference purpose. The caller owns cache lifetime and source
+mapping; failed or reference-only children do not commit parent resources. See
+[document contexts](document-context.md) and [footnote ownership](../footnotes.md).
+
+The returned handle contains `tokens`, `env` and `logs`. Read metadata and
+declared resources from `env.meta` and `env.assets`. Take diagnostics from the
+same handle after compilation if your renderer can emit additional messages.
+
+## Retained APIs and extension resources
+
+Bundled Liquid and YFMLint remain available with their existing behavior in 5.
+Actual use emits scoped warnings; imports alone do not. Root Liquid runs unless
+`disableLiquid` or `isLiquided` is set, but `isLiquided` alone does not disable
+Liquid in child helpers. Standalone YFMLint is asynchronous: await it outside the
+synchronous Transform pipeline. See [bundled engines](bundled-engines.md).
+
+The retained Transform cut/tabs callbacks and old typings forwarding paths are
+deprecated in 5 and scheduled for removal in 6, subject to release and consumer
+migration gates. Standard builtin behavior remains available. Replace explicit
+callbacks with direct extension dependencies and public factories, preserving
+options, `generateID`, registration order and `collect`; callback identities
+change. Use `/types` for public types. See [cut, tabs and types migration](cut-tabs-types.md).
+
+Notes remain enabled and keep their existing Transform paths and styles. A host
+owning its callback list may use `@diplodoc/notes-extension/plugin`; supply its
+existing formatter and title options. Avoid importing standalone Notes CSS again
+when Transform already supplies it. Sass consumers compiling Transform's public
+sources need Sass `NodePackageImporter` for the `pkg:` imports. See [Notes migration](notes-extension.md).
+
+Rebuild and deploy client JavaScript and CSS with the renderer. Updating
+`@diplodoc/transform` alone does not replace assets already embedded in a Client
+or Viewer build. Pick one owner for each bundle. If the selected Transform asset
+set already includes an extension, omit its standalone asset. For separately
+bundled Tabs, deploy markup and runtime together so anchor navigation can use the
+new tab IDs.
+
+## Block directives
+
+[The merged integration](https://github.com/diplodoc-platform/transform/pull/1142)
+adds colon forms for Cut, Notes and Tabs and a conservative source migrator. Its
+standard preset defaults to `directiveSyntax: 'enabled'`, accepting legacy and
+colon syntax together. Explicit legacy callbacks and standalone extension
+factories retain their `disabled` default; configure their factories when a host
+owns its callback list. `disabled` retains old-only parsing; `only` selects
+colon-only parsing. These modes are per feature; they do not migrate source files.
+The integration is accepted on `codex/transform-5-major` at `e8c57378`.
+Genuine-version local consumer checks passed; publication is a separate gate.
+
+For example, Transform 5 accepts this Cut spelling:
+
+```md
+:::cut [Details]
+Content
+:::
+```
+
+The migrator changes only supported source occurrences, preserves original UTF-16
+edit positions and refuses ambiguous or nonequivalent cases. Code examples,
+protected content and unsupported attributes need the documented refusal policy.
+Outside positively closed frontmatter, unresolved Liquid output or unknown
+template tags leave the whole document unchanged with `unresolved-liquid-template`,
+even when they occur inside a protected example; safe siblings cannot be assumed
+independent. An unclosed frontmatter opener does not shield subsequent content.
+The candidate proof budget is 32 actual full-input parser calls, after which
+unproved groups get `equivalence-budget-exceeded`. Setup and the mandatory
+uncached final whole-document proof in both attributes profiles are outside that
+budget; final failure restores the original source with no edits. Supported
+syntax can therefore still require manual migration.
+The [block directives guide](../block-directives.md) describes the
+complete grammar, examples and migration limits. These contracts cover the three
+supported owners.
+
+## Historical prerelease validation: consumers and asset delivery
+
+This section records checks of earlier local candidates. The versions below
+identify those historical artifacts; they are not installation instructions or
+the target stable dependency set. For the stable release and its coordinated
+dependencies, use [Installing Transform 5](#installing-transform-5). Revalidate your
+own consumer graph and assets after updating; the older results do not establish
+acceptance of a different package version.
+
+The genuine `5.0.0-transform5.0` archive was normally installed and checked in
+CLI, Translation, SDK/yfmlint, request-time Viewer and VS Code integrations.
+Their reviewed adaptations are committed on separate local branches; none is a
+published consumer release. These checks use real peer dependencies and retain
+real Transform 4 where an unrelated UI/editor contract requires it.
+
+Translation preserves item anchors and `{selected}` markers in both pipelines
+using direct Tabs `3.10.8-transform5.4`; Transform retains its own reviewed Tabs
+`3.10.8-transform5.3`. Installed CJS/ESM extraction and composition protect
+poisoned markers, and CLI forwards refused-title warnings, including quiet mode.
+The selected Page Extension → Gravity server → Transform path resolves to 5,
+without a nested Transform 4 renderer. Real Page collect, SSR and CSR data pass.
+
+Use `@diplodoc/html-extension/transform-host` for the reviewed HTML extension
+factory in a Transform 4/5 host. Its default entry retains native MarkdownIt 13
+types and an optional Transform peer; the separate typed entry uses the same
+runtime factory. Page Extension retains its required Transform peer and public
+`collect` method. These are bounded host contracts, not support for every native
+MarkdownIt version or a change to the HTML sanitizer policy.
+
+A parser upgrade alone does not replace prebuilt browser assets. The accepted
+local Client 5.14.8 rebuild supplies actual Transform 5 JavaScript and CSS, while
+all 44 public declarations remain byte-identical to its published baseline. The
+packaged CLI copies all 14 manifest assets byte for byte. Real browser checks
+exercise mixed Transform 4/5 Cuts, Notes and Tabs, disabled tasks, Page content,
+footnotes and history in light/dark styles. Enter in the visible search control
+opens a new document: main and search each execute one runtime, with no page
+errors. Cut/Tabs standalone resources are filtered when the client owns them;
+Page's explicit resources remain. Artificial same-document app/search co-loading
+still executes twice, as in the published baseline.
+
+Viewer keeps ordinary Transform 4 and stable Gravity UI providers for its UI
+peers, uses Transform 5 in models/server, and selects one canonical Transform 5
+browser runtime and stylesheet in each external/internal language build. Local
+SSR and Chromium cover retained editor-produced 4 markup and 5 content, a single
+Tabs handler and code-wrap mutation, footnote/history and no extra DocsAPI call.
+VS Code similarly upgrades its owned validator to 5 while its editor and toc
+webviews retain real 4/native13; its evidence covers tests, builds and VSIX contents, not
+running the VS Code UI. This hybrid graph is intentional. No whole-UI migration
+or live production acceptance is claimed.
+
+Legacy block-syntax warnings are a separate conditional phase. They require
+replacement and migration parity, an approved diagnostic descriptor/removal policy
+and a truthful eligibility rule for the original occurrence. They are not wired
+into the integrated major. No removal version has been agreed for this syntax. The existing explicit Cut/Tabs callback deprecations described above
+remain separate.
+
+## Validation limits before adoption
+
+Use the final installed package graph for release acceptance. Current local
+checks retain these known baseline limits:
+
+- Repeated cached Tabs can reuse panel IDs; the checks do not establish unique IDs
+  or unrestricted accessibility acceptance.
+- Earlier limited dark-theme fixtures recorded low contrast for Cut, nested
+  Notes and some Tabs controls. Current mixed-markup Note computed-style checks
+  pass in light and dark themes; neither observation is a universal contrast or
+  accessibility assessment.
+- Dropdown Tabs can change the visible panel, label and active classes while
+  leaving the selected item's `aria-selected` false. This reproduces with both
+  the published Client 5.14.8 runtime and the candidate on legacy and new markup;
+  functional interaction checks are not full accessibility acceptance.
+- Compact Translation V2 can change generic bold-only body/tab-label whitespace;
+  CRLF normalization and unsupported legacy V2 Tabs variants remain documented
+  baseline behavior. This is not a universal source-exact round-trip guarantee.
+- Translation's strict declaration probes retain 87 all-file and 20 entrypoint
+  errors, identical to the baseline with the same dependency graph. Source
+  typechecks and matching baseline diagnostics do not make those probes pass.
+- CLI manual declaration emission retains its accepted baseline of 2 library and
+  6 root errors. The build script masks emission failures with `|| true`; a zero
+  exit status does not establish declaration acceptance. The source graph also
+  retains the optional tsconfck TypeScript 5 peer warning under TypeScript 6;
+  selected runtime peers and the installed production CLI tree pass separately.
+
+The bounded genuine-version local consumer checks and major integration are
+accepted. Release completion requires publication of stable `5.0.0`, its
+changelog and this guide, followed by installation and verification of that exact
+published package. An RC or an accepted local candidate alone does not satisfy
+that release criterion. Transform master remains outside this integration; the
+release source and npm tag must be explicitly agreed before publication.

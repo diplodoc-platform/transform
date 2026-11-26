@@ -9,6 +9,8 @@ export default {...getSnippetMeta(), title: 'Builtins/table/Basic'};
 export const Base: MarkdownSnippetStory = {
     name: 'Base',
     args: {
+        // Legacy attrs fixture: this visual contract explicitly depends on general attributes.
+        extraOptions: {enableMarkdownAttrs: true},
         snippet: dedent`
 | head1  | head2  |
 | ----------- | ----------- |

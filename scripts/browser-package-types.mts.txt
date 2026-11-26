@@ -1,0 +1,75 @@
+import transform, {
+    createParser,
+    createDiagnosticCollector,
+    type DiagnosticCollector,
+    type DiagnosticLogs,
+    materializeFootnoteTokens,
+    definePlugin,
+    type BrowserTransformOptions,
+    type ParserEnv,
+    type DocumentEnv,
+} from '@diplodoc/transform/portable';
+import minimal, {
+    createParser as createMinimalParser,
+    type BrowserSanitizeFunction,
+    type BrowserTransformOptions as MinimalOptions,
+} from '@diplodoc/transform/portable/minimal';
+import browser from '@diplodoc/transform/browser';
+import browserMinimal from '@diplodoc/transform/browser/minimal';
+
+const standardAlias: typeof transform = browser;
+const minimalAlias: typeof minimal = browserMinimal;
+void [standardAlias, minimalAlias];
+
+const plugin = definePlugin({
+    id: 'typed',
+    setup(md, options: {word: string}, context) {
+        const id: string = context.generateID(options.word);
+        md.core.ruler.push(id, (state) => {
+            state.env.title = options.word;
+        });
+    },
+})({word: 'hello'});
+const aggregateDiagnostics: DiagnosticCollector = createDiagnosticCollector();
+const options: BrowserTransformOptions = {
+    diagnostics: aggregateDiagnostics,
+    generateID: (prefix) => `${prefix}-1`,
+    pluginConfiguration: {plugins: [plugin]},
+};
+const html: string = transform('text', options).result.html;
+const parser = createParser(options);
+const document = parser.parseDocument('text');
+const documentLogs: DiagnosticLogs = document.logs;
+const parserLogs: DiagnosticLogs = parser.logs;
+void [documentLogs, parserLogs];
+const env: ParserEnv = document.env;
+const documentEnv: DocumentEnv = document.env;
+parser.compileDocument(document);
+materializeFootnoteTokens(document.tokens, document.tokens.slice(0, 3));
+transform('ref[^a]', {pluginConfiguration: {enable: ['footnotes', 'task-list']}});
+const sanitize: BrowserSanitizeFunction = (rendered, settings) =>
+    settings?.allowedTags ? rendered : '';
+minimal(html, {pluginConfiguration: {preset: 'none'}, sanitize});
+createMinimalParser({sanitize});
+createMinimalParser({warnOnUnsanitizedHtml: true});
+// @ts-expect-error Only minimal can return unsanitized HTML.
+createParser({warnOnUnsanitizedHtml: true});
+// @ts-expect-error The standard browser entry uses its own sanitizer.
+transform('text', {sanitize});
+// @ts-expect-error The minimal sanitizer must return a string synchronously.
+minimal('text', {sanitize: async (rendered) => rendered});
+// @ts-expect-error Node filesystem options are not browser capabilities.
+transform('text', {root: '/docs'});
+// @ts-expect-error Filesystem output is not a browser plugin capability.
+transform('text', {pluginConfiguration: {options: {tabs: {output: '/tmp'}}}});
+// @ts-expect-error Minimal has no builtin implementations.
+const unavailable: MinimalOptions = {pluginConfiguration: {enable: ['notes']}};
+// @ts-expect-error Node ambient declarations are absent.
+process.exit(0);
+// @ts-expect-error Node ambient declarations are absent.
+Buffer.from('text');
+// @ts-expect-error Node ambient declarations are absent.
+require('fs');
+// @ts-expect-error Node ambient namespace is absent.
+type Process = NodeJS.Process;
+void [env, documentEnv, unavailable];

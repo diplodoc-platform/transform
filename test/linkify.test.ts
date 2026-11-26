@@ -2,6 +2,8 @@ import type {MarkdownIt} from '../src/transform/typings';
 
 import transform from '../src/transform';
 
+import {highlighter} from './highlighter-fixture';
+
 describe('Linkify', () => {
     const url = 'https://example.com/path';
     const renderedLink = `<a href="${url}">${url}</a>`;
@@ -136,7 +138,7 @@ describe('Linkify', () => {
     ])('should not linkify a strikethrough URL in $name', ({source, expectedFragments}) => {
         const {
             result: {html},
-        } = transform(source, {linkify: true, codeLineWrapping: true});
+        } = transform(source, {highlighter, linkify: true, codeLineWrapping: true});
 
         expect(html).toContain(`~~${url}~~`);
         expect(html).not.toContain('<a ');

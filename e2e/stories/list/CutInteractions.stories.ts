@@ -50,6 +50,8 @@ export const CutAfterTheList: MarkdownSnippetStory = {
 export const CutInsideListChild: MarkdownSnippetStory = {
     name: 'Cut inside list (child)',
     args: {
+        // Legacy attrs fixture: preserve the existing encut typo, not supported directive syntax.
+        extraOptions: {enableMarkdownAttrs: true},
         snippet: dedent`
         1. This is an ordered nested list.
         2. This item has a sublist.
@@ -75,6 +77,8 @@ export const CutInsideListChild: MarkdownSnippetStory = {
 export const CutInsideListBreak: MarkdownSnippetStory = {
     name: 'Cut inside list (break)',
     args: {
+        // Legacy attrs fixture: preserve the existing encut typo, not supported directive syntax.
+        extraOptions: {enableMarkdownAttrs: true},
         snippet: dedent`
         1. This is an ordered nested list.
         2. This item has a sublist.

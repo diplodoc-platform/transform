@@ -1,11 +1,11 @@
-import type {MarkdownItPluginCb} from '../typings';
+import type {MarkdownItPluginCb, StateCore} from '../typings';
 
 const cssWhitelist = {
     '--hier-list-start': true,
 };
 
 export const olAttrConversion: MarkdownItPluginCb = (md) => {
-    md.core.ruler.after('block', 'olAttrs', (state) => {
+    md.core.ruler.after('block', 'olAttrs', (state: StateCore) => {
         state.tokens.forEach((token) => {
             const maybeStart = token.attrGet('start');
 

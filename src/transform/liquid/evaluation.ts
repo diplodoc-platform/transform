@@ -1,5 +1,7 @@
+import type {LogConsumer} from '../log-core';
+
 import getObject from '../getObject';
-import {log} from '../log';
+import {log as defaultLog} from '../log';
 
 import * as lexical from './lexical';
 import filters from './filters';
@@ -98,6 +100,7 @@ export function evalExp(
     exp: string,
     scope: Record<string, unknown>,
     strict = false,
+    log: LogConsumer = defaultLog,
 ):
     | string[]
     | number[]
@@ -122,7 +125,7 @@ export function evalExp(
                 const notMatch = exp.match(notPrefixRE);
                 if (notMatch) {
                     const rest = exp.slice(notMatch[0].length);
-                    const value = evalExp(rest, scope, strict);
+                    const value = evalExp(rest, scope, strict, log);
 
                     if (value === NoValue) {
                         return NoValue;
@@ -141,8 +144,8 @@ export function evalExp(
                 }
 
                 const op = operators[operator];
-                const l = evalExp(match[1], scope, strict);
-                const r = evalExp(match[3], scope, strict);
+                const l = evalExp(match[1], scope, strict, log);
+                const r = evalExp(match[3], scope, strict, log);
 
                 if (l === NoValue || r === NoValue) {
                     return NoValue;
@@ -179,5 +182,9 @@ export function evalExp(
     return undefined;
 }
 
-export default (exp: string, scope: Record<string, unknown>, strict = false) =>
-    Boolean(evalExp(exp, scope, strict));
+export default (
+    exp: string,
+    scope: Record<string, unknown>,
+    strict = false,
+    log: LogConsumer = defaultLog,
+) => Boolean(evalExp(exp, scope, strict, log));

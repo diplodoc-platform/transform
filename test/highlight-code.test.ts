@@ -2,11 +2,14 @@ import {dirname} from 'path';
 
 import transform from '../src/transform';
 
+import {highlighter} from './highlighter-fixture';
+
 const mocksPath = require.resolve('./utils.ts');
 const transformYfm = (text: string) => {
     const {
         result: {html},
     } = transform(text, {
+        highlighter,
         plugins: [],
         path: mocksPath,
         root: dirname(mocksPath),
@@ -22,6 +25,7 @@ const transformWithPlugins = (text: string) => {
     const {
         result: {html},
     } = transform(text, {
+        highlighter,
         path: mocksPath,
         root: dirname(mocksPath),
     });

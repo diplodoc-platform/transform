@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export = function getObject(path: string, obj: Record<string, any>, fallback?: any) {
+export default function getObject(path: string, obj: Record<string, any>, fallback?: any) {
     const queue = path.split('.');
 
     let box = obj;
@@ -14,4 +14,4 @@ export = function getObject(path: string, obj: Record<string, any>, fallback?: a
     }
 
     return box;
-};
+}

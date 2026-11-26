@@ -1,4 +1,4 @@
-import type Token from 'markdown-it/lib/token';
+import type {Token} from 'markdown-it' with {'resolution-mode': 'import'};
 import type {StateCore} from '../../typings';
 import type {GetFileTokensOpts} from '../../utilsFS';
 import type {MarkdownItPluginCb, MarkdownItPluginOpts} from '../typings';
@@ -6,10 +6,15 @@ import type {MarkdownItIncluded} from './types';
 
 import {bold} from 'chalk';
 
+import {materializeFootnoteTokens} from '../../footnote-data';
+import {replayChildDocument} from '../../document-context';
+import {IncludeCycleError} from '../../document';
 import {findBlockTokens} from '../../utils';
-import {getFileTokens, getFullIncludePath, getRealPath, isFileExists} from '../../utilsFS';
+import {getFileFragment, getFullIncludePath, getRealPath, isFileExists} from '../../utilsFS';
 
-const INCLUDE_REGEXP = /^{%\s*include\s*(notitle)?\s*\[(.+?)]\((.+?)\)\s*%}$/;
+import {createIncludeRegExp} from './syntax';
+
+const INCLUDE_REGEXP = createIncludeRegExp();
 
 function stripTitleTokens(tokens: Token[]) {
     const [open, _, close] = tokens;
@@ -25,7 +30,7 @@ type Options = MarkdownItPluginOpts &
         noReplaceInclude: boolean;
     };
 
-function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, options: Options) {
+function unfoldIncludes(state: StateCore, path: string, options: Options) {
     const {root, notFoundCb, log, noReplaceInclude = false} = options;
     const {tokens} = state;
     let i = 0;
@@ -39,7 +44,8 @@ function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, 
         if (
             openToken.type === 'paragraph_open' &&
             contentToken.type === 'inline' &&
-            (match = contentToken.content.match(INCLUDE_REGEXP)) &&
+            // Preserve native 13's paragraph-edge whitespace handling for legacy includes.
+            (match = INCLUDE_REGEXP.exec(contentToken.content.trim())) &&
             closeToken.type === 'paragraph_close'
         ) {
             try {
@@ -64,22 +70,30 @@ function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, 
                 }
 
                 // Check the existed included store and extract it
-                const included = md.included?.[pathname];
+                const included = state.env.included?.[pathname];
 
-                const fileTokens = getFileTokens(pathname, state, options, included);
+                const fragment = getFileFragment(
+                    pathname,
+                    state,
+                    {...options, purpose: 'reference'},
+                    included,
+                );
+                const fileTokens = fragment.tokens;
 
                 let includedTokens;
                 if (hash) {
                     // TODO: add warning about missed block
-                    // TODO: findBlockTokens requires markdown-it-attrs plugin for find block with id=hash
                     includedTokens = findBlockTokens(fileTokens, hash);
                 } else {
-                    includedTokens = fileTokens;
+                    includedTokens = fileTokens.slice();
                 }
 
                 if (keyword === 'notitle') {
                     stripTitleTokens(includedTokens);
                 }
+
+                includedTokens = materializeFootnoteTokens(fileTokens, includedTokens, openToken);
+                replayChildDocument(state.md, fragment, state.env, {purpose: 'include'});
 
                 if (noReplaceInclude) {
                     i++;
@@ -89,6 +103,9 @@ function unfoldIncludes(md: MarkdownItIncluded, state: StateCore, path: string, 
                     i += includedTokens.length;
                 }
             } catch (e) {
+                if (e instanceof IncludeCycleError) {
+                    throw e;
+                }
                 // @ts-ignore for some reason typescript fails here
                 const errPath = e.path?.replace(root, '');
                 // Normalize path separators to forward slashes for cross-platform compatibility
@@ -124,19 +141,23 @@ const index: MarkdownItPluginCb<Options> = (md: MarkdownItIncluded, options) => 
 
         if (isCircularInclude) {
             log.error(`Circular includes: ${bold(env.includes.concat(path).join(' ▶ '))}`);
-            process.exit(1);
+            throw new IncludeCycleError(env.includes.concat(path));
         }
 
         env.includes.push(path);
-        unfoldIncludes(md, state, path, options);
-        env.includes.pop();
+        try {
+            unfoldIncludes(state, path, options);
+        } finally {
+            env.includes.pop();
+        }
     };
 
     try {
         md.core.ruler.before('curly_attributes', 'includes', plugin);
     } catch {
-        md.core.ruler.push('includes', plugin);
+        // Keep includes before linkification and later term processing without general attrs.
+        md.core.ruler.before('linkify', 'includes', plugin);
     }
 };
 
-export = index;
+export default index;

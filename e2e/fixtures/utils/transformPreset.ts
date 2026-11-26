@@ -1,5 +1,6 @@
 import type {OptionsType} from '../../../lib/typings';
 
+import hljs from 'highlight.js';
 import meta from '@diplodoc/transform/lib/plugins/meta';
 import sup from '@diplodoc/transform/lib/plugins/sup';
 import cut from '@diplodoc/transform/lib/plugins/cut';
@@ -15,11 +16,14 @@ import video from '@diplodoc/transform/lib/plugins/video';
 import table from '@diplodoc/transform/lib/plugins/table';
 import notes from '@diplodoc/transform/lib/plugins/notes';
 import transform from '@diplodoc/transform';
+import {createHighlightJsHighlighter} from '@diplodoc/transform/highlighter';
 import inlineCode from '@diplodoc/transform/lib/plugins/inline-code';
 import code from '@diplodoc/transform/lib/plugins/code';
 import term from '@diplodoc/transform/lib/plugins/term';
 
 const transformOptions: OptionsType = {
+    // Existing visual fixtures retain their full-library highlighting explicitly.
+    highlighter: createHighlightJsHighlighter(hljs),
     lang: 'en',
     path: '',
     plugins: [

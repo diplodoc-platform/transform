@@ -8,6 +8,34 @@ import includes from '../src/transform/plugins/includes';
 const mocksPath = require.resolve('./mocks/link.md');
 const publicPath = '/docs/page.html';
 
+describe.each([undefined, false, true])('Legacy heading text (attrs=%s)', (enableMarkdownAttrs) => {
+    it.each([
+        ['Install **CLI** tool', 'Install CLI tool', 'Install CLI tool'],
+        // The existing anchor-label helper omits inline code; this change preserves that policy.
+        ['Run `init` command', 'Run init command', 'Run  command'],
+        ['Read *important* notes', 'Read important notes', 'Read important notes'],
+        ['Open [the link](https://example.com) now', 'Open the link now', 'Open the link now'],
+    ])('preserves spaces around inline content: %s', (source, text, label) => {
+        for (const plugins of [[anchors], [includes, anchors]]) {
+            const result = transform(`## ${source} {#section}`, {
+                plugins,
+                disableLiquid: true,
+                needFlatListHeadings: true,
+                getPublicPath: () => publicPath,
+                ...(enableMarkdownAttrs === undefined ? {} : {enableMarkdownAttrs}),
+            }).result;
+            const heading = load(result.html)('h2');
+            expect(heading.attr('id')).toBe('section');
+            expect(heading.find('a.yfm-anchor').attr('href')).toBe(`${publicPath}#section`);
+            expect(heading.find('a.yfm-anchor span').text()).toBe(label);
+            heading.find('a.yfm-anchor').remove();
+            expect(heading.text()).toBe(text);
+            expect(result.headings[0].title).toBe(text);
+            expect(result.headings[0].href).toBe(`${publicPath}#section`);
+        }
+    });
+});
+
 describe.each([false, true])('Heading attributes (includes=%s)', (withIncludes) => {
     const render = (source: string, options?: transform.Options) =>
         transform(source, {
