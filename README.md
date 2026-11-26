@@ -215,6 +215,9 @@ MIT
 
 **table**
 
+- `--yfm-table-border-radius` (default: `8px`; reset to `0px` in the wide modal content)
+- `--yfm-table-cell-padding-block` (default: `10px`, applies to `th` and `td`)
+- `--yfm-table-cell-padding-inline` (default: `20px`, applies to `th` and `td`)
 - `--yfm-color-table`
 - `--yfm-color-table-border`
 - `--yfm-color-table-background`
