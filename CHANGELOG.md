@@ -1,5 +1,16 @@
 # Changelog
 
+## [5.0.0](https://github.com/diplodoc-platform/transform/compare/v4.79.0...v5.0.0) (2026-11-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* **transform:** Transform requires Node.js 24 and Markdown-it 15.
+
+### Features
+
+* **transform:** release Transform 5 ([c556492](https://github.com/diplodoc-platform/transform/commit/c5564925afb079b0918fdee493dfc63bd01a197f))
+
 ## [4.79.0](https://github.com/diplodoc-platform/transform/compare/v4.78.15...v4.79.0) (2026-11-26)
 
 
