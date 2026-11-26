@@ -29,6 +29,30 @@
     &.cell-align-bottom-right {
         vertical-align: bottom;
     }
+
+    &[data-halign='start'] {
+        text-align: start;
+    }
+
+    &[data-halign='center'] {
+        text-align: center;
+    }
+
+    &[data-halign='end'] {
+        text-align: end;
+    }
+
+    &[data-valign='top'] {
+        vertical-align: top;
+    }
+
+    &[data-valign='center'] {
+        vertical-align: middle;
+    }
+
+    &[data-valign='bottom'] {
+        vertical-align: bottom;
+    }
 }
 
 @mixin yfm-sticky-header-row {
