@@ -9,8 +9,9 @@ Task: [DOCSTOOLS-6942](https://st.yandex-team.ru/DOCSTOOLS-6942).
   Russian fallback, and automatic, explicit and empty titles. No title-default
   change or colon syntax is part of this extraction.
 - The Transform bridge uses the pure package entry, so rendering adds no separate
-  assets, filesystem copying or resource flags. The standard/minimal composition
-  contract and strict Node/browser declarations remain unchanged.
+  assets, filesystem copying or resource flags. Minimal requires an
+  application-owned `sanitize` callback to produce sanitized document HTML,
+  including the output of any explicitly enabled Notes plugin.
 - Preserve base, yfm-only and print cascade positions. Compare compiled CSS and
   runtime assets against the accepted browser-phase2 package. Public Sass must
   compile with the real standard NodePackageImporter as well as the real build.

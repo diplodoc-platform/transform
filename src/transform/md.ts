@@ -13,6 +13,7 @@ import {createDocumentLogger} from './diagnostic-context';
 import {getLogger, log} from './log';
 import {createDeprecationReporter} from './deprecation';
 import {resolvePluginConfiguration} from './plugin-registry';
+import {defaultOptions} from './sanitize-core';
 import {sanitizersForLogger} from './sanitize-node';
 
 const nodeHost: ParserHost = {
@@ -23,10 +24,27 @@ const nodeHost: ParserHost = {
     getLogger,
     createLogger: createDocumentLogger,
     createReporter: createDeprecationReporter,
-    sanitize: (html, options, additional, logger) =>
-        sanitizersForLogger(logger ?? log).sanitize(html, options, additional),
-    sanitizeStyles: (html, options, logger) =>
-        sanitizersForLogger(logger ?? log).sanitizeStyles(html, options),
+    sanitize(html, options, additional, logger, custom) {
+        const {sanitize, sanitizeStyles} = sanitizersForLogger(logger ?? log);
+        if (!custom) {
+            return sanitize(html, options, additional);
+        }
+        if (options?.disableStyleSanitizer) {
+            return custom(html, options);
+        }
+
+        // Node callbacks receive style-sanitized HTML unless explicitly disabled.
+        const base = options || defaultOptions;
+        const filtered = sanitizeStyles(html, {
+            ...base,
+            cssWhiteList: {
+                ...defaultOptions.cssWhiteList,
+                ...base.cssWhiteList,
+                ...additional?.cssWhiteList,
+            },
+        });
+        return custom(filtered, options);
+    },
 };
 
 function initMarkdownIt(

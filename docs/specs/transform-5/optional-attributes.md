@@ -94,6 +94,10 @@ are unchanged by this task.
 | Standalone `@diplodoc/yfmlint`, omitted new selector                | preserve its current true default                          |
 | CLI compatibility integration                                       | explicitly true at renderer and standalone lint boundaries |
 
+The attrs setting does not control sanitization. Use an application-owned
+`sanitize` callback with `/browser/minimal` before rendering its HTML in the DOM.
+Without a callback, minimal returns unsanitized HTML.
+
 Use existing supported boolean semantics; this task does not introduce runtime
 coercion rules for invalid arbitrary JS values. The builder need not materialize
 a default value: resolve once at parser/lint installation. Only the explicit core

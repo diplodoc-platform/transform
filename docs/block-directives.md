@@ -32,9 +32,10 @@ transform(':::note {type=info}\n\nBody\n\n:::', options);
 | `enabled`  | accepted          | accepted          |
 | `only`     | ordinary Markdown | accepted          |
 
-Disabling a feature removes both spellings. The minimal preset has no block
-features. An invalid mode is rejected before plugins are installed. There is
-no shared flat `directiveSyntax` option that changes every plugin.
+Disabling a feature removes both spellings. The minimal browser entry has no
+builtin block features and returns unsanitized HTML unless the application
+supplies its own `sanitize` callback. An invalid mode is rejected before plugins
+are installed. Configure `directiveSyntax` per plugin.
 
 The standard preset defaults to `enabled`, accepting both legacy and colon
 syntax. Standalone extension factories and explicit legacy Transform callbacks

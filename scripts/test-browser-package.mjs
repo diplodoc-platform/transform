@@ -100,9 +100,22 @@ void [fromNode, toNode, fromMinimal, fromNodeDocument, toMinimal];
             code,
             /(?:require|import)\(["'](?:node:|fs["']|path["']|highlight\.js)/,
         );
+        const inputs = Object.keys(result.metafile.inputs);
+        const sources = inputs
+            .filter((input) => /[/\\]dist[/\\]browser[/\\].*\.mjs$/.test(input))
+            .flatMap(
+                (input) => JSON.parse(readFileSync(join(consumerRoot, input + '.map'))).sources,
+            );
+        assert.ok(sources.length, `Missing browser source map for ${entry}`);
+        const sanitizerImplementation =
+            /(?:sanitize-core\.ts|browser\/css\.ts|node_modules\/(?:sanitize-html|cssfilter|cheerio|css)\/)/;
+        assert.equal(
+            sources.some((source) => sanitizerImplementation.test(source)),
+            entry === 'browser',
+        );
         report[entry] = {
             bytes: result.outputFiles[0].contents.length,
-            inputs: Object.keys(result.metafile.inputs),
+            inputs,
         };
     }
     writeFileSync(

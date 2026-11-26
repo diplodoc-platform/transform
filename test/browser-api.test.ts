@@ -23,24 +23,38 @@ beforeEach(() => {
 });
 
 test.each([standard, minimal])(
-    'public browser API retains document shape, shared attrs policy and final sanitizer',
+    'public browser API retains document shape, shared attrs policy and isolated diagnostics',
     (transform) => {
-        const source =
-            '# Title {.custom}\n\n<img src="image.png" onerror="bad()"><a href="javascript:bad()">link</a>';
-        const result = transform(source, {allowHTML: true});
+        const source = '# Title {.custom}';
+        const result = transform(source);
         expect(result.result).toHaveProperty('headings');
         expect(result.result).toHaveProperty('title', '');
         expect(result.result.html).not.toContain('class="custom"');
         expect(result.result.html).toContain('{.custom}');
-        expect(result.result.html).not.toMatch(/onerror|javascript:/);
         expect(result.logs).not.toBe(log.get());
         expect(log.isEmpty()).toBe(true);
-        expect(
-            transform(source, {allowHTML: true, enableMarkdownAttrs: true}).result.html,
-        ).toContain('class="custom"');
+        expect(transform(source, {enableMarkdownAttrs: true}).result.html).toContain(
+            'class="custom"',
+        );
         expect(nodeLog.isEmpty()).toBe(true);
     },
 );
+
+test('standard sanitizes document HTML while minimal returns renderer output', () => {
+    const source = '<p style="position:fixed;color:red">text</p>';
+    const options = {allowHTML: true};
+    const parser = createMinimalParser(options);
+
+    expect(standard(source, options).result.html).toBe('<p style="color:red">text</p>');
+    expect(minimal(source, options).result.html).toBe(source);
+    expect(parser.compileDocument(parser.parseDocument(source))).toBe(source);
+    expect(minimal(source).result.html).toContain('&lt;p style=');
+});
+
+test('standard filters disallowed raw HTML attributes and URL schemes', () => {
+    const source = '<img src="image.png" onerror="bad()"><a href="javascript:bad()">link</a>';
+    expect(standard(source, {allowHTML: true}).result.html).not.toMatch(/onerror|javascript:/);
+});
 
 test('standard binds the real additive underline/subscript callbacks while minimal has no feature implementations', () => {
     expect(standard('++under++ H~2~O').result.html).toContain('<u>under</u> H<sub>2</sub>O');
@@ -66,6 +80,9 @@ test('standard binds the real additive underline/subscript callbacks while minim
             /(?:highlight\.js|lowlight|chalk|utilsFS|liquid\/|plugins\/utils\.ts)/.test(path),
         ),
     ).toBe(false);
+    expect(paths.join('\n')).not.toMatch(
+        /sanitize-core\.ts|browser\/css\.ts|node_modules\/(?:sanitize-html|cssfilter|cheerio|css)\//,
+    );
 });
 
 test.each([
@@ -234,7 +251,6 @@ test('minimal supports an explicit final HTML and CSS policy for each parser', (
     const document = parser.parseDocument(source);
 
     expect(sanitize).not.toHaveBeenCalled();
-    expect(minimal(source, {allowHTML: true}).result.html).not.toContain('position:fixed');
     expect(parser.compileDocument(document)).toBe('<p class="application-policy">text</p>');
     expect(sanitize.mock.calls).toEqual([
         ['<p style="position:fixed;color:red">text</p>', sanitizeOptions],
@@ -253,6 +269,7 @@ test('minimal preserves the guard and propagates sanitizer failures', () => {
     const sanitize = vi.fn(() => {
         throw failure;
     });
+    expect(() => minimal('{% include [part](part.md) %}')).toThrow(BrowserUnsupportedFeatureError);
     expect(() => minimal('{% include [part](part.md) %}', {sanitize})).toThrow(
         BrowserUnsupportedFeatureError,
     );
@@ -282,14 +299,15 @@ test('minimal rejects a malformed sanitizer before plugin setup', () => {
     expect(setup).not.toHaveBeenCalled();
 });
 
-test('minimal preserves existing sanitizer settings while ignoring an inherited callback', () => {
+test('minimal forwards sanitizer settings only to an explicitly supplied callback', () => {
     const sanitize = vi.fn(() => '<p>unexpected</p>');
     const options: Parameters<typeof minimal>[1] = Object.create({
         sanitize,
         sanitizeOptions: {allowedTags: []},
     });
 
-    expect(minimal('text', options).result.html).toBe('text\n');
+    expect(minimal('text', options).result.html).toBe('<p>text</p>\n');
+    expect(minimal('text', {sanitizeOptions: {allowedTags: []}}).result.html).toBe('<p>text</p>\n');
     expect(sanitize).not.toHaveBeenCalled();
 });
 

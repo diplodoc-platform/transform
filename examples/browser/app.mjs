@@ -16,9 +16,16 @@ let highlighter;
  */
 function render() {
     try {
-        const transform = composition.value === 'minimal' ? minimal : standard;
+        const showSource = composition.value === 'minimal';
+        const transform = showSource ? minimal : standard;
         const output = transform(source.value, {highlighter, lang: 'en'});
-        result.innerHTML = output.result.html;
+        if (showSource) {
+            const renderedSource = document.createElement('pre');
+            renderedSource.textContent = output.result.html;
+            result.replaceChildren(renderedSource);
+        } else {
+            result.innerHTML = output.result.html;
+        }
         status.textContent = JSON.stringify({meta: output.result.meta, logs: output.logs}, null, 2);
     } catch (error) {
         status.textContent = error.message;
@@ -29,7 +36,7 @@ source.value = `# Browser Markdown
 
 {% note info %}
 
-This page uses the public browser entry, shared CSS sanitizer and explicit runtime/styles imports.
+The standard composition uses the built-in sanitizer and explicit runtime and style imports.
 
 {% endnote %}
 

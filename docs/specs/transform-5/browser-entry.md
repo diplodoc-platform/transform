@@ -87,10 +87,8 @@ does not invoke them. Do not describe this as a graph with zero disabled entries
 Special application `resolve.fallback`, resolver aliases hiding builtins, injected
 Node globals and new Transform-specific empty modules remain disallowed.
 
-Preserve sanitize-html/Cheerio/cssfilter and the current policy. A DOMPurify/new
-DOM sanitizer is not the selected design and is not justified by the successful
-bounded proof. If a required case fails, report that concrete failure before
-changing engines, dependencies, or security policy.
+The standard entry preserves sanitize-html, Cheerio, cssfilter and the current
+policy. The bounded proof applies to that implementation.
 
 ## Public API and finite compositions
 
@@ -98,7 +96,9 @@ Add explicit `@diplodoc/transform/browser` and
 `@diplodoc/transform/browser/minimal` exports. The former is the standard browser
 composition; the latter has a separately reachable minimal dependency graph.
 Selecting a runtime flag after importing all standard plugins is insufficient
-for the minimal bundle requirement.
+for the minimal bundle requirement. The standard entry includes the built-in
+sanitizer. The minimal entry returns unsanitized HTML unless the application
+passes its own synchronous `sanitize` callback.
 
 Both entries provide:
 
@@ -197,17 +197,21 @@ standard-entry/explicit-plugin alternative. Supported per-builtin settings match
 the existing typed settings except filesystem `output`; reject that option.
 Plugin context path is absent by default and is not a filesystem capability.
 
-`BrowserSanitizeOptions` initially exposes `cssWhiteList`, `allowedTags`,
+`BrowserSanitizeOptions` exposes `cssWhiteList`, `allowedTags`,
 `allowedAttributes`, `allowedSchemes`, `allowedSchemesByTag`,
 `allowedSchemesAppliedToAttributes`, and `allowProtocolRelative`, with the same
-underlying policy semantics. Reject parser/source-map options, Node callbacks,
-custom sanitizer replacement, `disableStyleSanitizer` and
-`needToSanitizeHtml:false` in this new browser contract. This restriction changes
-no Node option. Keep final sanitization enabled for plugin/highlighter output.
+underlying policy semantics for the standard entry. Minimal forwards these
+settings to the application callback when supplied. Without a callback it
+returns renderer HTML, including plugin and highlighter output, with no
+sanitization. Applications must sanitize that output before inserting it into
+the DOM. Reject parser/source-map options, Node callbacks, `disableStyleSanitizer`
+and `needToSanitizeHtml:false` in both entries. The standard entry rejects custom
+sanitizer replacement.
 
 | Feature                                                                                                                                                                | Minimal entry                                                                      | Standard browser entry                                                                     |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| CommonMark, links/images by URL, safe HTML/CSS sanitization                                                                                                            | Yes                                                                                | Yes                                                                                        |
+| CommonMark and links/images by URL                                                                                                                                     | Yes                                                                                | Yes                                                                                        |
+| Final HTML and CSS sanitization                                                                                                                                        | Application-supplied `sanitize` only                                               | Built-in sanitizer                                                                         |
 | YFM metadata, anchors, notes, code controls, definition lists, sup, monospace, tables, image dimensions, terms, block anchors, inline-code controls, visibility, video | Explicit supplied compatible plugins only                                          | Same finite builtin installation order/algorithms as Node, after the dependency cuts above |
 | Cut/tabs/file extension rendering                                                                                                                                      | Explicit compatible browser plugin                                                 | Existing browser implementations with `bundle:false`; URL/resource records only            |
 | General Markdown attrs                                                                                                                                                 | Explicit `enableMarkdownAttrs:true` using the pinned implementation; default false | Final shared default false after6944B; explicit true retains compatibility                 |
@@ -217,8 +221,8 @@ no Node option. Keep final sanitization enabled for plugin/highlighter output.
 | Filesystem includes/included blocks, link-title file inspection, asset copying, SVG filesystem inlining/optimization, single-page collectors                           | No                                                                                 | No                                                                                         |
 
 Minimal has no standard preset imports, table implementation, cut/tabs/file
-implementation or runtime side effects unless explicitly composed. Its ordinary
-Markdown features and sanitizer remain present; minimal does not mean unsanitized.
+implementation or runtime side effects unless explicitly composed. Ordinary
+Markdown features remain available.
 Standard is deliberately not advertised as identical to the Node default preset:
 Node host services remain unavailable. The table implementation/defaults must
 follow the integrated reviewed table task, not another browser scanner variant.
@@ -290,8 +294,8 @@ entries keep the existing `{id,plugin,requires?,before?,after?}` shape and typed
 callback context. Standard builtin IDs stay reserved in both entries, so an
 explicit custom plugin must use its own ID. Custom callbacks may capture typed
 application settings; this task adds no separate browser configuration language
-or browser builder subpath. Preset:none does not remove the following prelude or
-final sanitizer.
+or browser builder subpath. `preset: 'none'` retains the following prelude and
+the selected entry's final HTML policy.
 
 The exact prelude/installation sequence is:
 
@@ -311,7 +315,8 @@ The exact prelude/installation sequence is:
 6. Install selected builtin/custom callbacks in the shared resolved order. Apply
    explicit linkify TLD additions after installation, only when linkify is enabled.
 7. Parse/compile through the same owned-document/child/capsule lifecycle; retain
-   title/headings and final mandatory HTML+CSS sanitizer behavior. No Node default
+   title and headings. Apply the standard built-in sanitizer or the supplied
+   minimal callback. When minimal has no callback, return unsanitized HTML. No Node default
    preprocessors, file collectors, root-path/base-URL rewriting or implicit Liquid.
 
 Core title/headings/inline flags default false; disabled rules default empty.
@@ -340,7 +345,7 @@ independent of general attrs enablement.
 - Preserve imsize dimensions/title/alt parsing and safe style dimensions. Keep
   original anchor IDs/legacy auto URLs and pinned attrs behavior for supported
   input. Do not replace filesystem SVG reads with implicit fetch. An SVG image
-  URL remains an image; explicit raw inline SVG passes the existing sanitizer.
+  URL remains an image. Raw inline SVG follows the selected entry's HTML policy.
 - `result.assets` does not become a filesystem manifest. Explicit extension
   `meta.script/style/csp` resource declarations still merge/deduplicate through
   document contexts. The renderer neither imports nor executes arbitrary URLs
@@ -374,18 +379,18 @@ new Markdown scanner framework. If native hooks require a small position tracker
 prove it on these fixtures before choosing its implementation. The22frozen cases
 include the following required distinctions in both entries unless scoped:
 
-| Input/context                                                          | Result                                                  |
-| ---------------------------------------------------------------------- | ------------------------------------------------------- |
-| `{% include [child](child.md) %}`; notitle with fragment               | throw include                                           |
-| Same standalone directive in list or blockquote                        | throw include                                           |
-| Same directive in actual YFM table cell (standard only)                | throw include                                           |
-| `{% included (child.md) %}` with/without close; standalone endincluded | throw materialized-include                              |
-| Fenced/indented examples and single/double/multiline backtick spans    | render as code; no error                                |
-| Escaped opener/keyword/endincluded                                     | literal; no error                                       |
-| HTML comment or quoted HTML attribute example                          | no error (existing HTML/sanitizer policy still applies) |
-| `Example: {% include [child](child.md) %}`                             | literal prose; no error                                 |
-| Empty target / includeSomething lookalike                              | ordinary Markdown; no error                             |
-| `{{ value }}` and conditional-looking text                             | literal; no implicit engine                             |
+| Input/context                                                          | Result                                                |
+| ---------------------------------------------------------------------- | ----------------------------------------------------- |
+| `{% include [child](child.md) %}`; notitle with fragment               | throw include                                         |
+| Same standalone directive in list or blockquote                        | throw include                                         |
+| Same directive in actual YFM table cell (standard only)                | throw include                                         |
+| `{% included (child.md) %}` with/without close; standalone endincluded | throw materialized-include                            |
+| Fenced/indented examples and single/double/multiline backtick spans    | render as code; no error                              |
+| Escaped opener/keyword/endincluded                                     | literal; no error                                     |
+| HTML comment or quoted HTML attribute example                          | no error (selected entry's HTML policy still applies) |
+| `Example: {% include [child](child.md) %}`                             | literal prose; no error                               |
+| Empty target / includeSomething lookalike                              | ordinary Markdown; no error                           |
+| `{{ value }}` and conditional-looking text                             | literal; no implicit engine                           |
 
 Fixtures must also cover CRLF, even/odd escapes, variable backtick runs, nested
 source labels and custom child parsing through both tokens-only and capsule APIs.
@@ -397,8 +402,8 @@ partial result; guard failures leave the next owned root usable.
 Extract only the small host-independent parser/render/lifecycle core necessary to
 avoid importing Node host services. A finite internal host object supplies:
 the builtin installation list, preprocessing policy, diagnostic/reporter factory,
-and sanitizer/CSS implementation. Node supplies its current defaults; browser
-supplies its explicit composition and unsupported-feature validation.
+and final HTML policy. Node supplies its current defaults. Browser entries
+supply their explicit composition and unsupported-feature validation.
 
 Parameterize the existing named-plugin resolver with that finite builtin table
 instead of importing `DefaultPlugins` in the shared resolver. Preserve existing
@@ -406,11 +411,12 @@ ordering, requirements, conflict checks and callback identity. Do not implement 
 second plugin configuration language or expose a general service registry.
 
 Split the pure sanitizer policy/value checks from host CSS/HTML traversal plumbing
-only as needed. Node keeps its current CSS wrapper and exact sanitizer options;
-browser uses the real no-source-map CSS adapter and ordinary upstream browser
-exports. Shared fixtures must demonstrate identical required policy decisions,
-including CSS escaping, SVG URLs and extension allowances. No removal of the final
-sanitizer, weaker URL rules, regex-only HTML filter, or fake CSS parser is allowed.
+only as needed. Node keeps its current CSS wrapper and exact sanitizer options.
+The standard browser entry uses the real no-source-map CSS adapter and ordinary
+upstream browser exports. Shared Node and standard fixtures must demonstrate
+the required CSS escaping, SVG URL and extension policy decisions. Minimal
+keeps the content guard and delegates final HTML/CSS policy to the application.
+Its reachable graph must exclude the built-in sanitizer and CSS sanitizer dependencies.
 
 Keep pure token/ID/URL helpers out of Node filesystem/newline modules. Preserve
 Node-only compatibility exports through their existing wrappers. Reuse reviewed
@@ -544,9 +550,10 @@ No highlighter is required for the basic example; code stays correctly escaped.
 
 ## Implementation boundaries
 
-The shared parser, document lifecycle, diagnostics, registry and sanitizer preserve
-Node behavior. Standard and minimal browser entries have separate dependency
-graphs and reuse the shared plugin implementations.
+The shared parser, document lifecycle, diagnostics and registry preserve Node
+behavior. Node and the standard browser entry share the built-in sanitizer.
+Standard and minimal have separate dependency graphs and reuse the shared
+plugin implementations.
 
 The image-size implementation retains actual-use warning scope, native reporter
 fallback, private recognition markers, migration purity, grammar quirks and the
@@ -574,14 +581,15 @@ default, titles, maps and diagnostics through the standalone package.
    prove no mandatory Node dependency or transform-time resource fetch.
 4. Supported standard features, metadata, title/headings, anchors/attrs, table
    defaults, image dimensions, visibility and extension resources. Minimal graph
-   contains no standard-only implementations or implicit highlighter. Unsupported
+   contains no standard-only implementations, built-in sanitizer or implicit highlighter. Unsupported
    options/directives produce the documented failures outside protected examples.
-5. Hostile HTML/URLs/encoded and escaped CSS, style tags/attributes, malformed CSS,
+5. For the standard sanitizer, cover hostile HTML/URLs/encoded and escaped CSS, style tags/attributes, malformed CSS,
    sourceMappingURL comments/data, SVG use/SMIL/namespace references, unknown
    highlighter languages and malicious callback HTML. Preserve safe anchor IDs,
    dimensions, local SVG references, necessary runtime attributes and extension
    CSS allowances. Compare required sanitizer decisions with Node fixtures; do
-   not weaken policy to make a browser test pass.
+   not weaken policy to make a browser test pass. For minimal, verify raw output
+   without a callback and exact application-owned output with a callback.
 6. Document A/B, parseA/parseB/compileA, derived tokens/foreign handles, initializer
    and render errors, child fragments/resources and augmented ParserEnv behavior
    match the reviewed context contract. No concurrency or opaque-generator reset

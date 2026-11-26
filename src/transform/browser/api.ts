@@ -33,7 +33,7 @@ export function createBrowserApi<Options extends BrowserTransformOptions>(
     }
 
     /**
-     * Transform one Markdown root with mandatory final HTML/CSS sanitization.
+     * Transform one Markdown root using this entry's final HTML policy.
      * @param source - Markdown after any application-owned host preprocessing.
      * @param options - Supported browser parser and composition settings.
      * @returns Rendered document data and the browser host's collected diagnostics.

@@ -150,7 +150,7 @@ Keep the existing host inclusion context during child parsing: the include stack
 
 Materialization keeps transitive definitions reachable from the selected references, even when the definitions are outside the selected heading. It preserves currently admitted transformed bodies, copies token trees, reconstructs local nested sections, and prunes backlinks to absent references. It has no parser, renderer, resource, or generator effects. Do it before replay so a malformed selection cannot commit child resources.
 
-The browser document API exports the same helper. Browser filesystem include directives remain unsupported: hosts prepare those sources before browser transformation. The helper is pure and does not import the footnote grammar into the minimal browser entry.
+The browser document API exports the same helper. Browser filesystem include directives remain unsupported: hosts prepare those sources before browser transformation. The helper is pure and does not import the footnote grammar into the minimal browser entry. That entry returns unsanitized HTML unless the host supplies its own `sanitize` callback. See the [browser entry guide](migrations/browser-entry.md).
 
 ### Mutable titles and raw native callbacks
 

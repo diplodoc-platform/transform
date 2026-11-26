@@ -12,8 +12,9 @@ const output = transform('# Heading\n\n**Browser** content');
 document.querySelector('.yfm')!.innerHTML = output.result.html;
 ```
 
-The runtime and CSS imports are explicit application choices. Transform returns
-sanitized HTML and document metadata; it does not fetch, copy or execute resources.
+The runtime and CSS imports are explicit application choices. The standard
+browser entry returns sanitized HTML and document metadata. Transform does not
+fetch, copy or execute resources.
 Treat extension `meta.script/style/csp` as resource declarations and choose trusted
 runtime/style bundles in the application. Do not automatically execute arbitrary
 frontmatter URLs. The [working example](../../examples/browser/README.md) uses
@@ -31,10 +32,11 @@ General Markdown attributes default to false through the same shared policy as
 Node; use `enableMarkdownAttrs:true` explicitly for compatibility. Heading IDs and
 image dimensions remain independent features.
 
-`@diplodoc/transform/browser/minimal` has no builtin implementations or companion
-extension imports. It retains native Markdown parsing, shared core repairs,
-explicit highlighting and final HTML/CSS sanitization. Its attrs default
-is explicitly false; explicit true is supported. Enabling, disabling or configuring
+`@diplodoc/transform/browser/minimal` has no builtin plugins, companion extension
+imports or built-in sanitizer. It retains native Markdown parsing, shared core
+repairs and explicit highlighting. Pass an application sanitizer before using
+the output as HTML. Its attrs default is explicitly false. Explicit true is
+supported. Enabling, disabling or configuring
 an unavailable builtin fails. An application can supply an explicit compatible
 plugin through named configuration.
 
@@ -60,17 +62,19 @@ Node capabilities fail before caller plugin installation with
 
 The data-only sanitizer settings are `cssWhiteList`, `allowedTags`,
 `allowedAttributes`, `allowedSchemes`, `allowedSchemesByTag`,
-`allowedSchemesAppliedToAttributes`, and `allowProtocolRelative`. They use the
-existing sanitizer policy. Final sanitization applies to trusted plugin and
-highlighter output too. The standard browser entry always uses the built-in
-sanitizer.
+`allowedSchemesAppliedToAttributes`, and `allowProtocolRelative`. The standard
+browser entry uses these settings in its built-in policy for all rendered HTML,
+including plugin and highlighter output.
 
-The minimal entry also accepts a synchronous `sanitize` function in
+The minimal entry accepts an application-owned synchronous `sanitize` function in
 `transform` and `createParser` options. It receives the final renderer HTML
-and the optional validated `sanitizeOptions` object. The application owns its
-HTML and CSS policy when it supplies this function. Transform uses the returned
-string as the document HTML and propagates callback errors. Omitting `sanitize`
-uses the built-in sanitizer. The content guard still runs before rendering.
+and the optional validated `sanitizeOptions` object. Transform uses the returned
+string as the document HTML and propagates callback errors.
+**Without `sanitize`, minimal returns unsanitized HTML.** Pass your own HTML and
+CSS policy before inserting any rendered output into the DOM. `sanitizeOptions`
+alone only describes settings for a callback and does not sanitize the output.
+The content guard and default Markdown HTML escaping still run. They do not
+sanitize the output of plugins or highlighters.
 
 ```typescript
 import {createParser} from '@diplodoc/transform/browser/minimal';
@@ -85,11 +89,11 @@ const html = parser.compileDocument(document);
 
 The [working HTML extension example](../../e2e/fixtures/html-extension/app.mjs)
 uses two sanitizer policies. The extension's `htmlBlockDefaultSanitizer`
-sanitizes the block head and body before they go into the iframe. The minimal
-entry's document `sanitize` callback preserves `srcdoc` and `sandbox` on
-the generated iframe. Raw Markdown HTML is disabled, and the HTML extension
-is the only enabled plugin. Keep that distinction when adapting the document
-policy to your own set of plugins.
+sanitizes the block head and body before they go into the iframe. The application
+passes a document `sanitize` callback to minimal that preserves `srcdoc` and
+`sandbox` on the generated iframe. Raw Markdown HTML is disabled, and the HTML
+extension is the only enabled plugin. Keep that distinction when adapting the
+document policy to your own set of plugins.
 
 `buildYfmHtmlBlockOptions` builds a policy for the contents of the block. Fields
 such as `nonBooleanAttributes` fall outside the browser `sanitizeOptions`
@@ -118,6 +122,7 @@ and verifies that the iframe grows and shrinks when the viewport changes.
 
 ```typescript
 import {createParser, definePlugin} from '@diplodoc/transform/browser/minimal';
+import {sanitizeDocumentHtml} from './application-sanitizer.js';
 
 const badge = definePlugin({
   id: 'app/badge',
@@ -128,7 +133,10 @@ const badge = definePlugin({
   },
 })({label: 'Article: '});
 
-const parser = createParser({pluginConfiguration: {plugins: [badge]}});
+const parser = createParser({
+  sanitize: sanitizeDocumentHtml,
+  pluginConfiguration: {plugins: [badge]},
+});
 const article = parser.parseDocument('Content');
 const html = parser.compileDocument(article);
 ```
@@ -138,6 +146,7 @@ Import one portable callback directly when building a minimal bundle.
 ```typescript
 import transform, {definePlugin} from '@diplodoc/transform/browser/minimal';
 import monospace from '@diplodoc/transform/plugins/monospace';
+import {sanitizeDocumentHtml} from './application-sanitizer.js';
 
 const samples = definePlugin({
   id: 'app/samples',
@@ -147,6 +156,7 @@ const samples = definePlugin({
 })({});
 
 const output = transform('Output: ##sample##', {
+  sanitize: sanitizeDocumentHtml,
   pluginConfiguration: {preset: 'none', plugins: [samples]},
 });
 ```
@@ -156,8 +166,9 @@ Only import callbacks verified for browser bundling. Node helpers such as
 reserved even in the minimal entry.
 
 Builtin installation order and dependency/ordering constraints remain shared.
-`preset:'none'` removes feature callbacks while keeping core repairs, the content
-guard and final sanitizer. Browser diagnostics belong to each document and are
+`preset:'none'` removes feature callbacks while keeping core repairs and the content
+guard. The final HTML policy is selected by the entry and, in minimal, the
+application callback. Browser diagnostics belong to each document and are
 returned as detached snapshots, with plain labels. Use the browser entry's
 `createDiagnosticCollector()` and `diagnostics` option for explicit build history;
 `log` still forwards to an embedding logger. Node terminal formatting remains
