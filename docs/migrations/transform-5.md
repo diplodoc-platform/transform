@@ -64,7 +64,8 @@ For exact names and the retained compatibility paths, check the
 [public API inventory](../../scripts/public-api.mjs).
 
 Use your own synchronous `sanitize` callback before inserting output from
-`/portable/minimal` into the DOM. See the [browser entry guide](browser-entry.md).
+`/portable/minimal` into the DOM. You can opt into a diagnostic for unsanitized
+output with `warnOnUnsanitizedHtml: true`. See the [browser entry guide](browser-entry.md).
 
 If browser rendering fails, for example on an unexpanded include, display the
 source as text and keep your application’s existing error reporting in the catch

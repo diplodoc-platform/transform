@@ -50,4 +50,6 @@ export interface BrowserMinimalTransformOptions extends Omit<
     pluginConfiguration?: BrowserMinimalPluginConfiguration;
     /** Sanitize the rendered HTML before inserting it into the DOM. Omission returns raw HTML. */
     sanitize?: BrowserSanitizeFunction;
+    /** Emit a diagnostic when nonempty HTML is returned without a sanitizer. Defaults to false. */
+    warnOnUnsanitizedHtml?: boolean;
 }

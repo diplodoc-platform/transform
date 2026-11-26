@@ -50,6 +50,10 @@ export interface ParserHost {
     getLogger(consumer?: LogConsumer): Logger;
     createLogger(options: DiagnosticOptions): Logger;
     createReporter(options: OptionsType): DeprecationReporter;
+    /**
+     * @param custom - Node's optional application callback. Portable entries bind their HTML
+     * policy directly to this host method and leave this argument unset.
+     */
     sanitize(
         html: string,
         options?: SanitizeOptions,
