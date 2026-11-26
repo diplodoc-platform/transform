@@ -95,7 +95,7 @@ are unchanged by this task.
 | CLI compatibility integration                                       | explicitly true at renderer and standalone lint boundaries |
 
 The attrs setting does not control sanitization. Use an application-owned
-`sanitize` callback with `/browser/minimal` before rendering its HTML in the DOM.
+`sanitize` callback with `/portable/minimal` before rendering its HTML in the DOM.
 Without a callback, minimal returns unsanitized HTML.
 
 Use existing supported boolean semantics; this task does not introduce runtime

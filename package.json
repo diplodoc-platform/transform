@@ -293,6 +293,18 @@
         "default": "./api/deprecation.cjs"
       }
     },
+    "./portable": {
+      "import": {
+        "types": "./dist/browser/standard.d.mts",
+        "default": "./dist/browser/standard.mjs"
+      }
+    },
+    "./portable/minimal": {
+      "import": {
+        "types": "./dist/browser/minimal.d.mts",
+        "default": "./dist/browser/minimal.mjs"
+      }
+    },
     "./browser": {
       "import": {
         "types": "./dist/browser/standard.d.mts",

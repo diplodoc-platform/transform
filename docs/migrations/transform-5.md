@@ -41,10 +41,11 @@ const output = transform('# Heading');
 
 CommonJS can use `const transform = require('@diplodoc/transform')`. Use the
 stable `/parser`, `/types`, `/document`, `/configuration` and `/plugins/<name>`
-entries for the corresponding APIs. The explicit `/browser` entry is ESM-only;
-CommonJS callers can use dynamic `import()`. Runtime and styles are separate
-imports and do not execute automatically. Browser callers must provide their own
-include preparation and resource policy. See [public exports](../ADR/ADR-012-public-module-exports.md)
+entries for the corresponding APIs. `/portable` and `/portable/minimal` are ESM-only
+and render prepared Markdown without a DOM or Node host services. CommonJS callers
+can use dynamic `import()`. The beta paths `/browser` and `/browser/minimal` are
+aliases for these same entries. Import runtime and styles separately when rendering
+in a browser. See [public exports](../ADR/ADR-012-public-module-exports.md)
 and [browser integration](browser-entry.md).
 
 | Public path after `@diplodoc/transform`                                                       | Purpose and loading                                                                                                                                |
@@ -55,7 +56,7 @@ and [browser integration](browser-entry.md).
 | `/highlighter`, `/highlighter/legacy`                                                         | Explicit adapters. Use `createHighlightJsHighlighter` from a browser entry when composing a browser renderer.                                      |
 | `/preprocessors`, `/frontmatter`, `/utils`, `/utils/fs`, `/sanitize`, `/log`, `/deprecation`  | Node-side helpers. In particular, filesystem adapters do not belong in a browser bundle.                                                           |
 | `/migrations/image-dimensions`, `/migrations/block-directives`, `/migrations/table-alignment` | Synchronous source-to-source migrations. Run them before rendering.                                                                                |
-| `/browser`, `/browser/minimal`                                                                | Native ESM. The standard entry sanitizes HTML. Minimal returns unsanitized HTML unless you pass your own `sanitize` callback.                      |
+| `/portable`, `/portable/minimal`                                                              | Native ESM. The standard entry sanitizes HTML. Minimal returns unsanitized HTML unless you pass your own `sanitize` callback.                      |
 | `/runtime`, `/styles`, their `/base`, `/yfm-only` and `/print` variants, `/scss/*`            | Client assets. Resolve them through the asset loader or bundler.                                                                                   |
 
 For exact names and the retained compatibility paths, check the
@@ -63,14 +64,14 @@ For exact names and the retained compatibility paths, check the
 [public API inventory](../../scripts/public-api.mjs).
 
 Use your own synchronous `sanitize` callback before inserting output from
-`/browser/minimal` into the DOM. See the [browser entry guide](browser-entry.md).
+`/portable/minimal` into the DOM. See the [browser entry guide](browser-entry.md).
 
 If browser rendering fails, for example on an unexpanded include, display the
 source as text and keep your application’s existing error reporting in the catch
 handler. The standard browser entry sanitizes the HTML in this example:
 
 ```ts
-import transform from '@diplodoc/transform/browser';
+import transform from '@diplodoc/transform/portable';
 
 function renderPreview(
   container: HTMLElement,

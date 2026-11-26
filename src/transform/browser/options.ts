@@ -116,7 +116,7 @@ function requireAvailable(id: BuiltinPluginId, available: readonly BuiltinPlugin
     if (!available.includes(id)) {
         throw new BrowserUnsupportedFeatureError(
             'builtin',
-            'Import @diplodoc/transform/browser for standard builtins, or register an explicit compatible plugin',
+            'Import @diplodoc/transform/portable for standard builtins, or register an explicit compatible plugin',
             undefined,
             id,
         );

@@ -56,8 +56,11 @@ export const stableEntries = {
     './plugins/utils': 'plugins/utils',
 };
 
-// Browser contracts deliberately have import conditions only, with no Node fallback.
-export const browserEntries = {
+// Portable contracts use ESM in every environment.
+const portableEntries = {
+    './portable': 'standard',
+    './portable/minimal': 'minimal',
+    // Compatibility with published Transform 5 betas.
     './browser': 'standard',
     './browser/minimal': 'minimal',
 };
@@ -443,7 +446,7 @@ const legacyModuleExport = (source) => ({
     ...moduleExport(source),
     import: {types: `./api/${source}.legacy.d.mts`, default: `./api/${source}.legacy.mjs`},
 });
-const browserExport = (source) => ({
+const portableExport = (source) => ({
     import: {types: `./dist/browser/${source}.d.mts`, default: `./dist/browser/${source}.mjs`},
 });
 const legacyTypeExport = (source) => ({
@@ -457,8 +460,8 @@ export function packageExports() {
             .filter(([name]) => !name.startsWith('./plugins/') && !name.startsWith('./migrations/'))
             .map(([name, source]) => [name, moduleExport(source)]),
     );
-    for (const [name, source] of Object.entries(browserEntries)) {
-        entries[name] = browserExport(source);
+    for (const [name, source] of Object.entries(portableEntries)) {
+        entries[name] = portableExport(source);
     }
     entries['./plugins/*'] = moduleExport('plugins/*');
     entries['./migrations/*'] = moduleExport('migrations/*');
@@ -492,8 +495,8 @@ export function publicEntryInventory() {
     const entries = Object.fromEntries(
         Object.entries(stableEntries).map(([name, source]) => [name, moduleExport(source)]),
     );
-    for (const [name, source] of Object.entries(browserEntries)) {
-        entries[name] = browserExport(source);
+    for (const [name, source] of Object.entries(portableEntries)) {
+        entries[name] = portableExport(source);
     }
     for (const {source} of publicModules) {
         for (const alias of [source, ...(source.endsWith('/index') ? [source.slice(0, -6)] : [])]) {

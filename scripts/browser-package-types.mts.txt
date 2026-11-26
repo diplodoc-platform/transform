@@ -8,12 +8,18 @@ import transform, {
     type BrowserTransformOptions,
     type ParserEnv,
     type DocumentEnv,
-} from '@diplodoc/transform/browser';
+} from '@diplodoc/transform/portable';
 import minimal, {
     createParser as createMinimalParser,
     type BrowserSanitizeFunction,
     type BrowserTransformOptions as MinimalOptions,
-} from '@diplodoc/transform/browser/minimal';
+} from '@diplodoc/transform/portable/minimal';
+import browser from '@diplodoc/transform/browser';
+import browserMinimal from '@diplodoc/transform/browser/minimal';
+
+const standardAlias: typeof transform = browser;
+const minimalAlias: typeof minimal = browserMinimal;
+void [standardAlias, minimalAlias];
 
 const plugin = definePlugin({
     id: 'typed',

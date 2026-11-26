@@ -47,7 +47,7 @@ for (const [transform, factory, parse] of [
 }
 assert.equal(logEsm.log.isEmpty(), true);
 
-for (const name of ['@diplodoc/transform/browser', '@diplodoc/transform/browser/minimal']) {
+for (const name of ['@diplodoc/transform/portable', '@diplodoc/transform/portable/minimal']) {
     const api = await import(name);
     const diagnostics = api.createDiagnosticCollector();
     const custom = api.definePlugin({

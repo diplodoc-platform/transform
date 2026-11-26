@@ -1,6 +1,6 @@
 /* eslint-env browser */
-import standard, {createHighlightJsHighlighter} from '@diplodoc/transform/browser';
-import minimal from '@diplodoc/transform/browser/minimal';
+import standard, {createHighlightJsHighlighter} from '@diplodoc/transform/portable';
+import minimal from '@diplodoc/transform/portable/minimal';
 import '@diplodoc/transform/runtime';
 import '@diplodoc/transform/styles';
 

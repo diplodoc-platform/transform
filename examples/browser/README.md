@@ -1,8 +1,8 @@
 # Browser example
 
-Use a Transform version that includes the new browser exports. The repository
-example self-resolves the built package; an installed application uses exactly
-the same public imports.
+Use a Transform version that exports `/portable` and `/portable/minimal`.
+The repository example resolves those imports from the built package. An installed
+application uses the same public imports.
 
 From the Transform checkout:
 
@@ -28,7 +28,7 @@ serving to preserve Unicode parser data.
 The application chooses trusted runtime/style bundles itself. It must not load
 arbitrary metadata URLs as executable resources.
 
-The minimal selector displays the generated HTML as text. The minimal entry
+The minimal selector displays the generated HTML as text. `/portable/minimal`
 contains no built-in sanitizer and returns unsanitized HTML without a
 `sanitize` callback. Supply your application's own sanitizer before inserting
 its output into the DOM.

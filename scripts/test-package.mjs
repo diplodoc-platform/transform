@@ -142,7 +142,7 @@ try {
         viteEntry,
         `import sup from '@diplodoc/transform/plugins/sup';
 import monospace from '@diplodoc/transform/plugins/monospace';
-import browserTransform, {definePlugin} from '@diplodoc/transform/browser/minimal';
+import browserTransform, {definePlugin} from '@diplodoc/transform/portable/minimal';
 import {ImsizeAttr} from '@diplodoc/transform/lib/plugins/imsize/const.js';
 import logger, {getLogger, log} from '@diplodoc/transform/log';
 export const result = [typeof sup, ImsizeAttr.Width, typeof getLogger, typeof log.warn, logger === log];

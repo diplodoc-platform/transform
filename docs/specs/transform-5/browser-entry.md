@@ -92,11 +92,13 @@ policy. The bounded proof applies to that implementation.
 
 ## Public API and finite compositions
 
-Add explicit `@diplodoc/transform/browser` and
-`@diplodoc/transform/browser/minimal` exports. The former is the standard browser
+Add explicit `@diplodoc/transform/portable` and
+`@diplodoc/transform/portable/minimal` exports. The former is the standard browser
 composition; the latter has a separately reachable minimal dependency graph.
-Selecting a runtime flag after importing all standard plugins is insufficient
-for the minimal bundle requirement. The standard entry includes the built-in
+The beta paths `/browser` and `/browser/minimal` resolve to the same ESM modules
+and declaration files as their portable counterparts. Both compositions run
+without a DOM. Selecting a runtime flag after importing all standard plugins
+is insufficient for the minimal bundle requirement. The standard entry includes the built-in
 sanitizer. The minimal entry returns unsanitized HTML unless the application
 passes its own synchronous `sanitize` callback.
 
@@ -427,18 +429,18 @@ declaration extraction must preserve `ParserEnv` augmentation identity across
 ## Build and package contract
 
 Browser outputs are built from source under ordinary browser package conditions,
-not by re-exporting the Node CJS `lib/` graph. **New browser subpaths are ESM-only.**
-The exact new manifest entries are:
+not by re-exporting the Node CJS `lib/` graph. **Portable subpaths and their aliases
+are ESM-only.** The canonical manifest entries are:
 
 ```json
 {
-  "./browser": {
+  "./portable": {
     "import": {
       "types": "./dist/browser/standard.d.mts",
       "default": "./dist/browser/standard.mjs"
     }
   },
-  "./browser/minimal": {
+  "./portable/minimal": {
     "import": {
       "types": "./dist/browser/minimal.d.mts",
       "default": "./dist/browser/minimal.mjs"
@@ -449,17 +451,17 @@ The exact new manifest entries are:
 
 There is no require condition, outer default/types/node condition, CJS browser
 artifact or fallback to Node. Even Node24 require(ESM) support must not make
-`require('@diplodoc/transform/browser')` succeed: its expected code is
+`require('@diplodoc/transform/portable')` succeed: its expected code is
 `ERR_PACKAGE_PATH_NOT_EXPORTED`, before loading the Node root. A CommonJS host
-may use `await import('@diplodoc/transform/browser')` before entering the synchronous
+may use `await import('@diplodoc/transform/portable')` before entering the synchronous
 transform boundary. Document ordinary ESM usage and test CJS static require/type
 rejection plus dynamic-import success. A web bundler's require-based entry must
 also fail resolution, rather than follow a Node fallback. Existing Node root CJS,
 ESM facades, main/module/types, legacy paths and runtime/style exports are unchanged.
 
 Keep browser entry metadata separate from `stableEntries` (whose existing generator
-adds both Node formats). A finite `browserEntries` map in the existing public-api
-inventory owns only these two paths, output names and import conditions. The
+adds both Node formats). The `portableEntries` map in the public API inventory
+maps both compositions and their beta aliases to the two ESM outputs. The
 manifest verifier must consume that map without generating Node facades for it.
 A separate source build uses esbuild `platform:'browser',format:'esm',bundle:true,
 splitting:true,target:'es2018',outdir:'dist/browser',outExtension:{'.js':'.mjs'}`
@@ -504,7 +506,7 @@ browser bundler configuration. It must work with no webpack fallback settings,
 Node polyfill package or resolver alias:
 
 ```typescript
-import transform, {createParser} from '@diplodoc/transform/browser';
+import transform, {createParser} from '@diplodoc/transform/portable';
 import '@diplodoc/transform/runtime';
 import '@diplodoc/transform/styles';
 
@@ -528,7 +530,7 @@ untrusted resource URLs found in metadata.
 Show caller-owned lazy loading before the synchronous boundary:
 
 ````typescript
-import {createHighlightJsHighlighter} from '@diplodoc/transform/browser';
+import {createHighlightJsHighlighter} from '@diplodoc/transform/portable';
 
 const [{default: hljs}, {default: javascript}] = await Promise.all([
   import('highlight.js/lib/core'),

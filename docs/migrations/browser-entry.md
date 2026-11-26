@@ -1,10 +1,13 @@
-# Transform in a browser
+# Portable rendering with Transform
 
-Import the explicit ESM browser entry from a Transform version containing this
-API. Existing Node entrypoints retain their host services and CommonJS support.
+Import `/portable` to render prepared Markdown in a browser, a Web Worker or
+Node.js. The ESM entry runs without a DOM and leaves includes, Liquid, linting
+and filesystem operations to the application. Use the Node entry for its host
+services and CommonJS support. The earlier beta paths `/browser` and
+`/browser/minimal` remain aliases for `/portable` and `/portable/minimal`.
 
 ```typescript
-import transform from '@diplodoc/transform/browser';
+import transform from '@diplodoc/transform/portable';
 import '@diplodoc/transform/runtime';
 import '@diplodoc/transform/styles';
 
@@ -22,7 +25,7 @@ ordinary esbuild configuration; Rspack needs no Node aliases or fallback modules
 
 ## Two finite compositions
 
-`@diplodoc/transform/browser` includes the actual standard installation order:
+`@diplodoc/transform/portable` includes the actual standard installation order:
 meta, deflist, cut, notes, anchors, tabs, code, sup, video, monospace, table, file,
 imsize, term, block-anchor, inline-code, visibility, underline, subscript, footnotes
 and task-list. See the shared [plugin configuration contract](../specs/transform-5/plugin-configuration.md)
@@ -32,7 +35,7 @@ General Markdown attributes default to false through the same shared policy as
 Node; use `enableMarkdownAttrs:true` explicitly for compatibility. Heading IDs and
 image dimensions remain independent features.
 
-`@diplodoc/transform/browser/minimal` has no builtin plugins, companion extension
+`@diplodoc/transform/portable/minimal` has no builtin plugins, companion extension
 imports or built-in sanitizer. It retains native Markdown parsing, shared core
 repairs and explicit highlighting. Pass an application sanitizer before using
 the output as HTML. Its attrs default is explicitly false. Explicit true is
@@ -77,7 +80,7 @@ The content guard and default Markdown HTML escaping still run. They do not
 sanitize the output of plugins or highlighters.
 
 ```typescript
-import {createParser} from '@diplodoc/transform/browser/minimal';
+import {createParser} from '@diplodoc/transform/portable/minimal';
 import {sanitizeDocumentHtml} from './application-sanitizer.js';
 
 const parser = createParser({sanitize: sanitizeDocumentHtml});
@@ -121,7 +124,7 @@ and verifies that the iframe grows and shrinks when the viewport changes.
 ### Custom browser plugins
 
 ```typescript
-import {createParser, definePlugin} from '@diplodoc/transform/browser/minimal';
+import {createParser, definePlugin} from '@diplodoc/transform/portable/minimal';
 import {sanitizeDocumentHtml} from './application-sanitizer.js';
 
 const badge = definePlugin({
@@ -144,7 +147,7 @@ const html = parser.compileDocument(article);
 Import one portable callback directly when building a minimal bundle.
 
 ```typescript
-import transform, {definePlugin} from '@diplodoc/transform/browser/minimal';
+import transform, {definePlugin} from '@diplodoc/transform/portable/minimal';
 import monospace from '@diplodoc/transform/plugins/monospace';
 import {sanitizeDocumentHtml} from './application-sanitizer.js';
 
@@ -200,7 +203,7 @@ No Highlight.js implementation loads by default. Await an explicit caller import
 then keep the transform pipeline synchronous:
 
 ````typescript
-import transform, {createHighlightJsHighlighter} from '@diplodoc/transform/browser';
+import transform, {createHighlightJsHighlighter} from '@diplodoc/transform/portable';
 
 const [backend, language] = await Promise.all([
   import('highlight.js/lib/core'),
@@ -217,8 +220,9 @@ This example uses Highlight.js11 exports. Native ESM callers using10.x must use
 the version-appropriate `.js` subpaths described in the
 [highlighter migration guide](./transform-5-highlighter.md).
 
-Both browser subpaths have **import-only** package conditions and `.d.mts`
-declarations. CommonJS `require('@diplodoc/transform/browser')` fails with
+Both portable subpaths and their aliases have **import-only** package conditions
+and share the same `.d.mts` declarations for each composition. CommonJS
+`require('@diplodoc/transform/portable')` fails with
 `ERR_PACKAGE_PATH_NOT_EXPORTED`; a CommonJS caller can use `await import(...)`.
 The existing Node `require('@diplodoc/transform')` behavior is unchanged.
 
