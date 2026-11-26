@@ -29,6 +29,8 @@
         flex-direction: column;
 
         .wide-content {
+            --yfm-table-border-radius: 0px;
+
             height: 95%;
             width: 100%;
 
@@ -37,10 +39,6 @@
                 width: 100%;
                 scrollbar-width: thin;
                 height: 100%;
-            }
-
-            table {
-                border-radius: 0px;
             }
 
             .wide-thead-content {

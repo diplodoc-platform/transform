@@ -212,7 +212,7 @@
 
         box-sizing: border-box;
         border: 1px solid var(--yfm-color-table-border, var(--yfm-color-table-border-private));
-        border-radius: 8px;
+        border-radius: var(--yfm-table-border-radius, var(--yfm-table-border-radius-private));
         border-collapse: collapse;
         border-spacing: 0;
         background: var(--yfm-color-table-background, var(--yfm-color-table-background-private));
@@ -240,7 +240,14 @@
 
         th,
         td {
-            padding: 10px 20px;
+            padding-block: var(
+                --yfm-table-cell-padding-block,
+                var(--yfm-table-cell-padding-block-private)
+            );
+            padding-inline: var(
+                --yfm-table-cell-padding-inline,
+                var(--yfm-table-cell-padding-inline-private)
+            );
             overflow: hidden;
             text-overflow: ellipsis;
             border: 1px solid var(--yfm-color-table-border, var(--yfm-color-table-border-private));
