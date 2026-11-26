@@ -252,17 +252,17 @@ describe.each([false, true])('Heading attributes (includes=%s)', (withIncludes) 
         );
     });
 
-    it('keeps legacy multiple custom anchor IDs', () => {
-        const heading = load(render('### Heading {#first} {#second}').html)('h3');
+    it.each([
+        ['### Heading {#first} {#second}', 'h3', 'Heading {#first}'],
+        ['head\ning\n{#first}\n{#second}\n===', 'h1', 'head<br>\ning<br>\n{#first}'],
+    ])('should use only the last custom anchor ID: %s', (source, tag, content) => {
+        const heading = load(render(source).html)(tag);
 
-        expect(heading.attr('id')).toBe('first');
-        expect(
-            heading
-                .find('a')
-                .map((_index, element) => load(element)('a').attr('href'))
-                .get()
-                .sort(),
-        ).toEqual([`${publicPath}#first`, `${publicPath}#second`]);
+        expect(heading.attr('id')).toBe('second');
+        expect(heading.find('a')).toHaveLength(1);
+        expect(heading.find('a').attr('href')).toBe(`${publicPath}#second`);
+        heading.find('a').remove();
+        expect(heading.html()).toBe(content);
     });
 
     it.each(['hidden', 'data-x', 'custom-flag', 'multiple words'])(
