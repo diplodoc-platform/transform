@@ -25,6 +25,7 @@ entries:
       - yfmlint
       - vsc
       - ajv
+      - screencaster
       - algolia-extension
       - color-extension
       - cut-extension
@@ -33,6 +34,7 @@ entries:
       - html-extension
       - latex-extension
       - mermaid-extension
+      - notes-extension
       - openapi-extension
       - page-constructor-extension
       - quote-link-extension
@@ -52,8 +54,8 @@ entries:
       distribution: https://github.com/diplodoc-platform/infra/actions/runs/37463691539
     owner: diplodoc-platform/team
     introduced-at: 2026-10-06T00:00:00.000Z
-    review-after: 2026-12-01T00:00:00.000Z
-    expires-at: 2026-12-01T00:00:00.000Z
+    review-after: 2027-01-15T00:00:00.000Z
+    expires-at: 2027-02-01T00:00:00.000Z
     exit-criteria:
       - Reassess the managed dev-tool pin contract after stabilization
       - Keep distribution review-only until hosted pilots pass
@@ -72,9 +74,187 @@ entries:
       upstream-patch: https://github.com/svg/svgo/pull/2224
     owner: diplodoc-platform/team
     introduced-at: 2026-06-21T00:00:00.000Z
-    review-after: 2026-12-01T00:00:00.000Z
-    expires-at: 2026-12-01T00:00:00.000Z
+    review-after: 2027-01-15T00:00:00.000Z
+    expires-at: 2027-02-01T00:00:00.000Z
     exit-criteria:
       - Upstream releases configurable entity limits for the Node entry points
       - Counted-entity regressions pass in Transform and CLI HTML and Markdown builds
       - The packed npm artifact works without the local patch
+  - id: DEP-0004
+    dependency: cheerio
+    repositories:
+      - transform
+      - translation
+    allowed-version: 1.2.0
+    ignored-versions: []
+    risk: medium
+    category: runtime-baseline
+    verification-profile: document-transform
+    reason: >-
+      Keep the reviewed candidate-train runtime baseline explicit across library source locks and the CLI consumer lock;
+      upgrades require coordinated validation.
+    evidence:
+      baseline-pr: https://github.com/diplodoc-platform/transform/pull/1181
+    owner: diplodoc-platform/team
+    introduced-at: 2026-11-09T00:00:00.000Z
+    review-after: 2026-12-01T00:00:00.000Z
+    expires-at: 2027-02-01T00:00:00.000Z
+    exit-criteria:
+      - A coordinated dependency update passes canonical lock and installed-version checks
+      - Refresh or remove the pin after reviewing the replacement runtime baseline
+  - id: DEP-0005
+    dependency: js-yaml
+    repositories:
+      - cli
+      - transform
+      - translation
+    allowed-version: 4.3.2
+    ignored-versions: []
+    risk: medium
+    category: runtime-baseline
+    verification-profile: document-transform
+    reason: >-
+      Keep the reviewed candidate-train runtime baseline explicit across library source locks and the CLI consumer lock;
+      upgrades require coordinated validation.
+    evidence:
+      baseline-pr: https://github.com/diplodoc-platform/cli/pull/2385
+    owner: diplodoc-platform/team
+    introduced-at: 2026-11-09T00:00:00.000Z
+    review-after: 2026-12-01T00:00:00.000Z
+    expires-at: 2027-02-01T00:00:00.000Z
+    exit-criteria:
+      - A coordinated dependency update passes canonical lock and installed-version checks
+      - Refresh or remove the pin after reviewing the replacement runtime baseline
+  - id: DEP-0006
+    dependency: lodash
+    repositories:
+      - cli
+      - transform
+      - translation
+    allowed-version: 4.18.1
+    ignored-versions: []
+    risk: medium
+    category: runtime-baseline
+    verification-profile: document-transform
+    reason: >-
+      Keep the reviewed candidate-train runtime baseline explicit across library source locks and the CLI consumer lock;
+      upgrades require coordinated validation.
+    evidence:
+      baseline-pr: https://github.com/diplodoc-platform/transform/pull/1181
+    owner: diplodoc-platform/team
+    introduced-at: 2026-11-09T00:00:00.000Z
+    review-after: 2026-12-01T00:00:00.000Z
+    expires-at: 2027-02-01T00:00:00.000Z
+    exit-criteria:
+      - A coordinated dependency update passes canonical lock and installed-version checks
+      - Refresh or remove the pin after reviewing the replacement runtime baseline
+  - id: DEP-0009
+    dependency: markdown-it
+    repositories:
+      - transform
+    allowed-version: 15.0.3
+    ignored-versions: []
+    risk: critical
+    category: parser-migration
+    verification-profile: ecosystem
+    reason: The Transform build reads the 15.0.3 source map and compiles the native parser for Node and portable entry points.
+    evidence:
+      build: https://github.com/diplodoc-platform/transform/pull/1126
+      legacy-lint: https://github.com/diplodoc-platform/transform/pull/1200
+    owner: diplodoc-platform/team
+    introduced-at: 2026-11-26T00:00:00.000Z
+    review-after: 2027-01-15T00:00:00.000Z
+    expires-at: 2027-02-01T00:00:00.000Z
+    exit-criteria:
+      - Update the source-map build and verify the next parser version in the packed Node and portable entry points
+      - CLI and Viewer pass the reviewed rendering and diagnostics checks
+  - id: DEP-0010
+    dependency: markdown-it-deflist
+    repositories:
+      - transform
+    allowed-version: 4.0.0
+    ignored-versions: []
+    risk: critical
+    category: parser-migration
+    verification-profile: ecosystem
+    reason: The definition list adapter and native Markdown-it 15 token types were verified together for Transform 5.
+    evidence:
+      migration: https://github.com/diplodoc-platform/transform/pull/1126
+    owner: diplodoc-platform/team
+    introduced-at: 2026-11-26T00:00:00.000Z
+    review-after: 2027-01-15T00:00:00.000Z
+    expires-at: 2027-02-01T00:00:00.000Z
+    exit-criteria:
+      - Verify the replacement definition-list grammar and token types in installed consumers
+  - id: DEP-0011
+    dependency: markdown-it-footnote
+    repositories:
+      - transform
+    allowed-version: 4.0.0
+    ignored-versions: []
+    risk: critical
+    category: parser-migration
+    verification-profile: ecosystem
+    reason: Footnote collection and replay depend on the reviewed upstream token and rule shapes.
+    evidence:
+      migration: https://github.com/diplodoc-platform/transform/pull/1144
+    owner: diplodoc-platform/team
+    introduced-at: 2026-11-26T00:00:00.000Z
+    review-after: 2027-01-15T00:00:00.000Z
+    expires-at: 2027-02-01T00:00:00.000Z
+    exit-criteria:
+      - Verify token ownership, numbering and references on the replacement version in Node and portable builds
+  - id: DEP-0012
+    dependency: markdown-it-ins
+    repositories:
+      - transform
+    allowed-version: 4.0.0
+    ignored-versions: []
+    risk: critical
+    category: parser-migration
+    verification-profile: ecosystem
+    reason: The underline adapter reuses upstream parsing and delimiter processing with Transform token names.
+    evidence:
+      migration: https://github.com/diplodoc-platform/transform/pull/1137
+    owner: diplodoc-platform/team
+    introduced-at: 2026-11-26T00:00:00.000Z
+    review-after: 2027-01-15T00:00:00.000Z
+    expires-at: 2027-02-01T00:00:00.000Z
+    exit-criteria:
+      - Verify the replacement rule shapes, delimiter ownership and adjacent syntax before updating the pin
+  - id: DEP-0013
+    dependency: markdown-it-sub
+    repositories:
+      - transform
+    allowed-version: 2.0.0
+    ignored-versions: []
+    risk: critical
+    category: parser-migration
+    verification-profile: ecosystem
+    reason: The subscript adapter relies on the reviewed delimiter and escaping behavior.
+    evidence:
+      migration: https://github.com/diplodoc-platform/transform/pull/1137
+    owner: diplodoc-platform/team
+    introduced-at: 2026-11-26T00:00:00.000Z
+    review-after: 2027-01-15T00:00:00.000Z
+    expires-at: 2027-02-01T00:00:00.000Z
+    exit-criteria:
+      - Verify the replacement subscript grammar with strikethrough, escaping and nested inline syntax
+  - id: DEP-0014
+    dependency: '@mdit/plugin-tasklist'
+    repositories:
+      - transform
+    allowed-version: 1.1.4
+    ignored-versions: []
+    risk: critical
+    category: parser-migration
+    verification-profile: ecosystem
+    reason: Transform wraps the upstream task-list rules and relies on their checkbox token behavior.
+    evidence:
+      migration: https://github.com/diplodoc-platform/transform/pull/1144
+    owner: diplodoc-platform/team
+    introduced-at: 2026-11-26T00:00:00.000Z
+    review-after: 2027-01-15T00:00:00.000Z
+    expires-at: 2027-02-01T00:00:00.000Z
+    exit-criteria:
+      - Verify the replacement token and checkbox behavior on repeated, nested and mixed task lists
