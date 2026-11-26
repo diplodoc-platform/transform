@@ -61,12 +61,12 @@
     "test:performance": "node scripts/performance/run.mjs"
   },
   "dependencies": {
-    "@diplodoc/cut-extension": "^2.0.0-beta.2",
-    "@diplodoc/directive": "^1.0.0-beta.4",
-    "@diplodoc/file-extension": "^1.0.0-beta.2",
-    "@diplodoc/notes-extension": "^1.0.0-beta.2",
-    "@diplodoc/tabs-extension": "^4.0.0-beta.3",
-    "@diplodoc/utils": "^3.0.0-beta.3",
+    "@diplodoc/cut-extension": "^2.0.0",
+    "@diplodoc/directive": "^1.0.0",
+    "@diplodoc/file-extension": "^1.0.0",
+    "@diplodoc/notes-extension": "^1.0.0",
+    "@diplodoc/tabs-extension": "^4.0.0",
+    "@diplodoc/utils": "^3.0.0",
     "@mdit/plugin-tasklist": "1.1.4",
     "@types/lodash": "^4.17.23",
     "@types/sanitize-html": "^2.9.3",
