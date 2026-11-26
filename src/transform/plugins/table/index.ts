@@ -544,7 +544,7 @@ function extractAndApplyClassFromToken(
     if (attrsClass) {
         if (attrsClass.split(' ').some((c) => c.startsWith('cell-align-'))) {
             log?.warn(
-                `Deprecated: use align="..." inside cell attributes "::{align=\\"...\\"}" instead of .cell-align-* class in cell content "{ }"`,
+                'Deprecated: use halign and valign instead of .cell-align-* class in cell content "{ }".',
             );
         }
         tdOpenToken.attrJoin('class', attrsClass);
@@ -565,6 +565,8 @@ const VALID_ALIGN_VALUES: ReadonlySet<string> = new Set([
     'bottom-left',
     'bottom-right',
 ]);
+const VALID_HALIGN_VALUES: ReadonlySet<string> = new Set(['start', 'center', 'end']);
+const VALID_VALIGN_VALUES: ReadonlySet<string> = new Set(['top', 'center', 'bottom']);
 
 function parseHeaderRows(rawAttrs: TableAttrs, log?: Logger): number | null {
     if (!('header-rows' in rawAttrs)) return null;
@@ -580,15 +582,27 @@ function parseHeaderRows(rawAttrs: TableAttrs, log?: Logger): number | null {
 
 function applyCellAttrs(token: Token, rawAttrs: TableAttrs, log?: Logger): void {
     if ('align' in rawAttrs) {
-        const value = rawAttrs['align'];
-        if (!VALID_ALIGN_VALUES.has(value)) {
-            log?.warn(`Unknown table cell align value: "${value}"`);
+        log?.warn('Deprecated: use halign and valign instead of the table cell align attribute.');
+    }
+
+    for (const [attr, validValues] of Object.entries({
+        align: VALID_ALIGN_VALUES,
+        halign: VALID_HALIGN_VALUES,
+        valign: VALID_VALIGN_VALUES,
+    })) {
+        if (!(attr in rawAttrs)) {
+            continue;
+        }
+
+        const value = rawAttrs[attr];
+        if (!validValues.has(value)) {
+            log?.warn(`Unknown table cell ${attr} value: "${value}"`);
         }
         token.meta = token.meta || {};
-        token.meta.align = value;
-        token.attrSet('data-align', value);
+        token.meta[attr] = value;
+        token.attrSet(`data-${attr}`, value);
         if (value) {
-            token.attrJoin('class', `cell-align-${value}`);
+            token.attrJoin('class', `cell-${attr}-${value}`);
         }
     }
 

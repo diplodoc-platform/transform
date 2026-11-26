@@ -2002,16 +2002,64 @@ describe('cell attrs', () => {
 });
 
 describe('cell align attribute', () => {
+    beforeEach(() => {
+        log.clear();
+    });
+
     const parseTokens = (text: string, opts?: YfmTablePluginOptions) => {
         const md = new MarkdownIt();
         md.use(table, opts ?? {});
         return md.parse(text, {});
     };
 
-    it('align="center" adds cell-align-center class on td', () => {
-        const tokens = parseTokens('#|\n||::{align="center"} A ||\n|#');
-        const tdOpens = tokens.filter((t: {type: string}) => t.type === 'yfm_td_open');
-        expect(tdOpens[0]?.attrGet('class')).toBe('cell-align-center');
+    it.each([
+        ['start', 'top'],
+        ['center', 'center'],
+        ['end', 'bottom'],
+    ])('should render halign="%s" and valign="%s" together', (halign, valign) => {
+        const {
+            result: {html},
+            logs,
+        } = transform(`#|\n||::{halign="${halign}" valign="${valign}"} A ||\n|#`);
+
+        expect(html).toContain(`data-halign="${halign}"`);
+        expect(html).toContain(`data-valign="${valign}"`);
+        expect(html).toContain(`class="cell-halign-${halign} cell-valign-${valign}"`);
+        expect(logs.warn).toEqual([]);
+    });
+
+    it.each([
+        ['halign="end"', '<td data-halign="end" class="cell-halign-end">'],
+        ['valign="center"', '<td data-valign="center" class="cell-valign-center">'],
+    ])('should apply %s without adding the other axis', (attrs, expected) => {
+        expect(transformYfm(`#|\n||::{${attrs}} A ||\n|#`)).toContain(expected);
+    });
+
+    it.each([
+        ['halign', 'left'],
+        ['valign', 'start'],
+        ['valign', 'end'],
+        ['valign', 'middle'],
+    ])('should warn about unsupported %s="%s"', (attr, value) => {
+        const {logs} = transform(`#|\n||::{${attr}="${value}"} A ||\n|#`);
+
+        expect(logs.warn).toEqual([
+            expect.stringContaining(`Unknown table cell ${attr} value: "${value}"`),
+        ]);
+    });
+
+    it('should warn about deprecated align and preserve its output', () => {
+        const {
+            result: {html},
+            logs,
+        } = transform('#|\n||::{align="center"} A ||\n|#');
+
+        expect(html).toContain('<td data-align="center" class="cell-align-center">');
+        expect(logs.warn).toEqual([
+            expect.stringContaining(
+                'Deprecated: use halign and valign instead of the table cell align attribute.',
+            ),
+        ]);
     });
 
     it('align="top-left" adds cell-align-top-left class on td', () => {
@@ -2054,7 +2102,7 @@ describe('deprecated cell-align class', () => {
         log.clear();
     });
 
-    it('|| Text {.cell-align-center} || emits deprecation warn and still applies class on td', () => {
+    it('should recommend halign and valign for deprecated cell-align classes', () => {
         const {
             result: {html},
             logs,
@@ -2063,9 +2111,11 @@ describe('deprecated cell-align class', () => {
             enableMarkdownAttrs: false,
         });
         expect(html).toContain('<td class="cell-align-center">');
-        expect(
-            logs.warn.some((w: string) => w.includes('.cell-align-* class in cell content')),
-        ).toBe(true);
+        expect(logs.warn).toEqual([
+            expect.stringContaining(
+                'Deprecated: use halign and valign instead of .cell-align-* class in cell content "{ }".',
+            ),
+        ]);
     });
 
     it('|| Text {.other-class} || does not emit deprecation warn', () => {
