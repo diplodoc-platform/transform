@@ -597,13 +597,12 @@ function applyCellAttrs(token: Token, rawAttrs: TableAttrs, log?: Logger): void 
         const value = rawAttrs[attr];
         if (!validValues.has(value)) {
             log?.warn(`Unknown table cell ${attr} value: "${value}"`);
+            continue;
         }
         token.meta = token.meta || {};
         token.meta[attr] = value;
         token.attrSet(`data-${attr}`, value);
-        if (value) {
-            token.attrJoin('class', `cell-${attr}-${value}`);
-        }
+        token.attrJoin('class', `cell-${attr}-${value}`);
     }
 
     if ('bg' in rawAttrs) {

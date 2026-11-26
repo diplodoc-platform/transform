@@ -2,6 +2,7 @@ import type {YfmTablePluginOptions} from '../../src/transform/plugins/table/type
 
 import dd from 'ts-dedent';
 import MarkdownIt from 'markdown-it';
+import {load} from 'cheerio';
 
 import transform from '../../src/transform';
 import table from '../../src/transform/plugins/table';
@@ -2036,13 +2037,42 @@ describe('cell align attribute', () => {
     });
 
     it.each([
+        ['halign', 'start'],
+        ['valign', 'top'],
+    ])('should preserve align together with %s', (attr, value) => {
+        const html = transformYfm(`#|\n||::{align="bottom-right" ${attr}="${value}"} A ||\n|#`);
+        const cell = load(html)('td');
+
+        expect(cell.attr('data-align')).toBe('bottom-right');
+        expect(cell.attr(`data-${attr}`)).toBe(value);
+        expect(cell.hasClass('cell-align-bottom-right')).toBe(true);
+        expect(cell.hasClass(`cell-${attr}-${value}`)).toBe(true);
+    });
+
+    it('should preserve valid cell attributes when halign is invalid', () => {
+        const html = transformYfm('#|\n||::{halign="invalid" valign="bottom" bg="red"} A ||\n|#');
+        const cell = load(html)('td');
+
+        expect(cell.attr('data-halign')).toBeUndefined();
+        expect(cell.hasClass('cell-halign-invalid')).toBe(false);
+        expect(cell.attr('data-valign')).toBe('bottom');
+        expect(cell.hasClass('cell-valign-bottom')).toBe(true);
+        expect(cell.attr('data-bg')).toBe('red');
+        expect(cell.hasClass('cell-bg-red')).toBe(true);
+    });
+
+    it.each([
         ['halign', 'left'],
         ['valign', 'start'],
         ['valign', 'end'],
         ['valign', 'middle'],
-    ])('should warn about unsupported %s="%s"', (attr, value) => {
-        const {logs} = transform(`#|\n||::{${attr}="${value}"} A ||\n|#`);
+    ])('should warn and ignore unsupported %s="%s"', (attr, value) => {
+        const {
+            result: {html},
+            logs,
+        } = transform(`#|\n||::{${attr}="${value}"} A ||\n|#`);
 
+        expect(html).toContain('<td>');
         expect(logs.warn).toEqual([
             expect.stringContaining(`Unknown table cell ${attr} value: "${value}"`),
         ]);
@@ -2062,13 +2092,26 @@ describe('cell align attribute', () => {
         ]);
     });
 
+    it('should forward one align deprecation warning across cells and documents', () => {
+        const warnings: string[] = [];
+        const logger = {...log, warn: (message: string) => warnings.push(message)};
+        const input = '#|\n||::{align="center"} A |::{align="bottom-right"} B ||\n|#';
+
+        transform(input, {log: logger});
+        transform(input, {log: logger});
+
+        expect(warnings).toEqual([
+            'Deprecated: use halign and valign instead of the table cell align attribute.',
+        ]);
+    });
+
     it('align="top-left" adds cell-align-top-left class on td', () => {
         const tokens = parseTokens('#|\n||::{align="top-left"} A ||\n|#');
         const tdOpens = tokens.filter((t: {type: string}) => t.type === 'yfm_td_open');
         expect(tdOpens[0]?.attrGet('class')).toBe('cell-align-top-left');
     });
 
-    it('align="unknown-value" adds class on td and emits warn', () => {
+    it('should warn and ignore unsupported align values', () => {
         const {
             result: {html},
             logs,
@@ -2076,7 +2119,7 @@ describe('cell align attribute', () => {
             plugins: [table],
             enableMarkdownAttrs: false,
         });
-        expect(html).toContain('<td data-align="unknown-value" class="cell-align-unknown-value">');
+        expect(html).toContain('<td>');
         expect(logs.warn.some((w: string) => w.includes('Unknown table cell align value'))).toBe(
             true,
         );
