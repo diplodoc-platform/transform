@@ -95,6 +95,7 @@ test.each([
     {vars: {}},
     {included: false},
     {needToSanitizeHtml: false},
+    {warnOnUnsanitizedHtml: true},
     {sanitize: () => 'unsafe'},
     {inlineSvg: true},
     {highlightLangs: {}},
@@ -262,6 +263,35 @@ test('minimal supports an explicit final HTML and CSS policy for each parser', (
         '<p style="position:fixed;color:red">text</p>',
         undefined,
     );
+});
+
+test('minimal optionally warns when returning unsanitized HTML', () => {
+    const source = '<p>text</p>';
+    const options = {allowHTML: true, warnOnUnsanitizedHtml: true};
+    const warning = expect.stringContaining('/portable/minimal returned unsanitized HTML');
+    const parser = createMinimalParser(options);
+    const document = parser.parseDocument(source);
+    const empty = parser.parseDocument('');
+
+    expect(minimal(source, {allowHTML: true}).logs.warn).toEqual([]);
+    expect(minimal(source, {...options, warnOnUnsanitizedHtml: false}).logs.warn).toEqual([]);
+    expect(minimal(source, options)).toMatchObject({
+        result: {html: source},
+        logs: {warn: [warning]},
+    });
+    expect(minimal(source, {...options, sanitize: (html) => html}).logs.warn).toEqual([]);
+    expect(document.logs.warn).toEqual([]);
+    expect(parser.compileDocument(document)).toBe(source);
+    expect(document.logs.warn).toEqual([warning]);
+    expect(parser.compileDocument(empty)).toBe('');
+    expect(empty.logs.warn).toEqual([]);
+    expect(log.isEmpty()).toBe(true);
+});
+
+test('minimal rejects an invalid unsanitized HTML warning setting', () => {
+    expect(() =>
+        Reflect.apply(minimal, undefined, ['text', {warnOnUnsanitizedHtml: 'true'}]),
+    ).toThrow('Invalid browser option "warnOnUnsanitizedHtml"');
 });
 
 test('minimal preserves the guard and propagates sanitizer failures', () => {

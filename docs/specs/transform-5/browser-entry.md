@@ -98,9 +98,15 @@ composition; the latter has a separately reachable minimal dependency graph.
 The beta paths `/browser` and `/browser/minimal` resolve to the same ESM modules
 and declaration files as their portable counterparts. Both compositions run
 without a DOM. Selecting a runtime flag after importing all standard plugins
-is insufficient for the minimal bundle requirement. The standard entry includes the built-in
-sanitizer. The minimal entry returns unsanitized HTML unless the application
-passes its own synchronous `sanitize` callback.
+is insufficient for the minimal bundle requirement. The standard entry includes
+its built-in sanitizer.
+
+**Intentional change from the published beta contract.** This supersedes the
+earlier “minimal does not mean unsanitized” invariant. Through `5.0.0-beta.4`,
+omitting `sanitize` selected the built-in sanitizer even in minimal. Removing the HTML and CSS sanitizer from the minimal dependency graph
+means `/portable/minimal` and its `/browser/minimal` alias now return unsanitized
+HTML by default. Applications inserting this output into the DOM must pass a
+synchronous `sanitize` callback. Standard retains its built-in policy.
 
 Both entries provide:
 
@@ -206,7 +212,10 @@ underlying policy semantics for the standard entry. Minimal forwards these
 settings to the application callback when supplied. Without a callback it
 returns renderer HTML, including plugin and highlighter output, with no
 sanitization. Applications must sanitize that output before inserting it into
-the DOM. Reject parser/source-map options, Node callbacks, `disableStyleSanitizer`
+the DOM. For development, minimal accepts `warnOnUnsanitizedHtml: true` to emit
+an ordinary warning when it compiles nonempty output without a callback. The
+setting defaults to `false` and the warning goes through document diagnostics.
+Reject parser/source-map options, Node callbacks, `disableStyleSanitizer`
 and `needToSanitizeHtml:false` in both entries. The standard entry rejects custom
 sanitizer replacement.
 
@@ -216,7 +225,7 @@ sanitizer replacement.
 | Final HTML and CSS sanitization                                                                                                                                        | Application-supplied `sanitize` only                                               | Built-in sanitizer                                                                         |
 | YFM metadata, anchors, notes, code controls, definition lists, sup, monospace, tables, image dimensions, terms, block anchors, inline-code controls, visibility, video | Explicit supplied compatible plugins only                                          | Same finite builtin installation order/algorithms as Node, after the dependency cuts above |
 | Cut/tabs/file extension rendering                                                                                                                                      | Explicit compatible browser plugin                                                 | Existing browser implementations with `bundle:false`; URL/resource records only            |
-| General Markdown attrs                                                                                                                                                 | Explicit `enableMarkdownAttrs:true` using the pinned implementation; default false | Final shared default false after6944B; explicit true retains compatibility                 |
+| General Markdown attrs                                                                                                                                                 | Explicit `enableMarkdownAttrs:true` using the pinned implementation; default false | Final shared default false after DOCSTOOLS-6944B; explicit true retains compatibility      |
 | Explicit synchronous highlighter                                                                                                                                       | Yes                                                                                | Yes                                                                                        |
 | Implicit highlight.js/lowlight, legacy highlighter loader                                                                                                              | No                                                                                 | No                                                                                         |
 | Liquid/YFMLint engines and implicit interpolation                                                                                                                      | No                                                                                 | No                                                                                         |
@@ -324,10 +333,11 @@ The exact prelude/installation sequence is:
 Core title/headings/inline flags default false; disabled rules default empty.
 The final omitted standard attrs default is false through the shared Node policy;
 explicit true retains compatibility. Minimal also defaults false. DOCSTOOLS-6944B
-owns changing that policy and consumer compatibility settings;6940 cannot edit
-or duplicate its resolver. The implementation baseline already includes merged6944B. Final browser
-declarations, package and consumer gates retain that exact default. Anchor/image-dimension parsing remains
-independent of general attrs enablement.
+owns that policy and the consumer compatibility settings. DOCSTOOLS-6940 uses
+its shared resolver. The implementation baseline includes the merged
+DOCSTOOLS-6944B changes. Browser declarations, package and consumer checks
+retain that default. Anchor and image-dimension parsing remain independent of
+general attrs enablement.
 
 ### Unsupported content and resource behavior
 
@@ -378,7 +388,7 @@ must retain their existing boundaries; raw HTML comments/attributes are examples
 not executable directives. No regex over the complete input, second parse that
 executes user rules/IDs twice, stripped comments/code as replacement source, or
 new Markdown scanner framework. If native hooks require a small position tracker,
-prove it on these fixtures before choosing its implementation. The22frozen cases
+prove it on these fixtures before choosing its implementation. The 22 frozen cases
 include the following required distinctions in both entries unless scoped:
 
 | Input/context                                                          | Result                                                |

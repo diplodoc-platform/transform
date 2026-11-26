@@ -51,6 +51,9 @@ const sanitize: BrowserSanitizeFunction = (rendered, settings) =>
     settings?.allowedTags ? rendered : '';
 minimal(html, {pluginConfiguration: {preset: 'none'}, sanitize});
 createMinimalParser({sanitize});
+createMinimalParser({warnOnUnsanitizedHtml: true});
+// @ts-expect-error Only minimal can return unsanitized HTML.
+createParser({warnOnUnsanitizedHtml: true});
 // @ts-expect-error The standard browser entry uses its own sanitizer.
 transform('text', {sanitize});
 // @ts-expect-error The minimal sanitizer must return a string synchronously.

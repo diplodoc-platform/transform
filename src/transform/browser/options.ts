@@ -64,7 +64,7 @@ const sanitizeKeys = new Set(
         allowProtocolRelative: true,
     } satisfies Record<keyof BrowserSanitizeOptions, true>),
 );
-const minimalKeys = new Set([...coreKeys, 'sanitize']);
+const minimalKeys = new Set([...coreKeys, 'sanitize', 'warnOnUnsanitizedHtml']);
 
 function unsupported(option: string): never {
     throw new BrowserUnsupportedFeatureError(
@@ -218,10 +218,27 @@ export function resolveBrowserOptions(
 export function resolveMinimalBrowserOptions(
     options: BrowserMinimalTransformOptions = {},
 ): BrowserParserConfiguration {
-    const {sanitize, ...resolved} = resolveBrowserOptions(options, [], minimalKeys);
+    const {sanitize, warnOnUnsanitizedHtml, ...resolved} = resolveBrowserOptions(
+        options,
+        [],
+        minimalKeys,
+    );
 
     if (sanitize === undefined) {
-        return {options: resolved};
+        if (warnOnUnsanitizedHtml !== true) {
+            return {options: resolved};
+        }
+        return {
+            options: resolved,
+            sanitize(html, _options, _additionalOptions, logger) {
+                if (html) {
+                    logger?.warn(
+                        '/portable/minimal returned unsanitized HTML. Pass a sanitize callback before inserting the output into the DOM.',
+                    );
+                }
+                return html;
+            },
+        };
     }
     if (typeof sanitize !== 'function') {
         throw new TypeError('Invalid browser option "sanitize"');

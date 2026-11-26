@@ -79,6 +79,11 @@ alone only describes settings for a callback and does not sanitize the output.
 The content guard and default Markdown HTML escaping still run. They do not
 sanitize the output of plugins or highlighters.
 
+For development, set `warnOnUnsanitizedHtml: true` on minimal to record a warning
+when it compiles nonempty HTML without a callback. The warning is off by default.
+It appears in `transform(...).logs.warn` or the compiled document's `logs.warn`
+and is forwarded to a supplied diagnostic collector or logger.
+
 ```typescript
 import {createParser} from '@diplodoc/transform/portable/minimal';
 import {sanitizeDocumentHtml} from './application-sanitizer.js';
