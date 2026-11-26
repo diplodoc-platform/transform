@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.79.0](https://github.com/diplodoc-platform/transform/compare/v4.78.15...v4.79.0) (2026-11-26)
+
+
+### Features
+
+* **table:** add independent cell alignment ([318a208](https://github.com/diplodoc-platform/transform/commit/318a208c507c6006036f07b3a0c17f5239564053))
+* **table:** make border radius and cell padding configurable ([9803d7b](https://github.com/diplodoc-platform/transform/commit/9803d7bae2bfda89ac7834bcfe4615744730e844))
+
+
+### Bug Fixes
+
+* **table:** skip invalid cell alignment values ([37d4f2f](https://github.com/diplodoc-platform/transform/commit/37d4f2f03095cd0aee04294434107551542583fa))
+
 ## [4.78.15](https://github.com/diplodoc-platform/transform/compare/v4.78.14...v4.78.15) (2026-11-23)
 
 
