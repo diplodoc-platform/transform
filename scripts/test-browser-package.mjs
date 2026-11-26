@@ -49,8 +49,8 @@ export function verifyBrowserPackage(consumerRoot, compiler, buildSync) {
         `
 import {type ParserEnv as NodeEnv} from '@diplodoc/transform/types';
 import {type DocumentEnv as NodeDocument} from '@diplodoc/transform/document';
-import {createParser, type ParserEnv, type DocumentEnv, type ParsedDocumentFragment} from '@diplodoc/transform/browser';
-import {type ParserEnv as MinimalEnv, type ParsedDocumentFragment as MinimalFragment} from '@diplodoc/transform/browser/minimal';
+import {createParser, type ParserEnv, type DocumentEnv, type ParsedDocumentFragment} from '@diplodoc/transform/portable';
+import {type ParserEnv as MinimalEnv, type ParsedDocumentFragment as MinimalFragment} from '@diplodoc/transform/portable/minimal';
 declare module '@diplodoc/transform/types' {interface ParserEnv {consumerField: {owned: true}}}
 declare module '@diplodoc/transform/document' {interface DocumentEnv {documentField: {owned: true}}}
 declare const node: NodeEnv;
@@ -78,7 +78,7 @@ void [fromNode, toNode, fromMinimal, fromNodeDocument, toMinimal];
     writeFileSync(configPath, JSON.stringify(config));
     execFileSync(process.execPath, [compiler, '-p', configPath], {stdio: 'inherit'});
     const report = {};
-    for (const entry of ['browser', 'browser/minimal']) {
+    for (const entry of ['portable', 'portable/minimal']) {
         const result = buildSync({
             absWorkingDir: consumerRoot,
             stdin: {
@@ -111,7 +111,7 @@ void [fromNode, toNode, fromMinimal, fromNodeDocument, toMinimal];
             /(?:sanitize-core\.ts|browser\/css\.ts|node_modules\/(?:sanitize-html|cssfilter|cheerio|css)\/)/;
         assert.equal(
             sources.some((source) => sanitizerImplementation.test(source)),
-            entry === 'browser',
+            entry === 'portable',
         );
         report[entry] = {
             bytes: result.outputFiles[0].contents.length,

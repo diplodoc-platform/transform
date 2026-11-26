@@ -4,7 +4,7 @@ import {createRequire} from 'node:module';
 // Resolve the installed package after this fixture is copied to its consumer.
 const packageName = '@diplodoc/transform';
 const {default: transform} = await import(packageName);
-const {transform: browserTransform} = await import(`${packageName}/browser`);
+const {transform: browserTransform} = await import(`${packageName}/portable`);
 const {migrateBlockDirectives} = await import(`${packageName}/migrations/block-directives`);
 
 const require = createRequire(import.meta.url);

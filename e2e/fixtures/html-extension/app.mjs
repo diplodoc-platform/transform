@@ -1,6 +1,6 @@
 import {htmlBlockDefaultSanitizer, transform as htmlExtension} from '@diplodoc/html-extension';
 import '@diplodoc/html-extension/runtime';
-import transform, {definePlugin} from '@diplodoc/transform/browser/minimal';
+import transform, {definePlugin} from '@diplodoc/transform/portable/minimal';
 import sanitize, {defaultOptions} from '@diplodoc/transform/sanitize';
 
 // The extension applies its block policy before generating the iframe.

@@ -129,7 +129,7 @@ test('minimal rejects enabling an unavailable builtin before caller setup', () =
         },
     };
     expect(() => Reflect.apply(minimal, undefined, ['text', options])).toThrow(
-        /Import @diplodoc\/transform\/browser/,
+        /Import @diplodoc\/transform\/portable/,
     );
     expect(setup).not.toHaveBeenCalled();
     expect(minimal('text', {pluginConfiguration: {preset: 'default'}}).result.html).toBe(

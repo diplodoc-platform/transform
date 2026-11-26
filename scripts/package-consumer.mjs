@@ -114,6 +114,13 @@ await assert.rejects(import(`${packageName}/lib/plugin-registry`), {
     code: 'ERR_MODULE_NOT_FOUND',
 });
 
+for (const suffix of ['', '/minimal']) {
+    const portable = `${packageName}/portable${suffix}`;
+    const browser = `${packageName}/browser${suffix}`;
+    assert.equal(import.meta.resolve(browser), import.meta.resolve(portable));
+    assert.equal(await import(browser), await import(portable));
+}
+
 for (const [subpath, target] of Object.entries(publicEntryInventory())) {
     const specifier = `@diplodoc/transform${subpath === '.' ? '' : subpath.slice(1)}`;
     if (typeof target === 'string') {

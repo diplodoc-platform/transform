@@ -133,12 +133,13 @@ const output = transform('# Заголовок');
 | Реестр и отдельные публичные плагины                        | `/plugins`, например `/plugins/notes`, `/plugins/anchors/collect`                                                                                                          |
 | Preprocessors, frontmatter, утилиты, sanitizer, логирование | `/preprocessors`, `/frontmatter`, `/utils`, `/utils/fs`, `/sanitize`, `/log`, `/deprecation`                                                                               |
 | Миграция исходников                                         | `/migrations/image-dimensions`, `/migrations/table-alignment`, `/migrations/block-directives`                                                                              |
-| Браузерная сборка                                           | `/browser`, `/browser/minimal`                                                                                                                                             |
+| Рендер без DOM и сервисов Node.js                           | `/portable`, `/portable/minimal`                                                                                                                                           |
 | Ресурсы                                                     | `/runtime`, `/runtime/base`, `/runtime/yfm-only`, `/runtime/print`; аналогичные `/styles`, `/styles/base`, `/styles/yfm-only`, `/styles/print`; `/scss/*` и `/dist/scss/*` |
 
 Node API и публичные подмодули Node поддерживают ESM и CommonJS.
-`/browser` и `/browser/minimal` — ESM; их парсер и функции контекста нужно
-импортировать из выбранной браузерной точки. Загрузку JS и CSS настраивает сборщик.
+`/portable` и `/portable/minimal` — ESM; их парсер и функции контекста нужно
+импортировать из выбранной точки. Пути из беты `/browser` и `/browser/minimal`
+работают как алиасы на те же модули. Загрузку JS и CSS настраивает сборщик.
 Точные имена плагинов и совместимых путей перечислены в
 [публичном API](../../scripts/public-api.mjs) и [exports пакета](../../package.json).
 
@@ -161,18 +162,19 @@ Cut/Tabs устарели и запланированы к удалению в 6
 при этом сохраняются. Новые `/document` и `/configuration` не имеют старого
 эквивалентного alias.
 
-`/browser` и `/browser/minimal` доступны только через ESM import; из CommonJS
-используйте `await import('@diplodoc/transform/browser')`. Browser API не читает
-файлы, не выполняет Liquid и YFMLint, не копирует изображения и не раскрывает
+`/portable` и `/portable/minimal` доступны только через ESM import; из CommonJS
+используйте `await import('@diplodoc/transform/portable')`. Эти входы работают в
+браузере, Web Worker и Node.js без DOM. API не читает файлы, не выполняет Liquid
+и YFMLint, не копирует изображения и не раскрывает
 include: подготовьте содержимое на стороне хоста. Он не загружает ресурсы из
-метаданных и не исполняет произвольные URL. `/browser` применяет встроенную
-санитизацию. `/browser/minimal` исключает из сборки встроенные плагины и
+метаданных и не исполняет произвольные URL. `/portable` применяет встроенную
+санитизацию. `/portable/minimal` исключает из сборки встроенные плагины и
 санитайзер. Без callback `sanitize` он возвращает HTML без санитизации.
 Перед вставкой такого результата в DOM подключите свой санитайзер. Runtime и
 стили подключаются отдельно.
 
 ```ts
-import transform from '@diplodoc/transform/browser';
+import transform from '@diplodoc/transform/portable';
 import '@diplodoc/transform/runtime';
 import '@diplodoc/transform/styles';
 
@@ -799,7 +801,7 @@ const result = sass.compile('app.scss', {
 вывод плагинов и подсветки, возвращается без санитизации.
 
 ```ts
-import transform, {definePlugin} from '@diplodoc/transform/browser/minimal';
+import transform, {definePlugin} from '@diplodoc/transform/portable/minimal';
 import monospace from '@diplodoc/transform/plugins/monospace';
 import {sanitizeDocumentHtml} from './application-sanitizer.js';
 
@@ -816,7 +818,7 @@ const result = transform('Вывод: ##пример##', {
 ```
 
 `preset: 'none'` отключает регистрацию встроенных плагинов. Сам
-`/browser/minimal` также исключает их реализации из сборки. В браузере не
+`/portable/minimal` также исключает их реализации из сборки. В браузере не
 подключайте Node-модули `/utils/fs` и `/plugins/includes`, а ID встроенных
 плагинов не используйте для своих callback. Настройки `buildYfmHtmlBlockOptions`
 из HTML-extension задают политику отдельного блока. В браузерный
