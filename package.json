@@ -1,6 +1,6 @@
 {
   "name": "@diplodoc/transform",
-  "version": "5.0.0-beta.1",
+  "version": "5.0.0",
   "description": "A simple transformer of text in YFM (Yandex Flavored Markdown) to HTML",
   "keywords": [
     "markdown",
