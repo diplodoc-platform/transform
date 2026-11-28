@@ -30,6 +30,7 @@ import {olAttrConversion} from './plugins/ol-attr-conversion';
 import linkifyStrikethrough from './plugins/linkify-strikethrough';
 import inlineSvgMarker from './plugins/inline-svg-marker';
 import {DEFAULT_LANG} from './constants';
+import {fenceAttrs} from './plugins/fence-attrs';
 
 /** Finite execution-host operations; parser state and lifecycle remain shared. */
 export interface ParserHost {
@@ -300,6 +301,7 @@ function getPluginOptions(
     } as MarkdownItPluginOpts & {
         deprecations: DeprecationReporter;
         generateID: NonNullable<MarkdownItPluginOpts['generateID']>;
+        
     };
 }
 
@@ -322,6 +324,7 @@ function initPlugins(
     if (resolveMarkdownAttrs(enableMarkdownAttrs)) {
         // Need for ids of headers
         md.use(applyAttrs, {leftDelimiter, rightDelimiter});
+        md.use(fenceAttrs);
     }
 
     md.use(olAttrConversion, pluginOptions);
